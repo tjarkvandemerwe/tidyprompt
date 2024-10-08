@@ -28,7 +28,7 @@
 #'
 #' @examples
 #' # Below is an example of how to create a custom llm_provider using this function
-#' # (See also the source code for tidyllm::create_openai_llm_provider and tidyllm::create_ollama_llm_provider)
+#' # (See also the source code for tidyprompt::create_openai_llm_provider and tidyprompt::create_ollama_llm_provider)
 #'
 #' # First create a wrapper around the generic function,
 #' #  providing your implementation to complete a chat
