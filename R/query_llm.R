@@ -17,9 +17,11 @@
 # - validators; these take the (extracted) LLM response and validate it via functions
 #   that return a boolean. If the validation fails, the error message is passed back to the LLM
 
-# Adding, e.g., chain-of-thought reasoning, can be done by adding a prompt modifier
+# Adding, e.g., chain-of-thought reasoning, can be done by adding a mode modifier
 # that modifies the prompt to include the chain-of-thought reasoning instructions,
 # and an extractor that extracts the final answer from the chain-of-thought response (e.g., within 'Finish[]')
+# Ultimately a singular function would be created that would add all these components to a prompt object,
+# which could then be easily created via a piping interface
 
 # Adding a tool can be done by specifying the tools in the tool modifier,
 # and then the tool-caller should parse the LLM-response for tool-calls and execute them
