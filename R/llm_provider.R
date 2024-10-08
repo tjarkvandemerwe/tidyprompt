@@ -133,7 +133,10 @@ create_llm_provider <- function(
 #' ))
 #'
 #' oai$complete_chat("Hello!")
-create_openai_llm_provider <- function(parameters = list()) {
+create_openai_llm_provider <- function(parameters = list(
+  model = "gpt-4o-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY")
+)) {
   complete_chat <- function(chat_history) {
     url <- "https://api.openai.com/v1/chat/completions"
     headers <- c(
@@ -179,12 +182,15 @@ create_openai_llm_provider <- function(parameters = list()) {
 #' @export
 #'
 #' @examples
-#' ollama <- create_ollama_llm_provider(list(
-#'  model = "llama3.1:8b", url = "http://localhost:11434/api/chat"
-#' ))
+# ollama <- create_ollama_llm_provider(list(
+#  model = "llama3.1:8b", url = "http://localhost:11434/api/chat"
+# ))
 #'
 #' ollama$complete_chat("Hello!")
-create_ollama_llm_provider <- function(parameters = list()) {
+create_ollama_llm_provider <- function(parameters = list(
+  model = "llama3.1:8b",
+  url = "http://localhost:11434/api/chat"
+)) {
   complete_chat <- function(chat_history) {
     url <- parameters$url
 

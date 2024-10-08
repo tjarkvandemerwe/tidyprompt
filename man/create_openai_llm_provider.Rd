@@ -4,7 +4,9 @@
 \alias{create_openai_llm_provider}
 \title{Create a new OpenAI llm_provider instance}
 \usage{
-create_openai_llm_provider(parameters = list())
+create_openai_llm_provider(
+  parameters = list(model = "gpt-4o-mini", api_key = Sys.getenv("OPENAI_API_KEY"))
+)
 }
 \arguments{
 \item{parameters}{A named list of parameters. Currently the following parameters are required:

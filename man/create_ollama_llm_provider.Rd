@@ -4,7 +4,9 @@
 \alias{create_ollama_llm_provider}
 \title{Create a new Ollama llm_provider instance}
 \usage{
-create_ollama_llm_provider(parameters = list())
+create_ollama_llm_provider(
+  parameters = list(model = "llama3.1:8b", url = "http://localhost:11434/api/chat")
+)
 }
 \arguments{
 \item{parameters}{A named list of parameters. Currently the following parameters are required:
@@ -20,9 +22,6 @@ A new llm_provider object for use of the Ollama API
 Create a new Ollama llm_provider instance
 }
 \examples{
-ollama <- create_ollama_llm_provider(list(
- model = "llama3.1:8b", url = "http://localhost:11434/api/chat"
-))
 
 ollama$complete_chat("Hello!")
 }

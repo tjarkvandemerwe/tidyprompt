@@ -3,4 +3,5 @@
 export(create_llm_provider)
 export(create_ollama_llm_provider)
 export(create_openai_llm_provider)
+export(query_llm)
 export(validate_chat_history)
