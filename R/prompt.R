@@ -1,30 +1,16 @@
-#' Create a new prompt object
+#' Prompt object
 #'
-#' This function constructs a `prompt` object that contains the question,
-#' expected reply format, a function to extract the reply, and validation
-#' functions to ensure the response is valid.
+#' @param base_prompt The base prompt string
+#' @param modifiers List of functions that modify base_prompt string. Applied before mode modifier
+#' @param mode List with mode name, mode modifier, and mode extractor. Mode modifier is applied after regular modifiers;
+#'  mode extractor is applied before regular extractors
+#' @param tools Named list of functions that LLM can call
+#' @param extractors List of functions that extract content from LLM-reply. During query_llm,
+#' extracted content is passed to the validators and ultimately returned to the user.
+#' @param validators List of functions that validate extracted content
+#' @param llm_provider llm_provider object
 #'
-#' @param prompt A string containing the question or prompt text.
-#' @param reply_format A string describing the desired format or structure of the reply (optional).
-#' @param reply_extract A function that extracts the reply from the full response (optional).
-#' @param validation A list of validation functions, each checking the extracted response for validity.
-#'   If any function returns `FALSE`, the prompt is sent again, including the previous response
-#'   and validation error (optional).
-#'
-#' @return A `prompt` object with the specified components.
-#'
-#' @examples
-#' # Create a simple prompt with no validation
-#' p <- prompt("What is your name?")
-#'
-#' # Create a prompt with a format, reply extraction, and validation
-#' p <- prompt(
-#'   "Enter your age:",
-#'   reply_format = "numeric",
-#'   reply_extract = as.numeric,
-#'   validation = list(function(x) x > 0)
-#' )
-#'
+#' @return A prompt object
 #' @export
 new_prompt <- function(
     base_prompt, # Single string
@@ -44,53 +30,13 @@ new_prompt <- function(
 
     llm_provider = NULL # llm_provider object
 ) {
-  # Validate base_prompt
-  if (!is.character(base_prompt) || length(base_prompt) != 1) {
-    stop("`base_prompt` must be a single string.")
-  }
-
-  # Validate function lists
-  function_lists <- list(
-    modifiers = modifiers, tools = tools, extractors = extractors, validators = validators
-  )
-  lapply(names(function_lists), function(name) {
-    if (!is.null(function_lists[[name]]) &&
-        (!is.list(function_lists[[name]]) || !all(vapply(function_lists[[name]], is.function, logical(1))))) {
-      stop(sprintf("`%s` must be a list of functions, an empty list, or NULL.", name))
-    }
-  })
-
-  # Validate mode
-  validate_mode <- function(mode) {
-    if (!is.null(mode) && !is.list(mode)) {
-      stop("`mode` must be a list or NULL.")
-    }
-
-    if (is.null(mode) || length(mode) == 0) {
-      return()  # Valid if `mode` is NULL or an empty list
-    }
-
-    # Check that mode is a list and has the expected structure
-    if (!is.null(mode$name) ||
-        (is.character(mode$name) & length(mode$name) != 1) ||
-        !is.null(mode$modifier) && !is.character(mode$modifier)) {
-      stop("`mode$name` must be a single string or NULL.")
-    }
-
-    if (!is.null(mode$modifier) && !is.function(mode$modifier)) {
-      stop("`mode$modifier` must be a single function or NULL.")
-    }
-
-    if (!is.null(mode$extractor) && !is.function(mode$extractor)) {
-      stop("`mode$extractor` must be a single function or NULL.")
-    }
-  }
-  validate_mode(mode)
-
-  # Validate llm_provider
-  if (!is.null(llm_provider) && !inherits(llm_provider, "llm_provider")) {
-    stop("`llm_provider` must be an llm_provider object or NULL.")
-  }
+  validate_single_string(base_prompt, allow_null = FALSE)
+  validate_function_list(modifiers, allow_null = TRUE)
+  validate_mode_structure(mode, allow_null = TRUE)
+  validate_function_list(tools, allow_null = TRUE)
+  validate_function_list(extractors, allow_null = TRUE)
+  validate_function_list(validators, allow_null = TRUE)
+  validate_object_class(llm_provider, "llm_provider", allow_null = TRUE)
 
   # Define function which constructs the prompt from the base_prompt and modifiers
   construct <- function() {
@@ -162,7 +108,6 @@ new_prompt <- function(
   return(prompt_object)
 }
 
-
 # Example modifiers
 modifier1 <- function(prompt) paste(prompt, "with modifier 1")
 modifier2 <- function(prompt) paste(prompt, "and modifier 2")
@@ -177,22 +122,3 @@ prompt <- new_prompt(
 )
 
 prompt$construct()
-
-
-
-
-
-
-#' #' User-friendly prompt constructor
-#' #'
-#' #' A wrapper for `new_prompt()` that allows for creating prompts more easily.
-#' #'
-#' #' @inheritParams new_prompt
-#' #' @return A `prompt` object.
-#' #' @export
-#' prompt <- function(prompt,
-#'                    reply_format = NULL,
-#'                    reply_extract = NULL,
-#'                    validation = NULL) {
-#'   new_prompt(prompt, reply_format, reply_extract, validation)
-#' }
