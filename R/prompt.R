@@ -176,26 +176,23 @@ prompt <- new_prompt(
   )
 )
 
-# Call the construct_prompt method
-final_prompt <- prompt$construct_prompt()
-print(final_prompt) # Output: "This is the base prompt. with modifier 1 and modifier 2"
+prompt$construct()
 
 
 
 
 
 
-
-#' User-friendly prompt constructor
-#'
-#' A wrapper for `new_prompt()` that allows for creating prompts more easily.
-#'
-#' @inheritParams new_prompt
-#' @return A `prompt` object.
-#' @export
-prompt <- function(prompt,
-                   reply_format = NULL,
-                   reply_extract = NULL,
-                   validation = NULL) {
-  new_prompt(prompt, reply_format, reply_extract, validation)
-}
+#' #' User-friendly prompt constructor
+#' #'
+#' #' A wrapper for `new_prompt()` that allows for creating prompts more easily.
+#' #'
+#' #' @inheritParams new_prompt
+#' #' @return A `prompt` object.
+#' #' @export
+#' prompt <- function(prompt,
+#'                    reply_format = NULL,
+#'                    reply_extract = NULL,
+#'                    validation = NULL) {
+#'   new_prompt(prompt, reply_format, reply_extract, validation)
+#' }
