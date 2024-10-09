@@ -37,7 +37,7 @@ new_prompt <- function(
       extractor = NULL # Function that extracts from LLM-reply based on mode (applied before regular extractors)
     ),
 
-    tools = list(), # List of functions that LLM can call
+    tools = list(), # Named list of functions that LLM can call. Names are provided as tool descriptions to the LLM
 
     extractors = list(), # List of functions that extract from LLM-reply
     validators = list(), # List of functions that validate extracted data
@@ -105,9 +105,43 @@ new_prompt <- function(
     }
 
     # Use Reduce to apply all modifiers to the base prompt
-    return(Reduce(function(prompt, modifier) {
+    constructed_prompt <- Reduce(function(prompt, modifier) {
       modifier(prompt)
-    }, all_modifiers, init = base_prompt))
+    }, all_modifiers, init = base_prompt)
+
+    # Add tools to constructed prompt
+    if (length(tools) > 0) {
+      constructed_prompt <- glue::glue(
+        "{constructed_prompt}
+
+        You have the following tools available:"
+      )
+
+      for (i in 1:length(tools)) {
+        tool_name <- names(tools)[i]
+        tool_function <- tools[[i]]
+        arguments <- formals(tool_function)
+        arguments_string <- paste(names(arguments), collapse = ", ")
+
+        # TODO: Add more information about the tool, potentially based on
+        #   docstring-documentation provided within the function?
+        #     E.g., description, what is returned, example usage, etc.
+        constructed_prompt <- glue::glue(
+          "{constructed_prompt}
+
+            Tool_name: {tool_name}
+            Arguments: {arguments_string}"
+        )
+      }
+
+      constructed_prompt <- glue::glue(
+        "{constructed_prompt}
+
+        You can use a tool by typing TOOL[tool_name](arguments)."
+      )
+    }
+
+    return(constructed_prompt)
   }
 
   # Construct and return the prompt object with construct_prompt as a method
@@ -120,7 +154,7 @@ new_prompt <- function(
       extractors = extractors,
       validators = validators,
       llm_provider = llm_provider,
-      construct_prompt = construct_prompt # Attach the function as a method
+      construct = construct
     ),
     class = "prompt"
   )
@@ -136,7 +170,10 @@ modifier2 <- function(prompt) paste(prompt, "and modifier 2")
 # Create a new prompt object
 prompt <- new_prompt(
   base_prompt = "This is the base prompt.",
-  modifiers = list(modifier1, modifier2)
+  modifiers = list(modifier1, modifier2),
+  tools = list(
+    `mean` = mean
+  )
 )
 
 # Call the construct_prompt method
