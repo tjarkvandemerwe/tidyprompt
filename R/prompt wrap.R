@@ -96,7 +96,7 @@ tidyprompt <- function(prompt_text, ...) {
 validate_prompt_list <- function(prompt_wrap_or_list) {
   # If prompt_wrap_or_list is a single string, we will create a prompt from that
   if (is(prompt_wrap_or_list, "character") && length(prompt_wrap_or_list) == 1) {
-    prompt_wrap_or_list <- create_prompt(prompt_wrap_or_list)
+    prompt_wrap_or_list <- create_prompt_wrap(prompt_wrap_or_list)
   }
 
   if (is(prompt_wrap_or_list, "prompt_wrap")) {
@@ -300,13 +300,97 @@ add_example_mode <- function(prompt_wrap_or_list) {
 }
 
 
+#' Make LLM answer as an integer (between min and max)
+#'
+#' @param prompt_wrap_or_list A single string, a prompt_wrap object, or a list
+#' of prompt_wrap objects.
+#' @param min (optional) Minimum value for the integer
+#' @param max (optional) Maximum value for the integer
+#' @param add_instruction_to_prompt (optional) Add instruction for replying
+#' as an integer to the prompt text. Useful for debugging if extractors/validators
+#' are working as expected (without instruction the answer should fail the
+#' validation function, initiating a retry).
+#'
+#' @return A prompt list with an added prompt wrapper object which
+#' will ensure that the LLM response is an integer.
+#' @export
+answer_as_integer <- function(
+    prompt_wrap_or_list, min = NULL, max = NULL, add_instruction_to_prompt = FALSE
+) {
+  prompt_list <- validate_prompt_list(prompt_wrap_or_list)
+
+  new_wrap <- create_prompt_wrap(
+    modify_fn = function(original_prompt_text, modify_fn_args) {
+      min <- modify_fn_args$min
+      max <- modify_fn_args$max
+
+      new_prompt_text <- original_prompt_text
+
+      if (add_instruction_to_prompt) {
+        new_prompt_text <- glue::glue(
+          "{new_prompt_text}
+
+        You must answer with only an integer (use no other characters)."
+        )
+
+        if (!is.null(min) && !is.null(max)) {
+          new_prompt_text <- glue::glue(
+            "{new_prompt_text}
+          Enter an integer between {min} and {max}."
+          )
+        } else if (!is.null(min)) {
+          new_prompt_text <- glue::glue(
+            "{new_prompt_text}
+          Enter an integer greater than or equal to {min}."
+          )
+        } else if (!is.null(max)) {
+          new_prompt_text <- glue::glue(
+            "{new_prompt_text}
+          Enter an integer less than or equal to {max}."
+          )
+        }
+      }
+
+      return(new_prompt_text)
+    },
+    extractor_functions = list(
+      function(x) {
+        suppressWarnings(as.integer(x))
+      }
+    ),
+    validation_functions = list(
+      function(x) {
+        if (!is.integer(x)) {
+          return(create_llm_feedback(glue::glue(
+            "You must answer with only an integer (use no other characters)."
+          )))
+        }
+        if (!is.null(min) && x < min) {
+          return(create_llm_feedback(glue::glue(
+            "The number should be greater than or equal to {min}."
+          )))
+        }
+        if (!is.null(max) && x > max) {
+          return(create_llm_feedback(glue::glue(
+            "The number should be less than or equal to {max}."
+          )))
+        }
+
+        return(TRUE)
+      }
+    )
+  )
+
+  return(c(prompt_list, list(new_wrap)))
+}
+
 
 #### 3 Example usage ####
 
 if (FALSE) {
 
   # Create prompt with extra text
-  pw <- create_prompt(
+  pw <- tidyprompt(
     prompt_text = "Enter a number between 1 and 10",
     validation_functions = list(
       function(x) {

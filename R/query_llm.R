@@ -32,7 +32,12 @@ query_llm <- function(
   )
   # Create internal function to send_chat to LLM-provider
   send_chat <- function(message) {
-    # TODO: logging, verbose printing of queries & responses
+    # TODO: logging
+    if (verbose) {
+      message("--- Sending message to LLM-provider: ---")
+      message(message)
+    }
+
     chat_history <<- chat_history |>
       dplyr::bind_rows(data.frame(
         role = "user",
@@ -40,6 +45,12 @@ query_llm <- function(
       ))
 
     completion <- llm_provider$complete_chat(chat_history)
+
+    if (verbose) {
+      message("--- Received response from LLM-provider: ---")
+      message(completion$content)
+    }
+
     chat_history <<- chat_history |>
       dplyr::bind_rows(data.frame(
         role = completion$role,
@@ -144,3 +155,15 @@ query_llm <- function(
 
   return(response)
 }
+
+# Code to test extractors/validators
+if (FALSE) {
+
+  "Hi!" |>
+    add_text("Can you please calculate what is 5+5?") |>
+    answer_as_integer(add_instruction_to_prompt = FALSE) |>
+    query_llm(create_ollama_llm_provider())
+
+}
+
+

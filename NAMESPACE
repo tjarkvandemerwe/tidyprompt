@@ -2,6 +2,7 @@
 
 export(add_example_mode)
 export(add_text)
+export(answer_as_integer)
 export(construct_prompt_text)
 export(correct_prompt_list_order)
 export(create_llm_feedback)
