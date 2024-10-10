@@ -256,7 +256,7 @@ get_llm_provider_from_prompt_list <- function(prompt_list) {
 #' @return A prompt list with an added prompt wrapper object which
 #' will append the text to the end of the prompt text.
 #' @export
-add_text_to_prompt <- function(prompt_wrap_or_list, text, sep = "\n\n") {
+add_text <- function(prompt_wrap_or_list, text, sep = "\n\n") {
   prompt_list <- validate_prompt_list(prompt_wrap_or_list)
 
   new_wrap <- create_prompt_wrap(
@@ -318,7 +318,7 @@ if (FALSE) {
     ),
     llm_provider = create_ollama_llm_provider()
   ) |>
-    add_text_to_prompt("Some text added to the end of the prompt.")
+    add_text("Some text added to the end of the prompt.")
 
   # Construct prompt text from list of prompt wrappers
   construct_prompt_text(pw) |>
@@ -326,15 +326,15 @@ if (FALSE) {
 
   # Example; starting from string, adding mode in the middle but placed at the end
   "Hi there!" |>
-    add_text_to_prompt("Some text added to the end of the prompt.") |>
+    add_text("Some text added to the end of the prompt.") |>
     add_example_mode() |> # This will be placed at the end, even though we add it in the middle
-    add_text_to_prompt("More text to add (to be placed before the mode)") |>
+    add_text("More text to add (to be placed before the mode)") |>
     construct_prompt_text() |>
     cat()
 
   # Example passing to query_llm
   "Hi, how are you?" |>
-    add_text_to_prompt("Maybe write a poem to express yourself?") |>
+    add_text("Maybe write a poem to express yourself?") |>
     add_example_mode() |>
     set_llm_provider(create_ollama_llm_provider()) |>
     query_llm()
