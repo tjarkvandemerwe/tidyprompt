@@ -6,38 +6,29 @@
 \usage{
 query_llm(
   prompt,
-  llm_provider,
-  mode = c("default", "chain-of-thought"),
+  llm_provider = NULL,
+  extractors = list(),
   validations = list(),
   max_retries = 10,
-  verbose = global$settings$verbose_llm,
-  cot_require_finish_brackets = TRUE,
-  also_return_chat_history = FALSE
+  verbose = TRUE
 )
 }
 \arguments{
 \item{prompt}{...}
 
-\item{mode}{...}
+\item{llm_provider}{...}
+
+\item{extractors}{...}
 
 \item{validations}{...}
 
 \item{max_retries}{...}
 
-\item{verbose}{...}
-
-\item{cot_require_finish_brackets}{...}
-
-\item{also_return_chat_history}{...}
-
-\item{llm_model}{...}
+\item{verbose}{....}
 }
 \value{
 ...
 }
 \description{
 ...
-}
-\examples{
-# ...
 }
