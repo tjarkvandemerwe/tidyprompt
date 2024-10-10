@@ -1,6 +1,23 @@
 #### 1 Prompt wrap object & functions ####
 
-# Create a constructor for Prompt S3 class
+#' Create a prompt wrap object
+#'
+#' @param prompt_text Text of the prompt; is typically supplied for the first prompt in a prompt list,
+#'  and not for the rest of the prompts in the list.
+#' @param type Type of the prompt; can be "unspecified", "mode", or "toolset".
+#' This is used to determine the order the prompt wrappers when constructing the final prompt text.
+#' Mode prompts and toolset prompts are placed at the bottom of the prompt list (toolset after mode).
+#' @param modify_fn Function that modifies the prompt text; takes two arguments: original_prompt_text and modify_fn_args.
+#' This function will be applied to the previous prompt text in the prompt list.
+#' @param modify_fn_args List of arguments to be passed to the modify_fn.
+#' @param extractor_functions List of functions that extract content from the response to the prompt.
+#' Should return the extracted object on successful extraction, or a 'llm_feedback' object upon failure.
+#' @param validation_functions List of functions that validate the (extracted) response to the prompt.
+#' Should return TRUE on successful validation, or a 'llm_feedback' object upon failure.
+#' @param llm_provider LLM provider object to be used for this prompt.
+#'
+#' @return A prompt wrap object
+#' @export
 create_prompt_wrap <- function(
     prompt_text = NULL,
     type = c("unspecified", "mode", "toolset"),
@@ -33,8 +50,24 @@ create_prompt_wrap <- function(
   return(prompt_wrap)
 }
 
-# Wrapper function to create a prompt
-#   (which is also just a prompt_wrap, but with a promp_text and not a modify_fn)
+
+#' Create a base prompt wrap object
+#'
+#' Function to create a prompt wrap object which will be at the base of the
+#' prompt list. Typically, prompt wrappers will be added to this base prompt.
+#'
+#' @param prompt_text Text of the prompt
+#' @param ... Additional arguments to be passed to create_prompt_wrap
+#'
+#' @return A prompt wrap object
+#' @export
+#'
+#' @examples
+#' base_prompt <- tidyprompt("Enter a number between 1 and 10")
+#'
+#' # Note that if your base_prompt is only text, you do not need to use tidyprompt.
+#' # You can also use the other functions directly with a string of text as the
+#' # base prompt.
 tidyprompt <- function(prompt_text, ...) {
   return(create_prompt_wrap(prompt_text = prompt_text, ...))
 }
@@ -43,6 +76,23 @@ tidyprompt <- function(prompt_text, ...) {
 # This list can be a regular list but needs to meet certain criteria, checked in the
 # validate_prompt_list function. This function will also convert a single prompt wrap
 # to a list. Anywhere that we work with a prompt list, this function should be called first
+
+
+
+#' Validate a prompt list
+#'
+#' Tidyprompt will use a list of prompt_wrap objects to organise a base prompt and
+#' modifications to that base prompt, plus extractor and validation functions which
+#' need to be applied after the prompt is sent to the LLM. An LLM provider,
+#' to be used for evaluation of the final prompt, can also be kept within one of
+#' the prompt wrap objects within the prompt list.
+#'
+#' @param prompt_wrap_or_list A single string, a prompt_wrap object, or a list
+#' of prompt_wrap objects.
+#'
+#' @return A valid prompt list. If the input contains errors and cannot be turned
+#' into a valid prompt list, an error will be thrown.
+#' @export
 validate_prompt_list <- function(prompt_wrap_or_list) {
   # If prompt_wrap_or_list is a single string, we will create a prompt from that
   if (is(prompt_wrap_or_list, "character") && length(prompt_wrap_or_list) == 1) {
@@ -93,6 +143,18 @@ validate_prompt_list <- function(prompt_wrap_or_list) {
 # Function to correct the order of a prompt list, to be used
 # before constructing the final prompt text/when passing final prompt to the LLM
 # Typically we want modes and toolsets to be at the bottom
+
+
+#' Correct the order of a prompt list
+#'
+#' Reorder prompt wrap objects in a prompt list so that "mode" and "toolset" prompts
+#' are placed at the bottom, and the final prompt can be properly constructed.
+#'
+#' @param prompt_list A list of prompt_wrap objects
+#'
+#' @return A list of prompt_wrap objects with the order corrected.
+#' 'Mode' and 'toolset' prompts are placed at the bottom of the list.
+#' @export
 correct_prompt_list_order <- function(prompt_list) {
   # Validate that the input is a proper prompt list
   prompt_list <- validate_prompt_list(prompt_list)
@@ -115,7 +177,13 @@ correct_prompt_list_order <- function(prompt_list) {
   return(reordered_list)
 }
 
-# Construct prompt text from prompt list
+#' Construct a final prompt text from a prompt list
+#'
+#' @param prompt_wrap_or_list A single string, a prompt_wrap object, or a list
+#' of prompt_wrap objects.
+#'
+#' @return A character string containing the final prompt text.
+#' @export
 construct_prompt_text <- function(prompt_wrap_or_list) {
   prompt_list <- validate_prompt_list(prompt_wrap_or_list) |>
     correct_prompt_list_order()
@@ -128,7 +196,17 @@ construct_prompt_text <- function(prompt_wrap_or_list) {
   return(prompt_text)
 }
 
-# Function to set llm_provider for prompt list
+
+#' Set the LLM provider for a prompt list
+#'
+#' @param prompt_wrap_or_list A single string, a prompt_wrap object, or a list
+#' of prompt_wrap objects.
+#' @param llm_provider llm_provider object to be used for evaluation
+#' of the final prompt.
+#'
+#' @return A prompt list with the LLM provider set. The LLM provider
+#' will be set for the base prompt in the list.
+#' @export
 set_llm_provider <- function(prompt_wrap_or_list, llm_provider) {
   prompt_list <- validate_prompt_list(prompt_wrap_or_list)
 
@@ -137,7 +215,15 @@ set_llm_provider <- function(prompt_wrap_or_list, llm_provider) {
   return(prompt_list)
 }
 
-# Get LLM provider from prompt list; take first one provided that is not NULL
+
+#' Get the LLM provider from a prompt list
+#'
+#' @param prompt_list A list of prompt_wrap objects
+#'
+#' @return The LLM provider object from the prompt list. The first
+#' LLM provider found in the list will be returned (starting from the base prompt).
+#' If no LLM provider is found in the list, NULL will be returned.
+#' @export
 get_llm_provider_from_prompt_list <- function(prompt_list) {
   prompt_list <- validate_prompt_list(prompt_list)
 
@@ -156,7 +242,20 @@ get_llm_provider_from_prompt_list <- function(prompt_list) {
 
 #### 2 Example prompt wrappers ####
 
-# Example function that adds text at the end of an existing prompt
+
+#' Add text to a prompt
+#'
+#' Add text to a prompt by appending a prompt wrapper to the prompt list.
+#' The text will be added to the end of the prompt text.
+#'
+#' @param prompt_wrap_or_list A single string, a prompt_wrap object, or a list
+#' of prompt_wrap objects.
+#' @param text Text to be added to the prompt.
+#' @param sep Separator to be used between the original prompt text and the added text.
+#'
+#' @return A prompt list with an added prompt wrapper object which
+#' will append the text to the end of the prompt text.
+#' @export
 add_text_to_prompt <- function(prompt_wrap_or_list, text, sep = "\n\n") {
   prompt_list <- validate_prompt_list(prompt_wrap_or_list)
 
@@ -172,7 +271,14 @@ add_text_to_prompt <- function(prompt_wrap_or_list, text, sep = "\n\n") {
   return(c(prompt_list, list(new_wrap)))
 }
 
-# Example mode function
+
+#' Add a mode to a prompt (example function)
+#'
+#' @param prompt_wrap_or_list A single string, a prompt_wrap object, or a list
+#' of prompt_wrap objects.
+#'
+#' @return A prompt list with an added mode prompt wrapper object.
+#' @export
 add_example_mode <- function(prompt_wrap_or_list) {
   prompt_list <- validate_prompt_list(prompt_wrap_or_list)
 
@@ -197,36 +303,40 @@ add_example_mode <- function(prompt_wrap_or_list) {
 
 #### 3 Example usage ####
 
-# Create prompt with extra text
-pw <- create_prompt(
-  prompt_text = "Enter a number between 1 and 10",
-  validation_functions = list(
-    function(x) {
-      if (x < 1 || x > 10) {
-        return("The number should be between 1 and 10")
+if (FALSE) {
+
+  # Create prompt with extra text
+  pw <- create_prompt(
+    prompt_text = "Enter a number between 1 and 10",
+    validation_functions = list(
+      function(x) {
+        if (x < 1 || x > 10) {
+          return("The number should be between 1 and 10")
+        }
+        return(TRUE)
       }
-      return(TRUE)
-    }
-  ),
-  llm_provider = create_ollama_llm_provider()
-) |>
-  add_text_to_prompt("Some text added to the end of the prompt.")
+    ),
+    llm_provider = create_ollama_llm_provider()
+  ) |>
+    add_text_to_prompt("Some text added to the end of the prompt.")
 
-# Construct prompt text from list of prompt wrappers
-construct_prompt_text(pw) |>
-  cat()
+  # Construct prompt text from list of prompt wrappers
+  construct_prompt_text(pw) |>
+    cat()
 
-# Example; starting from string, adding mode in the middle but placed at the end
-"Hi there!" |>
-  add_text_to_prompt("Some text added to the end of the prompt.") |>
-  add_example_mode() |> # This will be placed at the end, even though we add it in the middle
-  add_text_to_prompt("More text to add (to be placed before the mode)") |>
-  construct_prompt_text() |>
-  cat()
+  # Example; starting from string, adding mode in the middle but placed at the end
+  "Hi there!" |>
+    add_text_to_prompt("Some text added to the end of the prompt.") |>
+    add_example_mode() |> # This will be placed at the end, even though we add it in the middle
+    add_text_to_prompt("More text to add (to be placed before the mode)") |>
+    construct_prompt_text() |>
+    cat()
 
-# Example passing to query_llm
-"Hi, how are you?" |>
-  add_text_to_prompt("Maybe write a poem to express yourself?") |>
-  add_example_mode() |>
-  set_llm_provider(create_ollama_llm_provider()) |>
-  query_llm()
+  # Example passing to query_llm
+  "Hi, how are you?" |>
+    add_text_to_prompt("Maybe write a poem to express yourself?") |>
+    add_example_mode() |>
+    set_llm_provider(create_ollama_llm_provider()) |>
+    query_llm()
+
+}
