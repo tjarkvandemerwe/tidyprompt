@@ -1,137 +1,14 @@
-# Idea for design:
-# - send_query can take a 'raw' prompt (e.g., just text/chat_history); then
-#   the options have to be set in the arguments of this function
-# - send_query can take a prompt object, which contains the prompt and the options
-#     This prompt object can be build via tidy-style piping functions
-
-# Prompt + evaluation consist of several building blocks, which are functions:
-# - prompt modifiers; these take the initial prompt and modify it.
-#   Special case is mode modifier (there can only be 1, applied after others)
-#   Another special case is tool modifier (there can only be 1, applied also after mode modifier)
-# - tool-callers; these take LLM-response, parse for function calls, and execute function + give
-#   feedback to LLM. When a tool is called, extracting/validating will not be performed
-# - extractors; these take an LLM-response and apply some form of parsing to it,
-#   passing forward the extracted information. Can return error to LLM if extraction fails. What is extracted
-#   will be the input for validation functions, and, pending validation, will be the
-#   final output
-# - validators; these take the (extracted) LLM response and validate it via functions
-#   that return a boolean. If the validation fails, the error message is passed back to the LLM
-
-# Adding, e.g., chain-of-thought reasoning, can be done by adding a mode modifier
-# that modifies the prompt to include the chain-of-thought reasoning instructions,
-# and an extractor that extracts the final answer from the chain-of-thought response (e.g., within 'Finish[]')
-# Ultimately a singular function would be created that would add all these components to a prompt object,
-# which could then be easily created via a piping interface
-
-# Adding a tool can be done by specifying the tools in the tool modifier,
-# and then the tool-caller should parse the LLM-response for tool-calls and execute them
-
-# TODO: integrate the above design, create prompt object
-# TODO: integrate llm_provider for completing chat
-# TODO: add functionality for tool-calling, extractor functions
-
-if (FALSE) {
-  # Old documentation from original send_query:
-
-  #' Send query to LLM with validation and retry mechanism (old documentation from )
-  #'
-  #' This function sends a query to a large language model (LLM), optionally using chain-of-thought reasoning
-  #' and applying validation functions to the responses. It handles retries and error messages in case
-  #' of invalid responses.
-  #'
-  #' @param query A string representing the query to be sent to the LLM.
-  #'
-  #' @param llm_model A string specifying the LLM model to use. Defaults to `global$settings$llm_model`
-  #'
-  #' @param mode A character string specifying the mode for the query. Can be
-  #'  either `"default"` or `"chain-of-thought"`. In `"chain-of-thought"` mode,
-  #'  the LLM is prompted to think step-by-step. Defaults to `"default"`.
-  #'
-  #' @param validations A list of validation functions to apply to the LLM response.
-  #'  Each function should return a logical value (`TRUE` for a valid response and
-  #'  `FALSE` for an invalid one). The error messages which will be passed back
-  #'  to the LLM need to be either provided in the names() of the list, or as
-  #'  attribute 'error_message' to the 'FALSE' value which a validation function
-  #'  returns. See examples.
-  #'
-  #' @param max_retries An integer specifying the maximum number of retry attempts
-  #'  in case of an invalid response. Defaults to 10.
-  #'
-  #' @param verbose A logical flag indicating whether the interaction with the LLM
-  #'  should be printed to the console.Defaults to `TRUE`.
-  #'
-  #' @return The final response from the LLM after validation and retries.
-  #'  If all retries fail, an error is raised.
-  #'
-  #' @throws An error if the LLM response fails to pass validation after `max_retries`
-  #'  attempts, or if there are issues with the validation functions.
-  #'
-  #' @examples
-  #'   # Basic query with default settings
-  #'   send_query("What is the capital of France?")
-  #'
-  #'   # Chain-of-thought mode example(
-  #'   send_query("What is the square root of 144?", mode = "chain-of-thought")
-  #'
-  #'   # Example 1 with validation:
-  #'   #   error message via names() of 'validations'
-  #'   my_validation <- function(response) {
-  #'     if (response == "Paris") return(TRUE)
-  #'     return(FALSE)
-  #'   }
-  #'   send_query(
-  #'     "What is the capital of France?",
-  #'     validations = list(
-  #'       "Tell me only the name of the capital, without dots." = my_validation
-  #'     ),
-  #'     verbose = TRUE
-  #'   )
-  #'
-  #'   # Example 2 with validation:
-  #'   #   error message as attribute of 'FALSE' result
-  #'   my_validation <- function(response) {
-  #'     # Check if the response is only "Paris" (regardless of case)
-  #'     if (toupper(response) != "PARIS") {
-  #'       return(structure(
-  #'         FALSE,
-  #'         error_message = "Tell me only the name of the capital, without dots."
-  #'       ))
-  #'     }
-  #'     # Check if the response is uppercase
-  #'     if (response != "PARIS") {
-  #'       return(structure(
-  #'         FALSE,
-  #'         error_message = "Tell me in uppercase."
-  #'       ))
-  #'     }
-  #'     return(TRUE)
-  #'   }
-  #'   send_query(
-  #'     "What is the capital of France?",
-  #'     validations = list(my_validation),
-  #'     verbose = TRUE
-  #'   )
-  #'
-  #'   # See also bottom of 'r/src/functions/send_query.R' for more examples.
-
-}
-
 #' ...
 #'
 #' @param prompt ...
-#' @param llm_model ...
-#' @param mode ...
+#' @param llm_provider ...
+#' @param extractors ...
 #' @param validations ...
 #' @param max_retries ...
-#' @param verbose ...
-#' @param cot_require_finish_brackets ...
-#' @param also_return_chat_history ...
+#' @param verbose ....
 #'
 #' @return ...
 #' @export
-#'
-#' @examples
-#' # ...
 query_llm <- function(
     prompt,
     llm_provider = NULL,
@@ -155,6 +32,7 @@ query_llm <- function(
   )
   # Create internal function to send_chat to LLM-provider
   send_chat <- function(message) {
+    # TODO: logging, verbose printing of queries & responses
     chat_history <<- chat_history |>
       dplyr::bind_rows(data.frame(
         role = "user",
@@ -174,7 +52,8 @@ query_llm <- function(
   # Retrieve initial response
   response <- send_chat(prompt |> construct_prompt_text())
 
-  # TODO: apply extractors, validators (get from prompt object)
+  # TODO: apply extractors, validators --- altering the response as needed
+  # (get from prompt object if provided; likely want to reorder based on type)
   # ...
 
   # OLD CODE (from project):
@@ -261,6 +140,7 @@ query_llm <- function(
         chat_history = chat_history
       ))
   }
+
 
   return(response)
 }
