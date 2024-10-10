@@ -88,6 +88,30 @@ validate_prompt_list <- function(prompt_wrap_or_list) {
   return(invisible(prompt_wrap_or_list))
 }
 
+# Function to set llm_provider for prompt list
+set_llm_provider <- function(prompt_wrap_or_list, llm_provider) {
+  prompt_list <- validate_prompt_list(prompt_wrap_or_list)
+
+  prompt_list[[1]]$llm_provider <- llm_provider
+
+  return(prompt_list)
+}
+
+# Get LLM provider from prompt list; take first one provided that is not NULL
+get_llm_provider_from_prompt_list <- function(prompt_list) {
+  prompt_list <- validate_prompt_list(prompt_list)
+
+  llm_provider <- NULL
+  for (i in seq_along(prompt_list)) {
+    if (!is.null(prompt_list[[i]]$llm_provider)) {
+      llm_provider <- prompt_list[[i]]$llm_provider
+      break
+    }
+  }
+
+  return(llm_provider)
+}
+
 # Function to correct the order of a prompt list, to be used
 # before constructing the final prompt text/when passing final prompt to the LLM
 # Typically we want modes and toolsets to be at the bottom
@@ -176,7 +200,8 @@ pw <- create_prompt(
       }
       return(TRUE)
     }
-  )
+  ),
+  llm_provider = create_ollama_llm_provider()
 ) |>
   add_text_to_prompt("Some text added to the end of the prompt.")
 
@@ -191,3 +216,10 @@ construct_prompt_text(pw) |>
   add_text_to_prompt("More text to add (to be placed before the mode)") |>
   construct_prompt_text() |>
   cat()
+
+# Example passing to query_llm
+"Hi, how are you?" |>
+  add_text_to_prompt("Maybe write a poem to express yourself?") |>
+  add_example_mode() |>
+  set_llm_provider(create_ollama_llm_provider()) |>
+  query_llm()

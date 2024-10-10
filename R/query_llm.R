@@ -134,24 +134,25 @@ if (FALSE) {
 #' # ...
 query_llm <- function(
     prompt,
-    llm_provider,
-    mode = c("default", "chain-of-thought"),
+    llm_provider = NULL,
+    extractors = list(),
     validations = list(),
     max_retries = 10,
-    verbose = global$settings$verbose_llm,
-    cot_require_finish_brackets = TRUE,
-    also_return_chat_history = FALSE
+    verbose = TRUE
 ) {
-  mode <- match.arg(mode)
+  prompt <- validate_prompt_list(prompt)
 
-  raw_prompt <- prompt
+  last_llm_provider_from_prompt_list <- get_llm_provider_from_prompt_list(prompt)
+  if (!is.null(last_llm_provider_from_prompt_list))
+    llm_provider <- last_llm_provider_from_prompt_list
+  if (is.null(llm_provider))
+    stop("No llm_provider provided and no llm_provider found in prompt list.")
 
   # Create internal chat_history
   chat_history <- data.frame(
     role = character(),
     content = character()
   )
-
   # Create internal function to send_chat to LLM-provider
   send_chat <- function(message) {
     chat_history <<- chat_history |>
@@ -170,119 +171,96 @@ query_llm <- function(
     return(invisible(completion$content))
   }
 
-
-  if (mode == "chain-of-thought") {
-    raw_prompt <- glue::glue(
-      "{raw_prompt}
-
-      -------------------------------------------------------------------------
-
-      You are given the above prompt.
-      To answer this prompt, please think step-by-step, detailing your thought process.
-      What are the steps you would take to answer this question?
-
-      Describe your thought process in the following format:
-        >> step 1: <description of step 1>
-        >> step 2: <description of step 2>
-        (etc.)"
-    )
-
-    if (cot_require_finish_brackets) {
-      raw_prompt <- glue::glue(
-        "{raw_prompt}
-
-        When you are done, you must type:
-        'Finish[<put here your final answer to the original prompt>]'
-
-        Make sure the final answer follows the logical conclusion of
-        the step by step reasoning."
-      )
-    }
-  }
-
   # Retrieve initial response
-  response <- send_chat(raw_prompt)
+  response <- send_chat(prompt |> construct_prompt_text())
 
-  # If no parsing/validation required,
-  if (mode == "default" & length(validations) == 0)
-    return(response)
+  # TODO: apply extractors, validators (get from prompt object)
+  # ...
 
-  # Else start a parsing/validation loop
-  tries <- 0; successful_output <- FALSE
-  while (tries < max_retries) {
-    tries <- tries + 1
+  # OLD CODE (from project):
+  if (FALSE) {
+    # If no parsing/validation required,
+    if (mode == "default" & length(validations) == 0)
+      return(response)
 
-    # Attempt to parse final answer from the chain-of-thought response
-    #   If it fails, tell LLM how it should provide the answer
-    if (mode == "chain-of-thought" & cot_require_finish_brackets) {
-      response <- stringr::str_extract(response, "(?s)(?<=Finish\\[).+?(?=\\])")
+    # Else start a parsing/validation loop
+    tries <- 0; successful_output <- FALSE
+    while (tries < max_retries) {
+      tries <- tries + 1
 
-      # LLM may not have put answer within 'Finish[...]' brackets;
-      #   sometimes the LLM also puts 'answer' within the brackets, while the
-      #   actual answer is placed somewhere else
-      if (is.na(response) | tolower(response) == "answer") {
-        response <- send_chat(glue::glue(
-          "Error, could not parse final answer.
+      # Attempt to parse final answer from the chain-of-thought response
+      #   If it fails, tell LLM how it should provide the answer
+      if (mode == "chain-of-thought" & cot_require_finish_brackets) {
+        response <- stringr::str_extract(response, "(?s)(?<=Finish\\[).+?(?=\\])")
+
+        # LLM may not have put answer within 'Finish[...]' brackets;
+        #   sometimes the LLM also puts 'answer' within the brackets, while the
+        #   actual answer is placed somewhere else
+        if (is.na(response) | tolower(response) == "answer") {
+          response <- send_chat(glue::glue(
+            "Error, could not parse final answer.
           Please call 'Finish[<put here your final answer to the original prompt>]'"
-        ))
-        next
-      }
-    }
-
-    if (length(validations) == 0) {
-      message("No validations, returning response.")
-      successful_output <- TRUE
-      break
-    }
-
-    # Apply validation functions to the response
-    #   If they fail, give LLM the error message so it can retry
-    all_validations_passed <- TRUE
-    for (i in 1:length(validations)) {
-      validation_function <- validations[[i]]
-      validation_result <- validation_function(response)
-
-      if (!is.logical(validation_result))
-        stop("Validation function did not return a logical value.")
-
-      if (!validation_result) {
-        all_validations_passed <- FALSE
-
-        if (!is.null(attr(validation_result, "error_message"))) {
-          error_message <- attr(validation_result, "error_message")
-        } else {
-          error_message <- names(validations)[i]
+          ))
+          next
         }
+      }
 
-        if (is.null(error_message))
-          stop("
+      if (length(validations) == 0) {
+        message("No validations, returning response.")
+        successful_output <- TRUE
+        break
+      }
+
+      # Apply validation functions to the response
+      #   If they fail, give LLM the error message so it can retry
+      all_validations_passed <- TRUE
+      for (i in 1:length(validations)) {
+        validation_function <- validations[[i]]
+        validation_result <- validation_function(response)
+
+        if (!is.logical(validation_result))
+          stop("Validation function did not return a logical value.")
+
+        if (!validation_result) {
+          all_validations_passed <- FALSE
+
+          if (!is.null(attr(validation_result, "error_message"))) {
+            error_message <- attr(validation_result, "error_message")
+          } else {
+            error_message <- names(validations)[i]
+          }
+
+          if (is.null(error_message))
+            stop("
               No error message was provided with the validation function.
               Please provide an error message as an attribute to the 'FALSE'
               result of the validation function, or as a named element in the
               'validations' list.
             ")
 
-        response <- send_chat(
-          paste0("Error: ", error_message)
-        )
+          response <- send_chat(
+            paste0("Error: ", error_message)
+          )
 
+          break
+        }
+      }
+
+      if (all_validations_passed) {
+        successful_output <- TRUE
         break
       }
     }
 
-    if (all_validations_passed) {
-      successful_output <- TRUE
-      break
-    }
+    if (!successful_output)
+      stop("Failed to reach a valid answer after ", max_retries, " tries.")
+
+    if (also_return_chat_history)
+      return(list(
+        response = response,
+        chat_history = chat_history
+      ))
   }
 
-  if (!successful_output)
-    stop("Failed to reach a valid answer after ", max_retries, " tries.")
-
-  if (also_return_chat_history)
-    return(list(
-      response = response,
-      chat_history = chat_history
-    ))
   return(response)
 }
