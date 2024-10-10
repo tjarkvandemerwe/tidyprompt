@@ -1,3 +1,5 @@
+#### 1 Prompt wrap object & functions ####
+
 # Create a constructor for Prompt S3 class
 create_prompt_wrap <- function(
     prompt_text = NULL,
@@ -33,7 +35,7 @@ create_prompt_wrap <- function(
 
 # Wrapper function to create a prompt
 #   (which is also just a prompt_wrap, but with a promp_text and not a modify_fn)
-create_prompt <- function(prompt_text, ...) {
+tidyprompt <- function(prompt_text, ...) {
   return(create_prompt_wrap(prompt_text = prompt_text, ...))
 }
 
@@ -88,30 +90,6 @@ validate_prompt_list <- function(prompt_wrap_or_list) {
   return(invisible(prompt_wrap_or_list))
 }
 
-# Function to set llm_provider for prompt list
-set_llm_provider <- function(prompt_wrap_or_list, llm_provider) {
-  prompt_list <- validate_prompt_list(prompt_wrap_or_list)
-
-  prompt_list[[1]]$llm_provider <- llm_provider
-
-  return(prompt_list)
-}
-
-# Get LLM provider from prompt list; take first one provided that is not NULL
-get_llm_provider_from_prompt_list <- function(prompt_list) {
-  prompt_list <- validate_prompt_list(prompt_list)
-
-  llm_provider <- NULL
-  for (i in seq_along(prompt_list)) {
-    if (!is.null(prompt_list[[i]]$llm_provider)) {
-      llm_provider <- prompt_list[[i]]$llm_provider
-      break
-    }
-  }
-
-  return(llm_provider)
-}
-
 # Function to correct the order of a prompt list, to be used
 # before constructing the final prompt text/when passing final prompt to the LLM
 # Typically we want modes and toolsets to be at the bottom
@@ -137,7 +115,6 @@ correct_prompt_list_order <- function(prompt_list) {
   return(reordered_list)
 }
 
-
 # Construct prompt text from prompt list
 construct_prompt_text <- function(prompt_wrap_or_list) {
   prompt_list <- validate_prompt_list(prompt_wrap_or_list) |>
@@ -150,6 +127,34 @@ construct_prompt_text <- function(prompt_wrap_or_list) {
 
   return(prompt_text)
 }
+
+# Function to set llm_provider for prompt list
+set_llm_provider <- function(prompt_wrap_or_list, llm_provider) {
+  prompt_list <- validate_prompt_list(prompt_wrap_or_list)
+
+  prompt_list[[1]]$llm_provider <- llm_provider
+
+  return(prompt_list)
+}
+
+# Get LLM provider from prompt list; take first one provided that is not NULL
+get_llm_provider_from_prompt_list <- function(prompt_list) {
+  prompt_list <- validate_prompt_list(prompt_list)
+
+  llm_provider <- NULL
+  for (i in seq_along(prompt_list)) {
+    if (!is.null(prompt_list[[i]]$llm_provider)) {
+      llm_provider <- prompt_list[[i]]$llm_provider
+      break
+    }
+  }
+
+  return(llm_provider)
+}
+
+
+
+#### 2 Example prompt wrappers ####
 
 # Example function that adds text at the end of an existing prompt
 add_text_to_prompt <- function(prompt_wrap_or_list, text, sep = "\n\n") {
@@ -188,7 +193,9 @@ add_example_mode <- function(prompt_wrap_or_list) {
   return(c(prompt_list, list(new_wrap)))
 }
 
-#### 2 Example usage ####
+
+
+#### 3 Example usage ####
 
 # Create prompt with extra text
 pw <- create_prompt(
