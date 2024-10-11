@@ -11,6 +11,7 @@ create_prompt_wrap(
   modify_fn_args = list(),
   validation_functions = list(),
   extractor_functions = list(),
+  tool_functions = list(),
   llm_provider = NULL,
   max_retries = 10
 )
@@ -19,7 +20,7 @@ create_prompt_wrap(
 \item{prompt_text}{Text of the prompt; is typically supplied for the first prompt in a prompt list,
 and not for the rest of the prompts in the list.}
 
-\item{type}{Type of the prompt; can be "unspecified", "mode", or "toolset".
+\item{type}{Type of the prompt; can be "unspecified", "mode", or "tool".
 This is used to determine the order the prompt wrappers when constructing the final prompt text.
 Mode prompts and toolset prompts are placed at the bottom of the prompt list (toolset after mode).}
 

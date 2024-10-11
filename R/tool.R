@@ -189,11 +189,13 @@ tool_extractor <- function(llm_response, tool_functions) {
     do.call(tool_function, as.list(arguments_list))
   }, error = function(e) {
     # Capture the error message
-    create_llm_feedback(glue::glue("Error: {e$message}"))
+    glue::glue("Error: {e$message}")
   })
 
+  result_as_llm_feedback <- create_llm_feedback(as.character(result))
+
   # Return the result (or the error feedback)
-  return(result)
+  return(result_as_llm_feedback)
 }
 
 
