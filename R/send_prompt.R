@@ -167,9 +167,10 @@ send_prompt <- function(
 if (FALSE) {
 
   prompt <- "Hi!" |>
-    add_text("Can you please calculate what is 5+5?") |>
+    add_text("Can you please calculate what is 5+5? Write the answer out as a word") |>
     answer_as_integer(add_instruction_to_prompt = FALSE) |>
-    set_llm_provider(create_ollama_llm_provider())
+    set_llm_provider(create_ollama_llm_provider()) |>
+    set_mode_chainofthought()
 
   prompt |> construct_prompt_text()
 
