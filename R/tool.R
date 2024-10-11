@@ -212,9 +212,17 @@ tool_extractor <- function(llm_response, tool_functions) {
 add_tools <- function(prompt_wrap_or_list, tool_functions = list()) {
   prompt_list <- validate_prompt_list(prompt_wrap_or_list)
 
-  if (length(tool_functions) == 0) {
+  # Check if tool_functions is single function, if so, convert to list
+  if (length(tool_functions) == 1 && is.function(tool_functions))
+    tool_functions <- list(tool_functions)
+  # Check if is list & if all elements in list are functions
+  if (
+    !is.list(tool_functions) ||
+    !all(sapply(tool_functions, is.function))
+  )
+    stop("tool_functions must be a single function or a list of functions.")
+  if (length(tool_functions) == 0)
     stop("No tool functions provided.")
-  }
 
   # Convert tool_functions to named list, taking the name from the function documentation
   tool_functions <- setNames(tool_functions, sapply(tool_functions, function(f) {
