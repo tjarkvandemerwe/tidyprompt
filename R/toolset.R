@@ -3,16 +3,16 @@ temperature_in_location <- function(
     location = c("Amsterdam", "Utrecht", "Enschede"),
     unit = c("Celcius", "Fahrenheit")
 ) {
-  #' @name temperature_in_location
+  #' llm_tool::name temperature_in_location
   #'
-  #' @description Get the temperature in a location
+  #' llm_tool::description Get the temperature in a location
   #'
-  #' @param location Location, must be one of: "Amsterdam", "Utrecht", "Enschede"
-  #' @param unit Unit, must be one of: "Celcius", "Fahrenheit"
+  #' llm_tool::param location Location, must be one of: "Amsterdam", "Utrecht", "Enschede"
+  #' llm_tool::param unit Unit, must be one of: "Celcius", "Fahrenheit"
   #'
-  #' @return The temperature in the specified location and unit
+  #' llm_tool::return The temperature in the specified location and unit
   #'
-  #' @example
+  #' llm_tool::example
   #' temperature_in_location("Amsterdam", "Fahrenheit")
   location <- match.arg(location)
   unit <- match.arg(unit)
@@ -57,7 +57,7 @@ extract_doc_section <- function(doc_lines, section_keyword) {
   }
 
   # For parameters, we want to return all of them
-  if (section_keyword == "@param") {
+  if (section_keyword == "llm_tool::param") {
     param_lines <- doc_lines[section_starts]
 
     # Clean up the lines
@@ -82,7 +82,7 @@ extract_doc_section <- function(doc_lines, section_keyword) {
   section_start <- section_starts[1]
 
   # Determine where the section ends (next section or end of doc_lines)
-  next_section <- grep("^\\s*#'\\s*@", doc_lines)
+  next_section <- grep("^\\s*#'\\s*llm_tool::", doc_lines)
   next_after_current <- next_section[next_section > section_start]
 
   if (length(next_after_current) == 0) {
@@ -112,7 +112,8 @@ extract_doc_section <- function(doc_lines, section_keyword) {
 #' Extract docstring-documentation from a function
 #'
 #' @param func A function object which has internal, roxygen-like documentation,
-#' with the tags: 'name', 'description', 'param', 'return', and 'example'.
+#' with the 'llm_tool::' tags: 'name', 'description', 'param', 'return', and 'example'
+#' (e.g., llm_tool::name my_function_name).
 #'
 #' Note that for 'example' it must be a one-line example of how the function is used in R,
 #' this will be converted to how LLM should call the function in text (slightly different
@@ -133,11 +134,11 @@ extract_function_docs <- function(func) {
   doc_lines <- grep("^\\s*#'", func_text, value = TRUE)
 
   # Extract parameters, return values, and examples using the generic function
-  name <- extract_doc_section(doc_lines, "@name")
-  description <- extract_doc_section(doc_lines, "@description")
-  params <- extract_doc_section(doc_lines, "@param")
-  return_value <- extract_doc_section(doc_lines, "@return")
-  example <- extract_doc_section(doc_lines, "@example")
+  name <- extract_doc_section(doc_lines, "llm_tool::name")
+  description <- extract_doc_section(doc_lines, "llm_tool::description")
+  params <- extract_doc_section(doc_lines, "llm_tool::param")
+  return_value <- extract_doc_section(doc_lines, "llm_tool::return")
+  example <- extract_doc_section(doc_lines, "llm_tool::example")
 
   # Convert example to how LLM should call it
   converted_example <- sub("^(\\w+)\\((.*)\\)$", "FUNCTION[\\1](\\2)", example)
@@ -154,5 +155,5 @@ extract_function_docs <- function(func) {
 }
 
 # Example usage:
-docs <- extract_function_docs(temperature_in_location)
-print(docs)
+# docs <- extract_function_docs(temperature_in_location)
+# print(docs)
