@@ -22,6 +22,7 @@ A new llm_provider object for use of the Ollama API
 Create a new Ollama llm_provider instance
 }
 \examples{
-
-ollama$complete_chat("Hello!")
+ollama <- create_ollama_llm_provider(list(
+  model = "llama3.1:8b", url = "http://localhost:11434/api/chat"
+))
 }

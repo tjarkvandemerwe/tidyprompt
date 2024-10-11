@@ -31,7 +31,9 @@ send_prompt(
 
 \item{max_retries}{...}
 
-\item{verbose}{....}
+\item{verbose}{...}
+
+\item{extract_validate_mode}{...}
 }
 \value{
 ...

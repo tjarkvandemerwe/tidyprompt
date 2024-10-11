@@ -2,17 +2,24 @@
 % Please edit documentation in R/tool.R
 \name{temperature_in_location}
 \alias{temperature_in_location}
-\title{llm_tool::name temperature_in_location}
+\title{Example function to pass to LLM}
 \usage{
 temperature_in_location(
   location = c("Amsterdam", "Utrecht", "Enschede"),
   unit = c("Celcius", "Fahrenheit")
 )
 }
-\description{
-llm_tool::description Get the temperature in a location
+\arguments{
+\item{location}{...}
+
+\item{unit}{...}
 }
-\details{
+\value{
+...
+llm_tool::name temperature_in_location
+
+llm_tool::description Get the temperature in a location
+
 llm_tool::param location Location, must be one of: "Amsterdam", "Utrecht", "Enschede"
 llm_tool::param unit Unit, must be one of: "Celcius", "Fahrenheit"
 
@@ -20,4 +27,7 @@ llm_tool::return The temperature in the specified location and unit
 
 llm_tool::example
 temperature_in_location("Amsterdam", "Fahrenheit")
+}
+\description{
+Example function to pass to LLM
 }

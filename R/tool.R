@@ -1,4 +1,9 @@
-# Example function to pass to a LLM as a tool
+#' Example function to pass to LLM
+#'
+#' @param location ...
+#' @param unit ...
+#'
+#' @return ...
 temperature_in_location <- function(
     location = c("Amsterdam", "Utrecht", "Enschede"),
     unit = c("Celcius", "Fahrenheit")
@@ -30,6 +35,9 @@ temperature_in_location <- function(
     return(temperature_celcius * 9/5 + 32)
   }
 }
+
+
+
 
 #' Extract a specific section from a function's docstring-like documentation block
 #'
@@ -65,7 +73,7 @@ extract_doc_section <- function(doc_lines, section_keyword) {
 
     # Remove section keyword from the start of each line; also remove leading "'# ' if it's there
     param_lines <- gsub(paste0("^", section_keyword, "\\s*"), "", param_lines)
-    param_lines <- param_lines |> setNames(NULL)
+    param_lines <- param_lines |> stats::setNames(NULL)
 
     params_list <- list()
     for (param_line in param_lines) {
@@ -128,7 +136,7 @@ extract_doc_section <- function(doc_lines, section_keyword) {
 #' @export
 extract_function_docs <- function(func) {
   # Convert the function to a character string
-  func_text <- capture.output(print(func))
+  func_text <- utils::capture.output(print(func))
 
   # Find documentation lines
   doc_lines <- grep("^\\s*#'", func_text, value = TRUE)
@@ -209,6 +217,13 @@ tool_extractor <- function(llm_response, tool_functions) {
 
 
 
+#' Add function-calling to prompt
+#'
+#' @param prompt_wrap_or_list ...
+#' @param tool_functions ...
+#'
+#' @return ...
+#' @export
 add_tools <- function(prompt_wrap_or_list, tool_functions = list()) {
   prompt_list <- validate_prompt_list(prompt_wrap_or_list)
 

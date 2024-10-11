@@ -27,6 +27,4 @@ This function creates a new llm_provider that interacts with the Open AI API
 oai <- create_openai_llm_provider(list(
  model = "gpt-4o-mini", api_key = Sys.getenv("OPENAI_API_KEY")
 ))
-
-oai$complete_chat("Hello!")
 }

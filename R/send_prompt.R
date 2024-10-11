@@ -7,7 +7,8 @@
 #' @param extraction_functions ...
 #' @param validation_functions ...
 #' @param max_retries ...
-#' @param verbose ....
+#' @param verbose ...
+#' @param extract_validate_mode ...
 #'
 #' @return ...
 #' @export
@@ -48,12 +49,12 @@ send_prompt <- function(
     validation_functions <- extractors_validators$validators
 
   # Retrieve max_retries (prioritizing function argument over prompt)
-  if (is.null(max_retries))
-    max_retries <- get_max_retries_from_prompt_list(prompt) # TODO: implement function
+  # if (is.null(max_retries))
+    # max_retries <- get_max_retries_from_prompt_list(prompt) # TODO: implement function
 
   # Retrieve verbose setting (prioritizing function argument over prompt)
-  if (is.null(verbose))
-    verbose <- get_verbose_from_prompt_list(prompt) # TODO: implement function
+  # if (is.null(verbose))
+    # verbose <- get_verbose_from_prompt_list(prompt) # TODO: implement function
 
   # Retrieve system prompt
   # if (is.null(system_prompt))

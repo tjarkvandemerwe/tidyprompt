@@ -28,7 +28,8 @@
 #'
 #' @examples
 #' # Below is an example of how to create a custom llm_provider using this function
-#' # (See also the source code for tidyprompt::create_openai_llm_provider and tidyprompt::create_ollama_llm_provider)
+#' # (See also the source code for tidyprompt::create_openai_llm_provider
+#' #    and tidyprompt::create_ollama_llm_provider)
 #'
 #' # First create a wrapper around the generic function,
 #' #  providing your implementation to complete a chat
@@ -94,7 +95,7 @@ create_llm_provider <- function(
       stop("new_parameters must be a named list")
     }
     # Merge new parameters with existing ones
-    updated_parameters <- modifyList(parameters, new_parameters)
+    updated_parameters <- utils::modifyList(parameters, new_parameters)
     for (name in names(updated_parameters)) {
       assign(name, updated_parameters[[name]], envir = llm_provider_env)
     }
@@ -131,8 +132,6 @@ create_llm_provider <- function(
 #' oai <- create_openai_llm_provider(list(
 #'  model = "gpt-4o-mini", api_key = Sys.getenv("OPENAI_API_KEY")
 #' ))
-#'
-#' oai$complete_chat("Hello!")
 create_openai_llm_provider <- function(parameters = list(
   model = "gpt-4o-mini",
   api_key = Sys.getenv("OPENAI_API_KEY")
@@ -182,11 +181,9 @@ create_openai_llm_provider <- function(parameters = list(
 #' @export
 #'
 #' @examples
-# ollama <- create_ollama_llm_provider(list(
-#  model = "llama3.1:8b", url = "http://localhost:11434/api/chat"
-# ))
-#'
-#' ollama$complete_chat("Hello!")
+#' ollama <- create_ollama_llm_provider(list(
+#'   model = "llama3.1:8b", url = "http://localhost:11434/api/chat"
+#' ))
 create_ollama_llm_provider <- function(parameters = list(
   model = "llama3.1:8b",
   url = "http://localhost:11434/api/chat"

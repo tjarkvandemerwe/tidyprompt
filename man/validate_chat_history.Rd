@@ -9,7 +9,10 @@ validate_chat_history(chat_history, last_message_from_user = FALSE)
 \arguments{
 \item{chat_history}{A dataframe with 'role' and 'content' columns,
 where 'role' is the role of the message ('user' or 'assistant') and 'content'
-is the content of the message.
+is the content of the message.}
+
+\item{last_message_from_user}{A logical indicating whether the last message
+should be from the user. Default is FALSE.
 
 Alternatively, you can provide a single message as a character string.}
 }

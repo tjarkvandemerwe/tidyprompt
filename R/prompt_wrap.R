@@ -10,11 +10,13 @@
 #' @param modify_fn Function that modifies the prompt text; takes two arguments: original_prompt_text and modify_fn_args.
 #' This function will be applied to the previous prompt text in the prompt list.
 #' @param modify_fn_args List of arguments to be passed to the modify_fn.
+#' @param tool_functions List of tool functions to be added to the prompt.
 #' @param extractor_functions List of functions that extract content from the response to the prompt.
 #' Should return the extracted object on successful extraction, or a 'llm_feedback' object upon failure.
 #' @param validation_functions List of functions that validate the (extracted) response to the prompt.
 #' Should return TRUE on successful validation, or a 'llm_feedback' object upon failure.
 #' @param llm_provider LLM provider object to be used for this prompt.
+#' @param max_retries Maximum number of retries for this prompt.
 #'
 #' @return A prompt wrap object
 #' @export
@@ -99,11 +101,11 @@ tidyprompt <- function(prompt_text, ...) {
 #' @export
 validate_prompt_list <- function(prompt_wrap_or_list) {
   # If prompt_wrap_or_list is a single string, we will create a prompt from that
-  if (is(prompt_wrap_or_list, "character") && length(prompt_wrap_or_list) == 1) {
+  if (methods::is(prompt_wrap_or_list, "character") && length(prompt_wrap_or_list) == 1) {
     prompt_wrap_or_list <- create_prompt_wrap(prompt_wrap_or_list)
   }
 
-  if (is(prompt_wrap_or_list, "prompt_wrap")) {
+  if (methods::is(prompt_wrap_or_list, "prompt_wrap")) {
     prompt_wrap_or_list <- list(prompt_wrap_or_list)
   }
 
