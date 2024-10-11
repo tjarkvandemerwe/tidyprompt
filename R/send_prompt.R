@@ -3,6 +3,7 @@
 #' @param prompt ...
 #' @param llm_provider ...
 #' @param system_prompt ...
+#' @param tool_functions ...
 #' @param extraction_functions ...
 #' @param validation_functions ...
 #' @param max_retries ...
@@ -14,6 +15,7 @@ send_prompt <- function(
     prompt,
     llm_provider = NULL,
     system_prompt = NULL,
+    tool_functions = list(),
     extraction_functions = list(),
     validation_functions = list(),
     max_retries = 10,
@@ -34,8 +36,11 @@ send_prompt <- function(
   if (is.null(llm_provider))
     stop("No llm_provider provided and no llm_provider found in prompt list.")
 
-  # Retrieve validators, extractors (prioritizing function arguments over prompt)
-  if (length(extraction_functions) == 0 | length(validation_functions) == 0)
+  # Retrieve validators, extractors, tool functions (prioritizing function arguments over prompt)
+  if (
+    length(extraction_functions) == 0 |
+    length(validation_functions) == 0
+  )
     extractors_validators <- get_extractors_and_validators_from_prompt_list(prompt)
   if (length(extraction_functions) == 0)
     extraction_functions <- extractors_validators$extractors
@@ -108,11 +113,6 @@ send_prompt <- function(
   response <- send_chat(prompt |> construct_prompt_text())
 
 
-  ## 5 Tool calling
-
-  # TODO: implement
-
-
   ## 6 Extractors & validators toepassen
 
   # Eerst alle extractors, dan alle validators
@@ -126,7 +126,14 @@ send_prompt <- function(
       if (length(extraction_functions) > 0) {
         for (i in 1:length(extraction_functions)) {
           extraction_function <- extraction_functions[[i]]
-          extraction_result <- extraction_function(response)
+
+          # If extraction function has attribute 'tool_functions':
+          if (!is.null(attr(extraction_function, "tool_functions"))) {
+            tool_functions <- attr(extraction_function, "tool_functions")
+            extraction_result <- extraction_function(response, tool_functions)
+          } else {
+            extraction_result <- extraction_function(response)
+          }
 
           # If it inherits llm_feedback, send the feedback to the LLM & get new response
           if (inherits(extraction_result, "llm_feedback")) {
@@ -187,6 +194,9 @@ if (FALSE) {
     set_mode_chainofthought()
   prompt |> construct_prompt_text()
   prompt |> send_prompt()
+
+  tool_functions <- list(temperature_in_location)
+
 
   "Hi!" |>
     send_prompt(
