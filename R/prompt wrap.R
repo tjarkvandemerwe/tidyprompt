@@ -25,7 +25,8 @@ create_prompt_wrap <- function(
     modify_fn_args = list(),
     validation_functions = list(),
     extractor_functions = list(),
-    llm_provider = NULL
+    llm_provider = NULL,
+    max_retries = 10
 ) {
   # match.arg for type
   type <- match.arg(type)
@@ -43,7 +44,8 @@ create_prompt_wrap <- function(
     modify_fn_args = modify_fn_args,
     validation_functions = validation_functions,
     extractor_functions = extractor_functions,
-    llm_provider = llm_provider
+    llm_provider = llm_provider,
+    max_retries = max_retries
   )
 
   class(prompt_wrap) <- "prompt_wrap"
@@ -238,6 +240,32 @@ get_llm_provider_from_prompt_list <- function(prompt_list) {
   return(llm_provider)
 }
 
+#' Get the validator and extractor functions from a prompt list
+#'
+#' @param prompt_list A list of prompt_wrap objects
+#'
+#' @return A list with two elements: 'extractors' and 'validations'.#'
+#' 'extractors' is a list of extractor functions from the prompt list.#'
+#' 'validations' is a list of validation functions from the prompt list.
+#'
+#' @export
+get_extractors_and_validators_from_prompt_list <- function(prompt_list) {
+  prompt_list <- validate_prompt_list(prompt_list) |>
+    correct_prompt_list_order()
+
+  extractors <- list()
+  validators <- list()
+  for (prompt_wrap in rev(prompt_list)) { # Reverse order
+    for (fn in prompt_wrap$extractor_functions) {
+      extractors <- c(extractors, fn)
+    }
+    for (fn in prompt_wrap$validation_functions) {
+      validators <- c(validators, fn)
+    }
+  }
+  return(list(extractors = extractors, validators = validators))
+}
+
 
 
 #### 2 Example prompt wrappers ####
@@ -355,16 +383,15 @@ answer_as_integer <- function(
     },
     extractor_functions = list(
       function(x) {
-        suppressWarnings(as.integer(x))
+        extracted <- suppressWarnings(as.integer(x))
+        if (is.na(extracted)) {
+          return(create_llm_feedback("You must answer with only an integer (use no other characters)."))
+        }
+        return(extracted)
       }
     ),
     validation_functions = list(
       function(x) {
-        if (!is.integer(x)) {
-          return(create_llm_feedback(glue::glue(
-            "You must answer with only an integer (use no other characters)."
-          )))
-        }
         if (!is.null(min) && x < min) {
           return(create_llm_feedback(glue::glue(
             "The number should be greater than or equal to {min}."
@@ -421,6 +448,6 @@ if (FALSE) {
     add_text("Maybe write a poem to express yourself?") |>
     add_example_mode() |>
     set_llm_provider(create_ollama_llm_provider()) |>
-    query_llm()
+    send_prompt()
 
 }

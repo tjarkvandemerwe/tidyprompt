@@ -4,7 +4,7 @@
 \alias{validate_chat_history}
 \title{Validate chat history}
 \usage{
-validate_chat_history(chat_history)
+validate_chat_history(chat_history, last_message_from_user = FALSE)
 }
 \arguments{
 \item{chat_history}{A dataframe with 'role' and 'content' columns,

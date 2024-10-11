@@ -11,7 +11,8 @@ create_prompt_wrap(
   modify_fn_args = list(),
   validation_functions = list(),
   extractor_functions = list(),
-  llm_provider = NULL
+  llm_provider = NULL,
+  max_retries = 10
 )
 }
 \arguments{

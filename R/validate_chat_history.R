@@ -36,10 +36,10 @@
 #'     content = c("Hello", "Hi")
 #'   ))
 #' }
-validate_chat_history <- function(chat_history) {
+validate_chat_history <- function(chat_history, last_message_from_user = FALSE) {
   input_should_be <- paste0(
     "The input for chat_history must be a dataframe with 'role' and 'content' columns,",
-    " where 'role' is the role of the message ('user' or 'assistant') and 'content'",
+    " where 'role' is the role of the message (e.g., 'system', 'user', or 'assistant') and 'content'",
     " is the content of the message. Alternatively, you can provide a single message",
     " as a character string."
   )
@@ -67,17 +67,9 @@ validate_chat_history <- function(chat_history) {
   if (nrow(chat_history) == 0)
     stop("The input dataframe for chat_history must have at least one row.")
 
-  # Check that the first message is from the user
-  if (head(chat_history$role, 1) != "user")
-    stop("The first message must be from the role 'user'.")
-
   # Check that the last message is from the user
-  if (tail(chat_history$role, 1) != "user")
+  if (tail(chat_history$role, 1) != "user" & last_message_from_user)
     stop("The last message must be from the role 'user'.")
-
-  # Check if messages between user and assistant alternate
-  if (any(chat_history$role[-1] == chat_history$role[-nrow(chat_history)]))
-    stop("Messages between user and assistant must alternate.")
 
   return(invisible(chat_history))
 }
