@@ -36,19 +36,24 @@ if (FALSE) {
   prompt <- "Can you please calculate what is 5+5?" |>
     answer_as_integer()
 
-  # This will instruction to the prompt, and also extraction + validation
-  #   functions for when sending the prompt the LLM
+  # answer_as_integer is a prompt wrapper, which will add instruction for
+  # integer output to the prompt; it will also add extraction + validation functions,
+  # which will be applied to the LLM response
+
   prompt |>
     construct_prompt_text() |>
     cat()
-
   prompt |>
     send_prompt(llm_provider = create_ollama_llm_provider())
 
-  # Upon failing validation, the LLM will be sent feedback so that it can retry
+  # If the LLM response fails the extraction/validation functions,
+  # the LLM will be sent a feedback message, and the LLM can try again
+
   prompt_which_will_initially_fail <- "Can you please calculate what is 5+5?" |>
     add_text("Write out your answer in words, do not use numbers!") |>
-    answer_as_integer() |>
+    answer_as_integer(add_instruction_to_prompt = FALSE)
+
+  prompt_which_will_initially_fail |>
     send_prompt(llm_provider = create_ollama_llm_provider())
 
 }
