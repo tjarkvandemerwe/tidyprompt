@@ -19,9 +19,9 @@ temperature_in_location <- function(
 
   temperature_celcius <- switch(
     location,
-    "Amsterdam" = 20,
-    "Utrecht" = 21,
-    "Enschede" = 22
+    "Amsterdam" = 32.5,
+    "Utrecht" = 19.8,
+    "Enschede" = 22.7
   )
 
   if (unit == "Celcius") {
@@ -184,18 +184,27 @@ tool_extractor <- function(llm_response, tool_functions) {
   }
 
   # Call the tool function with the arguments and capture errors
+  error <- FALSE
   result <- tryCatch({
     # Call the tool function with the arguments
     do.call(tool_function, as.list(arguments_list))
   }, error = function(e) {
+    error <- TRUE
     # Capture the error message
     glue::glue("Error: {e$message}")
   })
 
-  result_as_llm_feedback <- create_llm_feedback(as.character(result))
+  if (!error) {
+    # Create some context around the result
+    result <- glue::glue(
+      "function called: {function_name}
+      arguments used: {glue::glue_collapse(arguments_list, sep = ', ')}
+      result: {result}"
+    )
+  }
 
   # Return the result (or the error feedback)
-  return(result_as_llm_feedback)
+  return(create_llm_feedback(as.character(result)))
 }
 
 
@@ -271,37 +280,21 @@ add_tools <- function(prompt_wrap_or_list, tool_functions = list()) {
 
 if (FALSE) {
 
-  # llm_response <- "Hi, what is the weather in Enschede?" |>
-  #   # set_mode_chainofthought() |>
-  #   add_tools(tool_functions = list(temperature_in_location)) |>
-  #   construct_prompt_text() |>
-  #   send_prompt(llm_provider = create_ollama_llm_provider())
+  "Hi, what is the weather in Enschede?" |>
+    add_tools(tool_functions = list(temperature_in_location)) |>
+    send_prompt(llm_provider = create_ollama_llm_provider())
 
-  prompt <- "Hi, what is the weather in Enschede?" |>
-    add_tools(tool_functions = list(temperature_in_location))
-
-  prompt |> send_prompt(llm_provider = create_ollama_llm_provider())
-
-
-
-  tool_functions <- list(temperature_in_location)
-  # Convert tool_functions to named list, taking the name from the function documentation
-  tool_functions <- setNames(tool_functions, sapply(tool_functions, function(f) {
-    docs <- extract_function_docs(f)
-    return(docs$name)
-  }))
-
-  llm_response <- 'Let me call it with Enschede as the location and Celsius as the unit...
-FUNCTION[temperature_in_location]("Enschede", "Celcius")'
-
-  tool_extractor(llm_response, tool_functions)
-
-
+  # For test:
+  # tool_functions <- list(temperature_in_location)
+  # # Convert tool_functions to named list, taking the name from the function documentation
+  # tool_functions <- setNames(tool_functions, sapply(tool_functions, function(f) {
+  #   docs <- extract_function_docs(f)
+  #   return(docs$name)
+  # }))
+  #
+  # llm_response <- 'Let me call it with Enschede as the location and Celsius as the unit...
+  # FUNCTION[temperature_in_location]("Enschede", "Celcius")'
+  #
+  # tool_extractor(llm_response, tool_functions)
 
 }
-
-
-
-
-
-
