@@ -31,9 +31,15 @@ temperature_in_location <- function(
   }
 }
 
-
-# Function to extract documentation sections
-# Function to extract documentation sections
+#' Extract a specific section from a function's docstring-like documentation block
+#'
+#' This is a helper function for extract_function_docs.
+#'
+#' @param doc_lines A character vector of lines from a function's documentation block
+#' @param section_keyword The keyword to search for in the documentation block, e.g., '@param'
+#'
+#' @return The extracted section as a character string or list
+#' @export
 extract_doc_section <- function(doc_lines, section_keyword) {
   # Identify lines that contain the section keyword
   section_starts <- grep(paste0("^\\s*#'\\s*", section_keyword), doc_lines)
@@ -103,7 +109,22 @@ extract_doc_section <- function(doc_lines, section_keyword) {
   return(trimmed_section)
 }
 
-# Main function to extract documentation from a function
+#' Extract docstring-documentation from a function
+#'
+#' @param func A function object which has internal, roxygen-like documentation,
+#' with the tags: 'name', 'description', 'param', 'return', and 'example'.
+#'
+#' Note that for 'example' it must be a one-line example of how the function is used in R,
+#' this will be converted to how LLM should call the function in text (slightly different
+#' syntax).
+#'
+#' @return A list with the following elements:
+#'  - name: The name of the function
+#'  - description: A description of the function
+#'  - parameters: A named list of parameters with descriptions
+#'  - return_value: A description of the return value
+#'  - example: An example of how the LLM should call the function
+#' @export
 extract_function_docs <- function(func) {
   # Convert the function to a character string
   func_text <- capture.output(print(func))
