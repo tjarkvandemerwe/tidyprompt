@@ -154,6 +154,65 @@ extract_function_docs <- function(func) {
   ))
 }
 
-# Example usage:
+# # Example usage:
 # docs <- extract_function_docs(temperature_in_location)
 # print(docs)
+
+add_tools <- function(prompt_wrap_or_list, tool_functions = list()) {
+  prompt_list <- validate_prompt_list(prompt_wrap_or_list)
+
+  if (length(tool_functions) == 0) {
+    stop("No tool functions provided.")
+  }
+
+  new_wrap <- create_prompt_wrap(
+    type = "tool",
+    modify_fn = function(original_prompt_text, modify_fn_args) {
+      new_prompt <- glue::glue(
+        "{original_prompt_text}
+
+        If you need more information, you can call functions to help you.
+        To call a function, type:
+          FUNCTION[<function name here>](<argument 1>, <argument 2>, etc...)
+
+        The following functions are available:"
+      )
+
+      for (tool_function in modify_fn_args$tool_functions) {
+        docs <- extract_function_docs(tool_function)
+
+        new_prompt <- glue::glue(
+          "{new_prompt}
+
+          function name: {docs$name}
+          description: {docs$description}
+          arguments:
+            {
+              paste(
+                sapply(names(docs$parameters), function(param_name) {
+                  param_description <- docs$parameters[[param_name]]
+                  glue::glue(\"  - {param_name}: {param_description}\")
+                }),
+                collapse = '\n            '
+              )
+            }
+          return value: {docs$return_value}
+          example usage: {docs$example}"
+        )
+
+      }
+
+      return(new_prompt)
+    },
+    modify_fn_args = list(tool_functions = tool_functions)
+  )
+
+  return(c(prompt_list, list(new_wrap)))
+}
+
+"Hi, what is the weather in Enschede?" |>
+  set_mode_chainofthought() |>
+  add_tools(tool_functions = list(temperature_in_location)) |>
+  construct_prompt_text() |>
+  send_prompt(llm_provider = create_ollama_llm_provider())
+

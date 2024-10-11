@@ -4,9 +4,9 @@
 #'
 #' @param prompt_text Text of the prompt; is typically supplied for the first prompt in a prompt list,
 #'  and not for the rest of the prompts in the list.
-#' @param type Type of the prompt; can be "unspecified", "mode", or "toolset".
+#' @param type Type of the prompt; can be "unspecified", "mode", or "tool".
 #' This is used to determine the order the prompt wrappers when constructing the final prompt text.
-#' Mode prompts and toolset prompts are placed at the bottom of the prompt list (toolset after mode).
+#' Mode prompts and tool prompts are placed at the bottom of the prompt list (tool after mode).
 #' @param modify_fn Function that modifies the prompt text; takes two arguments: original_prompt_text and modify_fn_args.
 #' This function will be applied to the previous prompt text in the prompt list.
 #' @param modify_fn_args List of arguments to be passed to the modify_fn.
@@ -20,11 +20,12 @@
 #' @export
 create_prompt_wrap <- function(
     prompt_text = NULL,
-    type = c("unspecified", "mode", "toolset"),
+    type = c("unspecified", "mode", "tool"),
     modify_fn = NULL,
     modify_fn_args = list(),
     validation_functions = list(),
     extractor_functions = list(),
+    tool_functions = list(),
     llm_provider = NULL,
     max_retries = 10
 ) {
@@ -44,6 +45,7 @@ create_prompt_wrap <- function(
     modify_fn_args = modify_fn_args,
     validation_functions = validation_functions,
     extractor_functions = extractor_functions,
+    tool_functions = tool_functions,
     llm_provider = llm_provider,
     max_retries = max_retries
   )
@@ -144,18 +146,18 @@ validate_prompt_list <- function(prompt_wrap_or_list) {
 
 # Function to correct the order of a prompt list, to be used
 # before constructing the final prompt text/when passing final prompt to the LLM
-# Typically we want modes and toolsets to be at the bottom
+# Typically we want modes and tools to be at the bottom
 
 
 #' Correct the order of a prompt list
 #'
-#' Reorder prompt wrap objects in a prompt list so that "mode" and "toolset" prompts
+#' Reorder prompt wrap objects in a prompt list so that "mode" and "tool" prompts
 #' are placed at the bottom, and the final prompt can be properly constructed.
 #'
 #' @param prompt_list A list of prompt_wrap objects
 #'
 #' @return A list of prompt_wrap objects with the order corrected.
-#' 'Mode' and 'toolset' prompts are placed at the bottom of the list.
+#' 'Mode' and 'tool' prompts are placed at the bottom of the list.
 #' @export
 correct_prompt_list_order <- function(prompt_list) {
   # Validate that the input is a proper prompt list
@@ -169,11 +171,11 @@ correct_prompt_list_order <- function(prompt_list) {
   # Reorder the prompt list:
   # 1. Keep "unspecified" and other types at the top
   # 2. Place "mode" below them
-  # 3. Place "toolset" at the bottom
+  # 3. Place "tool" at the bottom
   reordered_list <- c(
-    prompt_list[types != "mode" & types != "toolset"], # Non-mode and non-toolset items
+    prompt_list[types != "mode" & types != "tool"], # Non-mode and non-tool items
     prompt_list[types == "mode"],                      # Mode items
-    prompt_list[types == "toolset"]                    # Toolset items
+    prompt_list[types == "tool"]                    # tool items
   )
 
   return(reordered_list)
