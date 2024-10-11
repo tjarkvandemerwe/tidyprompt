@@ -104,7 +104,7 @@ if (FALSE) {
 
   # Add tool to prompt
   prompt <- "Hi, what is the weather in Enschede?" |>
-    add_tools(list(temperature_in_location)) |>
+    add_tools(temperature_in_location) |>
     send_prompt(llm_provider = create_ollama_llm_provider())
 
 }
