@@ -7,6 +7,7 @@
 send_prompt(
   prompt,
   llm_provider = NULL,
+  system_prompt = NULL,
   extraction_functions = list(),
   validation_functions = list(),
   max_retries = 10,
@@ -18,6 +19,8 @@ send_prompt(
 \item{prompt}{...}
 
 \item{llm_provider}{...}
+
+\item{system_prompt}{...}
 
 \item{extraction_functions}{...}
 

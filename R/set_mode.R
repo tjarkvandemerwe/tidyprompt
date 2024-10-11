@@ -88,4 +88,13 @@ if (FALSE) {
     set_mode_chainofthought(extract_from_finish_brackets = FALSE) |>
     send_prompt()
 
+  "Hi!" |>
+    send_prompt(
+      llm_provider = create_ollama_llm_provider(),
+      system_prompt = "You are an assistant who always answers in poems. You are also very angry."
+    )
+
+  "Hi" |>
+    send_prompt(llm_provider = create_ollama_llm_provider())
+
 }

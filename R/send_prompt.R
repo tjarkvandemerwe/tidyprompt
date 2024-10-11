@@ -2,6 +2,7 @@
 #'
 #' @param prompt ...
 #' @param llm_provider ...
+#' @param system_prompt ...
 #' @param extraction_functions ...
 #' @param validation_functions ...
 #' @param max_retries ...
@@ -12,6 +13,7 @@
 send_prompt <- function(
     prompt,
     llm_provider = NULL,
+    system_prompt = NULL,
     extraction_functions = list(),
     validation_functions = list(),
     max_retries = 10,
@@ -48,6 +50,10 @@ send_prompt <- function(
   if (is.null(verbose))
     verbose <- get_verbose_from_prompt_list(prompt) # TODO: implement function
 
+  # Retrieve system prompt
+  # if (is.null(system_prompt))
+  #   system_prompt <- get_system_prompt_from_prompt_list(prompt) # TODO: implement function
+
 
   ## 3 Chat_history & send_chat
 
@@ -56,6 +62,14 @@ send_prompt <- function(
     role = character(),
     content = character()
   )
+  if (!is.null(system_prompt)) {
+    chat_history <- chat_history |>
+      dplyr::bind_rows(data.frame(
+        role = "system",
+        content = system_prompt
+      ))
+  }
+
   # Create internal function to send_chat to LLM-provider
   send_chat <- function(message) {
     message <- as.character(message)
@@ -171,10 +185,14 @@ if (FALSE) {
     answer_as_integer(add_instruction_to_prompt = FALSE) |>
     set_llm_provider(create_ollama_llm_provider()) |>
     set_mode_chainofthought()
-
   prompt |> construct_prompt_text()
-
   prompt |> send_prompt()
+
+  "Hi!" |>
+    send_prompt(
+      llm_provider = create_ollama_llm_provider(),
+      system_prompt = "You are an assistant who always answers in poems. You are also very angry."
+    )
 
 }
 

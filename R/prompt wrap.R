@@ -191,8 +191,10 @@ construct_prompt_text <- function(prompt_wrap_or_list) {
     correct_prompt_list_order()
 
   prompt_text <- prompt_list[[1]]$prompt_text
-  for (i in 2:length(prompt_list)) {
-    prompt_text <- prompt_list[[i]]$modify_fn(prompt_text, prompt_list[[i]]$modify_fn_args)
+  if (length(prompt_list) > 1) {
+    for (i in 2:length(prompt_list)) {
+      prompt_text <- prompt_list[[i]]$modify_fn(prompt_text, prompt_list[[i]]$modify_fn_args)
+    }
   }
 
   return(prompt_text)
