@@ -235,7 +235,7 @@ answer_as_integer <- function(
       return(new_prompt_text)
     },
     
-    extractor_functions = list(
+    extraction_functions = list(
       function(x) {
         extracted <- suppressWarnings(as.integer(x))
         if (is.na(extracted)) {
