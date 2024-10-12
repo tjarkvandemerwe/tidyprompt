@@ -196,7 +196,7 @@ add_text <- function(prompt_wrap_or_list, text, sep = "\n\n") {
 }
 ```
 
-More complex may also add extraction and validation functions. 
+More complex prompt wrappers may also add extraction and validation functions. 
 
 They key difference between an extraction and validation function is that an 
 extraction function alters the LLM's response and passes on the altered response
