@@ -6,8 +6,8 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-`tidyprompt` is an R package to empower your large language models
-(LLMs), the tidy way.
+`tidyprompt` is an R package to prompt and empower your large language
+models (LLMs), the tidy way.
 
 Key features of `tidyprompt` are:
 
