@@ -167,8 +167,9 @@ succeed after a retry.
 
 ### Adding a reasoning mode to the LLM
 
-Prompt wrappers may also be used to add a reasoning mode to the LLM.
-This may improve the LLM’s performance on more complex tasks.
+Prompt wrappers may also be used to add a reasoning mode to the LLM. It
+is hypothesized that this could improve the LLM’s performance on more
+complex tasks.
 
 For instance, function `set_mode_chainofthought` will add chain of
 thought reasoning mode to the LLM. This wraps the base prompt within a

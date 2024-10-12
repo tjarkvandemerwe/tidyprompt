@@ -100,7 +100,7 @@ Below is an example of a prompt which will initially fail, but will succeed afte
 
 ### Adding a reasoning mode to the LLM
 
-Prompt wrappers may also be used to add a reasoning mode to the LLM. This may
+Prompt wrappers may also be used to add a reasoning mode to the LLM. It is hypothesized that this could
 improve the LLM's performance on more complex tasks. 
 
 For instance, function `set_mode_chainofthought` will add chain of thought reasoning mode to the LLM.
@@ -166,6 +166,7 @@ This enables the LLM to retrieve additional information or take other actions.
     add_tools(temperature_in_location) |>
     send_prompt(ollama, verbose = TRUE)
 ```
+
 ### Creating your own prompt wrappers
 
 Under the hood, prompts are just lists of a base prompt (a string) and a series of prompt wrappers.
@@ -266,7 +267,6 @@ answer_as_integer <- function(
   return(c(prompt_list, list(new_wrap)))
 }
 ```
-
 
 They key difference between an extraction and validation function is that an 
 extraction function alters the LLM's response and passes on the altered response

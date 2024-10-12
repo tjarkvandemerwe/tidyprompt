@@ -4,3 +4,4 @@
 ^LICENSE\.md$
 README_cache
 dev_playground/*
+vignettes/example_usage_cache/*
