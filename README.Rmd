@@ -26,9 +26,9 @@ source_rmd = function(file, ...) {
 <!-- badges: start -->
 <!-- badges: end -->
 
-`tidyprompt` is an R package to empower your use of large language models (LLMs). 
+`tidyprompt` is an R package to empower your use of large language models (LLMs).
 
-Key features of `tidyprompt` include:
+Key features of `tidyprompt` are:
 
 * **tidy prompting**: Quickly and elegantly construct prompts for LLMs, using piping syntax (inspired by the `tidyverse`). 
 Wrap a base prompt in prompt wrappers to influence how the LLM handles the prompt. A library of pre-built prompt wrappers is included, but you can
