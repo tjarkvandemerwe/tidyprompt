@@ -26,7 +26,8 @@ source_rmd = function(file, ...) {
 <!-- badges: start -->
 <!-- badges: end -->
 
-`tidyprompt` is an R package to empower your use of large language models (LLMs).
+`tidyprompt` is an R package to empower your large language models (LLMs), 
+the tidy way.
 
 Key features of `tidyprompt` are:
 
@@ -40,7 +41,7 @@ also write your own.
 
 * **function calling**: Give your LLM the ability to autonomously call R functions ('tools'). With this, the LLM can retrieve information or take other actions.
 
-* **compatible with all LLM providers**:: Usable with any LLM provider that supports chat completion. Use included LLM providers such as Ollama (on your local PC or your own server) or the OpenAI API. Or easily write a hook for your own LLM provider.
+* **compatible with all LLM providers**:: Usable with any LLM provider that supports chat completion. Use included LLM providers such as Ollama (on your local PC or your own server) or the OpenAI API. Or easily write a hook for any other LLM provider.
 
 ## Installation
 
@@ -58,7 +59,7 @@ remotes::install_github("tjarkvandemerwe/tidyprompt")
 
 ## More information and contributing
 
-`tidyprompt` is in active development by Luka Koning (l.koning@kennispunttwente.nl) and
+`tidyprompt` is under active development by Luka Koning (l.koning@kennispunttwente.nl) and
 Tjark van de Merwe (t.vandemerwe@kennispunttwente.nl). Note that in this stage,
 the package is not yet fully stable and its architecture is subject to change.
 

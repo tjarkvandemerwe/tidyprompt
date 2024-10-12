@@ -6,8 +6,8 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-`tidyprompt` is an R package to empower your use of large language
-models (LLMs).
+`tidyprompt` is an R package to empower your large language models
+(LLMs), the tidy way.
 
 Key features of `tidyprompt` are:
 
@@ -31,7 +31,7 @@ Key features of `tidyprompt` are:
 - **compatible with all LLM providers**:: Usable with any LLM provider
   that supports chat completion. Use included LLM providers such as
   Ollama (on your local PC or your own server) or the OpenAI API. Or
-  easily write a hook for your own LLM provider.
+  easily write a hook for any other LLM provider.
 
 ## Installation
 
@@ -355,7 +355,7 @@ instance the documentation and source code of `add_text`,
 
 ## More information and contributing
 
-`tidyprompt` is in active development by Luka Koning
+`tidyprompt` is under active development by Luka Koning
 (<l.koning@kennispunttwente.nl>) and Tjark van de Merwe
 (<t.vandemerwe@kennispunttwente.nl>). Note that in this stage, the
 package is not yet fully stable and its architecture is subject to
