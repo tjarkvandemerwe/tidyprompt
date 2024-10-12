@@ -364,29 +364,30 @@ answer_as_integer <- function(
         new_prompt_text <- glue::glue(
           "{new_prompt_text}
 
-        You must answer with only an integer (use no other characters)."
+          You must answer with only an integer (use no other characters)."
         )
 
         if (!is.null(min) && !is.null(max)) {
           new_prompt_text <- glue::glue(
             "{new_prompt_text}
-          Enter an integer between {min} and {max}."
+            Enter an integer between {min} and {max}."
           )
         } else if (!is.null(min)) {
           new_prompt_text <- glue::glue(
             "{new_prompt_text}
-          Enter an integer greater than or equal to {min}."
+            Enter an integer greater than or equal to {min}."
           )
         } else if (!is.null(max)) {
           new_prompt_text <- glue::glue(
             "{new_prompt_text}
-          Enter an integer less than or equal to {max}."
+            Enter an integer less than or equal to {max}."
           )
         }
       }
 
       return(new_prompt_text)
     },
+
     extractor_functions = list(
       function(x) {
         extracted <- suppressWarnings(as.integer(x))
@@ -396,6 +397,7 @@ answer_as_integer <- function(
         return(extracted)
       }
     ),
+
     validation_functions = list(
       function(x) {
         if (!is.null(min) && x < min) {
