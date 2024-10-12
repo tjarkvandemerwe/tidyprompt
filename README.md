@@ -28,7 +28,7 @@ Key features of `tidyprompt` are:
   functions (‘tools’). With this, the LLM can retrieve information or
   take other actions.
 
-- **compatible with all LLM providers**:: Usable with any LLM provider
+- **compatible with all LLM providers**: Usable with any LLM provider
   that supports chat completion. Use included LLM providers such as
   Ollama (on your local PC or your own server) or the OpenAI API. Or
   easily write a hook for any other LLM provider.
