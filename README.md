@@ -73,14 +73,9 @@ openai <- create_openai_llm_provider(
   parameters = list(model = "gpt-4o-mini", api_key = Sys.getenv("OPENAI_API_KEY"))
 )
 
-# Build a hook to your own LLM provider with create_llm_provider; 
-#   see the documentation for more information; you can also look
-#   at the source code of create_ollama_llm_provider and create_openai_llm_provider
-
-# Example usage
-response <- ollama$complete_chat("Hello there!")
-print(response$content)
-#> [1] "Hello! How can I assist you today?"
+# Create your own LLM provider hook using create_llm_provider(); 
+#   see ?create_llm_provider for more information, and take a look at
+#   the source code of create_ollama_llm_provider() and create_openai_llm_provider()
 ```
 
 ### Basic prompting
@@ -94,7 +89,7 @@ and valid (including retries with feedback to the LLM if it is not).
 ``` r
   "Hi there!" |>
     send_prompt(ollama, verbose = FALSE)
-#> [1] "How's it going? Is there something I can help you with or would you like to chat?"
+#> [1] "It's nice to meet you. Is there something I can help you with, or would you like to chat?"
 ```
 
 `add_text` is a simple example of a prompt wrapper. It simply adds some
@@ -104,7 +99,7 @@ text at the end of the base prompt.
   "Hi there!" |>
     add_text("What is a large language model? Explain in 10 words.") |>
     send_prompt(ollama, verbose = FALSE)
-#> [1] "Sophisticated computer program that processes and generates human-like written language efficiently."
+#> [1] "Complex software using artificial intelligence to process and generate human-like text."
 ```
 
 You can also construct the final prompt text, without sending it to an
@@ -162,7 +157,7 @@ succeed after a retry.
 #> 
 #> Please write out your reply in words, use no numbers.
 #> --- Received response from LLM-provider: ---
-#> Two plus two equals four.
+#> Four.
 #> --- Sending message to LLM-provider: ---
 #> You must answer with only an integer (use no other characters).
 #> --- Received response from LLM-provider: ---
@@ -205,19 +200,13 @@ function then ensures only the final answer is returned.
 #> 
 #> Make sure your final answer follows the logical conclusion of your thought process.
 #> --- Received response from LLM-provider: ---
-#> Here are the steps I would take to answer the user's prompt:
+#> >> step 1: Identify the mathematical operation in the prompt, which is a simple addition problem.
 #> 
-#> >> step 1: Identify the mathematical operation being asked in the prompt.
-#> The prompt is asking for a simple arithmetic calculation, specifically an addition.
+#> >> step 2: Recall the basic arithmetic fact that 2 + 2 equals a specific numerical value.
 #> 
-#> >> step 2: Determine the numbers involved in the calculation.
-#> In this case, the two numbers involved are both "2".
+#> >> step 3: Apply this knowledge to determine the result of the addition problem, using the known facts about numbers and their operations.
 #> 
-#> >> step 3: Apply the basic rules of addition to combine the numbers.
-#> When adding two identical numbers together (in this case, 2 + 2), we simply count how many times each number appears and then add that total together. In this scenario, there are 2 instances of the number 2.
-#> 
-#> >> step 4: Calculate the result by counting the total instances of the number 2.
-#> There are 2 twos, so the total is 2 + 2 = 4.
+#> >> step 4: Conclude that based on this mathematical understanding, the solution to the prompt "What is 2 + 2?" is a fixed numerical quantity.
 #> 
 #> FINISH[4]
 #> [1] 4
@@ -269,7 +258,7 @@ information or take other actions.
   }
 
   # Ask the LLM a question which can be answered with the function
-  prompt <- "Hi, what is the weather temperature in Enschede?" |>
+  "Hi, what is the weather temperature in Enschede?" |>
     add_text("I want to know the Celcius degrees.") |>
     answer_as_integer() |>
     add_tools(temperature_in_location) |>
@@ -295,7 +284,7 @@ information or take other actions.
 #> 
 #> After you call a function, wait until you receive more information.
 #> --- Received response from LLM-provider: ---
-#> I'll call the `temperature_in_location` function to get the weather temperature in Enschede.
+#> I'll use the provided function to get the current temperature in Enschede.
 #> 
 #> FUNCTION[temperature_in_location]("Enschede", "Celcius")
 #> --- Sending message to LLM-provider: ---
@@ -303,11 +292,12 @@ information or take other actions.
 #> arguments used: Enschede, Celcius
 #> result: 22.7
 #> --- Received response from LLM-provider: ---
-#> The current temperature in Enschede is 22.7 degrees Celsius. That's warm!
+#> So the current temperature in Enschede is 22.7 degrees Celsius.
 #> --- Sending message to LLM-provider: ---
 #> You must answer with only an integer (use no other characters).
 #> --- Received response from LLM-provider: ---
 #> 22
+#> [1] 22
 ```
 
 ### Creating your own prompt wrappers
@@ -342,7 +332,6 @@ functions. Take a look at the source code for function
 `answer_as_integer`:
 
 ``` r
-
 answer_as_integer <- function(
     prompt_wrap_or_list, min = NULL, max = NULL, add_instruction_to_prompt = FALSE
 ) {

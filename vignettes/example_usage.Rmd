@@ -39,13 +39,9 @@ openai <- create_openai_llm_provider(
   parameters = list(model = "gpt-4o-mini", api_key = Sys.getenv("OPENAI_API_KEY"))
 )
 
-# Build a hook to your own LLM provider with create_llm_provider; 
-#   see the documentation for more information; you can also look
-#   at the source code of create_ollama_llm_provider and create_openai_llm_provider
-
-# Example usage
-response <- ollama$complete_chat("Hello there!")
-print(response$content)
+# Create your own LLM provider hook using create_llm_provider(); 
+#   see ?create_llm_provider for more information, and take a look at
+#   the source code of create_ollama_llm_provider() and create_openai_llm_provider()
 ```
 
 ### Basic prompting
@@ -58,7 +54,6 @@ while verifying that the output is structured and valid (including retries with 
 ```{r, cache=TRUE}
   "Hi there!" |>
     send_prompt(ollama, verbose = FALSE)
-
 ```
 `add_text` is a simple example of a prompt wrapper. It simply adds some text at the end of the base prompt.
 
@@ -165,7 +160,7 @@ This enables the LLM to retrieve additional information or take other actions.
   }
 
   # Ask the LLM a question which can be answered with the function
-  prompt <- "Hi, what is the weather temperature in Enschede?" |>
+  "Hi, what is the weather temperature in Enschede?" |>
     add_text("I want to know the Celcius degrees.") |>
     answer_as_integer() |>
     add_tools(temperature_in_location) |>
@@ -200,7 +195,6 @@ More complex prompt wrappers may also add extraction and validation functions. T
 at the source code for function `answer_as_integer`:
 
 ```{r echo=TRUE, eval=FALSE}
-
 answer_as_integer <- function(
     prompt_wrap_or_list, min = NULL, max = NULL, add_instruction_to_prompt = FALSE
 ) {
@@ -271,7 +265,6 @@ answer_as_integer <- function(
 
   return(c(prompt_list, list(new_wrap)))
 }
-
 ```
 
 
