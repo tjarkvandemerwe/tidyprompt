@@ -16,7 +16,7 @@ into a valid prompt list, an error will be thrown.
 }
 \description{
 Tidyprompt will use a list of prompt_wrap objects to organise a base prompt and
-modifications to that base prompt, plus extractor and validation functions which
+modifications to that base prompt, plus extraction and validation functions which
 need to be applied after the prompt is sent to the LLM. An LLM provider,
 to be used for evaluation of the final prompt, can also be kept within one of
 the prompt wrap objects within the prompt list.

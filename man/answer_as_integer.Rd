@@ -20,7 +20,7 @@ of prompt_wrap objects.}
 \item{max}{(optional) Maximum value for the integer}
 
 \item{add_instruction_to_prompt}{(optional) Add instruction for replying
-as an integer to the prompt text. Useful for debugging if extractors/validators
+as an integer to the prompt text. Useful for debugging if extractions/validations
 are working as expected (without instruction the answer should fail the
 validation function, initiating a retry).}
 }

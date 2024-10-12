@@ -47,7 +47,7 @@ set_mode_chainofthought <- function(
     },
     modify_fn_args = list(extract_from_finish_brackets = extract_from_finish_brackets),
 
-    extractor_functions = list(function(llm_response) {
+    extraction_functions = list(function(llm_response) {
       if (!extract_from_finish_brackets) {
         return(llm_response)
       }
@@ -71,7 +71,7 @@ set_mode_chainofthought <- function(
   return(c(prompt_list, list(new_wrap)))
 }
 
-# Code to test extractors/validators
+# Code to test extractions/validations
 if (FALSE) {
 
   "Hi!" |>

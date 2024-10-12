@@ -166,8 +166,8 @@ extract_function_docs <- function(func) {
 # docs <- extract_function_docs(temperature_in_location)
 # print(docs)
 
-# Extractor function for tool prompts
-tool_extractor <- function(llm_response, tool_functions) {
+# extraction function for tool prompts
+tool_extraction <- function(llm_response, tool_functions) {
   # Check if the response contains a function call
   function_call <- stringr::str_match(llm_response, "FUNCTION\\[(.*?)\\]\\((.*?)\\)")
 
@@ -245,10 +245,10 @@ add_tools <- function(prompt_wrap_or_list, tool_functions = list()) {
     return(docs$name)
   }))
 
-  # TODO: add extractor which will be responsible for tool execution
+  # TODO: add extraction which will be responsible for tool execution
 
-  # Add tool_functions as an attribute to the extractor
-  attr(tool_extractor, "tool_functions") <- tool_functions
+  # Add tool_functions as an attribute to the extraction
+  attr(tool_extraction, "tool_functions") <- tool_functions
 
   new_wrap <- create_prompt_wrap(
     type = "tool",
@@ -295,7 +295,7 @@ add_tools <- function(prompt_wrap_or_list, tool_functions = list()) {
       return(new_prompt)
     },
     modify_fn_args = list(tool_functions = tool_functions),
-    extractor_functions = list(tool_extractor)
+    extraction_functions = list(tool_extraction)
   )
 
   return(c(prompt_list, list(new_wrap)))
@@ -318,6 +318,6 @@ if (FALSE) {
   # llm_response <- 'Let me call it with Enschede as the location and Celsius as the unit...
   # FUNCTION[temperature_in_location]("Enschede", "Celcius")'
   #
-  # tool_extractor(llm_response, tool_functions)
+  # tool_extraction(llm_response, tool_functions)
 
 }

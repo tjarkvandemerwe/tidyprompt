@@ -11,7 +11,7 @@
 #' This function will be applied to the previous prompt text in the prompt list.
 #' @param modify_fn_args List of arguments to be passed to the modify_fn.
 #' @param tool_functions List of tool functions to be added to the prompt.
-#' @param extractor_functions List of functions that extract content from the response to the prompt.
+#' @param extraction_functions List of functions that extract content from the response to the prompt.
 #' Should return the extracted object on successful extraction, or a 'llm_feedback' object upon failure.
 #' @param validation_functions List of functions that validate the (extracted) response to the prompt.
 #' Should return TRUE on successful validation, or a 'llm_feedback' object upon failure.
@@ -26,7 +26,7 @@ create_prompt_wrap <- function(
     modify_fn = NULL,
     modify_fn_args = list(),
     validation_functions = list(),
-    extractor_functions = list(),
+    extraction_functions = list(),
     tool_functions = list(),
     llm_provider = NULL,
     max_retries = 10
@@ -46,7 +46,7 @@ create_prompt_wrap <- function(
     modify_fn = modify_fn,
     modify_fn_args = modify_fn_args,
     validation_functions = validation_functions,
-    extractor_functions = extractor_functions,
+    extraction_functions = extraction_functions,
     tool_functions = tool_functions,
     llm_provider = llm_provider,
     max_retries = max_retries
@@ -88,7 +88,7 @@ tidyprompt <- function(prompt_text, ...) {
 #' Validate a prompt list
 #'
 #' Tidyprompt will use a list of prompt_wrap objects to organise a base prompt and
-#' modifications to that base prompt, plus extractor and validation functions which
+#' modifications to that base prompt, plus extraction and validation functions which
 #' need to be applied after the prompt is sent to the LLM. An LLM provider,
 #' to be used for evaluation of the final prompt, can also be kept within one of
 #' the prompt wrap objects within the prompt list.
@@ -246,30 +246,30 @@ get_llm_provider_from_prompt_list <- function(prompt_list) {
   return(llm_provider)
 }
 
-#' Get the validator and extractor functions from a prompt list
+#' Get the validation and extraction functions from a prompt list
 #'
 #' @param prompt_list A list of prompt_wrap objects
 #'
-#' @return A list with two elements: 'extractors' and 'validations'.#'
-#' 'extractors' is a list of extractor functions from the prompt list.#'
+#' @return A list with two elements: 'extractions' and 'validations'.#'
+#' 'extractions' is a list of extraction functions from the prompt list.#'
 #' 'validations' is a list of validation functions from the prompt list.
 #'
 #' @export
-get_extractors_and_validators_from_prompt_list <- function(prompt_list) {
+get_extractions_and_validations_from_prompt_list <- function(prompt_list) {
   prompt_list <- validate_prompt_list(prompt_list) |>
     correct_prompt_list_order()
 
-  extractors <- list()
-  validators <- list()
+  extractions <- list()
+  validations <- list()
   for (prompt_wrap in rev(prompt_list)) { # Reverse order
-    for (fn in prompt_wrap$extractor_functions) {
-      extractors <- c(extractors, fn)
+    for (fn in prompt_wrap$extraction_functions) {
+      extractions <- c(extractions, fn)
     }
     for (fn in prompt_wrap$validation_functions) {
-      validators <- c(validators, fn)
+      validations <- c(validations, fn)
     }
   }
-  return(list(extractors = extractors, validators = validators))
+  return(list(extractions = extractions, validations = validations))
 }
 
 
@@ -328,7 +328,7 @@ add_example_mode <- function(prompt_wrap_or_list) {
     modify_fn_args = list()
   )
 
-  # (May also want to add extractors for a mode, etc.)
+  # (May also want to add extractions for a mode, etc.)
 
   return(c(prompt_list, list(new_wrap)))
 }
@@ -341,7 +341,7 @@ add_example_mode <- function(prompt_wrap_or_list) {
 #' @param min (optional) Minimum value for the integer
 #' @param max (optional) Maximum value for the integer
 #' @param add_instruction_to_prompt (optional) Add instruction for replying
-#' as an integer to the prompt text. Useful for debugging if extractors/validators
+#' as an integer to the prompt text. Useful for debugging if extractions/validations
 #' are working as expected (without instruction the answer should fail the
 #' validation function, initiating a retry).
 #'
@@ -388,7 +388,7 @@ answer_as_integer <- function(
       return(new_prompt_text)
     },
 
-    extractor_functions = list(
+    extraction_functions = list(
       function(x) {
         extracted <- suppressWarnings(as.integer(x))
         if (is.na(extracted)) {

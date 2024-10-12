@@ -37,16 +37,16 @@ send_prompt <- function(
   if (is.null(llm_provider))
     stop("No llm_provider provided and no llm_provider found in prompt list.")
 
-  # Retrieve validators, extractors, tool functions (prioritizing function arguments over prompt)
+  # Retrieve extraction & validation functions (prioritizing function arguments over prompt)
   if (
     length(extraction_functions) == 0 |
     length(validation_functions) == 0
   )
-    extractors_validators <- get_extractors_and_validators_from_prompt_list(prompt)
+    extractions_validations <- get_extractions_and_validations_from_prompt_list(prompt)
   if (length(extraction_functions) == 0)
-    extraction_functions <- extractors_validators$extractors
+    extraction_functions <- extractions_validations$extractions
   if (length(validation_functions) == 0)
-    validation_functions <- extractors_validators$validators
+    validation_functions <- extractions_validations$validations
 
   # Retrieve max_retries (prioritizing function argument over prompt)
   # if (is.null(max_retries))
@@ -114,15 +114,15 @@ send_prompt <- function(
   response <- send_chat(prompt |> construct_prompt_text())
 
 
-  ## 6 Extractors & validators toepassen
+  ## 6 extractions & validations toepassen
 
-  # Eerst alle extractors, dan alle validators
+  # Eerst alle extractions, dan alle validations
   if (extract_validate_mode == "extraction_then_validation") {
     tries <- 0; successful_output <- FALSE
     while (tries < max_retries & !successful_output) {
       tries <- tries + 1
 
-      # Apply extractor functions
+      # Apply extraction functions
       extraction_error <- FALSE
       if (length(extraction_functions) > 0) {
         for (i in 1:length(extraction_functions)) {
@@ -171,7 +171,7 @@ send_prompt <- function(
     }
   }
 
-  # Wrap by wrap, eerst alle extractors+validators van één wrap, dan de volgende
+  # Wrap by wrap, eerst alle extractions+validations van één wrap, dan de volgende
   if (extract_validate_mode == "wrap_by_wrap") {
     # TODO: implementation
   }
@@ -185,7 +185,7 @@ send_prompt <- function(
   return(response)
 }
 
-# Code to test extractors/validators
+# Code to test extractions/validations
 if (FALSE) {
 
   prompt <- "Hi!" |>

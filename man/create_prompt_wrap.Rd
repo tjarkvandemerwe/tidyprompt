@@ -10,7 +10,7 @@ create_prompt_wrap(
   modify_fn = NULL,
   modify_fn_args = list(),
   validation_functions = list(),
-  extractor_functions = list(),
+  extraction_functions = list(),
   tool_functions = list(),
   llm_provider = NULL,
   max_retries = 10
@@ -32,7 +32,7 @@ This function will be applied to the previous prompt text in the prompt list.}
 \item{validation_functions}{List of functions that validate the (extracted) response to the prompt.
 Should return TRUE on successful validation, or a 'llm_feedback' object upon failure.}
 
-\item{extractor_functions}{List of functions that extract content from the response to the prompt.
+\item{extraction_functions}{List of functions that extract content from the response to the prompt.
 Should return the extracted object on successful extraction, or a 'llm_feedback' object upon failure.}
 
 \item{tool_functions}{List of tool functions to be added to the prompt.}
