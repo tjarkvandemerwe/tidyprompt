@@ -171,7 +171,7 @@ This enables the LLM to retrieve additional information or take other actions.
     add_tools(temperature_in_location) |>
     send_prompt(ollama, verbose = TRUE)
 ```
-### Creating and using your own prompt wrappers
+### Creating your own prompt wrappers
 
 Under the hood, prompts are just lists of a base prompt (a string) and a series of prompt wrappers.
 
@@ -196,7 +196,84 @@ add_text <- function(prompt_wrap_or_list, text, sep = "\n\n") {
 }
 ```
 
-More complex prompt wrappers may also add extraction and validation functions. 
+More complex prompt wrappers may also add extraction and validation functions. Take a look
+at the source code for function `answer_as_integer`:
+
+```{r echo=TRUE, eval=FALSE}
+
+answer_as_integer <- function(
+    prompt_wrap_or_list, min = NULL, max = NULL, add_instruction_to_prompt = FALSE
+) {
+  prompt_list <- validate_prompt_list(prompt_wrap_or_list)
+
+  new_wrap <- create_prompt_wrap(
+    modify_fn = function(original_prompt_text, modify_fn_args) {
+      min <- modify_fn_args$min
+      max <- modify_fn_args$max
+
+      new_prompt_text <- original_prompt_text
+
+      if (add_instruction_to_prompt) {
+        new_prompt_text <- glue::glue(
+          "{new_prompt_text}
+
+          You must answer with only an integer (use no other characters)."
+        )
+
+        if (!is.null(min) && !is.null(max)) {
+          new_prompt_text <- glue::glue(
+            "{new_prompt_text}
+            Enter an integer between {min} and {max}."
+          )
+        } else if (!is.null(min)) {
+          new_prompt_text <- glue::glue(
+            "{new_prompt_text}
+            Enter an integer greater than or equal to {min}."
+          )
+        } else if (!is.null(max)) {
+          new_prompt_text <- glue::glue(
+            "{new_prompt_text}
+            Enter an integer less than or equal to {max}."
+          )
+        }
+      }
+
+      return(new_prompt_text)
+    },
+    
+    extractor_functions = list(
+      function(x) {
+        extracted <- suppressWarnings(as.integer(x))
+        if (is.na(extracted)) {
+          return(create_llm_feedback("You must answer with only an integer (use no other characters)."))
+        }
+        return(extracted)
+      }
+    ),
+    
+    validation_functions = list(
+      function(x) {
+        if (!is.null(min) && x < min) {
+          return(create_llm_feedback(glue::glue(
+            "The number should be greater than or equal to {min}."
+          )))
+        }
+        if (!is.null(max) && x > max) {
+          return(create_llm_feedback(glue::glue(
+            "The number should be less than or equal to {max}."
+          )))
+        }
+
+        return(TRUE)
+      }
+    )
+  )
+
+  return(c(prompt_list, list(new_wrap)))
+}
+
+```
+
 
 They key difference between an extraction and validation function is that an 
 extraction function alters the LLM's response and passes on the altered response
