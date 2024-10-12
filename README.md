@@ -88,8 +88,8 @@ and valid (including retries with feedback to the LLM if it is not).
 
 ``` r
   "Hi there!" |>
-    send_prompt(ollama, verbose = FALSE)
-#> [1] "It's nice to meet you. Is there something I can help you with, or would you like to chat?"
+    send_prompt(ollama)
+#> [1] "It's nice to meet you. Is there something I can help you with or would you like to chat?"
 ```
 
 `add_text` is a simple example of a prompt wrapper. It simply adds some
@@ -98,8 +98,8 @@ text at the end of the base prompt.
 ``` r
   "Hi there!" |>
     add_text("What is a large language model? Explain in 10 words.") |>
-    send_prompt(ollama, verbose = FALSE)
-#> [1] "Complex software using artificial intelligence to process and generate human-like text."
+    send_prompt(ollama)
+#> [1] "Complex computer program trained on vast texts to generate human-like responses."
 ```
 
 You can also construct the final prompt text, without sending it to an

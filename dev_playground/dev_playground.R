@@ -1,3 +1,8 @@
+#### Configuration ####
+
+options(tidyprompt.verbose = TRUE)
+
+
 ####  Code to test extractions/validations ####
 if (FALSE) {
 

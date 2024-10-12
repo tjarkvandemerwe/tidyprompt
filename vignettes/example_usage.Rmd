@@ -53,14 +53,14 @@ while verifying that the output is structured and valid (including retries with 
 
 ```{r, cache=TRUE}
   "Hi there!" |>
-    send_prompt(ollama, verbose = FALSE)
+    send_prompt(ollama)
 ```
 `add_text` is a simple example of a prompt wrapper. It simply adds some text at the end of the base prompt.
 
 ```{r, cache=TRUE}
   "Hi there!" |>
     add_text("What is a large language model? Explain in 10 words.") |>
-    send_prompt(ollama, verbose = FALSE)
+    send_prompt(ollama)
 ```
 You can also construct the final prompt text, without sending it to an LLM provider.
 

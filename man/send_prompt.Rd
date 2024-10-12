@@ -12,7 +12,7 @@ send_prompt(
   extraction_functions = list(),
   validation_functions = list(),
   max_retries = 10,
-  verbose = TRUE,
+  verbose = getOption("tidyprompt.verbose", FALSE),
   extract_validate_mode = c("extraction_then_validation", "wrap_by_wrap")
 )
 }
