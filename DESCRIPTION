@@ -1,5 +1,5 @@
 Package: tidyprompt
-Title: Empower your LLM, the tidy way
+Title: Prompt and empower your LLM, the tidy way
 Version: 0.0.0.9000
 Authors@R: 
   c(person(given = "Luka",
@@ -11,10 +11,11 @@ Authors@R:
            role = c("aut"),
            email = "t.vandemerwe@kennispunttwente.nl"))
 Description: 
-  The `tidyprompt` package allows users to construct LLM prompts using tidyverse-inspired piping syntax,
-  with a library of prompt wrappers or custom ones. It supports structured output extraction and validation,
-  with automatic retries if necessary. Additionally, it enables specific LLM reasoning modes, 
-  autonomous R function calling ('tools') for LLMs, and compatibility with multiple LLM providers.
+  The `tidyprompt` package allows users to prompt and empower their large language
+  models (LLMs) in a tidy way. It provides a framework to construct LLM prompts using tidyverse-inspired piping syntax,
+  with a library of pre-built prompt wrappers or custom ones. Additionally, it supports structured LLM output extraction and validation,
+  with automatic feedback and retries if necessary. Moreover, it enables specific LLM reasoning modes, 
+  autonomous R function calling ('tools') for LLMs, and it has compatibility with any LLM provider.
 License: GPL (>= 3) | file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
