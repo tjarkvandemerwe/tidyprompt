@@ -184,27 +184,3 @@ send_prompt <- function(
 
   return(response)
 }
-
-# Code to test extractions/validations
-if (FALSE) {
-
-  prompt <- "Hi!" |>
-    add_text("Can you please calculate what is 5+5? Write the answer out as a word") |>
-    answer_as_integer(add_instruction_to_prompt = FALSE) |>
-    set_llm_provider(create_ollama_llm_provider()) |>
-    set_mode_chainofthought()
-  prompt |> construct_prompt_text()
-  prompt |> send_prompt()
-
-  tool_functions <- list(temperature_in_location)
-
-
-  "Hi!" |>
-    send_prompt(
-      llm_provider = create_ollama_llm_provider(),
-      system_prompt = "You are an assistant who always answers in poems. You are also very angry."
-    )
-
-}
-
-

@@ -70,31 +70,3 @@ set_mode_chainofthought <- function(
 
   return(c(prompt_list, list(new_wrap)))
 }
-
-# Code to test extractions/validations
-if (FALSE) {
-
-  "Hi!" |>
-    add_text("Can you please calculate what is 5+5? Write the answer out as a word") |>
-    answer_as_integer(add_instruction_to_prompt = FALSE) |>
-    set_llm_provider(create_ollama_llm_provider()) |>
-    set_mode_chainofthought(extract_from_finish_brackets = FALSE) |>
-    send_prompt()
-
-  "Hi!" |>
-    add_text("Can you please calculate what is 5+5? Write the answer out as a word") |>
-    answer_as_integer(add_instruction_to_prompt = FALSE) |>
-    set_llm_provider(create_ollama_llm_provider()) |>
-    set_mode_chainofthought(extract_from_finish_brackets = FALSE) |>
-    send_prompt()
-
-  "Hi!" |>
-    send_prompt(
-      llm_provider = create_ollama_llm_provider(),
-      system_prompt = "You are an assistant who always answers in poems. You are also very angry."
-    )
-
-  "Hi" |>
-    send_prompt(llm_provider = create_ollama_llm_provider())
-
-}

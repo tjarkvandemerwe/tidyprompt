@@ -274,8 +274,7 @@ get_extractions_and_validations_from_prompt_list <- function(prompt_list) {
 
 
 
-#### 2 Example prompt wrappers ####
-
+#### 2 Basic prompt wrappers ####
 
 #' Add text to a prompt
 #'
@@ -304,35 +303,6 @@ add_text <- function(prompt_wrap_or_list, text, sep = "\n\n") {
 
   return(c(prompt_list, list(new_wrap)))
 }
-
-
-#' Add a mode to a prompt (example function)
-#'
-#' @param prompt_wrap_or_list A single string, a prompt_wrap object, or a list
-#' of prompt_wrap objects.
-#'
-#' @return A prompt list with an added mode prompt wrapper object.
-#' @export
-add_example_mode <- function(prompt_wrap_or_list) {
-  prompt_list <- validate_prompt_list(prompt_wrap_or_list)
-
-  new_wrap <- create_prompt_wrap(
-    type = "mode",
-    modify_fn = function(original_prompt_text, modify_fn_args) {
-      return(glue::glue(
-        "{original_prompt_text}
-
-        Provide your answer in a way that a 5-year old would understand."
-      ))
-    },
-    modify_fn_args = list()
-  )
-
-  # (May also want to add extractions for a mode, etc.)
-
-  return(c(prompt_list, list(new_wrap)))
-}
-
 
 #' Make LLM answer as an integer (between min and max)
 #'
@@ -417,45 +387,4 @@ answer_as_integer <- function(
   )
 
   return(c(prompt_list, list(new_wrap)))
-}
-
-
-#### 3 Example usage ####
-
-if (FALSE) {
-
-  # Create prompt with extra text
-  pw <- tidyprompt(
-    prompt_text = "Enter a number between 1 and 10",
-    validation_functions = list(
-      function(x) {
-        if (x < 1 || x > 10) {
-          return("The number should be between 1 and 10")
-        }
-        return(TRUE)
-      }
-    ),
-    llm_provider = create_ollama_llm_provider()
-  ) |>
-    add_text("Some text added to the end of the prompt.")
-
-  # Construct prompt text from list of prompt wrappers
-  construct_prompt_text(pw) |>
-    cat()
-
-  # Example; starting from string, adding mode in the middle but placed at the end
-  "Hi there!" |>
-    add_text("Some text added to the end of the prompt.") |>
-    add_example_mode() |> # This will be placed at the end, even though we add it in the middle
-    add_text("More text to add (to be placed before the mode)") |>
-    construct_prompt_text() |>
-    cat()
-
-  # Example passing to query_llm
-  "Hi, how are you?" |>
-    add_text("Maybe write a poem to express yourself?") |>
-    add_example_mode() |>
-    set_llm_provider(create_ollama_llm_provider()) |>
-    send_prompt()
-
 }

@@ -1,44 +1,3 @@
-#' Example function to pass to LLM
-#'
-#' @param location ...
-#' @param unit ...
-#'
-#' @return ...
-temperature_in_location <- function(
-    location = c("Amsterdam", "Utrecht", "Enschede"),
-    unit = c("Celcius", "Fahrenheit")
-) {
-  #' llm_tool::name temperature_in_location
-  #'
-  #' llm_tool::description Get the temperature in a location
-  #'
-  #' llm_tool::param location Location, must be one of: "Amsterdam", "Utrecht", "Enschede"
-  #' llm_tool::param unit Unit, must be one of: "Celcius", "Fahrenheit"
-  #'
-  #' llm_tool::return The temperature in the specified location and unit
-  #'
-  #' llm_tool::example
-  #' temperature_in_location("Amsterdam", "Fahrenheit")
-  location <- match.arg(location)
-  unit <- match.arg(unit)
-
-  temperature_celcius <- switch(
-    location,
-    "Amsterdam" = 32.5,
-    "Utrecht" = 19.8,
-    "Enschede" = 22.7
-  )
-
-  if (unit == "Celcius") {
-    return(temperature_celcius)
-  } else {
-    return(temperature_celcius * 9/5 + 32)
-  }
-}
-
-
-
-
 #' Extract a specific section from a function's docstring-like documentation block
 #'
 #' This is a helper function for extract_function_docs.
@@ -162,11 +121,15 @@ extract_function_docs <- function(func) {
   ))
 }
 
-# # Example usage:
-# docs <- extract_function_docs(temperature_in_location)
-# print(docs)
-
-# extraction function for tool prompts
+#' Extraction function for LLM function calling
+#'
+#' @param llm_response LLM response text to parse for a function call
+#' @param tool_functions List of R functions that can be called by the LLM;
+#' should have internal docstring-like documentation with 'llm_tool::' tags
+#'
+#' @return If a tool is called: a character string with the result of the function call or an error message.
+#' If no tool is called: the original LLM response.
+#' @export
 tool_extraction <- function(llm_response, tool_functions) {
   # Check if the response contains a function call
   function_call <- stringr::str_match(llm_response, "FUNCTION\\[(.*?)\\]\\((.*?)\\)")
@@ -214,8 +177,6 @@ tool_extraction <- function(llm_response, tool_functions) {
   # Return the result (or the error feedback)
   return(create_llm_feedback(as.character(result)))
 }
-
-
 
 #' Add function-calling to prompt
 #'
@@ -299,25 +260,4 @@ add_tools <- function(prompt_wrap_or_list, tool_functions = list()) {
   )
 
   return(c(prompt_list, list(new_wrap)))
-}
-
-if (FALSE) {
-
-  "Hi, what is the weather in Enschede?" |>
-    add_tools(tool_functions = list(temperature_in_location)) |>
-    send_prompt(llm_provider = create_ollama_llm_provider())
-
-  # For test:
-  # tool_functions <- list(temperature_in_location)
-  # # Convert tool_functions to named list, taking the name from the function documentation
-  # tool_functions <- setNames(tool_functions, sapply(tool_functions, function(f) {
-  #   docs <- extract_function_docs(f)
-  #   return(docs$name)
-  # }))
-  #
-  # llm_response <- 'Let me call it with Enschede as the location and Celsius as the unit...
-  # FUNCTION[temperature_in_location]("Enschede", "Celcius")'
-  #
-  # tool_extraction(llm_response, tool_functions)
-
 }
