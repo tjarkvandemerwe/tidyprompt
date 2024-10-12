@@ -2,13 +2,29 @@ Package: tidyprompt
 Title: What the Package Does (One Line, Title Case)
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
+  c(person(given = "Luka",
+           family = "Koning",
+           role = c("aut", "cre"),
+           email = "l.koning@kennispunttwente.nl"),
+    person(given = "Tjark",
+           family = "Van de Merwe",
+           role = c("aut"),
+           email = "t.vandemerwe@kennispunttwente.nl"))
 Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+License: GPL (>= 3) | file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 URL: https://github.com/tjarkvandemerwe/tidyprompt
 BugReports: https://github.com/tjarkvandemerwe/tidyprompt/issues
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+Imports: 
+    dplyr,
+    glue,
+    httr,
+    methods,
+    stats,
+    stringr

@@ -11,6 +11,14 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-",
   out.width = "100%"
 )
+
+source_rmd = function(file, ...) {
+  tmp_file = tempfile(fileext = ".R")
+  on.exit(unlink(tmp_file), add = TRUE)
+  knitr::purl(file, output = tmp_file)
+  source(file = tmp_file, ...)
+}
+
 ```
 
 # tidyprompt
@@ -18,31 +26,42 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of tidyprompt is to create llm prompting pipelines in a structured and tidy manner.
+`tidyprompt` is an R package to empower your use of large language models (LLMs). 
+
+Key features of `tidyprompt` include:
+
+* **tidy prompting**: Quickly and elegantly construct prompts for LLMs, using piping syntax (inspired by the `tidyverse`). 
+Wrap a base prompt in prompt wrappers to influence how the LLM handles the prompt. A library of pre-built prompt wrappers is included, but you can
+also write your own.
+
+* **structured output**: Extract structured output from the LLM's response, and validate it. Automatic retries with feedback to the LLM, if the output is not as expected.
+
+* **reasoning modes**: Make your LLM answer in a specific mode, such as chain-of-thought or ReAct (Reasoning and Acting) modes.
+
+* **function calling**: Give your LLM the ability to autonomously call R functions ('tools'). With this, the LLM can retrieve information or take other actions.
+
+* **compatible with all LLM providers**:: Usable with any LLM provider that supports chat completion. Use included LLM providers such as Ollama (on your local PC or your own server) or the OpenAI API. Or easily write a hook for your own LLM provider.
 
 ## Installation
 
 You can install the development version of tidyprompt from [GitHub](https://github.com/tjarkvandemerwe/tidyprompt) with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("tjarkvandemerwe/tidyprompt")
+# install.packages("remotes")
+remotes::install_github("tjarkvandemerwe/tidyprompt")
 ```
 
-## Example
+## Example usage
 
-An basic example of prompting, defining the output structure, validating the output, wrapping the prompt inside other prompts, retry with feedback to the llm:
-
-```{r example}
-library(tidyprompt)
-
-# holiday_suggestions <- 
-#   prompt("Can you give me five possible holiday locations") |>
-#   reply_as_list(name = "locations",
-#                 element_name = "location") |>
-#   validate(are_cities) |> 
-#   add_prepromt("You are a helpful assistant") |> 
-#   reason_method("chain of thought") |> 
-#   send_prompt(retry = 5)
-
+```{r child = 'vignettes/example_usage.Rmd'}
 ```
+
+## More information and contributing
+
+`tidyprompt` is in active development by Luka Koning (l.koning@kennispunttwente.nl) and
+Tjark van de Merwe (t.vandemerwe@kennispunttwente.nl). Note that in this stage,
+the package is not yet fully stable and its architecture is subject to change.
+
+If you encounter issues, please open an issue in the GitHub repository. You are 
+welcome to contribute to the package by opening a pull request. If you have any
+questions or suggestions, you can also reach us via e-mail.
