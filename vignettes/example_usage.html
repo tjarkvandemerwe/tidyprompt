@@ -373,14 +373,14 @@ the LLM handles the prompt, while verifying that the output is
 structured and valid (including retries with feedback to the LLM if it
 is not).</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>  <span class="st">&quot;Hi there!&quot;</span> <span class="sc">|&gt;</span></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>    <span class="fu">send_prompt</span>(ollama, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
-<pre><code>## [1] &quot;How&#39;s it going? Is there something I can help you with or would you like to chat?&quot;</code></pre>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>    <span class="fu">send_prompt</span>(ollama)</span></code></pre></div>
+<pre><code>## [1] &quot;How&#39;s your day going so far? Is there something I can help you with or would you like to chat?&quot;</code></pre>
 <p><code>add_text</code> is a simple example of a prompt wrapper. It
 simply adds some text at the end of the base prompt.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>  <span class="st">&quot;Hi there!&quot;</span> <span class="sc">|&gt;</span></span>
 <span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>    <span class="fu">add_text</span>(<span class="st">&quot;What is a large language model? Explain in 10 words.&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>    <span class="fu">send_prompt</span>(ollama, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
-<pre><code>## [1] &quot;Complex computer program that understands and generates human-like written language efficiently.&quot;</code></pre>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>    <span class="fu">send_prompt</span>(ollama)</span></code></pre></div>
+<pre><code>## [1] &quot;Advanced artificial intelligence system that processes and generates human-like written content.&quot;</code></pre>
 <p>You can also construct the final prompt text, without sending it to
 an LLM provider.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>  <span class="st">&quot;Hi there!&quot;</span> <span class="sc">|&gt;</span></span>
@@ -435,7 +435,8 @@ succeed after a retry.</p>
 <div id="adding-a-reasoning-mode-to-the-llm" class="section level3">
 <h3>Adding a reasoning mode to the LLM</h3>
 <p>Prompt wrappers may also be used to add a reasoning mode to the LLM.
-This may improve the LLM’s performance on more complex tasks.</p>
+It is hypothesized that this could improve the LLM’s performance on more
+complex tasks.</p>
 <p>For instance, function <code>set_mode_chainofthought</code> will add
 chain of thought reasoning mode to the LLM. This wraps the base prompt
 within a request for the LLM to reason step by step, asking it to
@@ -629,7 +630,7 @@ functions. Take a look at the source code for function
 <span id="cb46-38"><a href="#cb46-38" tabindex="-1"></a>      <span class="fu">return</span>(new_prompt_text)</span>
 <span id="cb46-39"><a href="#cb46-39" tabindex="-1"></a>    },</span>
 <span id="cb46-40"><a href="#cb46-40" tabindex="-1"></a>    </span>
-<span id="cb46-41"><a href="#cb46-41" tabindex="-1"></a>    <span class="at">extractor_functions =</span> <span class="fu">list</span>(</span>
+<span id="cb46-41"><a href="#cb46-41" tabindex="-1"></a>    <span class="at">extraction_functions =</span> <span class="fu">list</span>(</span>
 <span id="cb46-42"><a href="#cb46-42" tabindex="-1"></a>      <span class="cf">function</span>(x) {</span>
 <span id="cb46-43"><a href="#cb46-43" tabindex="-1"></a>        extracted <span class="ot">&lt;-</span> <span class="fu">suppressWarnings</span>(<span class="fu">as.integer</span>(x))</span>
 <span id="cb46-44"><a href="#cb46-44" tabindex="-1"></a>        <span class="cf">if</span> (<span class="fu">is.na</span>(extracted)) {</span>
