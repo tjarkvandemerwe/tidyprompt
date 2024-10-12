@@ -3,9 +3,9 @@
 \docType{package}
 \name{tidyprompt-package}
 \alias{tidyprompt-package}
-\title{tidyprompt: Empower your LLM, the tidy way}
+\title{tidyprompt: Prompt and empower your LLM, the tidy way}
 \description{
-The `tidyprompt` package allows users to construct LLM prompts using tidyverse-inspired piping syntax, with a library of prompt wrappers or custom ones. It supports structured output extraction and validation, with automatic retries if necessary. Additionally, it enables specific LLM reasoning modes, autonomous R function calling ('tools') for LLMs, and compatibility with multiple LLM providers.
+The `tidyprompt` package allows users to prompt and empower their large language models (LLMs) in a tidy way. It provides a framework to construct LLM prompts using tidyverse-inspired piping syntax, with a library of pre-built prompt wrappers or custom ones. Additionally, it supports structured LLM output extraction and validation, with automatic feedback and retries if necessary. Moreover, it enables specific LLM reasoning modes, autonomous R function calling ('tools') for LLMs, and it has compatibility with any LLM provider.
 }
 \seealso{
 Useful links:
