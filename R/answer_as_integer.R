@@ -6,7 +6,7 @@
 #' @param min (optional) Minimum value for the integer
 #' @param max (optional) Maximum value for the integer
 #' @param add_instruction_to_prompt (optional) Add instruction for replying
-#' as an integer to the prompt text. Useful for debugging if extractions/validations
+#' as an integer to the prompt text. Set to FALSE for debugging if extractions/validations
 #' are working as expected (without instruction the answer should fail the
 #' validation function, initiating a retry).
 #'
@@ -14,7 +14,7 @@
 #' will ensure that the LLM response is an integer.
 #' @export
 answer_as_integer <- function(
-    prompt_wrap_or_list, min = NULL, max = NULL, add_instruction_to_prompt = FALSE
+    prompt_wrap_or_list, min = NULL, max = NULL, add_instruction_to_prompt = TRUE
 ) {
   prompt_list <- validate_prompt_list(prompt_wrap_or_list)
 
@@ -25,7 +25,7 @@ answer_as_integer <- function(
 
       new_prompt_text <- original_prompt_text
 
-      if (add_instruction_to_prompt) {
+      if (modify_fn_args$add_instruction_to_prompt) {
         new_prompt_text <- glue::glue(
           "{new_prompt_text}
 
@@ -52,6 +52,8 @@ answer_as_integer <- function(
 
       return(new_prompt_text)
     },
+
+    modify_fn_args = list(min = min, max = max, add_instruction_to_prompt = add_instruction_to_prompt),
 
     extraction_functions = list(
       function(x) {
