@@ -3,7 +3,6 @@
 #' @param prompt ...
 #' @param llm_provider ...
 #' @param system_prompt ...
-#' @param tool_functions ...
 #' @param extraction_functions ...
 #' @param validation_functions ...
 #' @param max_retries ...
@@ -16,7 +15,6 @@ send_prompt <- function(
     prompt,
     llm_provider = NULL,
     system_prompt = NULL,
-    tool_functions = list(),
     extraction_functions = list(),
     validation_functions = list(),
     max_retries = 10,
@@ -24,25 +22,24 @@ send_prompt <- function(
     extract_validate_mode = c("extraction_then_validation", "wrap_by_wrap")
 ) {
   ## 1 Validate arguments
-
   extract_validate_mode <- match.arg(extract_validate_mode)
-  prompt <- validate_prompt_list(prompt)
+  prompt_list <- create_prompt_list(prompt)
 
 
   ## 2 Retrieve prompt evaluation settings
 
   # Retrieve llm provider (prioritizing function argument over prompt)
   if (is.null(llm_provider))
-    llm_provider <- get_llm_provider_from_prompt_list(prompt)
+    llm_provider <- prompt_list$get_parameters()$llm_provider
   if (is.null(llm_provider))
-    stop("No llm_provider provided and no llm_provider found in prompt list.")
+    stop("No llm_provider provided and no llm_provider found in parameters of prompt list.")
 
   # Retrieve extraction & validation functions (prioritizing function arguments over prompt)
   if (
     length(extraction_functions) == 0 |
     length(validation_functions) == 0
   )
-    extractions_validations <- get_extractions_and_validations_from_prompt_list(prompt)
+    extractions_validations <- prompt_list$get_extractions_and_validations()
   if (length(extraction_functions) == 0)
     extraction_functions <- extractions_validations$extractions
   if (length(validation_functions) == 0)
@@ -111,12 +108,15 @@ send_prompt <- function(
 
   ## 4 Retrieve initial response
 
-  response <- send_chat(prompt |> construct_prompt_text())
+  response <- send_chat(prompt_list$construct_prompt_text())
 
 
   ## 6 extractions & validations toepassen
 
-  # Eerst alle extractions, dan alle validations
+  # TODO: layer by layer extractions, validations?
+  # TODO: use number of retries specified in per prompt wrapper
+
+  # Mode for first all extractions, then all validations:
   if (extract_validate_mode == "extraction_then_validation") {
     tries <- 0; successful_output <- FALSE
     while (tries < max_retries & !successful_output) {

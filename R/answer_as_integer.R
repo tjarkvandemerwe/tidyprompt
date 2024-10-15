@@ -1,7 +1,7 @@
 
 #' Make LLM answer as an integer (between min and max)
 #'
-#' @param prompt_wrap_or_list A single string, a prompt_wrap object, or a list
+#' @param prompt A single string, a prompt_wrap object, or a list
 #' of prompt_wrap objects.
 #' @param min (optional) Minimum value for the integer
 #' @param max (optional) Maximum value for the integer
@@ -14,9 +14,9 @@
 #' will ensure that the LLM response is an integer.
 #' @export
 answer_as_integer <- function(
-    prompt_wrap_or_list, min = NULL, max = NULL, add_instruction_to_prompt = TRUE
+    prompt, min = NULL, max = NULL, add_instruction_to_prompt = TRUE
 ) {
-  prompt_list <- validate_prompt_list(prompt_wrap_or_list)
+  prompt_list <- create_prompt_list(prompt)
 
   new_wrap <- create_prompt_wrap(
     modify_fn = function(original_prompt_text, modify_fn_args) {
@@ -83,5 +83,6 @@ answer_as_integer <- function(
     )
   )
 
-  return(c(prompt_list, list(new_wrap)))
+  prompt_list$append_prompt_wrap(new_wrap)
+  return(prompt_list)
 }
