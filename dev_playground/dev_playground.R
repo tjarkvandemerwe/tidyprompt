@@ -6,6 +6,25 @@ options(tidyprompt.verbose = TRUE)
 ####  Code to test extractions/validations ####
 if (FALSE) {
 
+
+  ollama <- create_ollama_llm_provider()
+
+
+  prompt <- "What is 2 + 2?" |>
+    set_mode_chainofthought() |>
+    answer_as_integer()
+
+  prompt$get_extractions_and_validations()
+
+  prompt |>
+    send_prompt(ollama, verbose = TRUE)
+
+
+  "Hi!" |>
+    add_text("Can you please calculate what is 5+5? Write the answer out as a word") |>
+    answer_as_integer(add_instruction_to_prompt = FALSE) |>
+    send_prompt(ollama)
+
   prompt <- "Hi!" |>
     add_text("Can you please calculate what is 5+5? Write the answer out as a word") |>
     answer_as_integer(add_instruction_to_prompt = FALSE) |>

@@ -4,13 +4,10 @@
 \alias{set_mode_chainofthought}
 \title{Add chain-of-thought mode to a prompt}
 \usage{
-set_mode_chainofthought(
-  prompt_wrap_or_list,
-  extract_from_finish_brackets = TRUE
-)
+set_mode_chainofthought(prompt, extract_from_finish_brackets = TRUE)
 }
 \arguments{
-\item{prompt_wrap_or_list}{A single string, a prompt wrap,
+\item{prompt}{A single string, a prompt wrap,
 or a list of prompt wraps.}
 
 \item{extract_from_finish_brackets}{A logical indicating whether the final answer

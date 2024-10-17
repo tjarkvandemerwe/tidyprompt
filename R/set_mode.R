@@ -1,6 +1,6 @@
 #' Add chain-of-thought mode to a prompt
 #'
-#' @param prompt_wrap_or_list A single string, a prompt wrap,
+#' @param prompt A single string, a prompt wrap,
 #' or a list of prompt wraps.
 #' @param extract_from_finish_brackets A logical indicating whether the final answer
 #' should be extracted from the text inside the "FINISH[...]" brackets.
@@ -8,10 +8,10 @@
 #' @return A prompt list with the chain-of-thought mode added.
 #' @export
 set_mode_chainofthought <- function(
-    prompt_wrap_or_list,
+    prompt,
     extract_from_finish_brackets = TRUE
 ) {
-  prompt_list <- validate_prompt_list(prompt_wrap_or_list)
+  prompt_list <- create_prompt_list(prompt)
 
   new_wrap <- create_prompt_wrap(
     type = "mode",
@@ -68,5 +68,6 @@ set_mode_chainofthought <- function(
     })
   )
 
-  return(c(prompt_list, list(new_wrap)))
+  prompt_list$append_prompt_wrap(new_wrap)
+  return(prompt_list)
 }
