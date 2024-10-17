@@ -11,14 +11,11 @@ set_mode_chainofthought <- function(
     prompt,
     extract_from_finish_brackets = TRUE
 ) {
-  prompt_list <- create_prompt_list(prompt)
 
-  new_wrap <- create_prompt_wrap(
-    type = "mode",
-
-    modify_fn = function(original_prompt_text, modify_fn_args) {
-      new_prompt <- glue::glue(
-        "You are given a user's prompt.
+  # Define modification/extraction/validation functions:
+  modify_fn <- function(original_prompt_text) {
+    new_prompt <- glue::glue(
+      "You are given a user's prompt.
         To answer the user's prompt, you need to think step by step to arrive at a final answer.
 
         ----- START OF USER'S PROMPT -----
@@ -30,44 +27,65 @@ set_mode_chainofthought <- function(
           >> step 1: <step 1 description>
           >> step 2: <step 2 description>
           (etc.)"
-      )
+    )
 
-      if (modify_fn_args$extract_from_finish_brackets) {
-        new_prompt <- glue::glue(
-          "{new_prompt}
+    if (extract_from_finish_brackets) {
+      new_prompt <- glue::glue(
+        "{new_prompt}
 
           When you are done, you must type:
           FINISH[<put here your final answer to the user's prompt>]
 
           Make sure your final answer follows the logical conclusion of your thought process."
-        )
-      }
+      )
+    }
 
-      return(new_prompt)
-    },
-    modify_fn_args = list(extract_from_finish_brackets = extract_from_finish_brackets),
+    return(new_prompt)
+  }
 
-    extraction_functions = list(function(llm_response) {
-      if (!extract_from_finish_brackets) {
-        return(llm_response)
-      }
-      extracted_response <- stringr::str_extract(llm_response, "(?si)(?<=FINISH\\[).+?(?=\\])")
+  extraction_fn <- function(llm_response) {
+    if (!extract_from_finish_brackets) {
+      return(llm_response)
+    }
+    extracted_response <- stringr::str_extract(llm_response, "(?si)(?<=FINISH\\[).+?(?=\\])")
 
-      if (
-        is.na(extracted_response) ||
-        tolower(extracted_response) == "answer" ||
-        tolower(extracted_response) == "final answer"
-      ) {
-        return(create_llm_feedback(glue::glue(
-          "Error, could not parse your final answer.
+    if (
+      is.na(extracted_response) ||
+      tolower(extracted_response) == "answer" ||
+      tolower(extracted_response) == "final answer"
+    ) {
+      return(create_llm_feedback(glue::glue(
+        "Error, could not parse your final answer.
           Please type: 'FINISH[<put here your final answer to the original prompt>]'"
-        )))
-      }
+      )))
+    }
 
-      return(extracted_response)
-    })
+    return(extracted_response)
+  }
+
+  validation_fn <- function(x) {
+    if (!is.null(min) && x < min) {
+      return(create_llm_feedback(glue::glue(
+        "The number should be greater than or equal to {min}."
+      )))
+    }
+    if (!is.null(max) && x > max) {
+      return(create_llm_feedback(glue::glue(
+        "The number should be less than or equal to {max}."
+      )))
+    }
+    return(TRUE)
+  }
+
+  # Create new wrap:
+  new_wrap <- create_prompt_wrap(
+    type = "mode",
+    modify_fn = .inject_env_vars(modify_fn),
+    extraction_functions = list(.inject_env_vars(extraction_fn))
   )
 
-  prompt_list$append_prompt_wrap(new_wrap)
+  # Append wrap to prompt
+  prompt_list <- append_prompt_wrap(prompt, new_wrap)
+
   return(prompt_list)
 }
