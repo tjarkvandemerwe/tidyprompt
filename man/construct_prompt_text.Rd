@@ -4,7 +4,7 @@
 \alias{construct_prompt_text}
 \title{Construct the prompt text}
 \usage{
-construct_prompt_text(prompt)
+construct_prompt_text(prompt_list)
 }
 \arguments{
 \item{prompt}{A single character string,

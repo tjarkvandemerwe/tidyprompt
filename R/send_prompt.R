@@ -23,14 +23,11 @@ send_prompt <- function(
 ) {
   ## 1 Validate arguments
   extract_validate_mode <- match.arg(extract_validate_mode)
-  prompt_list <- create_prompt_list(prompt)
-
 
   ## 2 Retrieve prompt evaluation settings
-
   # Retrieve llm provider (prioritizing function argument over prompt)
   if (is.null(llm_provider))
-    llm_provider <- prompt_list$get_parameters()$llm_provider
+    llm_provider <- prompt_list$llm_provider
   if (is.null(llm_provider))
     stop("No llm_provider provided and no llm_provider found in parameters of prompt list.")
 

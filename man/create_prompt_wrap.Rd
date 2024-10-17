@@ -7,7 +7,6 @@
 create_prompt_wrap(
   type = c("unspecified", "mode", "tool"),
   modify_fn = NULL,
-  modify_fn_args = list(),
   validation_functions = list(),
   extraction_functions = list(),
   max_retries = 10
@@ -21,8 +20,6 @@ Mode prompts and toolset prompts are placed at the bottom of the prompt list (to
 \item{modify_fn}{Function that modifies the prompt text; takes two arguments: original_prompt_text and modify_fn_args.
 This function will be applied to the previous prompt text in the prompt list.}
 
-\item{modify_fn_args}{List of arguments to be passed to the modify_fn.}
-
 \item{validation_functions}{List of functions that validate the (extracted) response to the prompt.
 Should return TRUE on successful validation, or a 'llm_feedback' object upon failure.}
 
@@ -30,6 +27,8 @@ Should return TRUE on successful validation, or a 'llm_feedback' object upon fai
 Should return the extracted object on successful extraction, or a 'llm_feedback' object upon failure.}
 
 \item{max_retries}{Maximum number of retries for this wrap's validation and extraction functions.}
+
+\item{modify_fn_args}{List of arguments to be passed to the modify_fn.}
 }
 \value{
 A prompt wrap object

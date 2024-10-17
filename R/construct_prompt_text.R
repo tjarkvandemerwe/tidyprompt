@@ -8,6 +8,6 @@
 #' of all prompt wrappers in the prompt list to the base prompt text.
 #' @export
 construct_prompt_text <- function(prompt) {
-  prompt_list <- create_prompt_list(prompt)
+  prompt_list <- prompt_list(prompt)
   prompt_list$construct_prompt_text()
 }

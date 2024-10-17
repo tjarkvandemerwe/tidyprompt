@@ -12,7 +12,6 @@
 #' will append the text to the end of the prompt text.
 #' @export
 add_text <- function(prompt, text, sep = "\n\n") {
-  prompt_list <- create_prompt_list(prompt)
 
   modify_fn <- function(original_prompt_text) {
     return(paste(original_prompt_text, text, sep = sep))
@@ -22,5 +21,8 @@ add_text <- function(prompt, text, sep = "\n\n") {
     modify_fn = .inject_env_vars(modify_fn)
   )
 
-  return(c(prompt_list, list(new_wrap)))
+  # Append wrap to prompt
+  prompt_list <- append_prompt_wrap(prompt, new_wrap)
+
+  return(prompt_list)
 }

@@ -16,8 +16,8 @@
 answer_as_integer <- function(
     prompt, min = NULL, max = NULL, add_instruction_to_prompt = TRUE
 ) {
-  prompt_list <- create_prompt_list(prompt)
 
+  # Define modification/extraction/validation functions:
   modify_fn <- function(original_prompt_text) {
 
     new_prompt_text <- original_prompt_text
@@ -71,12 +71,15 @@ answer_as_integer <- function(
     return(TRUE)
   }
 
+  # Create new wrap:
   new_wrap <- create_prompt_wrap(
     modify_fn = .inject_env_vars(modify_fn),
     extraction_functions = list(.inject_env_vars(extraction_fn)),
     validation_functions = list(.inject_env_vars(validation_fn))
   )
 
-  prompt_list$append_prompt_wrap(new_wrap)
+  # Append wrap to prompt
+  prompt_list <- append_prompt_wrap(prompt, new_wrap)
+
   return(prompt_list)
 }
