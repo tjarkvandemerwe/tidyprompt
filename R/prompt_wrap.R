@@ -27,7 +27,6 @@
 create_prompt_wrap <- function(
     type = c("unspecified", "mode", "tool"),
     modify_fn = NULL,
-    modify_fn_args = list(),
     validation_functions = list(),
     extraction_functions = list(),
     max_retries = 10
@@ -51,7 +50,6 @@ create_prompt_wrap <- function(
   prompt_wrap <- list(
     type = type,
     modify_fn = modify_fn,
-    modify_fn_args = modify_fn_args,
     validation_functions = validation_functions,
     extraction_functions = extraction_functions,
     max_retries = max_retries

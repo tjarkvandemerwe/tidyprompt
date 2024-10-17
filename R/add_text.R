@@ -14,15 +14,13 @@
 add_text <- function(prompt, text, sep = "\n\n") {
   prompt_list <- create_prompt_list(prompt)
 
+  modify_fn <- function(original_prompt_text) {
+    return(paste(original_prompt_text, text, sep = sep))
+  }
+
   new_wrap <- create_prompt_wrap(
-    modify_fn = function(original_prompt_text, modify_fn_args) {
-      text <- modify_fn_args$text
-      sep <- modify_fn_args$sep
-      return(paste(original_prompt_text, text, sep = sep))
-    },
-    modify_fn_args = list(text = text, sep = sep)
+    modify_fn = .inject_env_vars(modify_fn)
   )
 
-  prompt_list$append_prompt_wrap(new_wrap)
-  return(prompt_list)
+  return(c(prompt_list, list(new_wrap)))
 }
