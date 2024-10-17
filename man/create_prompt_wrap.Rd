@@ -5,21 +5,14 @@
 \title{Create a prompt wrap object}
 \usage{
 create_prompt_wrap(
-  prompt_text = NULL,
-  type = c("unspecified", "mode", "toolset"),
+  type = c("unspecified", "mode", "tool"),
   modify_fn = NULL,
-  modify_fn_args = list(),
   validation_functions = list(),
   extraction_functions = list(),
-  tool_functions = list(),
-  llm_provider = NULL,
   max_retries = 10
 )
 }
 \arguments{
-\item{prompt_text}{Text of the prompt; is typically supplied for the first prompt in a prompt list,
-and not for the rest of the prompts in the list.}
-
 \item{type}{Type of the prompt; can be "unspecified", "mode", or "tool".
 This is used to determine the order the prompt wrappers when constructing the final prompt text.
 Mode prompts and toolset prompts are placed at the bottom of the prompt list (toolset after mode).}
@@ -27,19 +20,15 @@ Mode prompts and toolset prompts are placed at the bottom of the prompt list (to
 \item{modify_fn}{Function that modifies the prompt text; takes two arguments: original_prompt_text and modify_fn_args.
 This function will be applied to the previous prompt text in the prompt list.}
 
-\item{modify_fn_args}{List of arguments to be passed to the modify_fn.}
-
 \item{validation_functions}{List of functions that validate the (extracted) response to the prompt.
 Should return TRUE on successful validation, or a 'llm_feedback' object upon failure.}
 
 \item{extraction_functions}{List of functions that extract content from the response to the prompt.
 Should return the extracted object on successful extraction, or a 'llm_feedback' object upon failure.}
 
-\item{tool_functions}{List of tool functions to be added to the prompt.}
+\item{max_retries}{Maximum number of retries for this wrap's validation and extraction functions.}
 
-\item{llm_provider}{LLM provider object to be used for this prompt.}
-
-\item{max_retries}{Maximum number of retries for this prompt.}
+\item{modify_fn_args}{List of arguments to be passed to the modify_fn.}
 }
 \value{
 A prompt wrap object

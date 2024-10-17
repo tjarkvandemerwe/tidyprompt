@@ -86,7 +86,7 @@ the LLM can retry answering the prompt.
 
 ```{r, cache=TRUE}
   "What is 2 + 2?" |>
-    answer_as_integer(add_instruction_to_prompt = TRUE) |>
+    answer_as_integer() |>
     send_prompt(ollama, verbose = TRUE)
 ```
 Below is an example of a prompt which will initially fail, but will succeed after a retry.
@@ -176,8 +176,8 @@ You can thus create a function which takes a prompt and appends a new prompt wra
 Take a look at the source code for function `add_text`:
 
 ```{r echo=TRUE, eval=FALSE}
-add_text <- function(prompt_wrap_or_list, text, sep = "\n\n") {
-  prompt_list <- validate_prompt_list(prompt_wrap_or_list)
+add_text <- function(prompt, text, sep = "\n\n") {
+  prompt_list <- create_prompt_list(prompt)
 
   new_wrap <- create_prompt_wrap(
     modify_fn = function(original_prompt_text, modify_fn_args) {
@@ -188,7 +188,8 @@ add_text <- function(prompt_wrap_or_list, text, sep = "\n\n") {
     modify_fn_args = list(text = text, sep = sep)
   )
 
-  return(c(prompt_list, list(new_wrap)))
+  prompt_list$append_prompt_wrap(new_wrap)
+  return(prompt_list)
 }
 ```
 
@@ -197,9 +198,9 @@ at the source code for function `answer_as_integer`:
 
 ```{r echo=TRUE, eval=FALSE}
 answer_as_integer <- function(
-    prompt_wrap_or_list, min = NULL, max = NULL, add_instruction_to_prompt = FALSE
+    prompt, min = NULL, max = NULL, add_instruction_to_prompt = TRUE
 ) {
-  prompt_list <- validate_prompt_list(prompt_wrap_or_list)
+  prompt_list <- create_prompt_list(prompt)
 
   new_wrap <- create_prompt_wrap(
     modify_fn = function(original_prompt_text, modify_fn_args) {
@@ -208,7 +209,7 @@ answer_as_integer <- function(
 
       new_prompt_text <- original_prompt_text
 
-      if (add_instruction_to_prompt) {
+      if (modify_fn_args$add_instruction_to_prompt) {
         new_prompt_text <- glue::glue(
           "{new_prompt_text}
 
@@ -235,7 +236,9 @@ answer_as_integer <- function(
 
       return(new_prompt_text)
     },
-    
+
+    modify_fn_args = list(min = min, max = max, add_instruction_to_prompt = add_instruction_to_prompt),
+
     extraction_functions = list(
       function(x) {
         extracted <- suppressWarnings(as.integer(x))
@@ -245,7 +248,7 @@ answer_as_integer <- function(
         return(extracted)
       }
     ),
-    
+
     validation_functions = list(
       function(x) {
         if (!is.null(min) && x < min) {
@@ -264,7 +267,8 @@ answer_as_integer <- function(
     )
   )
 
-  return(c(prompt_list, list(new_wrap)))
+  prompt_list$append_prompt_wrap(new_wrap)
+  return(prompt_list)
 }
 ```
 

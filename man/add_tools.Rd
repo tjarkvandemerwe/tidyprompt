@@ -4,10 +4,10 @@
 \alias{add_tools}
 \title{Add function-calling to prompt}
 \usage{
-add_tools(prompt_wrap_or_list, tool_functions = list())
+add_tools(prompt, tool_functions = list())
 }
 \arguments{
-\item{prompt_wrap_or_list}{...}
+\item{prompt}{...}
 
 \item{tool_functions}{...}
 }
