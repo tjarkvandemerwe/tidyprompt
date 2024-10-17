@@ -14,7 +14,10 @@
 #' will ensure that the LLM response is an integer.
 #' @export
 answer_as_integer <- function(
-    prompt, min = NULL, max = NULL, add_instruction_to_prompt = TRUE
+    prompt,
+    min = NULL,
+    max = NULL,
+    add_instruction_to_prompt = TRUE
 ) {
 
   # Define modification/extraction/validation functions:

@@ -46,7 +46,6 @@ append_prompt_wrap.default <- function(prompt, prompt_wrap) {
 #' @exportS3Method append_prompt_wrap.character
 append_prompt_wrap.character <- function(prompt, prompt_wrap) {
   # character to prompt_list
-  print(prompt)
   prompt_list <- prompt_list(prompt)
 
   append_prompt_wrap(prompt_list, prompt_wrap)
