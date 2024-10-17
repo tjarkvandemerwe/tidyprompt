@@ -24,7 +24,6 @@ create_prompt_wrap <- function(
     prompt_text = NULL,
     type = c("unspecified", "mode", "toolset"),
     modify_fn = NULL,
-    modify_fn_args = list(),
     validation_functions = list(),
     extraction_functions = list(),
     tool_functions = list(),
@@ -44,7 +43,6 @@ create_prompt_wrap <- function(
     prompt_text = prompt_text,
     type = type,
     modify_fn = modify_fn,
-    modify_fn_args = modify_fn_args,
     validation_functions = validation_functions,
     extraction_functions = extraction_functions,
     tool_functions = tool_functions,
@@ -134,11 +132,11 @@ validate_prompt_list <- function(prompt_wrap_or_list) {
   # Check modify_fn structure for elements that have it
   for (i in seq_along(prompt_wrap_or_list)) {
     if (!is.null(prompt_wrap_or_list[[i]]$modify_fn)) {
-      if (length(formals(prompt_wrap_or_list[[i]]$modify_fn)) != 2) {
-        stop("The modify_fn should take exactly two arguments")
+      if (length(formals(prompt_wrap_or_list[[i]]$modify_fn)) != 1) {
+        stop("The modify_fn should take exactly one argument")
       }
-      if (!identical(names(formals(prompt_wrap_or_list[[i]]$modify_fn)), c("original_prompt_text", "modify_fn_args"))) {
-        stop("The modify_fn arguments should be named exactly original_prompt_text and modify_fn_args")
+      if (!identical(names(formals(prompt_wrap_or_list[[i]]$modify_fn)), c("original_prompt_text"))) {
+        stop("The modify_fn arguments should be named exactly original_prompt_text")
       }
     }
   }
@@ -197,7 +195,7 @@ construct_prompt_text <- function(prompt_wrap_or_list) {
   prompt_text <- prompt_list[[1]]$prompt_text
   if (length(prompt_list) > 1) {
     for (i in 2:length(prompt_list)) {
-      prompt_text <- prompt_list[[i]]$modify_fn(prompt_text, prompt_list[[i]]$modify_fn_args)
+      prompt_text <- prompt_list[[i]]$modify_fn(prompt_text)
     }
   }
 
@@ -270,36 +268,4 @@ get_extractions_and_validations_from_prompt_list <- function(prompt_list) {
     }
   }
   return(list(extractions = extractions, validations = validations))
-}
-
-
-
-#### 2 Basic prompt wrappers ####
-
-#' Add text to a prompt
-#'
-#' Add text to a prompt by appending a prompt wrapper to the prompt list.
-#' The text will be added to the end of the prompt text.
-#'
-#' @param prompt_wrap_or_list A single string, a prompt_wrap object, or a list
-#' of prompt_wrap objects.
-#' @param text Text to be added to the prompt.
-#' @param sep Separator to be used between the original prompt text and the added text.
-#'
-#' @return A prompt list with an added prompt wrapper object which
-#' will append the text to the end of the prompt text.
-#' @export
-add_text <- function(prompt_wrap_or_list, text, sep = "\n\n") {
-  prompt_list <- validate_prompt_list(prompt_wrap_or_list)
-
-  new_wrap <- create_prompt_wrap(
-    modify_fn = function(original_prompt_text, modify_fn_args) {
-      text <- modify_fn_args$text
-      sep <- modify_fn_args$sep
-      return(paste(original_prompt_text, text, sep = sep))
-    },
-    modify_fn_args = list(text = text, sep = sep)
-  )
-
-  return(c(prompt_list, list(new_wrap)))
 }

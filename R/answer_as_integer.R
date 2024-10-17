@@ -18,7 +18,7 @@ answer_as_integer <- function(
 ) {
   prompt_list <- validate_prompt_list(prompt_wrap_or_list)
 
-  modify_fn <- function(original_prompt_text, modify_fn_args) {
+  modify_fn <- function(original_prompt_text) {
 
     new_prompt_text <- original_prompt_text
 
