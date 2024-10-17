@@ -134,7 +134,7 @@ create_prompt_list.character <- function(input, parameters = list()) {
     if (length(prompt_wraps) > 0) {
       for (i in 1:length(prompt_wraps)) {
         prompt_text <- prompt_wraps[[i]]$modify_fn(
-          prompt_text, prompt_wraps[[i]]$modify_fn_args
+          prompt_text
         )
       }
     }

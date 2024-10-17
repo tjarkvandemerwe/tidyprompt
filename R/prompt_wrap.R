@@ -38,12 +38,12 @@ create_prompt_wrap <- function(
   if (
     is.null(modify_fn)
     || !is.function(modify_fn)
-    || length(formals(modify_fn)) != 2
-    || !identical(names(formals(modify_fn)), c("original_prompt_text", "modify_fn_args"))
+    || length(formals(modify_fn)) != 1
+    || !identical(names(formals(modify_fn)), c("original_prompt_text"))
   )
     stop(paste0(
-      "Modify_fn should be provided; it should be a function that takes two arguments: ",
-      "original_prompt_text and modify_fn_args"
+      "Modify_fn should be provided; it should be a function that takes one argument: ",
+      "original_prompt_text"
     ))
 
   # Create a list to hold the prompt details
