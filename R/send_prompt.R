@@ -12,7 +12,7 @@
 #' @return ...
 #' @export
 send_prompt <- function(
-    prompt,
+    prompt_list,
     llm_provider = NULL,
     system_prompt = NULL,
     extraction_functions = list(),
@@ -36,7 +36,7 @@ send_prompt <- function(
     length(extraction_functions) == 0 |
     length(validation_functions) == 0
   )
-    extractions_validations <- prompt_list$get_extractions_and_validations()
+    extractions_validations <- get_extractions_and_validations(prompt_list)
   if (length(extraction_functions) == 0)
     extraction_functions <- extractions_validations$extractions
   if (length(validation_functions) == 0)
@@ -105,7 +105,7 @@ send_prompt <- function(
 
   ## 4 Retrieve initial response
 
-  response <- send_chat(prompt_list$construct_prompt_text())
+  response <- prompt_list |> construct_prompt_text() |> send_chat()
 
 
   ## 6 extractions & validations toepassen
