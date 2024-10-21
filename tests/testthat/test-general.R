@@ -17,7 +17,7 @@ testthat::test_that("send message with ollama", {
   testthat::expect_length(result$content, 1)
 })
 
-testthat::test_that("basic prompt", {
+testthat::test_that("send basic prompt", {
   result <- "Hi" |>
     send_prompt(llm_provider = create_ollama_llm_provider())
 
@@ -26,7 +26,7 @@ testthat::test_that("basic prompt", {
   testthat::expect_length(result, 1)
 })
 
-testthat::test_that("prompt with text added", {
+testthat::test_that("send prompt with text added", {
   result <- "Hi" |>
     add_text("How are you?") |>
     send_prompt(llm_provider = create_ollama_llm_provider())
@@ -35,7 +35,7 @@ testthat::test_that("prompt with text added", {
   testthat::expect_length(result, 1)
 })
 
-testthat::test_that("prompt with validation & extraction added", {
+testthat::test_that("send prompt with validation & extraction added", {
   result <- "Hi" |>
     add_text("What is 5+5?") |>
     answer_as_integer() |>
@@ -45,7 +45,7 @@ testthat::test_that("prompt with validation & extraction added", {
   testthat::expect_length(result, 1)
 })
 
-testthat::test_that("prompt with mode added", {
+testthat::test_that("send prompt with mode added", {
   result <- "Hi" |>
     set_mode_chainofthought() |>
     send_prompt(llm_provider = create_ollama_llm_provider())
@@ -54,7 +54,7 @@ testthat::test_that("prompt with mode added", {
   testthat::expect_length(result, 1)
 })
 
-testthat::test_that("prompt with tool function added", {
+testthat::test_that("send prompt with tool added", {
   # Define tool function
   temperature_in_location <- function(
     location = c("Amsterdam", "Utrecht", "Enschede"),
