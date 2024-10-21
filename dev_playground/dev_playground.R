@@ -13,7 +13,7 @@ if (FALSE) {
     answer_as_integer(min = 0) |>
     add_text("hiii", position = "before")
 
-  x <- environment(prompt$`prompt wrap 2`$modify_fn)
+  x <- environment(prompt$prompt_wraps[[2]]$modify_fn)
 
   prompt |>
     send_prompt(ollama, verbose = TRUE)
