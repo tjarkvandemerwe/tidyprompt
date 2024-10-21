@@ -2,16 +2,16 @@
 % Please edit documentation in R/prompt.R
 \name{prompt.prompt}
 \alias{prompt.prompt}
-\title{Method to create a prompt object from prompt}
+\title{Method to validate a prompt object}
 \usage{
 \method{prompt}{prompt}(input)
 }
 \arguments{
-\item{input}{Input to create_prompt; the base prompt}
+\item{input}{A prompt object}
 }
 \value{
-A prompt object
+A validated prompt object
 }
 \description{
-Method to create a prompt object from prompt
+Method to validate a prompt object
 }

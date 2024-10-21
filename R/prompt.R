@@ -40,13 +40,32 @@ prompt.character <- function(input) {
 }
 
 
-#' Method to create a prompt object from prompt
+#' Method to validate a prompt object
 #'
-#' @param input Input to create_prompt; the base prompt
+#' @param input A prompt object
 #'
-#' @return A prompt object
+#' @return A validated prompt object
 #' @exportS3Method prompt prompt
 prompt.prompt <- function(input) {
+  # TODO: write validations
+
+  if (names(input)[[1]] != "base_prompt")
+    stop("The first element of the prompt object must be the base prompt")
+
+  if (!is.character(input$base_prompt)
+      | length(input$base_prompt) != 1
+  )
+    stop("The base prompt must be a single character string")
+
+  # Check if all other elements are of class 'prompt_wrap'
+  if (length(input) > 1) {
+    if (!all(sapply(input[-1], function(x) inherits(x, "prompt_wrap"))))
+      stop(paste0(
+        "All elements of the prompt object, besides the base_prompt,",
+        " must be of class 'prompt_wrap'"
+      ))
+  }
+
   return(input)
 }
 

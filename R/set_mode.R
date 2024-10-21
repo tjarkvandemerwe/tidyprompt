@@ -78,7 +78,7 @@ set_mode_chainofthought <- function(
   }
 
   # Create new wrap:
-  new_wrap <- create_prompt_wrap(
+  new_wrap <- prompt_wrap(
     type = "mode",
     modify_fn = modify_fn,
     extraction_functions = list(extraction_fn)
