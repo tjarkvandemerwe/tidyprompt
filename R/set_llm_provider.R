@@ -11,8 +11,7 @@ set_llm_provider <- function(prompt, llm_provider) {
   if (!inherits(llm_provider, "llm_provider"))
     stop("llm_provider must be an object of class llm_provider")
 
-  # Set as attribute
-  attr(prompt, "llm_provider") <- llm_provider
+  prompt$llm_provider <- llm_provider
 
   return(prompt)
 }

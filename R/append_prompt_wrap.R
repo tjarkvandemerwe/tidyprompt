@@ -38,26 +38,13 @@ append_prompt_wrap.default <- function(prompt, prompt_wrap) {
 #' @export
 #' @exportS3Method append_prompt_wrap prompt
 append_prompt_wrap.prompt <- function(prompt, prompt_wrap) {
-  # Get the names of the existing list elements
-  existing_names <- names(prompt)
+  if (!inherits(prompt_wrap, "prompt_wrap"))
+    stop(paste0(
+      "The prompt_wrap must be an object of class 'prompt_wrap'",
+      " Create a prompt_wrap object with the prompt_wrap() function"
+    ))
 
-  # Find names that match the pattern 'prompt wrap X'
-  prompt_wrap_names <- grep("^prompt wrap \\d+$", existing_names, value = TRUE)
+  prompt$prompt_wraps[[length(prompt$prompt_wraps) + 1]] <- prompt_wrap
 
-  # Extract the numeric part of the existing 'prompt wrap' names
-  existing_numbers <- as.numeric(gsub("prompt wrap ", "", prompt_wrap_names))
-
-  # Determine the next available number
-  next_number <- if (length(existing_numbers) == 0) 1 else max(existing_numbers) + 1
-
-  # Create the name for the new prompt wrap
-  new_name <- paste0("prompt wrap ", next_number)
-
-  # Append the new prompt wrap with the generated name
-  prompt_wraps <- c(prompt, setNames(list(prompt_wrap), new_name))
-
-  # Retain class
-  class(prompt_wraps) <- class(prompt)
-
-  return(prompt_wraps)
+  return(prompt)
 }

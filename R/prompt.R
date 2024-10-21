@@ -37,7 +37,10 @@ prompt.character <- function(input) {
   if (length(input) != 1)
     stop("Input (the base prompt) must be length 1")
 
-  prompt <- list(base_prompt = input)
+  prompt <- list(
+    base_prompt = input,
+    prompt_wraps = list()
+  )
   class(prompt) <- "prompt"
 
   return(prompt)
@@ -54,20 +57,23 @@ prompt.character <- function(input) {
 prompt.prompt <- function(input) {
   # TODO: write validations
 
-  if (names(input)[[1]] != "base_prompt")
-    stop("The first element of the prompt object must be the base prompt")
+  if (!"base_prompt" %in% names(input))
+    stop("The prompt object must have a base prompt")
 
-  if (!is.character(input$base_prompt)
-      | length(input$base_prompt) != 1
+  if (
+    !is.character(input$base_prompt) |
+    input$base_prompt |> length() != 1
   )
     stop("The base prompt must be a single character string")
 
-  # Check if all other elements are of class 'prompt_wrap'
-  if (length(input) > 1) {
-    if (!all(sapply(input[-1], function(x) inherits(x, "prompt_wrap"))))
+  if ("prompt_wrap" %in% names(input)) {
+    if (!is.list(input$prompt_wraps))
+      stop("The prompt_wraps must be a list")
+
+    if (!all(sapply(input$prompt_wraps, function(x) inherits(x, "prompt_wrap"))))
       stop(paste0(
-        "All elements of the prompt object, besides the base_prompt,",
-        " must be of class 'prompt_wrap'"
+        "All elements of prompt_wraps must be of class 'prompt_wrap'.",
+        " Create a prompt_wrap object with the prompt_wrap() function."
       ))
   }
 
@@ -100,11 +106,7 @@ get_base_prompt <- function(prompt) {
 #' @export
 get_prompt_wraps <- function(prompt) {
   prompt <- prompt(prompt)
-
-  classes <- lapply(prompt, class)
-  prompt_wraps <- prompt[classes == "prompt_wrap"]
-
-  return(prompt_wraps)
+  return(prompt$prompt_wraps)
 }
 
 
