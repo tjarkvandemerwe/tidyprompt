@@ -4,13 +4,15 @@
 \alias{add_text}
 \title{Add text to a prompt}
 \usage{
-add_text(prompt, text, sep = "\\n\\n")
+add_text(prompt, text, position = c("after", "before"), sep = "\\n\\n")
 }
 \arguments{
 \item{prompt}{A single string, a prompt_wrap object, or a list
 of prompt_wrap objects.}
 
 \item{text}{Text to be added to the prompt.}
+
+\item{position}{Where to add the text; either "after" or "before".}
 
 \item{sep}{Separator to be used between the original prompt text and the added text.}
 }

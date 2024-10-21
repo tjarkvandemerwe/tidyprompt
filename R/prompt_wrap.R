@@ -1,5 +1,3 @@
-#### 1 Prompt wrap object & functions ####
-
 #' Create a prompt wrap object
 #'
 #' @param type
@@ -24,7 +22,7 @@
 #' A prompt wrap object
 #'
 #' @export
-create_prompt_wrap <- function(
+prompt_wrap <- function(
     type = c("unspecified", "mode", "tool"),
     modify_fn = NULL,
     validation_functions = list(),
@@ -43,7 +41,9 @@ create_prompt_wrap <- function(
   )
     stop(paste0(
       "Modify_fn should be provided; it should be a function that takes one argument: ",
-      "original_prompt_text"
+      "original_prompt_text",
+      "(other arguments will be taken from the parent environment and do not need",
+      " to be passed as arguments to the function)."
     ))
 
   # Create a list to hold the prompt details
