@@ -405,7 +405,7 @@ integer from the LLM’s response. If extraction or validation fails,
 feedback is sent back to the LLM, after which the LLM can retry
 answering the prompt.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>  <span class="st">&quot;What is 2 + 2?&quot;</span> <span class="sc">|&gt;</span></span>
-<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>    <span class="fu">answer_as_integer</span>(<span class="at">add_instruction_to_prompt =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>    <span class="fu">answer_as_integer</span>() <span class="sc">|&gt;</span></span>
 <span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>    <span class="fu">send_prompt</span>(ollama, <span class="at">verbose =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <pre><code>## --- Sending message to LLM-provider: ---</code></pre>
 <pre><code>## What is 2 + 2?
@@ -573,93 +573,85 @@ and a series of prompt wrappers.</p>
 prompt wrapper to it.</p>
 <p>Take a look at the source code for function
 <code>add_text</code>:</p>
-<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" tabindex="-1"></a>add_text <span class="ot">&lt;-</span> <span class="cf">function</span>(prompt_wrap_or_list, text, <span class="at">sep =</span> <span class="st">&quot;</span><span class="sc">\n\n</span><span class="st">&quot;</span>) {</span>
-<span id="cb45-2"><a href="#cb45-2" tabindex="-1"></a>  prompt_list <span class="ot">&lt;-</span> <span class="fu">validate_prompt_list</span>(prompt_wrap_or_list)</span>
-<span id="cb45-3"><a href="#cb45-3" tabindex="-1"></a></span>
-<span id="cb45-4"><a href="#cb45-4" tabindex="-1"></a>  new_wrap <span class="ot">&lt;-</span> <span class="fu">create_prompt_wrap</span>(</span>
-<span id="cb45-5"><a href="#cb45-5" tabindex="-1"></a>    <span class="at">modify_fn =</span> <span class="cf">function</span>(original_prompt_text, modify_fn_args) {</span>
-<span id="cb45-6"><a href="#cb45-6" tabindex="-1"></a>      text <span class="ot">&lt;-</span> modify_fn_args<span class="sc">$</span>text</span>
-<span id="cb45-7"><a href="#cb45-7" tabindex="-1"></a>      sep <span class="ot">&lt;-</span> modify_fn_args<span class="sc">$</span>sep</span>
-<span id="cb45-8"><a href="#cb45-8" tabindex="-1"></a>      <span class="fu">return</span>(<span class="fu">paste</span>(original_prompt_text, text, <span class="at">sep =</span> sep))</span>
-<span id="cb45-9"><a href="#cb45-9" tabindex="-1"></a>    },</span>
-<span id="cb45-10"><a href="#cb45-10" tabindex="-1"></a>    <span class="at">modify_fn_args =</span> <span class="fu">list</span>(<span class="at">text =</span> text, <span class="at">sep =</span> sep)</span>
-<span id="cb45-11"><a href="#cb45-11" tabindex="-1"></a>  )</span>
-<span id="cb45-12"><a href="#cb45-12" tabindex="-1"></a></span>
-<span id="cb45-13"><a href="#cb45-13" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">c</span>(prompt_list, <span class="fu">list</span>(new_wrap)))</span>
-<span id="cb45-14"><a href="#cb45-14" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" tabindex="-1"></a>add_text <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
+<span id="cb45-2"><a href="#cb45-2" tabindex="-1"></a>    prompt,</span>
+<span id="cb45-3"><a href="#cb45-3" tabindex="-1"></a>    text, <span class="at">position =</span> <span class="fu">c</span>(<span class="st">&quot;after&quot;</span>, <span class="st">&quot;before&quot;</span>), <span class="at">sep =</span> <span class="st">&quot;</span><span class="sc">\n\n</span><span class="st">&quot;</span></span>
+<span id="cb45-4"><a href="#cb45-4" tabindex="-1"></a>) {</span>
+<span id="cb45-5"><a href="#cb45-5" tabindex="-1"></a>  position <span class="ot">&lt;-</span> <span class="fu">match.arg</span>(position)</span>
+<span id="cb45-6"><a href="#cb45-6" tabindex="-1"></a></span>
+<span id="cb45-7"><a href="#cb45-7" tabindex="-1"></a>  modify_fn <span class="ot">&lt;-</span> <span class="cf">function</span>(original_prompt_text) {</span>
+<span id="cb45-8"><a href="#cb45-8" tabindex="-1"></a>    <span class="cf">if</span> (position <span class="sc">==</span> <span class="st">&quot;after&quot;</span>) {</span>
+<span id="cb45-9"><a href="#cb45-9" tabindex="-1"></a>      <span class="fu">paste</span>(original_prompt_text, text, <span class="at">sep =</span> sep)</span>
+<span id="cb45-10"><a href="#cb45-10" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb45-11"><a href="#cb45-11" tabindex="-1"></a>      <span class="fu">paste</span>(text, original_prompt_text, <span class="at">sep =</span> sep)</span>
+<span id="cb45-12"><a href="#cb45-12" tabindex="-1"></a>    }</span>
+<span id="cb45-13"><a href="#cb45-13" tabindex="-1"></a>  }</span>
+<span id="cb45-14"><a href="#cb45-14" tabindex="-1"></a></span>
+<span id="cb45-15"><a href="#cb45-15" tabindex="-1"></a>  new_wrap <span class="ot">&lt;-</span> <span class="fu">prompt_wrap</span>(</span>
+<span id="cb45-16"><a href="#cb45-16" tabindex="-1"></a>    <span class="at">modify_fn =</span> modify_fn</span>
+<span id="cb45-17"><a href="#cb45-17" tabindex="-1"></a>  )</span>
+<span id="cb45-18"><a href="#cb45-18" tabindex="-1"></a></span>
+<span id="cb45-19"><a href="#cb45-19" tabindex="-1"></a>  <span class="fu">append_prompt_wrap</span>(prompt, new_wrap)</span>
+<span id="cb45-20"><a href="#cb45-20" tabindex="-1"></a>}</span></code></pre></div>
 <p>More complex prompt wrappers may also add extraction and validation
 functions. Take a look at the source code for function
 <code>answer_as_integer</code>:</p>
 <div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" tabindex="-1"></a>answer_as_integer <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
-<span id="cb46-2"><a href="#cb46-2" tabindex="-1"></a>    prompt_wrap_or_list, <span class="at">min =</span> <span class="cn">NULL</span>, <span class="at">max =</span> <span class="cn">NULL</span>, <span class="at">add_instruction_to_prompt =</span> <span class="cn">FALSE</span></span>
-<span id="cb46-3"><a href="#cb46-3" tabindex="-1"></a>) {</span>
-<span id="cb46-4"><a href="#cb46-4" tabindex="-1"></a>  prompt_list <span class="ot">&lt;-</span> <span class="fu">validate_prompt_list</span>(prompt_wrap_or_list)</span>
-<span id="cb46-5"><a href="#cb46-5" tabindex="-1"></a></span>
-<span id="cb46-6"><a href="#cb46-6" tabindex="-1"></a>  new_wrap <span class="ot">&lt;-</span> <span class="fu">create_prompt_wrap</span>(</span>
-<span id="cb46-7"><a href="#cb46-7" tabindex="-1"></a>    <span class="at">modify_fn =</span> <span class="cf">function</span>(original_prompt_text, modify_fn_args) {</span>
-<span id="cb46-8"><a href="#cb46-8" tabindex="-1"></a>      min <span class="ot">&lt;-</span> modify_fn_args<span class="sc">$</span>min</span>
-<span id="cb46-9"><a href="#cb46-9" tabindex="-1"></a>      max <span class="ot">&lt;-</span> modify_fn_args<span class="sc">$</span>max</span>
-<span id="cb46-10"><a href="#cb46-10" tabindex="-1"></a></span>
-<span id="cb46-11"><a href="#cb46-11" tabindex="-1"></a>      new_prompt_text <span class="ot">&lt;-</span> original_prompt_text</span>
-<span id="cb46-12"><a href="#cb46-12" tabindex="-1"></a></span>
-<span id="cb46-13"><a href="#cb46-13" tabindex="-1"></a>      <span class="cf">if</span> (add_instruction_to_prompt) {</span>
-<span id="cb46-14"><a href="#cb46-14" tabindex="-1"></a>        new_prompt_text <span class="ot">&lt;-</span> glue<span class="sc">::</span><span class="fu">glue</span>(</span>
-<span id="cb46-15"><a href="#cb46-15" tabindex="-1"></a>          <span class="st">&quot;{new_prompt_text}</span></span>
+<span id="cb46-2"><a href="#cb46-2" tabindex="-1"></a>    prompt,</span>
+<span id="cb46-3"><a href="#cb46-3" tabindex="-1"></a>    <span class="at">min =</span> <span class="cn">NULL</span>,</span>
+<span id="cb46-4"><a href="#cb46-4" tabindex="-1"></a>    <span class="at">max =</span> <span class="cn">NULL</span>,</span>
+<span id="cb46-5"><a href="#cb46-5" tabindex="-1"></a>    <span class="at">add_instruction_to_prompt =</span> <span class="cn">TRUE</span></span>
+<span id="cb46-6"><a href="#cb46-6" tabindex="-1"></a>) {</span>
+<span id="cb46-7"><a href="#cb46-7" tabindex="-1"></a>  instruction <span class="ot">&lt;-</span> <span class="st">&quot;You must answer with only an integer (use no other characters).&quot;</span></span>
+<span id="cb46-8"><a href="#cb46-8" tabindex="-1"></a></span>
+<span id="cb46-9"><a href="#cb46-9" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(min) <span class="sc">&amp;&amp;</span> <span class="sc">!</span><span class="fu">is.null</span>(max)) {</span>
+<span id="cb46-10"><a href="#cb46-10" tabindex="-1"></a>    instruction <span class="ot">&lt;-</span> <span class="fu">paste</span>(instruction, glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">&quot;Enter an integer between {min} and {max}.&quot;</span>))</span>
+<span id="cb46-11"><a href="#cb46-11" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(min)) {</span>
+<span id="cb46-12"><a href="#cb46-12" tabindex="-1"></a>    instruction <span class="ot">&lt;-</span> <span class="fu">paste</span>(instruction, glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">&quot;Enter an integer greater than or equal to {min}.&quot;</span>))</span>
+<span id="cb46-13"><a href="#cb46-13" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(max)) {</span>
+<span id="cb46-14"><a href="#cb46-14" tabindex="-1"></a>    instruction <span class="ot">&lt;-</span> <span class="fu">paste</span>(instruction, glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">&quot;Enter an integer less than or equal to {max}.&quot;</span>))</span>
+<span id="cb46-15"><a href="#cb46-15" tabindex="-1"></a>  }</span>
 <span id="cb46-16"><a href="#cb46-16" tabindex="-1"></a></span>
-<span id="cb46-17"><a href="#cb46-17" tabindex="-1"></a><span class="st">          You must answer with only an integer (use no other characters).&quot;</span></span>
-<span id="cb46-18"><a href="#cb46-18" tabindex="-1"></a>        )</span>
-<span id="cb46-19"><a href="#cb46-19" tabindex="-1"></a></span>
-<span id="cb46-20"><a href="#cb46-20" tabindex="-1"></a>        <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(min) <span class="sc">&amp;&amp;</span> <span class="sc">!</span><span class="fu">is.null</span>(max)) {</span>
-<span id="cb46-21"><a href="#cb46-21" tabindex="-1"></a>          new_prompt_text <span class="ot">&lt;-</span> glue<span class="sc">::</span><span class="fu">glue</span>(</span>
-<span id="cb46-22"><a href="#cb46-22" tabindex="-1"></a>            <span class="st">&quot;{new_prompt_text}</span></span>
-<span id="cb46-23"><a href="#cb46-23" tabindex="-1"></a><span class="st">            Enter an integer between {min} and {max}.&quot;</span></span>
-<span id="cb46-24"><a href="#cb46-24" tabindex="-1"></a>          )</span>
-<span id="cb46-25"><a href="#cb46-25" tabindex="-1"></a>        } <span class="cf">else</span> <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(min)) {</span>
-<span id="cb46-26"><a href="#cb46-26" tabindex="-1"></a>          new_prompt_text <span class="ot">&lt;-</span> glue<span class="sc">::</span><span class="fu">glue</span>(</span>
-<span id="cb46-27"><a href="#cb46-27" tabindex="-1"></a>            <span class="st">&quot;{new_prompt_text}</span></span>
-<span id="cb46-28"><a href="#cb46-28" tabindex="-1"></a><span class="st">            Enter an integer greater than or equal to {min}.&quot;</span></span>
-<span id="cb46-29"><a href="#cb46-29" tabindex="-1"></a>          )</span>
-<span id="cb46-30"><a href="#cb46-30" tabindex="-1"></a>        } <span class="cf">else</span> <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(max)) {</span>
-<span id="cb46-31"><a href="#cb46-31" tabindex="-1"></a>          new_prompt_text <span class="ot">&lt;-</span> glue<span class="sc">::</span><span class="fu">glue</span>(</span>
-<span id="cb46-32"><a href="#cb46-32" tabindex="-1"></a>            <span class="st">&quot;{new_prompt_text}</span></span>
-<span id="cb46-33"><a href="#cb46-33" tabindex="-1"></a><span class="st">            Enter an integer less than or equal to {max}.&quot;</span></span>
-<span id="cb46-34"><a href="#cb46-34" tabindex="-1"></a>          )</span>
-<span id="cb46-35"><a href="#cb46-35" tabindex="-1"></a>        }</span>
-<span id="cb46-36"><a href="#cb46-36" tabindex="-1"></a>      }</span>
-<span id="cb46-37"><a href="#cb46-37" tabindex="-1"></a></span>
-<span id="cb46-38"><a href="#cb46-38" tabindex="-1"></a>      <span class="fu">return</span>(new_prompt_text)</span>
-<span id="cb46-39"><a href="#cb46-39" tabindex="-1"></a>    },</span>
-<span id="cb46-40"><a href="#cb46-40" tabindex="-1"></a>    </span>
-<span id="cb46-41"><a href="#cb46-41" tabindex="-1"></a>    <span class="at">extraction_functions =</span> <span class="fu">list</span>(</span>
-<span id="cb46-42"><a href="#cb46-42" tabindex="-1"></a>      <span class="cf">function</span>(x) {</span>
-<span id="cb46-43"><a href="#cb46-43" tabindex="-1"></a>        extracted <span class="ot">&lt;-</span> <span class="fu">suppressWarnings</span>(<span class="fu">as.integer</span>(x))</span>
-<span id="cb46-44"><a href="#cb46-44" tabindex="-1"></a>        <span class="cf">if</span> (<span class="fu">is.na</span>(extracted)) {</span>
-<span id="cb46-45"><a href="#cb46-45" tabindex="-1"></a>          <span class="fu">return</span>(<span class="fu">create_llm_feedback</span>(<span class="st">&quot;You must answer with only an integer (use no other characters).&quot;</span>))</span>
-<span id="cb46-46"><a href="#cb46-46" tabindex="-1"></a>        }</span>
-<span id="cb46-47"><a href="#cb46-47" tabindex="-1"></a>        <span class="fu">return</span>(extracted)</span>
-<span id="cb46-48"><a href="#cb46-48" tabindex="-1"></a>      }</span>
-<span id="cb46-49"><a href="#cb46-49" tabindex="-1"></a>    ),</span>
-<span id="cb46-50"><a href="#cb46-50" tabindex="-1"></a>    </span>
-<span id="cb46-51"><a href="#cb46-51" tabindex="-1"></a>    <span class="at">validation_functions =</span> <span class="fu">list</span>(</span>
-<span id="cb46-52"><a href="#cb46-52" tabindex="-1"></a>      <span class="cf">function</span>(x) {</span>
-<span id="cb46-53"><a href="#cb46-53" tabindex="-1"></a>        <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(min) <span class="sc">&amp;&amp;</span> x <span class="sc">&lt;</span> min) {</span>
-<span id="cb46-54"><a href="#cb46-54" tabindex="-1"></a>          <span class="fu">return</span>(<span class="fu">create_llm_feedback</span>(glue<span class="sc">::</span><span class="fu">glue</span>(</span>
-<span id="cb46-55"><a href="#cb46-55" tabindex="-1"></a>            <span class="st">&quot;The number should be greater than or equal to {min}.&quot;</span></span>
-<span id="cb46-56"><a href="#cb46-56" tabindex="-1"></a>          )))</span>
-<span id="cb46-57"><a href="#cb46-57" tabindex="-1"></a>        }</span>
-<span id="cb46-58"><a href="#cb46-58" tabindex="-1"></a>        <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(max) <span class="sc">&amp;&amp;</span> x <span class="sc">&gt;</span> max) {</span>
-<span id="cb46-59"><a href="#cb46-59" tabindex="-1"></a>          <span class="fu">return</span>(<span class="fu">create_llm_feedback</span>(glue<span class="sc">::</span><span class="fu">glue</span>(</span>
-<span id="cb46-60"><a href="#cb46-60" tabindex="-1"></a>            <span class="st">&quot;The number should be less than or equal to {max}.&quot;</span></span>
-<span id="cb46-61"><a href="#cb46-61" tabindex="-1"></a>          )))</span>
-<span id="cb46-62"><a href="#cb46-62" tabindex="-1"></a>        }</span>
-<span id="cb46-63"><a href="#cb46-63" tabindex="-1"></a></span>
-<span id="cb46-64"><a href="#cb46-64" tabindex="-1"></a>        <span class="fu">return</span>(<span class="cn">TRUE</span>)</span>
-<span id="cb46-65"><a href="#cb46-65" tabindex="-1"></a>      }</span>
-<span id="cb46-66"><a href="#cb46-66" tabindex="-1"></a>    )</span>
-<span id="cb46-67"><a href="#cb46-67" tabindex="-1"></a>  )</span>
-<span id="cb46-68"><a href="#cb46-68" tabindex="-1"></a></span>
-<span id="cb46-69"><a href="#cb46-69" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">c</span>(prompt_list, <span class="fu">list</span>(new_wrap)))</span>
-<span id="cb46-70"><a href="#cb46-70" tabindex="-1"></a>}</span></code></pre></div>
+<span id="cb46-17"><a href="#cb46-17" tabindex="-1"></a></span>
+<span id="cb46-18"><a href="#cb46-18" tabindex="-1"></a>  <span class="co"># Define modification/extraction/validation functions:</span></span>
+<span id="cb46-19"><a href="#cb46-19" tabindex="-1"></a>  modify_fn <span class="ot">&lt;-</span> <span class="cf">function</span>(original_prompt_text) {</span>
+<span id="cb46-20"><a href="#cb46-20" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span>add_instruction_to_prompt) {</span>
+<span id="cb46-21"><a href="#cb46-21" tabindex="-1"></a>      <span class="fu">return</span>(original_prompt_text)</span>
+<span id="cb46-22"><a href="#cb46-22" tabindex="-1"></a>    }</span>
+<span id="cb46-23"><a href="#cb46-23" tabindex="-1"></a></span>
+<span id="cb46-24"><a href="#cb46-24" tabindex="-1"></a>    glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">&quot;{original_prompt_text}</span><span class="sc">\n\n</span><span class="st">{instruction}&quot;</span>)</span>
+<span id="cb46-25"><a href="#cb46-25" tabindex="-1"></a>  }</span>
+<span id="cb46-26"><a href="#cb46-26" tabindex="-1"></a></span>
+<span id="cb46-27"><a href="#cb46-27" tabindex="-1"></a>  extraction_fn <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb46-28"><a href="#cb46-28" tabindex="-1"></a>    extracted <span class="ot">&lt;-</span> <span class="fu">suppressWarnings</span>(<span class="fu">as.integer</span>(x))</span>
+<span id="cb46-29"><a href="#cb46-29" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">is.na</span>(extracted)) {</span>
+<span id="cb46-30"><a href="#cb46-30" tabindex="-1"></a>      <span class="fu">return</span>(<span class="fu">create_llm_feedback</span>(instruction))</span>
+<span id="cb46-31"><a href="#cb46-31" tabindex="-1"></a>    }</span>
+<span id="cb46-32"><a href="#cb46-32" tabindex="-1"></a>    <span class="fu">return</span>(extracted)</span>
+<span id="cb46-33"><a href="#cb46-33" tabindex="-1"></a>  }</span>
+<span id="cb46-34"><a href="#cb46-34" tabindex="-1"></a></span>
+<span id="cb46-35"><a href="#cb46-35" tabindex="-1"></a>  validation_fn <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb46-36"><a href="#cb46-36" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(min) <span class="sc">&amp;&amp;</span> x <span class="sc">&lt;</span> min) {</span>
+<span id="cb46-37"><a href="#cb46-37" tabindex="-1"></a>      <span class="fu">return</span>(<span class="fu">create_llm_feedback</span>(glue<span class="sc">::</span><span class="fu">glue</span>(</span>
+<span id="cb46-38"><a href="#cb46-38" tabindex="-1"></a>        <span class="st">&quot;The number should be greater than or equal to {min}.&quot;</span></span>
+<span id="cb46-39"><a href="#cb46-39" tabindex="-1"></a>      )))</span>
+<span id="cb46-40"><a href="#cb46-40" tabindex="-1"></a>    }</span>
+<span id="cb46-41"><a href="#cb46-41" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(max) <span class="sc">&amp;&amp;</span> x <span class="sc">&gt;</span> max) {</span>
+<span id="cb46-42"><a href="#cb46-42" tabindex="-1"></a>      <span class="fu">return</span>(<span class="fu">create_llm_feedback</span>(glue<span class="sc">::</span><span class="fu">glue</span>(</span>
+<span id="cb46-43"><a href="#cb46-43" tabindex="-1"></a>        <span class="st">&quot;The number should be less than or equal to {max}.&quot;</span></span>
+<span id="cb46-44"><a href="#cb46-44" tabindex="-1"></a>      )))</span>
+<span id="cb46-45"><a href="#cb46-45" tabindex="-1"></a>    }</span>
+<span id="cb46-46"><a href="#cb46-46" tabindex="-1"></a>    <span class="fu">return</span>(<span class="cn">TRUE</span>)</span>
+<span id="cb46-47"><a href="#cb46-47" tabindex="-1"></a>  }</span>
+<span id="cb46-48"><a href="#cb46-48" tabindex="-1"></a></span>
+<span id="cb46-49"><a href="#cb46-49" tabindex="-1"></a>  new_wrap <span class="ot">&lt;-</span> <span class="fu">prompt_wrap</span>(</span>
+<span id="cb46-50"><a href="#cb46-50" tabindex="-1"></a>    <span class="at">modify_fn =</span> modify_fn,</span>
+<span id="cb46-51"><a href="#cb46-51" tabindex="-1"></a>    <span class="at">extraction_functions =</span> <span class="fu">list</span>(extraction_fn),</span>
+<span id="cb46-52"><a href="#cb46-52" tabindex="-1"></a>    <span class="at">validation_functions =</span> <span class="fu">list</span>(validation_fn)</span>
+<span id="cb46-53"><a href="#cb46-53" tabindex="-1"></a>  )</span>
+<span id="cb46-54"><a href="#cb46-54" tabindex="-1"></a></span>
+<span id="cb46-55"><a href="#cb46-55" tabindex="-1"></a>  <span class="fu">append_prompt_wrap</span>(prompt, new_wrap)</span>
+<span id="cb46-56"><a href="#cb46-56" tabindex="-1"></a>}</span></code></pre></div>
 <p>They key difference between an extraction and validation function is
 that an extraction function alters the LLM’s response and passes on the
 altered response to next extraction and/or validation functions, and

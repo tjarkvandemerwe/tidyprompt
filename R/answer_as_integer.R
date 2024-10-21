@@ -1,4 +1,3 @@
-
 #' Make LLM answer as an integer (between min and max)
 #'
 #' @param prompt A single string, a prompt_wrap object, or a list
