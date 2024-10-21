@@ -12,7 +12,7 @@ set_llm_provider(prompt, llm_provider)
 \item{llm_provider}{An object of class llm_provider}
 }
 \value{
-A prompt_list object with the llm_provider set as a parameter
+A prompt_list object with the llm_provider set as an attribute
 }
 \description{
 Set the llm_provider for a prompt

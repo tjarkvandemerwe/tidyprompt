@@ -9,6 +9,8 @@ prompt <- function(input) {
   UseMethod("prompt")
 }
 
+
+
 #' Default method to create a prompt object
 #'
 #' Is called when the input is not a character string or a prompt object.
@@ -22,6 +24,8 @@ prompt.default <- function(input) {
     "Input (the base prompt) to prompt() must be a character string"
   ))
 }
+
+
 
 #' Method to create a prompt object from a character string
 #'
@@ -38,6 +42,7 @@ prompt.character <- function(input) {
 
   return(prompt)
 }
+
 
 
 #' Method to validate a prompt object
@@ -70,6 +75,7 @@ prompt.prompt <- function(input) {
 }
 
 
+
 #' Get base prompt from prompt
 #'
 #' @param prompt A prompt object
@@ -85,6 +91,7 @@ get_base_prompt <- function(prompt) {
 }
 
 
+
 #' Get prompt wraps from prompt
 #'
 #' @param prompt A prompt object
@@ -92,6 +99,8 @@ get_base_prompt <- function(prompt) {
 #' @return A list of prompt wraps from the prompt
 #' @export
 get_prompt_wraps <- function(prompt) {
+  prompt <- prompt(prompt)
+
   classes <- lapply(prompt, class)
   prompt_wraps <- prompt[classes == "prompt_wrap"]
 
@@ -100,8 +109,18 @@ get_prompt_wraps <- function(prompt) {
 
 
 
-
-# Extract only prompt wraps and reorder them in order of operations
+#' Extract only prompt wraps and reorder them in order of operations
+#'
+#' This function extracts only prompt wraps from a prompt object and reorders them.
+#' The order of operations is as follows:
+#'   1. "Unspecified"
+#'   2. "Mode"
+#'   3. "Tool"
+#'
+#' @param prompt A prompt object
+#'
+#' @return A list of prompt wraps from the prompt, reordered in order of operations
+#' @export
 get_prompt_wraps_ordered <- function(prompt) {
   prompt <- prompt(prompt)
 
@@ -126,8 +145,15 @@ get_prompt_wraps_ordered <- function(prompt) {
 }
 
 
-# Construct prompt text
+
+#' Construct prompt text from a prompt object
+#'
+#' @param prompt A prompt object
+#'
+#' @return The prompt text constructed from the prompt object
+#' @export
 construct_prompt_text <- function(prompt) {
+  prompt <- prompt(prompt)
 
   prompt_text <- get_base_prompt(prompt)
 
@@ -141,8 +167,17 @@ construct_prompt_text <- function(prompt) {
   return(prompt_text)
 }
 
-# Get extractions and validations
+
+
+#' Get extractions and validations from a prompt
+#'
+#' @param prompt A prompt object
+#'
+#' @return A list with two lists: extractions and validations
+#' @export
 get_extractions_and_validations <- function(prompt) {
+  prompt <- prompt(prompt)
+
   extractions <- list()
   validations <- list()
   prompt_wraps <- get_prompt_wraps_ordered(prompt) |> rev() # In reverse order
