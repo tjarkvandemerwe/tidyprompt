@@ -27,8 +27,6 @@ Should return TRUE on successful validation, or a 'llm_feedback' object upon fai
 Should return the extracted object on successful extraction, or a 'llm_feedback' object upon failure.}
 
 \item{max_retries}{Maximum number of retries for this wrap's validation and extraction functions.}
-
-\item{modify_fn_args}{List of arguments to be passed to the modify_fn.}
 }
 \value{
 A prompt wrap object

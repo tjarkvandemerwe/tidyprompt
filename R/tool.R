@@ -211,9 +211,9 @@ add_tools <- function(prompt, tool_functions = list()) {
   # Add tool_functions as an attribute to the extraction
   attr(tool_extraction, "tool_functions") <- tool_functions
 
-  new_wrap <- create_prompt_wrap(
+  new_wrap <- prompt_wrap(
     type = "tool",
-    modify_fn = function(original_prompt_text, modify_fn_args) {
+    modify_fn = function(original_prompt_text) {
       new_prompt <- glue::glue(
         "{original_prompt_text}
 
@@ -224,7 +224,7 @@ add_tools <- function(prompt, tool_functions = list()) {
         The following functions are available:"
       )
 
-      for (tool_function in modify_fn_args$tool_functions) {
+      for (tool_function in tool_functions) {
         docs <- extract_function_docs(tool_function)
 
         new_prompt <- glue::glue(
@@ -255,10 +255,8 @@ add_tools <- function(prompt, tool_functions = list()) {
 
       return(new_prompt)
     },
-    modify_fn_args = list(tool_functions = tool_functions),
     extraction_functions = list(tool_extraction)
   )
 
-  prompt$append_prompt_wrap(new_wrap)
-  return(prompt)
+  append_prompt_wrap(prompt, new_wrap)
 }

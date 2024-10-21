@@ -17,19 +17,26 @@ answer_as_integer <- function(
     prompt,
     min = NULL,
     max = NULL,
-    instruction = "You must answer with only an integer (use no other characters)."
+    add_instruction_to_prompt = TRUE
 ) {
+  instruction <- "You must answer with only an integer (use no other characters)."
+
+  if (!is.null(min) && !is.null(max)) {
+    instruction <- paste(instruction, glue::glue("Enter an integer between {min} and {max}."))
+  } else if (!is.null(min)) {
+    instruction <- paste(instruction, glue::glue("Enter an integer greater than or equal to {min}."))
+  } else if (!is.null(max)) {
+    instruction <- paste(instruction, glue::glue("Enter an integer less than or equal to {max}."))
+  }
+
+
   # Define modification/extraction/validation functions:
   modify_fn <- function(original_prompt_text) {
-    if (!is.null(min) && !is.null(max)) {
-      instruction <- paste(instruction, glue::glue("Enter an integer between {min} and {max}."))
-    } else if (!is.null(min)) {
-      instruction <- paste(instruction, glue::glue("Enter an integer greater than or equal to {min}."))
-    } else if (!is.null(max)) {
-      instruction <- paste(instruction, glue::glue("Enter an integer less than or equal to {max}."))
+    if (!add_instruction_to_prompt) {
+      return(original_prompt_text)
     }
-    new_prompt_text <- glue::glue("{original_prompt_text}\n\n{instruction}")
-    return(new_prompt_text)
+
+    glue::glue("{original_prompt_text}\n\n{instruction}")
   }
 
   extraction_fn <- function(x) {
