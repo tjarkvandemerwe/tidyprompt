@@ -22,17 +22,23 @@ send_prompt <- function(
     extract_validate_mode = c("extraction_then_validation", "wrap_by_wrap")
 ) {
   ## 1 Validate arguments
+
   prompt <- prompt(prompt)
   extract_validate_mode <- match.arg(extract_validate_mode)
 
+
   ## 2 Retrieve prompt evaluation settings
-  # Retrieve llm provider (prioritizing function argument over prompt)
+
   if (is.null(llm_provider))
     llm_provider < prompt$llm_provider
   if (is.null(llm_provider))
     stop("No llm_provider provided")
 
-  # Retrieve extraction & validation functions (prioritizing function arguments over prompt)
+  if (is.null(system_prompt))
+    system_prompt <- prompt$system_prompt
+
+  # Retrieve extraction & validation functions
+  #   (prioritizing function arguments over prompt)
   if (
     length(extraction_functions) == 0 |
     length(validation_functions) == 0
@@ -43,17 +49,10 @@ send_prompt <- function(
   if (length(validation_functions) == 0)
     validation_functions <- extractions_validations$validations
 
-  # Retrieve max_retries (prioritizing function argument over prompt)
+  # TODO: retrieve max_retries
+  #   (prioritizing function argument over prompt)
   # if (is.null(max_retries))
-    # max_retries <- get_max_retries_from_prompt(prompt) # TODO: implement function
-
-  # Retrieve verbose setting (prioritizing function argument over prompt)
-  # if (is.null(verbose))
-    # verbose <- get_verbose_from_prompt(prompt) # TODO: implement function
-
-  # Retrieve system prompt
-  # if (is.null(system_prompt))
-  #   system_prompt <- get_system_prompt_from_prompt(prompt) # TODO: implement function
+  #   max_retries <- get_max_retries_from_prompt(prompt)
 
 
   ## 3 Chat_history & send_chat
