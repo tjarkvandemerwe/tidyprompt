@@ -1,0 +1,148 @@
+#' Methods to create and manipulate prompt objects
+#'
+#' @param input Input to prompt. If a character string is passed,
+#' a new prompt object will be created with that character string as the base prompt.
+#'
+#' @return A prompt object (or an error if an unsuitable input is provided)
+#' @export
+prompt <- function(input) {
+  UseMethod("prompt")
+}
+
+#' Default method to create a prompt object
+#'
+#' Is called when the input is not a character string or a prompt object.
+#'
+#' @param input Input to create_prompt
+#'
+#' @return An error message stating that input type is not suitable
+#' @exportS3Method prompt default
+prompt.default <- function(input) {
+  stop(paste0(
+    "Input (the base prompt) to prompt() must be a character string"
+  ))
+}
+
+#' Method to create a prompt object from a character string
+#'
+#' @param input Input to create_prompt; the base prompt
+#'
+#' @return A prompt object
+#' @exportS3Method prompt character
+prompt.character <- function(input) {
+  if (length(input) != 1)
+    stop("Input (the base prompt) must be length 1")
+
+  prompt <- list(base_prompt = input)
+  class(prompt) <- "prompt"
+
+  return(prompt)
+}
+
+
+#' Method to create a prompt object from prompt
+#'
+#' @param input Input to create_prompt; the base prompt
+#'
+#' @return A prompt object
+#' @exportS3Method prompt prompt
+prompt.prompt <- function(input) {
+  return(input)
+}
+
+
+#' Get base prompt from prompt
+#'
+#' @param prompt A prompt object
+#'
+#' @return The base prompt from the prompt
+#' @export
+get_base_prompt <- function(prompt) {
+  prompt <- prompt(prompt)
+
+  base_prompt <- prompt$base_prompt
+
+  return(base_prompt)
+}
+
+
+#' Get prompt wraps from prompt
+#'
+#' @param prompt A prompt object
+#'
+#' @return A list of prompt wraps from the prompt
+#' @export
+get_prompt_wraps <- function(prompt) {
+  classes <- lapply(prompt, class)
+  prompt_wraps <- prompt[classes == "prompt_wrap"]
+
+  return(prompt_wraps)
+}
+
+
+
+
+# Extract only prompt wraps and reorder them in order of operations
+get_prompt_wraps_ordered <- function(prompt) {
+  prompt <- prompt(prompt)
+
+  prompt_wraps <- get_prompt_wraps(prompt)
+
+  # Extract types from the prompt, defaulting to "unspecified" if type is NULL
+  types <- sapply(prompt_wraps, function(x) {
+    if (!is.null(x$type)) x$type else "unspecified"
+  })
+
+  # Reorder the prompt wraps:
+  # 1. Keep "unspecified" and other types at the top
+  # 2. Place "mode" below them
+  # 3. Place "tool" at the bottom
+  reordered_prompt_wraps <- c(
+    prompt_wraps[types != "mode" & types != "tool"],
+    prompt_wraps[types == "mode"],
+    prompt_wraps[types == "tool"]
+  )
+
+  return(reordered_prompt_wraps)
+}
+
+
+# Construct prompt text
+construct_prompt_text <- function(prompt) {
+
+  prompt_text <- get_base_prompt(prompt)
+
+  prompt_wraps <- get_prompt_wraps_ordered(prompt)
+
+  if (length(prompt_wraps) > 0) {
+    for (i in 1:length(prompt_wraps)) {
+      prompt_text <- prompt_wraps[[i]]$modify_fn(prompt_text)
+    }
+  }
+  return(prompt_text)
+}
+
+# Get extractions and validations
+get_extractions_and_validations <- function(prompt) {
+  extractions <- list()
+  validations <- list()
+  prompt_wraps <- get_prompt_wraps_ordered(prompt) |> rev() # In reverse order
+
+  if (length(prompt_wraps) == 0)
+    return(list(extractions = extractions, validations = validations))
+
+  for (i in 1:length(prompt_wraps)) {
+    if (length(prompt_wraps[[i]]$extraction_functions) > 0) {
+      for (j in 1:length(prompt_wraps[[i]]$extraction_functions)) {
+        extractions <- c(extractions, prompt_wraps[[i]]$extraction_functions[[j]])
+      }
+    }
+    if (length(prompt_wraps[[i]]$validation_functions) > 0) {
+      for (j in 1:length(prompt_wraps[[i]]$validation_functions)) {
+        validations <- c(validations, prompt_wraps[[i]]$validation_functions[[j]])
+      }
+    }
+  }
+
+  return(list(extractions = extractions, validations = validations))
+}

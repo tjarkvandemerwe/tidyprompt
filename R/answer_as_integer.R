@@ -16,11 +16,9 @@
 answer_as_integer <- function(
     prompt,
     min = NULL,
-    max = NULL
+    max = NULL,
+    instruction = "You must answer with only an integer (use no other characters)."
 ) {
-
-  instruction <- "You must answer with only an integer (use no other characters)."
-
   # Define modification/extraction/validation functions:
   modify_fn <- function(original_prompt_text) {
     if (!is.null(min) && !is.null(max)) {
@@ -56,15 +54,11 @@ answer_as_integer <- function(
     return(TRUE)
   }
 
-  # Create new wrap:
   new_wrap <- create_prompt_wrap(
-    modify_fn = .inject_env_vars(modify_fn),
-    extraction_functions = list(.inject_env_vars(extraction_fn)),
-    validation_functions = list(.inject_env_vars(validation_fn))
+    modify_fn = modify_fn,
+    extraction_functions = list(extraction_fn),
+    validation_functions = list(validation_fn)
   )
 
-  # Append wrap to prompt
-  prompt_list <- append_prompt_wrap(prompt, new_wrap)
-
-  return(prompt_list)
+  append_prompt_wrap(prompt, new_wrap)
 }

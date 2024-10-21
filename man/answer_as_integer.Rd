@@ -8,7 +8,7 @@ answer_as_integer(
   prompt,
   min = NULL,
   max = NULL,
-  add_instruction_to_prompt = TRUE
+  instruction = "You must answer with only an integer (use no other characters)."
 )
 }
 \arguments{
