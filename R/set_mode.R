@@ -5,7 +5,7 @@
 #' @param extract_from_finish_brackets A logical indicating whether the final answer
 #' should be extracted from the text inside the "FINISH[...]" brackets.
 #'
-#' @return A prompt list with the chain-of-thought mode added.
+#' @return A prompt with the chain-of-thought mode added.
 #' @export
 set_mode_chainofthought <- function(
     prompt,
@@ -80,12 +80,12 @@ set_mode_chainofthought <- function(
   # Create new wrap:
   new_wrap <- create_prompt_wrap(
     type = "mode",
-    modify_fn = .inject_env_vars(modify_fn),
-    extraction_functions = list(.inject_env_vars(extraction_fn))
+    modify_fn = modify_fn,
+    extraction_functions = list(extraction_fn)
   )
 
   # Append wrap to prompt
-  prompt_list <- append_prompt_wrap(prompt, new_wrap)
+  prompt <- append_prompt_wrap(prompt, new_wrap)
 
-  return(prompt_list)
+  return(prompt)
 }

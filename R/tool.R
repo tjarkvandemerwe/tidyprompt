@@ -186,7 +186,7 @@ tool_extraction <- function(llm_response, tool_functions) {
 #' @return ...
 #' @export
 add_tools <- function(prompt, tool_functions = list()) {
-  prompt_list <- create_prompt_list(prompt)
+  prompt <- prompt(prompt)
 
   # Check if tool_functions is single function, if so, convert to list
   if (length(tool_functions) == 1 && is.function(tool_functions))
@@ -259,6 +259,6 @@ add_tools <- function(prompt, tool_functions = list()) {
     extraction_functions = list(tool_extraction)
   )
 
-  prompt_list$append_prompt_wrap(new_wrap)
-  return(prompt_list)
+  prompt$append_prompt_wrap(new_wrap)
+  return(prompt)
 }

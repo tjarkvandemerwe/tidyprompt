@@ -9,10 +9,11 @@ if (FALSE) {
 
   ollama <- create_ollama_llm_provider()
 
-
   prompt <- "What is 2 + 2?" |>
     set_mode_chainofthought() |>
     answer_as_integer()
+
+  x <- environment(prompt$`prompt wrap 2`$modify_fn)
 
   prompt$get_extractions_and_validations()
 

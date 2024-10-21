@@ -5,10 +5,10 @@
 #' @param type
 #' Type of the prompt; can be "unspecified", "mode", or "tool".
 #'  This is used to determine the order the prompt wrappers when constructing the final prompt text.
-#'  Mode prompts and toolset prompts are placed at the bottom of the prompt list (toolset after mode).
+#'  Mode prompts and toolset prompts are placed at the bottom of the prompt (toolset after mode).
 #' @param modify_fn
 #' Function that modifies the prompt text; takes two arguments: original_prompt_text and modify_fn_args.
-#'  This function will be applied to the previous prompt text in the prompt list.
+#'  This function will be applied to the previous prompt text in the prompt.
 #' @param modify_fn_args
 #' List of arguments to be passed to the modify_fn.
 #' @param extraction_functions

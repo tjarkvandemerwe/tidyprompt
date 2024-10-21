@@ -14,7 +14,7 @@ or a list of prompt wraps.}
 should be extracted from the text inside the "FINISH\link{...}" brackets.}
 }
 \value{
-A prompt list with the chain-of-thought mode added.
+A prompt with the chain-of-thought mode added.
 }
 \description{
 Add chain-of-thought mode to a prompt
