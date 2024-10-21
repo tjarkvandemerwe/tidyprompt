@@ -28,7 +28,7 @@ send_prompt <- function(
   ## 2 Retrieve prompt evaluation settings
   # Retrieve llm provider (prioritizing function argument over prompt)
   if (is.null(llm_provider))
-    llm_provider < attr(prompt, "llm_provider")
+    llm_provider < prompt$llm_provider
   if (is.null(llm_provider))
     stop("No llm_provider provided")
 

@@ -6,7 +6,6 @@ options(tidyprompt.verbose = TRUE)
 ####  Code to test extractions/validations ####
 if (FALSE) {
 
-
   ollama <- create_ollama_llm_provider()
 
   prompt <- "What is 2 + 2?" |>
@@ -18,7 +17,6 @@ if (FALSE) {
 
   prompt |>
     send_prompt(ollama, verbose = TRUE)
-
 
   "Hi!" |>
     add_text("Can you please calculate what is 5+5? Write the answer out as a word") |>
