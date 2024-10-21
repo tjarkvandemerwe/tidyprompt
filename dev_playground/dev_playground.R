@@ -187,7 +187,7 @@ if (FALSE) {
   }
 
 
-  "Hi, what is the weather in Enschede?" |>
+  "Hi, what is the weather in Enschede? Give me Celcius degrees" |>
     add_tools(tool_functions = list(temperature_in_location)) |>
     send_prompt(llm_provider = create_ollama_llm_provider())
 
