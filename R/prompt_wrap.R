@@ -7,8 +7,6 @@
 #' @param modify_fn
 #' Function that modifies the prompt text; takes two arguments: original_prompt_text and modify_fn_args.
 #'  This function will be applied to the previous prompt text in the prompt.
-#' @param modify_fn_args
-#' List of arguments to be passed to the modify_fn.
 #' @param extraction_functions
 #' List of functions that extract content from the response to the prompt.
 #'  Should return the extracted object on successful extraction, or a 'llm_feedback' object upon failure.

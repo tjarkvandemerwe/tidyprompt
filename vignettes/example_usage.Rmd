@@ -176,20 +176,25 @@ You can thus create a function which takes a prompt and appends a new prompt wra
 Take a look at the source code for function `add_text`:
 
 ```{r echo=TRUE, eval=FALSE}
-add_text <- function(prompt, text, sep = "\n\n") {
-  prompt_list <- create_prompt_list(prompt)
+add_text <- function(
+    prompt,
+    text, position = c("after", "before"), sep = "\n\n"
+) {
+  position <- match.arg(position)
 
-  new_wrap <- create_prompt_wrap(
-    modify_fn = function(original_prompt_text, modify_fn_args) {
-      text <- modify_fn_args$text
-      sep <- modify_fn_args$sep
-      return(paste(original_prompt_text, text, sep = sep))
-    },
-    modify_fn_args = list(text = text, sep = sep)
+  modify_fn <- function(original_prompt_text) {
+    if (position == "after") {
+      paste(original_prompt_text, text, sep = sep)
+    } else {
+      paste(text, original_prompt_text, sep = sep)
+    }
+  }
+
+  new_wrap <- prompt_wrap(
+    modify_fn = modify_fn
   )
 
-  prompt_list$append_prompt_wrap(new_wrap)
-  return(prompt_list)
+  append_prompt_wrap(prompt, new_wrap)
 }
 ```
 
@@ -198,77 +203,60 @@ at the source code for function `answer_as_integer`:
 
 ```{r echo=TRUE, eval=FALSE}
 answer_as_integer <- function(
-    prompt, min = NULL, max = NULL, add_instruction_to_prompt = TRUE
+    prompt,
+    min = NULL,
+    max = NULL,
+    add_instruction_to_prompt = TRUE
 ) {
-  prompt_list <- create_prompt_list(prompt)
+  instruction <- "You must answer with only an integer (use no other characters)."
 
-  new_wrap <- create_prompt_wrap(
-    modify_fn = function(original_prompt_text, modify_fn_args) {
-      min <- modify_fn_args$min
-      max <- modify_fn_args$max
+  if (!is.null(min) && !is.null(max)) {
+    instruction <- paste(instruction, glue::glue("Enter an integer between {min} and {max}."))
+  } else if (!is.null(min)) {
+    instruction <- paste(instruction, glue::glue("Enter an integer greater than or equal to {min}."))
+  } else if (!is.null(max)) {
+    instruction <- paste(instruction, glue::glue("Enter an integer less than or equal to {max}."))
+  }
 
-      new_prompt_text <- original_prompt_text
 
-      if (modify_fn_args$add_instruction_to_prompt) {
-        new_prompt_text <- glue::glue(
-          "{new_prompt_text}
+  # Define modification/extraction/validation functions:
+  modify_fn <- function(original_prompt_text) {
+    if (!add_instruction_to_prompt) {
+      return(original_prompt_text)
+    }
 
-          You must answer with only an integer (use no other characters)."
-        )
+    glue::glue("{original_prompt_text}\n\n{instruction}")
+  }
 
-        if (!is.null(min) && !is.null(max)) {
-          new_prompt_text <- glue::glue(
-            "{new_prompt_text}
-            Enter an integer between {min} and {max}."
-          )
-        } else if (!is.null(min)) {
-          new_prompt_text <- glue::glue(
-            "{new_prompt_text}
-            Enter an integer greater than or equal to {min}."
-          )
-        } else if (!is.null(max)) {
-          new_prompt_text <- glue::glue(
-            "{new_prompt_text}
-            Enter an integer less than or equal to {max}."
-          )
-        }
-      }
+  extraction_fn <- function(x) {
+    extracted <- suppressWarnings(as.integer(x))
+    if (is.na(extracted)) {
+      return(create_llm_feedback(instruction))
+    }
+    return(extracted)
+  }
 
-      return(new_prompt_text)
-    },
+  validation_fn <- function(x) {
+    if (!is.null(min) && x < min) {
+      return(create_llm_feedback(glue::glue(
+        "The number should be greater than or equal to {min}."
+      )))
+    }
+    if (!is.null(max) && x > max) {
+      return(create_llm_feedback(glue::glue(
+        "The number should be less than or equal to {max}."
+      )))
+    }
+    return(TRUE)
+  }
 
-    modify_fn_args = list(min = min, max = max, add_instruction_to_prompt = add_instruction_to_prompt),
-
-    extraction_functions = list(
-      function(x) {
-        extracted <- suppressWarnings(as.integer(x))
-        if (is.na(extracted)) {
-          return(create_llm_feedback("You must answer with only an integer (use no other characters)."))
-        }
-        return(extracted)
-      }
-    ),
-
-    validation_functions = list(
-      function(x) {
-        if (!is.null(min) && x < min) {
-          return(create_llm_feedback(glue::glue(
-            "The number should be greater than or equal to {min}."
-          )))
-        }
-        if (!is.null(max) && x > max) {
-          return(create_llm_feedback(glue::glue(
-            "The number should be less than or equal to {max}."
-          )))
-        }
-
-        return(TRUE)
-      }
-    )
+  new_wrap <- prompt_wrap(
+    modify_fn = modify_fn,
+    extraction_functions = list(extraction_fn),
+    validation_functions = list(validation_fn)
   )
 
-  prompt_list$append_prompt_wrap(new_wrap)
-  return(prompt_list)
+  append_prompt_wrap(prompt, new_wrap)
 }
 ```
 

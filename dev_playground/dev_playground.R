@@ -11,7 +11,7 @@ if (FALSE) {
 
   prompt <- "What is 2 + 2?" |>
     set_mode_chainofthought() |>
-    answer_as_integer() |>
+    answer_as_integer(min = 0) |>
     add_text("hiii", position = "before")
 
   x <- environment(prompt$`prompt wrap 2`$modify_fn)
