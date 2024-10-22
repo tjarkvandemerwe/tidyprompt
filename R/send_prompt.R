@@ -57,18 +57,15 @@ send_prompt <- function(
 
   ## 3 Chat_history & send_chat
 
-  # Create internal chat_history
-  chat_history <- data.frame(
-    role = character(),
-    content = character()
-  )
-  if (!is.null(system_prompt)) {
-    chat_history <- chat_history |>
-      dplyr::bind_rows(data.frame(
-        role = "system",
-        content = system_prompt
-      ))
+  create_chat_df <- function(role = character(), content = character()) {
+    data.frame(role = role, content = content)
   }
+
+  # Create internal chat_history
+  chat_history <- create_chat_df()
+
+  if (!is.null(system_prompt))
+    chat_history <- create_chat_df("system", system_prompt)
 
   # Create internal function to send_chat to LLM-provider
   send_chat <- function(message) {
@@ -81,10 +78,7 @@ send_prompt <- function(
     }
 
     chat_history <<- chat_history |>
-      dplyr::bind_rows(data.frame(
-        role = "user",
-        content = message
-      ))
+      dplyr::bind_rows(create_chat_df("user", message))
 
     completion <- llm_provider$complete_chat(chat_history)
 
@@ -94,10 +88,7 @@ send_prompt <- function(
     }
 
     chat_history <<- chat_history |>
-      dplyr::bind_rows(data.frame(
-        role = completion$role,
-        content = completion$content
-      ))
+      dplyr::bind_rows(create_chat_df(completion$role, completion$content))
 
     return(invisible(completion$content))
   }
