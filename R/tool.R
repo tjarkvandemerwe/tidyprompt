@@ -241,7 +241,7 @@ add_tools <- function(prompt, tool_functions = list()) {
   }
 
   # Add tool_functions as an attribute to the extraction
-  attr(tool_extraction, "tool_functions") <- tool_functions
+  attr(extraction_fn, "tool_functions") <- tool_functions
 
   prompt_wrap(prompt, modify_fn, extraction_fn, type = "tool")
 }
