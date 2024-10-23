@@ -63,8 +63,8 @@ prompt_wrap.default <- function(prompt, ...) {
 #'
 #' @param prompt See prompt_wrap
 #' @param modify_fn See prompt_wrap
-#' @param validation_fn See prompt_wrap
 #' @param extraction_fn See prompt_wrap
+#' @param validation_fn See prompt_wrap
 #' @param max_retries See prompt_wrap
 #' @param type See prompt_wrap
 #'
@@ -72,8 +72,8 @@ prompt_wrap.default <- function(prompt, ...) {
 prompt_wrap_internal <- function(
     prompt,
     modify_fn = NULL,
-    validation_fn = NULL,
     extraction_fn = NULL,
+    validation_fn = NULL,
     max_retries = 10,
     type = c("unspecified", "mode", "tool")
 ) {
@@ -106,8 +106,8 @@ prompt_wrap_internal <- function(
     list(
       type = type,
       modify_fn = modify_fn,
-      validation_fn = validation_fn,
       extraction_fn = extraction_fn,
+      validation_fn = validation_fn,
       max_retries = max_retries
     ),
     class = "prompt_wrap"
