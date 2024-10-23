@@ -9,3 +9,5 @@ vignettes/example_usage_cache/*
 ^docs$
 ^pkgdown$
 ^\.github$
+^doc$
+^Meta$

@@ -6,3 +6,5 @@
 .quarto
 inst/doc
 README_cache/*
+/doc/
+/Meta/
