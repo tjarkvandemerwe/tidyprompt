@@ -63,29 +63,5 @@ set_mode_chainofthought <- function(
     return(extracted_response)
   }
 
-  validation_fn <- function(x) {
-    if (!is.null(min) && x < min) {
-      return(create_llm_feedback(glue::glue(
-        "The number should be greater than or equal to {min}."
-      )))
-    }
-    if (!is.null(max) && x > max) {
-      return(create_llm_feedback(glue::glue(
-        "The number should be less than or equal to {max}."
-      )))
-    }
-    return(TRUE)
-  }
-
-  # Create new wrap:
-  new_wrap <- prompt_wrap(
-    type = "mode",
-    modify_fn = modify_fn,
-    extraction_functions = list(extraction_fn)
-  )
-
-  # Append wrap to prompt
-  prompt <- append_prompt_wrap(prompt, new_wrap)
-
-  return(prompt)
+  prompt_wrap(prompt, modify_fn, extraction_fn, type = "mode")
 }

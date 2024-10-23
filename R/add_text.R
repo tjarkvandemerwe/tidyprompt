@@ -26,9 +26,5 @@ add_text <- function(
     }
   }
 
-  new_wrap <- prompt_wrap(
-    modify_fn = modify_fn
-  )
-
-  append_prompt_wrap(prompt, new_wrap)
+  prompt_wrap(prompt, modify_fn)
 }

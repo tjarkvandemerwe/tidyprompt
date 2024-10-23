@@ -60,11 +60,5 @@ answer_as_integer <- function(
     return(TRUE)
   }
 
-  new_wrap <- prompt_wrap(
-    modify_fn = modify_fn,
-    extraction_functions = list(extraction_fn),
-    validation_functions = list(validation_fn)
-  )
-
-  append_prompt_wrap(prompt, new_wrap)
+  prompt_wrap(prompt, extraction_fn, validation_fn)
 }

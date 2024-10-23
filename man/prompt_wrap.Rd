@@ -2,35 +2,42 @@
 % Please edit documentation in R/prompt_wrap.R
 \name{prompt_wrap}
 \alias{prompt_wrap}
-\title{Create a prompt wrap object}
+\title{Wrap a prompt with additional functionality}
 \usage{
 prompt_wrap(
-  type = c("unspecified", "mode", "tool"),
+  prompt,
   modify_fn = NULL,
-  validation_functions = list(),
-  extraction_functions = list(),
-  max_retries = 10
+  extraction_fn = NULL,
+  validation_fn = NULL,
+  max_retries = 10,
+  type = c("unspecified", "mode", "tool")
 )
 }
 \arguments{
-\item{type}{Type of the prompt; can be "unspecified", "mode", or "tool".
-This is used to determine the order the prompt wrappers when constructing the final prompt text.
-Mode prompts and toolset prompts are placed at the bottom of the prompt (toolset after mode).}
+\item{prompt}{A prompt object or a single string}
 
-\item{modify_fn}{Function that modifies the prompt text; takes two arguments: original_prompt_text and modify_fn_args.
-This function will be applied to the previous prompt text in the prompt.}
+\item{modify_fn}{A function that takes the previous prompt text and returns the new prompt text}
 
-\item{validation_functions}{List of functions that validate the (extracted) response to the prompt.
-Should return TRUE on successful validation, or a 'llm_feedback' object upon failure.}
+\item{extraction_fn}{A function that takes the LLM response and attempts to extract a value from it.
+Upon succesful extraction, the function should return the extracted value.
+If the extraction fails, the function should return a feedback message which will be sent
+back to the LLM (the feedback message should be of class 'llm_feedback').}
 
-\item{extraction_functions}{List of functions that extract content from the response to the prompt.
-Should return the extracted object on successful extraction, or a 'llm_feedback' object upon failure.}
+\item{validation_fn}{A function that takes the (extracted) LLM response and attempts to validate it.
+Upon succesful validation, the function should return TRUE.
+If the validation fails, the function should return a feedback message which will be sent
+back to the LLM (the feedback message should be of class 'llm_feedback').#'}
 
-\item{max_retries}{Maximum number of retries for this wrap's validation and extraction functions.}
+\item{max_retries}{The maximum number of retries allowed for this prompt wrap;
+each failure of extraction or validation will count as a retry.}
+
+\item{type}{The type of prompt wrap; one of 'unspecified', 'mode', or 'tool'.
+Types are used to determine the order in which prompt wraps are applied.
+Typically, tools are applied first, then modes, then unspecified wraps.}
 }
 \value{
-A prompt wrap object
+A prompt object with the new prompt wrap appended to it.
 }
 \description{
-Create a prompt wrap object
+Wrap a prompt with additional functionality
 }

@@ -12,6 +12,7 @@ The 'tidyprompt' package allows users to prompt and empower their large language
 Useful links:
 \itemize{
   \item \url{https://github.com/tjarkvandemerwe/tidyprompt}
+  \item \url{https://tjarkvandemerwe.github.io/tidyprompt/}
   \item Report bugs at \url{https://github.com/tjarkvandemerwe/tidyprompt/issues}
 }
 
