@@ -65,8 +65,10 @@
 create_llm_provider <- function(
     complete_chat_function, parameters = list()
 ) {
-  llm_provider <- list()
-  class(llm_provider) <- "llm_provider"
+  llm_provider <- structure(
+    list(),
+    class = "llm_provider"
+  )
 
   # Create a new environment for the llm_provider
   llm_provider_env <- new.env()

@@ -37,11 +37,13 @@ prompt.character <- function(input) {
   if (length(input) != 1)
     stop("Input (the base prompt) must be length 1")
 
-  prompt <- list(
-    base_prompt = input,
-    prompt_wraps = list()
+  prompt <- structure(
+    list(
+      base_prompt = input,
+      prompt_wraps = list()
+    ),
+    class = "prompt"
   )
-  class(prompt) <- "prompt"
 
   return(prompt)
 }
