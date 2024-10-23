@@ -190,16 +190,9 @@ get_extractions_and_validations <- function(prompt) {
     return(list(extractions = extractions, validations = validations))
 
   for (i in 1:length(prompt_wraps)) {
-    if (length(prompt_wraps[[i]]$extraction_functions) > 0) {
-      for (j in 1:length(prompt_wraps[[i]]$extraction_functions)) {
-        extractions <- c(extractions, prompt_wraps[[i]]$extraction_functions[[j]])
-      }
-    }
-    if (length(prompt_wraps[[i]]$validation_functions) > 0) {
-      for (j in 1:length(prompt_wraps[[i]]$validation_functions)) {
-        validations <- c(validations, prompt_wraps[[i]]$validation_functions[[j]])
-      }
-    }
+    wrap <- prompt_wraps[[i]]
+    extractions <- c(extractions, wrap$extraction_fn)
+    validations <- c(validations, wrap$validation_fn)
   }
 
   return(list(extractions = extractions, validations = validations))
