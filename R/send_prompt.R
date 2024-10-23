@@ -37,7 +37,7 @@ send_prompt <- function(
 
   # Add system prompt
   if (!is.null(prompt$system_prompt))
-    chat_history <- create_chat_df("system", system_prompt)
+    chat_history <- create_chat_df("system", prompt$system_prompt)
 
   # Create internal function to send_chat to the given LLM-provider
   send_chat <- function(message) {

@@ -25,43 +25,6 @@
 #' @return A new llm_provider object
 #'
 #' @export
-#'
-#' @examples
-#' # Below is an example of how to create a custom llm_provider using this function
-#' # (See also the source code for tidyprompt::create_openai_llm_provider
-#' #    and tidyprompt::create_ollama_llm_provider)
-#'
-#' # First create a wrapper around the generic function,
-#' #  providing your implementation to complete a chat
-#' create_custom_llm_provider <- function(parameters = list()) {
-#'  # Define a function to complete a chat
-#'  complete_chat <- function(chat_history) {
-#'    # Your implementation to complete a chat here, e.g., call an API
-#'    call_my_fake_api <- function(chat_history) {
-#'      message("Calling my fake API...")
-#'      message("Using fake model name: ", parameters$model)
-#'      message("Using fake API key: ", parameters$api_key)
-#'      message("And we are not passing chat_history to the fake API, but you should!")
-#'
-#'      return(list(role = "assistant", content = "Hi, this is a fake API response!"))
-#'    }
-#'
-#'    api_response <- call_my_fake_api(chat_history)
-#'    return(list(role = api_response$role, content = api_response$content))
-#'  }
-#'
-#'  # Create the llm_provider object using the generic function
-#'  create_llm_provider(
-#'    complete_chat_function = complete_chat,
-#'    parameters = parameters
-#'  )
-#' }
-#'
-#' # Then create and use an instance, like so:
-#' custom_llm <- create_custom_llm_provider(list(model = "my-llm-model", api_key = "my-api-key"))
-#' custom_llm$complete_chat("Hello!")
-#' custom_llm$set_parameters(list(model = "my-new-llm-model"))
-#' custom_llm$get_parameters()
 create_llm_provider <- function(
     complete_chat_function, parameters = list()
 ) {
@@ -129,11 +92,6 @@ create_llm_provider <- function(
 #' @return A new llm_provider object for use of the OpenAI API
 #'
 #' @export
-#'
-#' @examples
-#' oai <- create_openai_llm_provider(list(
-#'  model = "gpt-4o-mini", api_key = Sys.getenv("OPENAI_API_KEY")
-#' ))
 create_openai_llm_provider <- function(parameters = list(
   model = "gpt-4o-mini",
   api_key = Sys.getenv("OPENAI_API_KEY")
@@ -181,11 +139,6 @@ create_openai_llm_provider <- function(parameters = list(
 #'
 #' @return A new llm_provider object for use of the Ollama API
 #' @export
-#'
-#' @examples
-#' ollama <- create_ollama_llm_provider(list(
-#'   model = "llama3.1:8b", url = "http://localhost:11434/api/chat"
-#' ))
 create_ollama_llm_provider <- function(parameters = list(
   model = "llama3.1:8b",
   url = "http://localhost:11434/api/chat"

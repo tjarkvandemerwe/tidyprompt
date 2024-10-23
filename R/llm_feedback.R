@@ -10,17 +10,6 @@
 #'
 #' @return An object of class "llm_feedback" containing the feedback text.
 #' @export
-#'
-#' @examples
-#' create_llm_feedback("This is the feedback text")
-#'
-#' is_integer <- function(x) {
-#'  if (!is.integer(x)) {
-#'    return(create_llm_feedback("The input is not an integer"))
-#'  }
-#'  return(TRUE)
-#' }
-#'
 create_llm_feedback <- function(text) {
   return(structure(
     text,

@@ -373,23 +373,23 @@ the LLM handles the prompt, while verifying that the output is
 structured and valid (including retries with feedback to the LLM if it
 is not).</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>  <span class="st">&quot;Hi there!&quot;</span> <span class="sc">|&gt;</span></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>    <span class="fu">send_prompt</span>(ollama)</span></code></pre></div>
-<pre><code>## [1] &quot;How&#39;s your day going so far? Is there something I can help you with or would you like to chat?&quot;</code></pre>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>    <span class="fu">send_prompt</span>(ollama)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&gt; [1] &quot;It&#39;s nice to meet you. Is there something I can help you with or would you like to chat?&quot;</span></span></code></pre></div>
 <p><code>add_text</code> is a simple example of a prompt wrapper. It
 simply adds some text at the end of the base prompt.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>  <span class="st">&quot;Hi there!&quot;</span> <span class="sc">|&gt;</span></span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>    <span class="fu">add_text</span>(<span class="st">&quot;What is a large language model? Explain in 10 words.&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>    <span class="fu">send_prompt</span>(ollama)</span></code></pre></div>
-<pre><code>## [1] &quot;Advanced artificial intelligence system that processes and generates human-like written content.&quot;</code></pre>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>  <span class="st">&quot;Hi there!&quot;</span> <span class="sc">|&gt;</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>    <span class="fu">add_text</span>(<span class="st">&quot;What is a large language model? Explain in 10 words.&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>    <span class="fu">send_prompt</span>(ollama)</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Complex AI system processing and generating human-like written language outputs.&quot;</span></span></code></pre></div>
 <p>You can also construct the final prompt text, without sending it to
 an LLM provider.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>  <span class="st">&quot;Hi there!&quot;</span> <span class="sc">|&gt;</span></span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>    <span class="fu">add_text</span>(<span class="st">&quot;What is a large language model? Explain in 10 words.&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>    <span class="fu">construct_prompt_text</span>() <span class="sc">|&gt;</span></span>
-<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>    <span class="fu">cat</span>()</span></code></pre></div>
-<pre><code>## Hi there!
-## 
-## What is a large language model? Explain in 10 words.</code></pre>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>  <span class="st">&quot;Hi there!&quot;</span> <span class="sc">|&gt;</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>    <span class="fu">add_text</span>(<span class="st">&quot;What is a large language model? Explain in 10 words.&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>    <span class="fu">construct_prompt_text</span>() <span class="sc">|&gt;</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>    <span class="fu">cat</span>()</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="co">#&gt; Hi there!</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co">#&gt; What is a large language model? Explain in 10 words.</span></span></code></pre></div>
 </div>
 <div id="retrieving-output-in-a-specific-format" class="section level3">
 <h3>Retrieving output in a specific format</h3>
@@ -404,166 +404,180 @@ wrapper does more: it also will attempt to extract and validate the
 integer from the LLM’s response. If extraction or validation fails,
 feedback is sent back to the LLM, after which the LLM can retry
 answering the prompt.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>  <span class="st">&quot;What is 2 + 2?&quot;</span> <span class="sc">|&gt;</span></span>
-<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>    <span class="fu">answer_as_integer</span>() <span class="sc">|&gt;</span></span>
-<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>    <span class="fu">send_prompt</span>(ollama, <span class="at">verbose =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
-<pre><code>## --- Sending message to LLM-provider: ---</code></pre>
-<pre><code>## What is 2 + 2?
-## 
-## You must answer with only an integer (use no other characters).</code></pre>
-<pre><code>## --- Received response from LLM-provider: ---</code></pre>
-<pre><code>## 4</code></pre>
-<pre><code>## [1] 4</code></pre>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>  <span class="st">&quot;What is 2 + 2?&quot;</span> <span class="sc">|&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>    <span class="fu">answer_as_integer</span>() <span class="sc">|&gt;</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>    <span class="fu">send_prompt</span>(ollama, <span class="at">verbose =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">#&gt; --- Sending message to LLM-provider: ---</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">#&gt; What is 2 + 2?</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co">#&gt; You must answer with only an integer (use no other characters).</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co">#&gt; --- Received response from LLM-provider: ---</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co">#&gt; 4</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="co">#&gt; [1] 4</span></span></code></pre></div>
 <p>Below is an example of a prompt which will initially fail, but will
 succeed after a retry.</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>  <span class="st">&quot;What is 2 + 2?&quot;</span> <span class="sc">|&gt;</span></span>
-<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>    <span class="fu">add_text</span>(<span class="st">&quot;Please write out your reply in words, use no numbers.&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>    <span class="fu">answer_as_integer</span>(<span class="at">add_instruction_to_prompt =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
-<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a>    <span class="fu">send_prompt</span>(ollama, <span class="at">verbose =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
-<pre><code>## --- Sending message to LLM-provider: ---</code></pre>
-<pre><code>## What is 2 + 2?
-## 
-## Please write out your reply in words, use no numbers.</code></pre>
-<pre><code>## --- Received response from LLM-provider: ---</code></pre>
-<pre><code>## Two plus two equals four.</code></pre>
-<pre><code>## --- Sending message to LLM-provider: ---</code></pre>
-<pre><code>## You must answer with only an integer (use no other characters).</code></pre>
-<pre><code>## --- Received response from LLM-provider: ---</code></pre>
-<pre><code>## 4</code></pre>
-<pre><code>## [1] 4</code></pre>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>  <span class="st">&quot;What is 2 + 2?&quot;</span> <span class="sc">|&gt;</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>    <span class="fu">add_text</span>(<span class="st">&quot;Please write out your reply in words, use no numbers.&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>    <span class="fu">answer_as_integer</span>(<span class="at">add_instruction_to_prompt =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>    <span class="fu">send_prompt</span>(ollama, <span class="at">verbose =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co">#&gt; --- Sending message to LLM-provider: ---</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="co">#&gt; What is 2 + 2?</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="co">#&gt; Please write out your reply in words, use no numbers.</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="co">#&gt; --- Received response from LLM-provider: ---</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="co">#&gt; Four.</span></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="co">#&gt; --- Sending message to LLM-provider: ---</span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co">#&gt; You must answer with only an integer (use no other characters).</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="co">#&gt; --- Received response from LLM-provider: ---</span></span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a><span class="co">#&gt; 4</span></span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a><span class="co">#&gt; [1] 4</span></span></code></pre></div>
 </div>
 <div id="adding-a-reasoning-mode-to-the-llm" class="section level3">
 <h3>Adding a reasoning mode to the LLM</h3>
 <p>Prompt wrappers may also be used to add a reasoning mode to the LLM.
 It is hypothesized that this could improve the LLM’s performance on more
 complex tasks.</p>
-<p>For instance, function <code>set_mode_chainofthought</code> will add
-chain of thought reasoning mode to the LLM. This wraps the base prompt
-within a request for the LLM to reason step by step, asking it to
+<p>For instance, function <code>answer_by_chain_of_thought</code> will
+add chain of thought reasoning mode to the LLM. This wraps the base
+prompt within a request for the LLM to reason step by step, asking it to
 provide the final answer within ‘FINISH[<final answer here>]’. An
 extraction function then ensures only the final answer is returned.</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a>  <span class="st">&quot;What is 2 + 2?&quot;</span> <span class="sc">|&gt;</span></span>
-<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a>    <span class="fu">set_mode_chainofthought</span>() <span class="sc">|&gt;</span></span>
-<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a>    <span class="fu">answer_as_integer</span>() <span class="sc">|&gt;</span></span>
-<span id="cb25-4"><a href="#cb25-4" tabindex="-1"></a>    <span class="fu">send_prompt</span>(ollama, <span class="at">verbose =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
-<pre><code>## --- Sending message to LLM-provider: ---</code></pre>
-<pre><code>## You are given a user&#39;s prompt.
-## To answer the user&#39;s prompt, you need to think step by step to arrive at a final answer.
-## 
-## ----- START OF USER&#39;S PROMPT -----
-## What is 2 + 2?
-## ----- END OF USER&#39;S PROMPT -----
-## 
-## What are the steps you would take to answer the user&#39;s prompt?
-## Describe your thought process in the following format:
-##   &gt;&gt; step 1: &lt;step 1 description&gt;
-##   &gt;&gt; step 2: &lt;step 2 description&gt;
-##   (etc.)
-## 
-## When you are done, you must type:
-## FINISH[&lt;put here your final answer to the user&#39;s prompt&gt;]
-## 
-## Make sure your final answer follows the logical conclusion of your thought process.</code></pre>
-<pre><code>## --- Received response from LLM-provider: ---</code></pre>
-<pre><code>## &gt;&gt; step 1: Identify the mathematical operation required by the user&#39;s prompt.
-## The prompt is asking for a simple arithmetic calculation, so I need to determine what type of math operation is being performed.
-## 
-## &gt;&gt; step 2: Determine the specific math operation.
-## In this case, the prompt specifies &quot;addition&quot; using the plus sign (+) between two numbers (2 and 2).
-## 
-## &gt;&gt; step 3: Recall basic arithmetic facts for addition.
-## I know that adding two identical numbers together results in a product of 4.
-## 
-## &gt;&gt; step 4: Apply the basic arithmetic fact to the user&#39;s prompt.
-## Since I&#39;m adding 2 + 2, my thought process tells me to recall that 2 + 2 = 4.
-## 
-## FINISH[4]</code></pre>
-<pre><code>## [1] 4</code></pre>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>  <span class="st">&quot;What is 2 + 2?&quot;</span> <span class="sc">|&gt;</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>    <span class="fu">answer_by_chain_of_thought</span>() <span class="sc">|&gt;</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>    <span class="fu">answer_as_integer</span>() <span class="sc">|&gt;</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>    <span class="fu">send_prompt</span>(ollama, <span class="at">verbose =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="co">#&gt; --- Sending message to LLM-provider: ---</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="co">#&gt; You are given a user&#39;s prompt.</span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="co">#&gt; To answer the user&#39;s prompt, you need to think step by step to arrive at a final answer.</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="co">#&gt; ----- START OF USER&#39;S PROMPT -----</span></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="co">#&gt; What is 2 + 2?</span></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="co">#&gt; You must answer with only an integer (use no other characters).</span></span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="co">#&gt; ----- </span><span class="re">END</span><span class="co"> OF USER&#39;S PROMPT -----</span></span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a><span class="co">#&gt; What are the steps you would take to answer the user&#39;s prompt?</span></span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a><span class="co">#&gt; Describe your thought process in the following format:</span></span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a><span class="co">#&gt;   &gt;&gt; step 1: &lt;step 1 description&gt;</span></span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a><span class="co">#&gt;   &gt;&gt; step 2: &lt;step 2 description&gt;</span></span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a><span class="co">#&gt;   (etc.)</span></span>
+<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a><span class="co">#&gt; When you are done, you must type:</span></span>
+<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a><span class="co">#&gt; FINISH[&lt;put here your final answer to the user&#39;s prompt&gt;]</span></span>
+<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a><span class="co">#&gt; Make sure your final answer follows the logical conclusion of your thought process.</span></span>
+<span id="cb8-25"><a href="#cb8-25" tabindex="-1"></a><span class="co">#&gt; --- Received response from LLM-provider: ---</span></span>
+<span id="cb8-26"><a href="#cb8-26" tabindex="-1"></a><span class="co">#&gt; &gt;&gt; step 1: Recognize that the prompt is a simple arithmetic question.</span></span>
+<span id="cb8-27"><a href="#cb8-27" tabindex="-1"></a><span class="co">#&gt; I understand that I need to perform basic math to arrive at an answer.</span></span>
+<span id="cb8-28"><a href="#cb8-28" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-29"><a href="#cb8-29" tabindex="-1"></a><span class="co">#&gt; &gt;&gt; step 2: Identify the numbers and operation involved in the prompt.</span></span>
+<span id="cb8-30"><a href="#cb8-30" tabindex="-1"></a><span class="co">#&gt; The prompt asks for the sum of 2 and another number, which I notice is also 2. The operation is addition (+).</span></span>
+<span id="cb8-31"><a href="#cb8-31" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-32"><a href="#cb8-32" tabindex="-1"></a><span class="co">#&gt; &gt;&gt; step 3: Perform the arithmetic operation specified by the prompt.</span></span>
+<span id="cb8-33"><a href="#cb8-33" tabindex="-1"></a><span class="co">#&gt; To find the result of the addition, I need to add the two numbers together.</span></span>
+<span id="cb8-34"><a href="#cb8-34" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-35"><a href="#cb8-35" tabindex="-1"></a><span class="co">#&gt; &gt;&gt; step 4: Execute the calculation with the identified numbers.</span></span>
+<span id="cb8-36"><a href="#cb8-36" tabindex="-1"></a><span class="co">#&gt; Addition of 2 + 2 equals 4.</span></span>
+<span id="cb8-37"><a href="#cb8-37" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-38"><a href="#cb8-38" tabindex="-1"></a><span class="co">#&gt; FINISH[4]</span></span>
+<span id="cb8-39"><a href="#cb8-39" tabindex="-1"></a><span class="co">#&gt; [1] 4</span></span></code></pre></div>
 </div>
 <div id="giving-tools-to-the-llm-autonomous-function-calling" class="section level3">
 <h3>Giving tools to the LLM (autonomous function-calling)</h3>
 <p>With <code>tidyprompt</code>, you can define R functions and give the
 LLM the ability to call them. This enables the LLM to retrieve
 additional information or take other actions.</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a>  <span class="co"># Define a function that returns fake data about the temperature in a location</span></span>
-<span id="cb31-2"><a href="#cb31-2" tabindex="-1"></a>  temperature_in_location <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
-<span id="cb31-3"><a href="#cb31-3" tabindex="-1"></a>    <span class="at">location =</span> <span class="fu">c</span>(<span class="st">&quot;Amsterdam&quot;</span>, <span class="st">&quot;Utrecht&quot;</span>, <span class="st">&quot;Enschede&quot;</span>),</span>
-<span id="cb31-4"><a href="#cb31-4" tabindex="-1"></a>    <span class="at">unit =</span> <span class="fu">c</span>(<span class="st">&quot;Celcius&quot;</span>, <span class="st">&quot;Fahrenheit&quot;</span>)</span>
-<span id="cb31-5"><a href="#cb31-5" tabindex="-1"></a>  ) {</span>
-<span id="cb31-6"><a href="#cb31-6" tabindex="-1"></a>    <span class="co">#&#39; llm_tool::name temperature_in_location</span></span>
-<span id="cb31-7"><a href="#cb31-7" tabindex="-1"></a>    <span class="co">#&#39;</span></span>
-<span id="cb31-8"><a href="#cb31-8" tabindex="-1"></a>    <span class="co">#&#39; llm_tool::description Get the temperature in a location</span></span>
-<span id="cb31-9"><a href="#cb31-9" tabindex="-1"></a>    <span class="co">#&#39;</span></span>
-<span id="cb31-10"><a href="#cb31-10" tabindex="-1"></a>    <span class="co">#&#39; llm_tool::param location Location, must be one of: &quot;Amsterdam&quot;, &quot;Utrecht&quot;, &quot;Enschede&quot;</span></span>
-<span id="cb31-11"><a href="#cb31-11" tabindex="-1"></a>    <span class="co">#&#39; llm_tool::param unit Unit, must be one of: &quot;Celcius&quot;, &quot;Fahrenheit&quot;</span></span>
-<span id="cb31-12"><a href="#cb31-12" tabindex="-1"></a>    <span class="co">#&#39;</span></span>
-<span id="cb31-13"><a href="#cb31-13" tabindex="-1"></a>    <span class="co">#&#39; llm_tool::return The temperature in the specified location and unit</span></span>
-<span id="cb31-14"><a href="#cb31-14" tabindex="-1"></a>    <span class="co">#&#39;</span></span>
-<span id="cb31-15"><a href="#cb31-15" tabindex="-1"></a>    <span class="co">#&#39; llm_tool::example</span></span>
-<span id="cb31-16"><a href="#cb31-16" tabindex="-1"></a>    <span class="co">#&#39; temperature_in_location(&quot;Amsterdam&quot;, &quot;Fahrenheit&quot;)</span></span>
-<span id="cb31-17"><a href="#cb31-17" tabindex="-1"></a>    </span>
-<span id="cb31-18"><a href="#cb31-18" tabindex="-1"></a>    <span class="co"># As shown above, one can use docstring-like text to document the function.</span></span>
-<span id="cb31-19"><a href="#cb31-19" tabindex="-1"></a>    <span class="co">#   This will provide the LLM information on what the function does,</span></span>
-<span id="cb31-20"><a href="#cb31-20" tabindex="-1"></a>    <span class="co">#   and how it should be used.</span></span>
-<span id="cb31-21"><a href="#cb31-21" tabindex="-1"></a>    </span>
-<span id="cb31-22"><a href="#cb31-22" tabindex="-1"></a>    location <span class="ot">&lt;-</span> <span class="fu">match.arg</span>(location)</span>
-<span id="cb31-23"><a href="#cb31-23" tabindex="-1"></a>    unit <span class="ot">&lt;-</span> <span class="fu">match.arg</span>(unit)</span>
-<span id="cb31-24"><a href="#cb31-24" tabindex="-1"></a></span>
-<span id="cb31-25"><a href="#cb31-25" tabindex="-1"></a>    temperature_celcius <span class="ot">&lt;-</span> <span class="cf">switch</span>(</span>
-<span id="cb31-26"><a href="#cb31-26" tabindex="-1"></a>      location,</span>
-<span id="cb31-27"><a href="#cb31-27" tabindex="-1"></a>      <span class="st">&quot;Amsterdam&quot;</span> <span class="ot">=</span> <span class="fl">32.5</span>,</span>
-<span id="cb31-28"><a href="#cb31-28" tabindex="-1"></a>      <span class="st">&quot;Utrecht&quot;</span> <span class="ot">=</span> <span class="fl">19.8</span>,</span>
-<span id="cb31-29"><a href="#cb31-29" tabindex="-1"></a>      <span class="st">&quot;Enschede&quot;</span> <span class="ot">=</span> <span class="fl">22.7</span></span>
-<span id="cb31-30"><a href="#cb31-30" tabindex="-1"></a>    )</span>
-<span id="cb31-31"><a href="#cb31-31" tabindex="-1"></a></span>
-<span id="cb31-32"><a href="#cb31-32" tabindex="-1"></a>    <span class="cf">if</span> (unit <span class="sc">==</span> <span class="st">&quot;Celcius&quot;</span>) {</span>
-<span id="cb31-33"><a href="#cb31-33" tabindex="-1"></a>      <span class="fu">return</span>(temperature_celcius)</span>
-<span id="cb31-34"><a href="#cb31-34" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
-<span id="cb31-35"><a href="#cb31-35" tabindex="-1"></a>      <span class="fu">return</span>(temperature_celcius <span class="sc">*</span> <span class="dv">9</span><span class="sc">/</span><span class="dv">5</span> <span class="sc">+</span> <span class="dv">32</span>)</span>
-<span id="cb31-36"><a href="#cb31-36" tabindex="-1"></a>    }</span>
-<span id="cb31-37"><a href="#cb31-37" tabindex="-1"></a>  }</span>
-<span id="cb31-38"><a href="#cb31-38" tabindex="-1"></a></span>
-<span id="cb31-39"><a href="#cb31-39" tabindex="-1"></a>  <span class="co"># Ask the LLM a question which can be answered with the function</span></span>
-<span id="cb31-40"><a href="#cb31-40" tabindex="-1"></a>  <span class="st">&quot;Hi, what is the weather temperature in Enschede?&quot;</span> <span class="sc">|&gt;</span></span>
-<span id="cb31-41"><a href="#cb31-41" tabindex="-1"></a>    <span class="fu">add_text</span>(<span class="st">&quot;I want to know the Celcius degrees.&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb31-42"><a href="#cb31-42" tabindex="-1"></a>    <span class="fu">answer_as_integer</span>() <span class="sc">|&gt;</span></span>
-<span id="cb31-43"><a href="#cb31-43" tabindex="-1"></a>    <span class="fu">add_tools</span>(temperature_in_location) <span class="sc">|&gt;</span></span>
-<span id="cb31-44"><a href="#cb31-44" tabindex="-1"></a>    <span class="fu">send_prompt</span>(ollama, <span class="at">verbose =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
-<pre><code>## --- Sending message to LLM-provider: ---</code></pre>
-<pre><code>## Hi, what is the weather temperature in Enschede?
-## 
-## I want to know the Celcius degrees.
-## 
-## If you need more information, you can call functions to help you.
-## To call a function, type:
-##   FUNCTION[&lt;function name here&gt;](&lt;argument 1&gt;, &lt;argument 2&gt;, etc...)
-## 
-## The following functions are available:
-## 
-## function name: temperature_in_location
-## description: Get the temperature in a location
-## arguments:
-##     - location: Location, must be one of: &quot;Amsterdam&quot;, &quot;Utrecht&quot;, &quot;Enschede&quot;
-##     - unit: Unit, must be one of: &quot;Celcius&quot;, &quot;Fahrenheit&quot;
-## return value: The temperature in the specified location and unit
-## example usage: FUNCTION[temperature_in_location](&quot;Amsterdam&quot;, &quot;Fahrenheit&quot;)
-## 
-## After you call a function, wait until you receive more information.</code></pre>
-<pre><code>## --- Received response from LLM-provider: ---</code></pre>
-<pre><code>## To get the weather temperature in Enschede, I&#39;ll use the `temperature_in_location` function.
-## 
-## FUNCTION[temperature_in_location](&quot;Enschede&quot;, &quot;Celcius&quot;)</code></pre>
-<pre><code>## --- Sending message to LLM-provider: ---</code></pre>
-<pre><code>## function called: temperature_in_location
-## arguments used: Enschede, Celcius
-## result: 22.7</code></pre>
-<pre><code>## --- Received response from LLM-provider: ---</code></pre>
-<pre><code>## The current temperature in Enschede is 22.7°C! That&#39;s a nice warm day. I&#39;m glad we could use the `temperature_in_location` function to get that information. If you want to know the temperature somewhere else or in a different unit, just let me know!</code></pre>
-<pre><code>## --- Sending message to LLM-provider: ---</code></pre>
-<pre><code>## You must answer with only an integer (use no other characters).</code></pre>
-<pre><code>## --- Received response from LLM-provider: ---</code></pre>
-<pre><code>## 22</code></pre>
-<pre><code>## [1] 22</code></pre>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>  <span class="co"># Define a function that returns fake data about the temperature in a location</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>  temperature_in_location <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>    <span class="at">location =</span> <span class="fu">c</span>(<span class="st">&quot;Amsterdam&quot;</span>, <span class="st">&quot;Utrecht&quot;</span>, <span class="st">&quot;Enschede&quot;</span>),</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>    <span class="at">unit =</span> <span class="fu">c</span>(<span class="st">&quot;Celcius&quot;</span>, <span class="st">&quot;Fahrenheit&quot;</span>)</span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>  ) {</span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>    <span class="co">#&#39; llm_tool::name temperature_in_location</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>    <span class="co">#&#39;</span></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>    <span class="co">#&#39; llm_tool::description Get the temperature in a location</span></span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>    <span class="co">#&#39;</span></span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>    <span class="co">#&#39; llm_tool::param location Location, must be one of: &quot;Amsterdam&quot;, &quot;Utrecht&quot;, &quot;Enschede&quot;</span></span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>    <span class="co">#&#39; llm_tool::param unit Unit, must be one of: &quot;Celcius&quot;, &quot;Fahrenheit&quot;</span></span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a>    <span class="co">#&#39;</span></span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a>    <span class="co">#&#39; llm_tool::return The temperature in the specified location and unit</span></span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a>    <span class="co">#&#39;</span></span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a>    <span class="co">#&#39; llm_tool::example</span></span>
+<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a>    <span class="co">#&#39; temperature_in_location(&quot;Amsterdam&quot;, &quot;Fahrenheit&quot;)</span></span>
+<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a>    </span>
+<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a>    <span class="co"># As shown above, one can use docstring-like text to document the function.</span></span>
+<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a>    <span class="co">#   This will provide the LLM information on what the function does,</span></span>
+<span id="cb9-20"><a href="#cb9-20" tabindex="-1"></a>    <span class="co">#   and how it should be used.</span></span>
+<span id="cb9-21"><a href="#cb9-21" tabindex="-1"></a>    </span>
+<span id="cb9-22"><a href="#cb9-22" tabindex="-1"></a>    location <span class="ot">&lt;-</span> <span class="fu">match.arg</span>(location)</span>
+<span id="cb9-23"><a href="#cb9-23" tabindex="-1"></a>    unit <span class="ot">&lt;-</span> <span class="fu">match.arg</span>(unit)</span>
+<span id="cb9-24"><a href="#cb9-24" tabindex="-1"></a></span>
+<span id="cb9-25"><a href="#cb9-25" tabindex="-1"></a>    temperature_celcius <span class="ot">&lt;-</span> <span class="cf">switch</span>(</span>
+<span id="cb9-26"><a href="#cb9-26" tabindex="-1"></a>      location,</span>
+<span id="cb9-27"><a href="#cb9-27" tabindex="-1"></a>      <span class="st">&quot;Amsterdam&quot;</span> <span class="ot">=</span> <span class="fl">32.5</span>,</span>
+<span id="cb9-28"><a href="#cb9-28" tabindex="-1"></a>      <span class="st">&quot;Utrecht&quot;</span> <span class="ot">=</span> <span class="fl">19.8</span>,</span>
+<span id="cb9-29"><a href="#cb9-29" tabindex="-1"></a>      <span class="st">&quot;Enschede&quot;</span> <span class="ot">=</span> <span class="fl">22.7</span></span>
+<span id="cb9-30"><a href="#cb9-30" tabindex="-1"></a>    )</span>
+<span id="cb9-31"><a href="#cb9-31" tabindex="-1"></a></span>
+<span id="cb9-32"><a href="#cb9-32" tabindex="-1"></a>    <span class="cf">if</span> (unit <span class="sc">==</span> <span class="st">&quot;Celcius&quot;</span>) {</span>
+<span id="cb9-33"><a href="#cb9-33" tabindex="-1"></a>      <span class="fu">return</span>(temperature_celcius)</span>
+<span id="cb9-34"><a href="#cb9-34" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb9-35"><a href="#cb9-35" tabindex="-1"></a>      <span class="fu">return</span>(temperature_celcius <span class="sc">*</span> <span class="dv">9</span><span class="sc">/</span><span class="dv">5</span> <span class="sc">+</span> <span class="dv">32</span>)</span>
+<span id="cb9-36"><a href="#cb9-36" tabindex="-1"></a>    }</span>
+<span id="cb9-37"><a href="#cb9-37" tabindex="-1"></a>  }</span>
+<span id="cb9-38"><a href="#cb9-38" tabindex="-1"></a></span>
+<span id="cb9-39"><a href="#cb9-39" tabindex="-1"></a>  <span class="co"># Ask the LLM a question which can be answered with the function</span></span>
+<span id="cb9-40"><a href="#cb9-40" tabindex="-1"></a>  <span class="st">&quot;Hi, what is the weather temperature in Enschede?&quot;</span> <span class="sc">|&gt;</span></span>
+<span id="cb9-41"><a href="#cb9-41" tabindex="-1"></a>    <span class="fu">add_text</span>(<span class="st">&quot;I want to know the Celcius degrees.&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb9-42"><a href="#cb9-42" tabindex="-1"></a>    <span class="fu">answer_as_integer</span>() <span class="sc">|&gt;</span></span>
+<span id="cb9-43"><a href="#cb9-43" tabindex="-1"></a>    <span class="fu">add_tools</span>(temperature_in_location) <span class="sc">|&gt;</span></span>
+<span id="cb9-44"><a href="#cb9-44" tabindex="-1"></a>    <span class="fu">send_prompt</span>(ollama, <span class="at">verbose =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb9-45"><a href="#cb9-45" tabindex="-1"></a><span class="co">#&gt; --- Sending message to LLM-provider: ---</span></span>
+<span id="cb9-46"><a href="#cb9-46" tabindex="-1"></a><span class="co">#&gt; Hi, what is the weather temperature in Enschede?</span></span>
+<span id="cb9-47"><a href="#cb9-47" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-48"><a href="#cb9-48" tabindex="-1"></a><span class="co">#&gt; I want to know the Celcius degrees.</span></span>
+<span id="cb9-49"><a href="#cb9-49" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-50"><a href="#cb9-50" tabindex="-1"></a><span class="co">#&gt; You must answer with only an integer (use no other characters).</span></span>
+<span id="cb9-51"><a href="#cb9-51" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-52"><a href="#cb9-52" tabindex="-1"></a><span class="co">#&gt; If you need more information, you can call functions to help you.</span></span>
+<span id="cb9-53"><a href="#cb9-53" tabindex="-1"></a><span class="co">#&gt; To call a function, type:</span></span>
+<span id="cb9-54"><a href="#cb9-54" tabindex="-1"></a><span class="co">#&gt;   FUNCTION[&lt;function name here&gt;](&lt;argument 1&gt;, &lt;argument 2&gt;, etc...)</span></span>
+<span id="cb9-55"><a href="#cb9-55" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-56"><a href="#cb9-56" tabindex="-1"></a><span class="co">#&gt; The following functions are available:</span></span>
+<span id="cb9-57"><a href="#cb9-57" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-58"><a href="#cb9-58" tabindex="-1"></a><span class="co">#&gt; function name: temperature_in_location</span></span>
+<span id="cb9-59"><a href="#cb9-59" tabindex="-1"></a><span class="co">#&gt; description: Get the temperature in a location</span></span>
+<span id="cb9-60"><a href="#cb9-60" tabindex="-1"></a><span class="co">#&gt; arguments:</span></span>
+<span id="cb9-61"><a href="#cb9-61" tabindex="-1"></a><span class="co">#&gt;     - location: Location, must be one of: &quot;Amsterdam&quot;, &quot;Utrecht&quot;, &quot;Enschede&quot;</span></span>
+<span id="cb9-62"><a href="#cb9-62" tabindex="-1"></a><span class="co">#&gt;     - unit: Unit, must be one of: &quot;Celcius&quot;, &quot;Fahrenheit&quot;</span></span>
+<span id="cb9-63"><a href="#cb9-63" tabindex="-1"></a><span class="co">#&gt; return value: The temperature in the specified location and unit</span></span>
+<span id="cb9-64"><a href="#cb9-64" tabindex="-1"></a><span class="co">#&gt; example usage: FUNCTION[temperature_in_location](&quot;Amsterdam&quot;, &quot;Fahrenheit&quot;)</span></span>
+<span id="cb9-65"><a href="#cb9-65" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-66"><a href="#cb9-66" tabindex="-1"></a><span class="co">#&gt; After you call a function, wait until you receive more information.</span></span>
+<span id="cb9-67"><a href="#cb9-67" tabindex="-1"></a><span class="co">#&gt; --- Received response from LLM-provider: ---</span></span>
+<span id="cb9-68"><a href="#cb9-68" tabindex="-1"></a><span class="co">#&gt; You want me to call a function to get the current weather temperature.</span></span>
+<span id="cb9-69"><a href="#cb9-69" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-70"><a href="#cb9-70" tabindex="-1"></a><span class="co">#&gt; I&#39;ll use the available function `temperature_in_location` with arguments `&quot;Enschede&quot;` for the location and `&quot;Celcius&quot;` for the unit.</span></span>
+<span id="cb9-71"><a href="#cb9-71" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-72"><a href="#cb9-72" tabindex="-1"></a><span class="co">#&gt; Let&#39;s see what I get... </span></span>
+<span id="cb9-73"><a href="#cb9-73" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-74"><a href="#cb9-74" tabindex="-1"></a><span class="co">#&gt; FUNCTION[temperature_in_location](&quot;Enschede&quot;, &quot;Celcius&quot;)</span></span>
+<span id="cb9-75"><a href="#cb9-75" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-76"><a href="#cb9-76" tabindex="-1"></a><span class="co">#&gt; Please wait until you receive more information.</span></span>
+<span id="cb9-77"><a href="#cb9-77" tabindex="-1"></a><span class="co">#&gt; --- Sending message to LLM-provider: ---</span></span>
+<span id="cb9-78"><a href="#cb9-78" tabindex="-1"></a><span class="co">#&gt; function called: temperature_in_location</span></span>
+<span id="cb9-79"><a href="#cb9-79" tabindex="-1"></a><span class="co">#&gt; arguments used: Enschede, Celcius</span></span>
+<span id="cb9-80"><a href="#cb9-80" tabindex="-1"></a><span class="co">#&gt; result: 22.7</span></span>
+<span id="cb9-81"><a href="#cb9-81" tabindex="-1"></a><span class="co">#&gt; --- Received response from LLM-provider: ---</span></span>
+<span id="cb9-82"><a href="#cb9-82" tabindex="-1"></a><span class="co">#&gt; The current weather temperature in Enschede is:</span></span>
+<span id="cb9-83"><a href="#cb9-83" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-84"><a href="#cb9-84" tabindex="-1"></a><span class="co">#&gt; **22**</span></span>
+<span id="cb9-85"><a href="#cb9-85" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-86"><a href="#cb9-86" tabindex="-1"></a><span class="co">#&gt; (Thanks for the result!)</span></span>
+<span id="cb9-87"><a href="#cb9-87" tabindex="-1"></a><span class="co">#&gt; --- Sending message to LLM-provider: ---</span></span>
+<span id="cb9-88"><a href="#cb9-88" tabindex="-1"></a><span class="co">#&gt; You must answer with only an integer (use no other characters).</span></span>
+<span id="cb9-89"><a href="#cb9-89" tabindex="-1"></a><span class="co">#&gt; --- Received response from LLM-provider: ---</span></span>
+<span id="cb9-90"><a href="#cb9-90" tabindex="-1"></a><span class="co">#&gt; 22</span></span>
+<span id="cb9-91"><a href="#cb9-91" tabindex="-1"></a><span class="co">#&gt; [1] 22</span></span></code></pre></div>
 </div>
 <div id="creating-your-own-prompt-wrappers" class="section level3">
 <h3>Creating your own prompt wrappers</h3>
@@ -573,85 +587,85 @@ and a series of prompt wrappers.</p>
 prompt wrapper to it.</p>
 <p>Take a look at the source code for function
 <code>add_text</code>:</p>
-<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" tabindex="-1"></a>add_text <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
-<span id="cb45-2"><a href="#cb45-2" tabindex="-1"></a>    prompt,</span>
-<span id="cb45-3"><a href="#cb45-3" tabindex="-1"></a>    text, <span class="at">position =</span> <span class="fu">c</span>(<span class="st">&quot;after&quot;</span>, <span class="st">&quot;before&quot;</span>), <span class="at">sep =</span> <span class="st">&quot;</span><span class="sc">\n\n</span><span class="st">&quot;</span></span>
-<span id="cb45-4"><a href="#cb45-4" tabindex="-1"></a>) {</span>
-<span id="cb45-5"><a href="#cb45-5" tabindex="-1"></a>  position <span class="ot">&lt;-</span> <span class="fu">match.arg</span>(position)</span>
-<span id="cb45-6"><a href="#cb45-6" tabindex="-1"></a></span>
-<span id="cb45-7"><a href="#cb45-7" tabindex="-1"></a>  modify_fn <span class="ot">&lt;-</span> <span class="cf">function</span>(original_prompt_text) {</span>
-<span id="cb45-8"><a href="#cb45-8" tabindex="-1"></a>    <span class="cf">if</span> (position <span class="sc">==</span> <span class="st">&quot;after&quot;</span>) {</span>
-<span id="cb45-9"><a href="#cb45-9" tabindex="-1"></a>      <span class="fu">paste</span>(original_prompt_text, text, <span class="at">sep =</span> sep)</span>
-<span id="cb45-10"><a href="#cb45-10" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
-<span id="cb45-11"><a href="#cb45-11" tabindex="-1"></a>      <span class="fu">paste</span>(text, original_prompt_text, <span class="at">sep =</span> sep)</span>
-<span id="cb45-12"><a href="#cb45-12" tabindex="-1"></a>    }</span>
-<span id="cb45-13"><a href="#cb45-13" tabindex="-1"></a>  }</span>
-<span id="cb45-14"><a href="#cb45-14" tabindex="-1"></a></span>
-<span id="cb45-15"><a href="#cb45-15" tabindex="-1"></a>  new_wrap <span class="ot">&lt;-</span> <span class="fu">prompt_wrap</span>(</span>
-<span id="cb45-16"><a href="#cb45-16" tabindex="-1"></a>    <span class="at">modify_fn =</span> modify_fn</span>
-<span id="cb45-17"><a href="#cb45-17" tabindex="-1"></a>  )</span>
-<span id="cb45-18"><a href="#cb45-18" tabindex="-1"></a></span>
-<span id="cb45-19"><a href="#cb45-19" tabindex="-1"></a>  <span class="fu">append_prompt_wrap</span>(prompt, new_wrap)</span>
-<span id="cb45-20"><a href="#cb45-20" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>add_text <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>    prompt,</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>    text, <span class="at">position =</span> <span class="fu">c</span>(<span class="st">&quot;after&quot;</span>, <span class="st">&quot;before&quot;</span>), <span class="at">sep =</span> <span class="st">&quot;</span><span class="sc">\n\n</span><span class="st">&quot;</span></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>) {</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>  position <span class="ot">&lt;-</span> <span class="fu">match.arg</span>(position)</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>  modify_fn <span class="ot">&lt;-</span> <span class="cf">function</span>(original_prompt_text) {</span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a>    <span class="cf">if</span> (position <span class="sc">==</span> <span class="st">&quot;after&quot;</span>) {</span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a>      <span class="fu">paste</span>(original_prompt_text, text, <span class="at">sep =</span> sep)</span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a>      <span class="fu">paste</span>(text, original_prompt_text, <span class="at">sep =</span> sep)</span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a>    }</span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a>  }</span>
+<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a></span>
+<span id="cb10-15"><a href="#cb10-15" tabindex="-1"></a>  new_wrap <span class="ot">&lt;-</span> <span class="fu">prompt_wrap</span>(</span>
+<span id="cb10-16"><a href="#cb10-16" tabindex="-1"></a>    <span class="at">modify_fn =</span> modify_fn</span>
+<span id="cb10-17"><a href="#cb10-17" tabindex="-1"></a>  )</span>
+<span id="cb10-18"><a href="#cb10-18" tabindex="-1"></a></span>
+<span id="cb10-19"><a href="#cb10-19" tabindex="-1"></a>  <span class="fu">append_prompt_wrap</span>(prompt, new_wrap)</span>
+<span id="cb10-20"><a href="#cb10-20" tabindex="-1"></a>}</span></code></pre></div>
 <p>More complex prompt wrappers may also add extraction and validation
 functions. Take a look at the source code for function
 <code>answer_as_integer</code>:</p>
-<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" tabindex="-1"></a>answer_as_integer <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
-<span id="cb46-2"><a href="#cb46-2" tabindex="-1"></a>    prompt,</span>
-<span id="cb46-3"><a href="#cb46-3" tabindex="-1"></a>    <span class="at">min =</span> <span class="cn">NULL</span>,</span>
-<span id="cb46-4"><a href="#cb46-4" tabindex="-1"></a>    <span class="at">max =</span> <span class="cn">NULL</span>,</span>
-<span id="cb46-5"><a href="#cb46-5" tabindex="-1"></a>    <span class="at">add_instruction_to_prompt =</span> <span class="cn">TRUE</span></span>
-<span id="cb46-6"><a href="#cb46-6" tabindex="-1"></a>) {</span>
-<span id="cb46-7"><a href="#cb46-7" tabindex="-1"></a>  instruction <span class="ot">&lt;-</span> <span class="st">&quot;You must answer with only an integer (use no other characters).&quot;</span></span>
-<span id="cb46-8"><a href="#cb46-8" tabindex="-1"></a></span>
-<span id="cb46-9"><a href="#cb46-9" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(min) <span class="sc">&amp;&amp;</span> <span class="sc">!</span><span class="fu">is.null</span>(max)) {</span>
-<span id="cb46-10"><a href="#cb46-10" tabindex="-1"></a>    instruction <span class="ot">&lt;-</span> <span class="fu">paste</span>(instruction, glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">&quot;Enter an integer between {min} and {max}.&quot;</span>))</span>
-<span id="cb46-11"><a href="#cb46-11" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(min)) {</span>
-<span id="cb46-12"><a href="#cb46-12" tabindex="-1"></a>    instruction <span class="ot">&lt;-</span> <span class="fu">paste</span>(instruction, glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">&quot;Enter an integer greater than or equal to {min}.&quot;</span>))</span>
-<span id="cb46-13"><a href="#cb46-13" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(max)) {</span>
-<span id="cb46-14"><a href="#cb46-14" tabindex="-1"></a>    instruction <span class="ot">&lt;-</span> <span class="fu">paste</span>(instruction, glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">&quot;Enter an integer less than or equal to {max}.&quot;</span>))</span>
-<span id="cb46-15"><a href="#cb46-15" tabindex="-1"></a>  }</span>
-<span id="cb46-16"><a href="#cb46-16" tabindex="-1"></a></span>
-<span id="cb46-17"><a href="#cb46-17" tabindex="-1"></a></span>
-<span id="cb46-18"><a href="#cb46-18" tabindex="-1"></a>  <span class="co"># Define modification/extraction/validation functions:</span></span>
-<span id="cb46-19"><a href="#cb46-19" tabindex="-1"></a>  modify_fn <span class="ot">&lt;-</span> <span class="cf">function</span>(original_prompt_text) {</span>
-<span id="cb46-20"><a href="#cb46-20" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span>add_instruction_to_prompt) {</span>
-<span id="cb46-21"><a href="#cb46-21" tabindex="-1"></a>      <span class="fu">return</span>(original_prompt_text)</span>
-<span id="cb46-22"><a href="#cb46-22" tabindex="-1"></a>    }</span>
-<span id="cb46-23"><a href="#cb46-23" tabindex="-1"></a></span>
-<span id="cb46-24"><a href="#cb46-24" tabindex="-1"></a>    glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">&quot;{original_prompt_text}</span><span class="sc">\n\n</span><span class="st">{instruction}&quot;</span>)</span>
-<span id="cb46-25"><a href="#cb46-25" tabindex="-1"></a>  }</span>
-<span id="cb46-26"><a href="#cb46-26" tabindex="-1"></a></span>
-<span id="cb46-27"><a href="#cb46-27" tabindex="-1"></a>  extraction_fn <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
-<span id="cb46-28"><a href="#cb46-28" tabindex="-1"></a>    extracted <span class="ot">&lt;-</span> <span class="fu">suppressWarnings</span>(<span class="fu">as.integer</span>(x))</span>
-<span id="cb46-29"><a href="#cb46-29" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">is.na</span>(extracted)) {</span>
-<span id="cb46-30"><a href="#cb46-30" tabindex="-1"></a>      <span class="fu">return</span>(<span class="fu">create_llm_feedback</span>(instruction))</span>
-<span id="cb46-31"><a href="#cb46-31" tabindex="-1"></a>    }</span>
-<span id="cb46-32"><a href="#cb46-32" tabindex="-1"></a>    <span class="fu">return</span>(extracted)</span>
-<span id="cb46-33"><a href="#cb46-33" tabindex="-1"></a>  }</span>
-<span id="cb46-34"><a href="#cb46-34" tabindex="-1"></a></span>
-<span id="cb46-35"><a href="#cb46-35" tabindex="-1"></a>  validation_fn <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
-<span id="cb46-36"><a href="#cb46-36" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(min) <span class="sc">&amp;&amp;</span> x <span class="sc">&lt;</span> min) {</span>
-<span id="cb46-37"><a href="#cb46-37" tabindex="-1"></a>      <span class="fu">return</span>(<span class="fu">create_llm_feedback</span>(glue<span class="sc">::</span><span class="fu">glue</span>(</span>
-<span id="cb46-38"><a href="#cb46-38" tabindex="-1"></a>        <span class="st">&quot;The number should be greater than or equal to {min}.&quot;</span></span>
-<span id="cb46-39"><a href="#cb46-39" tabindex="-1"></a>      )))</span>
-<span id="cb46-40"><a href="#cb46-40" tabindex="-1"></a>    }</span>
-<span id="cb46-41"><a href="#cb46-41" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(max) <span class="sc">&amp;&amp;</span> x <span class="sc">&gt;</span> max) {</span>
-<span id="cb46-42"><a href="#cb46-42" tabindex="-1"></a>      <span class="fu">return</span>(<span class="fu">create_llm_feedback</span>(glue<span class="sc">::</span><span class="fu">glue</span>(</span>
-<span id="cb46-43"><a href="#cb46-43" tabindex="-1"></a>        <span class="st">&quot;The number should be less than or equal to {max}.&quot;</span></span>
-<span id="cb46-44"><a href="#cb46-44" tabindex="-1"></a>      )))</span>
-<span id="cb46-45"><a href="#cb46-45" tabindex="-1"></a>    }</span>
-<span id="cb46-46"><a href="#cb46-46" tabindex="-1"></a>    <span class="fu">return</span>(<span class="cn">TRUE</span>)</span>
-<span id="cb46-47"><a href="#cb46-47" tabindex="-1"></a>  }</span>
-<span id="cb46-48"><a href="#cb46-48" tabindex="-1"></a></span>
-<span id="cb46-49"><a href="#cb46-49" tabindex="-1"></a>  new_wrap <span class="ot">&lt;-</span> <span class="fu">prompt_wrap</span>(</span>
-<span id="cb46-50"><a href="#cb46-50" tabindex="-1"></a>    <span class="at">modify_fn =</span> modify_fn,</span>
-<span id="cb46-51"><a href="#cb46-51" tabindex="-1"></a>    <span class="at">extraction_functions =</span> <span class="fu">list</span>(extraction_fn),</span>
-<span id="cb46-52"><a href="#cb46-52" tabindex="-1"></a>    <span class="at">validation_functions =</span> <span class="fu">list</span>(validation_fn)</span>
-<span id="cb46-53"><a href="#cb46-53" tabindex="-1"></a>  )</span>
-<span id="cb46-54"><a href="#cb46-54" tabindex="-1"></a></span>
-<span id="cb46-55"><a href="#cb46-55" tabindex="-1"></a>  <span class="fu">append_prompt_wrap</span>(prompt, new_wrap)</span>
-<span id="cb46-56"><a href="#cb46-56" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>answer_as_integer <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>    prompt,</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>    <span class="at">min =</span> <span class="cn">NULL</span>,</span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>    <span class="at">max =</span> <span class="cn">NULL</span>,</span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>    <span class="at">add_instruction_to_prompt =</span> <span class="cn">TRUE</span></span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>) {</span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a>  instruction <span class="ot">&lt;-</span> <span class="st">&quot;You must answer with only an integer (use no other characters).&quot;</span></span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(min) <span class="sc">&amp;&amp;</span> <span class="sc">!</span><span class="fu">is.null</span>(max)) {</span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a>    instruction <span class="ot">&lt;-</span> <span class="fu">paste</span>(instruction, glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">&quot;Enter an integer between {min} and {max}.&quot;</span>))</span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(min)) {</span>
+<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a>    instruction <span class="ot">&lt;-</span> <span class="fu">paste</span>(instruction, glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">&quot;Enter an integer greater than or equal to {min}.&quot;</span>))</span>
+<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(max)) {</span>
+<span id="cb11-14"><a href="#cb11-14" tabindex="-1"></a>    instruction <span class="ot">&lt;-</span> <span class="fu">paste</span>(instruction, glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">&quot;Enter an integer less than or equal to {max}.&quot;</span>))</span>
+<span id="cb11-15"><a href="#cb11-15" tabindex="-1"></a>  }</span>
+<span id="cb11-16"><a href="#cb11-16" tabindex="-1"></a></span>
+<span id="cb11-17"><a href="#cb11-17" tabindex="-1"></a></span>
+<span id="cb11-18"><a href="#cb11-18" tabindex="-1"></a>  <span class="co"># Define modification/extraction/validation functions:</span></span>
+<span id="cb11-19"><a href="#cb11-19" tabindex="-1"></a>  modify_fn <span class="ot">&lt;-</span> <span class="cf">function</span>(original_prompt_text) {</span>
+<span id="cb11-20"><a href="#cb11-20" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span>add_instruction_to_prompt) {</span>
+<span id="cb11-21"><a href="#cb11-21" tabindex="-1"></a>      <span class="fu">return</span>(original_prompt_text)</span>
+<span id="cb11-22"><a href="#cb11-22" tabindex="-1"></a>    }</span>
+<span id="cb11-23"><a href="#cb11-23" tabindex="-1"></a></span>
+<span id="cb11-24"><a href="#cb11-24" tabindex="-1"></a>    glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">&quot;{original_prompt_text}</span><span class="sc">\n\n</span><span class="st">{instruction}&quot;</span>)</span>
+<span id="cb11-25"><a href="#cb11-25" tabindex="-1"></a>  }</span>
+<span id="cb11-26"><a href="#cb11-26" tabindex="-1"></a></span>
+<span id="cb11-27"><a href="#cb11-27" tabindex="-1"></a>  extraction_fn <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb11-28"><a href="#cb11-28" tabindex="-1"></a>    extracted <span class="ot">&lt;-</span> <span class="fu">suppressWarnings</span>(<span class="fu">as.integer</span>(x))</span>
+<span id="cb11-29"><a href="#cb11-29" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">is.na</span>(extracted)) {</span>
+<span id="cb11-30"><a href="#cb11-30" tabindex="-1"></a>      <span class="fu">return</span>(<span class="fu">create_llm_feedback</span>(instruction))</span>
+<span id="cb11-31"><a href="#cb11-31" tabindex="-1"></a>    }</span>
+<span id="cb11-32"><a href="#cb11-32" tabindex="-1"></a>    <span class="fu">return</span>(extracted)</span>
+<span id="cb11-33"><a href="#cb11-33" tabindex="-1"></a>  }</span>
+<span id="cb11-34"><a href="#cb11-34" tabindex="-1"></a></span>
+<span id="cb11-35"><a href="#cb11-35" tabindex="-1"></a>  validation_fn <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb11-36"><a href="#cb11-36" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(min) <span class="sc">&amp;&amp;</span> x <span class="sc">&lt;</span> min) {</span>
+<span id="cb11-37"><a href="#cb11-37" tabindex="-1"></a>      <span class="fu">return</span>(<span class="fu">create_llm_feedback</span>(glue<span class="sc">::</span><span class="fu">glue</span>(</span>
+<span id="cb11-38"><a href="#cb11-38" tabindex="-1"></a>        <span class="st">&quot;The number should be greater than or equal to {min}.&quot;</span></span>
+<span id="cb11-39"><a href="#cb11-39" tabindex="-1"></a>      )))</span>
+<span id="cb11-40"><a href="#cb11-40" tabindex="-1"></a>    }</span>
+<span id="cb11-41"><a href="#cb11-41" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(max) <span class="sc">&amp;&amp;</span> x <span class="sc">&gt;</span> max) {</span>
+<span id="cb11-42"><a href="#cb11-42" tabindex="-1"></a>      <span class="fu">return</span>(<span class="fu">create_llm_feedback</span>(glue<span class="sc">::</span><span class="fu">glue</span>(</span>
+<span id="cb11-43"><a href="#cb11-43" tabindex="-1"></a>        <span class="st">&quot;The number should be less than or equal to {max}.&quot;</span></span>
+<span id="cb11-44"><a href="#cb11-44" tabindex="-1"></a>      )))</span>
+<span id="cb11-45"><a href="#cb11-45" tabindex="-1"></a>    }</span>
+<span id="cb11-46"><a href="#cb11-46" tabindex="-1"></a>    <span class="fu">return</span>(<span class="cn">TRUE</span>)</span>
+<span id="cb11-47"><a href="#cb11-47" tabindex="-1"></a>  }</span>
+<span id="cb11-48"><a href="#cb11-48" tabindex="-1"></a></span>
+<span id="cb11-49"><a href="#cb11-49" tabindex="-1"></a>  new_wrap <span class="ot">&lt;-</span> <span class="fu">prompt_wrap</span>(</span>
+<span id="cb11-50"><a href="#cb11-50" tabindex="-1"></a>    <span class="at">modify_fn =</span> modify_fn,</span>
+<span id="cb11-51"><a href="#cb11-51" tabindex="-1"></a>    <span class="at">extraction_functions =</span> <span class="fu">list</span>(extraction_fn),</span>
+<span id="cb11-52"><a href="#cb11-52" tabindex="-1"></a>    <span class="at">validation_functions =</span> <span class="fu">list</span>(validation_fn)</span>
+<span id="cb11-53"><a href="#cb11-53" tabindex="-1"></a>  )</span>
+<span id="cb11-54"><a href="#cb11-54" tabindex="-1"></a></span>
+<span id="cb11-55"><a href="#cb11-55" tabindex="-1"></a>  <span class="fu">append_prompt_wrap</span>(prompt, new_wrap)</span>
+<span id="cb11-56"><a href="#cb11-56" tabindex="-1"></a>}</span></code></pre></div>
 <p>They key difference between an extraction and validation function is
 that an extraction function alters the LLM’s response and passes on the
 altered response to next extraction and/or validation functions, and
@@ -664,7 +678,7 @@ the documentation of the <code>prompt_wrap</code> class creator
 function: <code>create_prompt_wrap</code>. For examples of prompt
 wrapper functions, see, for instance the documentation and source code
 of <code>add_text</code>, <code>answer_as_integer</code>,
-<code>set_mode_chainofthought</code>, and <code>add_tools</code>.</p>
+<code>answer_by_chain_of_thought</code>, and <code>add_tools</code>.</p>
 </div>
 
 

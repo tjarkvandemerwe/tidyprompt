@@ -29,21 +29,3 @@ This function validates the chat history, ensuring that it is a dataframe
 that matches the expected format. If a single message is provided as a
 character string, it will be turned into a valid chat history dataframe.
 }
-\examples{
-# Valid (the input object will be returned as is):
-validate_chat_history(data.frame(
-  role = c("user", "assistant", "user"),
-  content = c("Hello", "Hi", "How are you?")
-))
-
-# A single message will be turned into a valid chat_history dataframe:
-validate_chat_history("Hello")
-
-# Not valid (last message is not from the user); an error will be thrown:
-if (FALSE) {
-  validate_chat_history(data.frame(
-    role = c("user", "assistant"),
-    content = c("Hello", "Hi")
-  ))
-}
-}

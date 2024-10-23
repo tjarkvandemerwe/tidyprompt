@@ -20,24 +20,6 @@
 #' If not valid, an error will be thrown and nothing will be returned.
 #'
 #' @export
-#'
-#' @examples
-#' # Valid (the input object will be returned as is):
-#' validate_chat_history(data.frame(
-#'   role = c("user", "assistant", "user"),
-#'   content = c("Hello", "Hi", "How are you?")
-#' ))
-#'
-#' # A single message will be turned into a valid chat_history dataframe:
-#' validate_chat_history("Hello")
-#'
-#' # Not valid (last message is not from the user); an error will be thrown:
-#' if (FALSE) {
-#'   validate_chat_history(data.frame(
-#'     role = c("user", "assistant"),
-#'     content = c("Hello", "Hi")
-#'   ))
-#' }
 validate_chat_history <- function(chat_history, last_message_from_user = FALSE) {
   input_should_be <- paste0(
     "The input for chat_history must be a dataframe with 'role' and 'content' columns,",

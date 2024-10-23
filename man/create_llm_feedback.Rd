@@ -19,14 +19,3 @@ does not succesfully pass an extractor or validator function.
 The extractor or validator function should then return this object
 with the feedback text that should be sent to the LLM.
 }
-\examples{
-create_llm_feedback("This is the feedback text")
-
-is_integer <- function(x) {
- if (!is.integer(x)) {
-   return(create_llm_feedback("The input is not an integer"))
- }
- return(TRUE)
-}
-
-}

@@ -23,8 +23,3 @@ A new llm_provider object for use of the OpenAI API
 \description{
 This function creates a new llm_provider that interacts with the Open AI API
 }
-\examples{
-oai <- create_openai_llm_provider(list(
- model = "gpt-4o-mini", api_key = Sys.getenv("OPENAI_API_KEY")
-))
-}
