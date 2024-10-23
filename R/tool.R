@@ -121,63 +121,6 @@ extract_function_docs <- function(func) {
   ))
 }
 
-#' Extraction function for LLM function calling
-#'
-#' @param llm_response LLM response text to parse for a function call
-#' @param tool_functions List of R functions that can be called by the LLM;
-#' should have internal docstring-like documentation with 'llm_tool::' tags
-#'
-#' @return If a tool is called: a character string with the result of the function call or an error message.
-#' If no tool is called: the original LLM response.
-#' @export
-tool_extraction <- function(llm_response, tool_functions) {
-  # Check if the response contains a function call
-  function_call <- stringr::str_match(llm_response, "FUNCTION\\[(.*?)\\]\\((.*?)\\)")
-
-  # If no function call is found, return the response
-  if (is.na(function_call[1, 1]) || nrow(function_call) == 0) {
-    return(llm_response)
-  }
-
-  # Extract the function name and arguments
-  function_name <- function_call[2]
-  arguments <- function_call[3]
-
-  # Clean up the arguments by removing quotes and splitting them
-  arguments_list <- strsplit(gsub("\"", "", arguments), ",\\s*")[[1]]
-
-  # Find the function in the list of tool functions
-  tool_function <- tool_functions[[function_name]]
-
-  # If the function is not found, return an error message
-  if (is.null(tool_function)) {
-    return(create_llm_feedback(glue::glue("Error: Function '{function_name}' not found.")))
-  }
-
-  # Call the tool function with the arguments and capture errors
-  error <- FALSE
-  result <- tryCatch({
-    # Call the tool function with the arguments
-    do.call(tool_function, as.list(arguments_list))
-  }, error = function(e) {
-    error <- TRUE
-    # Capture the error message
-    glue::glue("Error: {e$message}")
-  })
-
-  if (!error) {
-    # Create some context around the result
-    result <- glue::glue(
-      "function called: {function_name}
-      arguments used: {glue::glue_collapse(arguments_list, sep = ', ')}
-      result: {result}"
-    )
-  }
-
-  # Return the result (or the error feedback)
-  return(create_llm_feedback(as.character(result)))
-}
-
 #' Add function-calling to prompt
 #'
 #' @param prompt ...
@@ -206,29 +149,22 @@ add_tools <- function(prompt, tool_functions = list()) {
     return(docs$name)
   }))
 
-  # TODO: add extraction which will be responsible for tool execution
-
-  # Add tool_functions as an attribute to the extraction
-  attr(tool_extraction, "tool_functions") <- tool_functions
-
-  new_wrap <- prompt_wrap(
-    type = "tool",
-    modify_fn = function(original_prompt_text) {
-      new_prompt <- glue::glue(
-        "{original_prompt_text}
+  modify_fn <- function(original_prompt_text) {
+    new_prompt <- glue::glue(
+      "{original_prompt_text}
 
         If you need more information, you can call functions to help you.
         To call a function, type:
           FUNCTION[<function name here>](<argument 1>, <argument 2>, etc...)
 
         The following functions are available:"
-      )
+    )
 
-      for (tool_function in tool_functions) {
-        docs <- extract_function_docs(tool_function)
+    for (tool_function in tool_functions) {
+      docs <- extract_function_docs(tool_function)
 
-        new_prompt <- glue::glue(
-          "{new_prompt}
+      new_prompt <- glue::glue(
+        "{new_prompt}
 
           function name: {docs$name}
           description: {docs$description}
@@ -244,19 +180,68 @@ add_tools <- function(prompt, tool_functions = list()) {
             }
           return value: {docs$return_value}
           example usage: {docs$example}"
-        )
-      }
+      )
+    }
 
-      new_prompt <- glue::glue(
-        "{new_prompt}
+    new_prompt <- glue::glue(
+      "{new_prompt}
 
         After you call a function, wait until you receive more information."
+    )
+
+    return(new_prompt)
+  }
+
+  extraction_fn <- function(llm_response, tool_functions) {
+    # Check if the response contains a function call
+    function_call <- stringr::str_match(llm_response, "FUNCTION\\[(.*?)\\]\\((.*?)\\)")
+
+    # If no function call is found, return the response
+    if (is.na(function_call[1, 1]) || nrow(function_call) == 0) {
+      return(llm_response)
+    }
+
+    # Extract the function name and arguments
+    function_name <- function_call[2]
+    arguments <- function_call[3]
+
+    # Clean up the arguments by removing quotes and splitting them
+    arguments_list <- strsplit(gsub("\"", "", arguments), ",\\s*")[[1]]
+
+    # Find the function in the list of tool functions
+    tool_function <- tool_functions[[function_name]]
+
+    # If the function is not found, return an error message
+    if (is.null(tool_function)) {
+      return(create_llm_feedback(glue::glue("Error: Function '{function_name}' not found.")))
+    }
+
+    # Call the tool function with the arguments and capture errors
+    error <- FALSE
+    result <- tryCatch({
+      # Call the tool function with the arguments
+      do.call(tool_function, as.list(arguments_list))
+    }, error = function(e) {
+      error <- TRUE
+      # Capture the error message
+      glue::glue("Error: {e$message}")
+    })
+
+    if (!error) {
+      # Create some context around the result
+      result <- glue::glue(
+        "function called: {function_name}
+      arguments used: {glue::glue_collapse(arguments_list, sep = ', ')}
+      result: {result}"
       )
+    }
 
-      return(new_prompt)
-    },
-    extraction_functions = list(tool_extraction)
-  )
+    # Return the result (or the error feedback)
+    return(create_llm_feedback(as.character(result)))
+  }
 
-  append_prompt_wrap(prompt, new_wrap)
+  # Add tool_functions as an attribute to the extraction
+  attr(tool_extraction, "tool_functions") <- tool_functions
+
+  prompt_wrap(prompt, modify_fn, extraction_fn, type = "tool")
 }
