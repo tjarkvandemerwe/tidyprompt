@@ -9,7 +9,7 @@ if (FALSE) {
   ollama <- create_ollama_llm_provider()
 
   prompt <- "What is 2 + 2?" |>
-    set_mode_chainofthought() |>
+    answer_by_chain_of_thought() |>
     answer_as_integer(min = 0) |>
     add_text("hiii", position = "before")
 
@@ -27,7 +27,7 @@ if (FALSE) {
     add_text("Can you please calculate what is 5+5? Write the answer out as a word") |>
     answer_as_integer(add_instruction_to_prompt = FALSE) |>
     set_llm_provider(create_ollama_llm_provider()) |>
-    set_mode_chainofthought()
+    answer_by_chain_of_thought()
   prompt |> construct_prompt_text()
   prompt |> send_prompt()
 
@@ -121,14 +121,14 @@ if (FALSE) {
     add_text("Can you please calculate what is 5+5? Write the answer out as a word") |>
     answer_as_integer(add_instruction_to_prompt = FALSE) |>
     set_llm_provider(create_ollama_llm_provider()) |>
-    set_mode_chainofthought(extract_from_finish_brackets = FALSE) |>
+    answer_by_chain_of_thought(extract_from_finish_brackets = FALSE) |>
     send_prompt()
 
   "Hi!" |>
     add_text("Can you please calculate what is 5+5? Write the answer out as a word") |>
     answer_as_integer(add_instruction_to_prompt = FALSE) |>
     set_llm_provider(create_ollama_llm_provider()) |>
-    set_mode_chainofthought(extract_from_finish_brackets = FALSE) |>
+    answer_by_chain_of_thought(extract_from_finish_brackets = FALSE) |>
     send_prompt()
 
   "Hi!" |>
