@@ -47,7 +47,7 @@ testthat::test_that("send prompt with validation & extraction added", {
 
 testthat::test_that("send prompt with mode added", {
   result <- "Hi" |>
-    set_mode_chainofthought() |>
+    answer_by_chain_of_thought() |>
     send_prompt(llm_provider = create_ollama_llm_provider())
 
   testthat::expect_true(is.character(result))

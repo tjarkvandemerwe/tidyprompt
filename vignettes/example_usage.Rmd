@@ -103,14 +103,14 @@ Below is an example of a prompt which will initially fail, but will succeed afte
 Prompt wrappers may also be used to add a reasoning mode to the LLM. It is hypothesized that this could
 improve the LLM's performance on more complex tasks. 
 
-For instance, function `set_mode_chainofthought` will add chain of thought reasoning mode to the LLM.
+For instance, function `answer_by_chain_of_thought` will add chain of thought reasoning mode to the LLM.
 This wraps the base prompt within a request for the LLM to reason step by step, asking
 it to provide the final answer within 'FINISH[<final answer here>]'. An extraction
 function then ensures only the final answer is returned.
 
 ```{r mode_cot, cache=TRUE}
   "What is 2 + 2?" |>
-    set_mode_chainofthought() |>
+    answer_by_chain_of_thought() |>
     answer_as_integer() |>
     send_prompt(ollama, verbose = TRUE)
 ```
@@ -270,4 +270,4 @@ extraction and validation functions can return feedback to the LLM.
 For more information, on what you can do with prompt wrappers, see the documentation
 of the `prompt_wrap` class creator function: `create_prompt_wrap`. For examples of prompt wrapper functions, 
 see, for instance the documentation and source code of `add_text`, `answer_as_integer`, 
-`set_mode_chainofthought`, and `add_tools`.
+`answer_by_chain_of_thought`, and `add_tools`.

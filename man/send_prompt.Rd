@@ -2,33 +2,21 @@
 % Please edit documentation in R/send_prompt.R
 \name{send_prompt}
 \alias{send_prompt}
-\title{...}
+\title{Send a prompt to a LLM provider}
 \usage{
 send_prompt(
   prompt,
-  llm_provider = NULL,
-  system_prompt = NULL,
-  extraction_functions = list(),
-  validation_functions = list(),
-  max_retries = 10,
+  llm_provider,
   verbose = getOption("tidyprompt.verbose", FALSE),
   extract_validate_mode = c("extraction_then_validation", "wrap_by_wrap")
 )
 }
 \arguments{
-\item{prompt}{...}
+\item{prompt}{A prompt object or a single string}
 
-\item{llm_provider}{...}
+\item{llm_provider}{'llm_provider' object}
 
-\item{system_prompt}{...}
-
-\item{extraction_functions}{...}
-
-\item{validation_functions}{...}
-
-\item{max_retries}{...}
-
-\item{verbose}{...}
+\item{verbose}{If the interaction with the LLM provider should be printed}
 
 \item{extract_validate_mode}{...}
 }
@@ -36,5 +24,5 @@ send_prompt(
 ...
 }
 \description{
-...
+Send a prompt to a LLM provider
 }
