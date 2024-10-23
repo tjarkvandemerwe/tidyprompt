@@ -60,5 +60,5 @@ answer_as_integer <- function(
     return(TRUE)
   }
 
-  prompt_wrap(prompt, extraction_fn, validation_fn)
+  prompt_wrap(prompt, modify_fn, extraction_fn, validation_fn)
 }
