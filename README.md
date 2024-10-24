@@ -47,6 +47,11 @@ remotes::install_github("tjarkvandemerwe/tidyprompt")
 
 ``` r
 library(tidyprompt)
+#> 
+#> Attaching package: 'tidyprompt'
+#> The following object is masked from 'package:utils':
+#> 
+#>     prompt
 ```
 
 ### Setup an LLM provider
@@ -133,7 +138,7 @@ answering the prompt.
 
 ``` r
   "What is 2 + 2?" |>
-    answer_as_integer(add_instruction_to_prompt = TRUE) |>
+    answer_as_integer() |>
     send_prompt(ollama, verbose = TRUE)
 #> --- Sending message to LLM-provider: ---
 #> What is 2 + 2?
@@ -171,7 +176,7 @@ Prompt wrappers may also be used to add a reasoning mode to the LLM. It
 is hypothesized that this could improve the LLM’s performance on more
 complex tasks.
 
-For instance, function `set_mode_chainofthought` will add chain of
+For instance, function `answer_by_chain_of_thought` will add chain of
 thought reasoning mode to the LLM. This wraps the base prompt within a
 request for the LLM to reason step by step, asking it to provide the
 final answer within ‘FINISH\[<final answer here>\]’. An extraction
@@ -179,7 +184,7 @@ function then ensures only the final answer is returned.
 
 ``` r
   "What is 2 + 2?" |>
-    set_mode_chainofthought() |>
+    answer_by_chain_of_thought() |>
     answer_as_integer() |>
     send_prompt(ollama, verbose = TRUE)
 #> --- Sending message to LLM-provider: ---
@@ -188,6 +193,8 @@ function then ensures only the final answer is returned.
 #> 
 #> ----- START OF USER'S PROMPT -----
 #> What is 2 + 2?
+#> 
+#> You must answer with only an integer (use no other characters).
 #> ----- END OF USER'S PROMPT -----
 #> 
 #> What are the steps you would take to answer the user's prompt?
@@ -201,13 +208,17 @@ function then ensures only the final answer is returned.
 #> 
 #> Make sure your final answer follows the logical conclusion of your thought process.
 #> --- Received response from LLM-provider: ---
-#> >> step 1: Identify the mathematical operation in the prompt, which is a simple addition problem.
+#> >> step 1: Identify the mathematical operation in the prompt,
+#> which is a simple addition problem.
 #> 
-#> >> step 2: Recall the basic arithmetic fact that 2 + 2 equals a specific numerical value.
+#> >> step 2: Recall the basic arithmetic fact that 2 + 2 equals a specific
+#> numerical value.
 #> 
-#> >> step 3: Apply this knowledge to determine the result of the addition problem, using the known facts about numbers and their operations.
+#> >> step 3: Apply this knowledge to determine the result of the addition problem,
+#> using the known facts about numbers and their operations.
 #> 
-#> >> step 4: Conclude that based on this mathematical understanding, the solution to the prompt "What is 2 + 2?" is a fixed numerical quantity.
+#> >> step 4: Conclude that based on this mathematical understanding, the
+#> solution to the prompt "What is 2 + 2?" is a fixed numerical quantity.
 #> 
 #> FINISH[4]
 #> [1] 4
@@ -269,6 +280,8 @@ information or take other actions.
 #> 
 #> I want to know the Celcius degrees.
 #> 
+#> You must answer with only an integer (use no other characters).
+#> 
 #> If you need more information, you can call functions to help you.
 #> To call a function, type:
 #>   FUNCTION[<function name here>](<argument 1>, <argument 2>, etc...)
@@ -290,7 +303,7 @@ information or take other actions.
 #> FUNCTION[temperature_in_location]("Enschede", "Celcius")
 #> --- Sending message to LLM-provider: ---
 #> function called: temperature_in_location
-#> arguments used: Enschede, Celcius
+#> arguments used: location = Enschede, unit = Celcius
 #> result: 22.7
 #> --- Received response from LLM-provider: ---
 #> So the current temperature in Enschede is 22.7 degrees Celsius.
@@ -312,19 +325,21 @@ prompt wrapper to it.
 Take a look at the source code for function `add_text`:
 
 ``` r
-add_text <- function(prompt_wrap_or_list, text, sep = "\n\n") {
-  prompt_list <- validate_prompt_list(prompt_wrap_or_list)
+add_text <- function(
+    prompt,
+    text, position = c("after", "before"), sep = "\n\n"
+) {
+  position <- match.arg(position)
 
-  new_wrap <- create_prompt_wrap(
-    modify_fn = function(original_prompt_text, modify_fn_args) {
-      text <- modify_fn_args$text
-      sep <- modify_fn_args$sep
-      return(paste(original_prompt_text, text, sep = sep))
-    },
-    modify_fn_args = list(text = text, sep = sep)
-  )
+  modify_fn <- function(original_prompt_text) {
+    if (position == "after") {
+      paste(original_prompt_text, text, sep = sep)
+    } else {
+      paste(text, original_prompt_text, sep = sep)
+    }
+  }
 
-  return(c(prompt_list, list(new_wrap)))
+  prompt_wrap(prompt, modify_fn)
 }
 ```
 
@@ -334,74 +349,54 @@ functions. Take a look at the source code for function
 
 ``` r
 answer_as_integer <- function(
-    prompt_wrap_or_list, min = NULL, max = NULL, add_instruction_to_prompt = FALSE
+    prompt,
+    min = NULL,
+    max = NULL,
+    add_instruction_to_prompt = TRUE
 ) {
-  prompt_list <- validate_prompt_list(prompt_wrap_or_list)
+  instruction <- "You must answer with only an integer (use no other characters)."
 
-  new_wrap <- create_prompt_wrap(
-    modify_fn = function(original_prompt_text, modify_fn_args) {
-      min <- modify_fn_args$min
-      max <- modify_fn_args$max
+  if (!is.null(min) && !is.null(max)) {
+    instruction <- paste(instruction, glue::glue("Enter an integer between {min} and {max}."))
+  } else if (!is.null(min)) {
+    instruction <- paste(instruction, glue::glue("Enter an integer greater than or equal to {min}."))
+  } else if (!is.null(max)) {
+    instruction <- paste(instruction, glue::glue("Enter an integer less than or equal to {max}."))
+  }
 
-      new_prompt_text <- original_prompt_text
 
-      if (add_instruction_to_prompt) {
-        new_prompt_text <- glue::glue(
-          "{new_prompt_text}
+  # Define modification/extraction/validation functions:
+  modify_fn <- function(original_prompt_text) {
+    if (!add_instruction_to_prompt) {
+      return(original_prompt_text)
+    }
 
-          You must answer with only an integer (use no other characters)."
-        )
+    glue::glue("{original_prompt_text}\n\n{instruction}")
+  }
 
-        if (!is.null(min) && !is.null(max)) {
-          new_prompt_text <- glue::glue(
-            "{new_prompt_text}
-            Enter an integer between {min} and {max}."
-          )
-        } else if (!is.null(min)) {
-          new_prompt_text <- glue::glue(
-            "{new_prompt_text}
-            Enter an integer greater than or equal to {min}."
-          )
-        } else if (!is.null(max)) {
-          new_prompt_text <- glue::glue(
-            "{new_prompt_text}
-            Enter an integer less than or equal to {max}."
-          )
-        }
-      }
+  extraction_fn <- function(x) {
+    extracted <- suppressWarnings(as.integer(x))
+    if (is.na(extracted)) {
+      return(create_llm_feedback(instruction))
+    }
+    return(extracted)
+  }
 
-      return(new_prompt_text)
-    },
-    
-    extraction_functions = list(
-      function(x) {
-        extracted <- suppressWarnings(as.integer(x))
-        if (is.na(extracted)) {
-          return(create_llm_feedback("You must answer with only an integer (use no other characters)."))
-        }
-        return(extracted)
-      }
-    ),
-    
-    validation_functions = list(
-      function(x) {
-        if (!is.null(min) && x < min) {
-          return(create_llm_feedback(glue::glue(
-            "The number should be greater than or equal to {min}."
-          )))
-        }
-        if (!is.null(max) && x > max) {
-          return(create_llm_feedback(glue::glue(
-            "The number should be less than or equal to {max}."
-          )))
-        }
+  validation_fn <- function(x) {
+    if (!is.null(min) && x < min) {
+      return(create_llm_feedback(glue::glue(
+        "The number should be greater than or equal to {min}."
+      )))
+    }
+    if (!is.null(max) && x > max) {
+      return(create_llm_feedback(glue::glue(
+        "The number should be less than or equal to {max}."
+      )))
+    }
+    return(TRUE)
+  }
 
-        return(TRUE)
-      }
-    )
-  )
-
-  return(c(prompt_list, list(new_wrap)))
+  prompt_wrap(prompt, modify_fn, extraction_fn, validation_fn)
 }
 ```
 
@@ -417,7 +412,7 @@ For more information, on what you can do with prompt wrappers, see the
 documentation of the `prompt_wrap` class creator function:
 `create_prompt_wrap`. For examples of prompt wrapper functions, see, for
 instance the documentation and source code of `add_text`,
-`answer_as_integer`, `set_mode_chainofthought`, and `add_tools`.
+`answer_as_integer`, `answer_by_chain_of_thought`, and `add_tools`.
 
 ## More information and contributing
 
