@@ -128,7 +128,7 @@ function then ensures only the final answer is returned.
 With `tidyprompt`, you can define R functions and give the LLM the ability to call them.
 This enables the LLM to retrieve additional information or take other actions.
 
-```{r tool}
+```{r tool_example}
   # Define a function that returns fake data about the temperature in a location
   temperature_in_location <- function(
     location = c("Amsterdam", "Utrecht", "Enschede"),
