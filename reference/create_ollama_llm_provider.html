@@ -53,7 +53,12 @@
 
 <dl><dt id="arg-parameters">parameters<a class="anchor" aria-label="anchor" href="#arg-parameters"></a></dt>
 <dd><p>A named list of parameters. Currently the following parameters are required:</p><ul><li><p>model: The name of the model to use (e.g., "llama3.1:8b")</p></li>
-<li><p>url: The URL of the Ollama API endpoint</p></li>
+<li><p>url: The URL of the Ollama API endpoint
+Additional parameters may be passed by adding them to the parameters list;
+these parameters will be passed to the Ollama API via the body of the POST request.
+Options specifically can be set with the $set_option function (e.g.,
+ollama$set_option("option_name", "option_value")). See options at
+https://ollama.com/docs/api/chat.</p></li>
 </ul></dd>
 
 </dl></div>
