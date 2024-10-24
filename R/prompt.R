@@ -135,15 +135,14 @@ get_prompt_wraps_ordered <- function(prompt) {
     if (!is.null(x$type)) x$type else "unspecified"
   })
 
-  # Reorder the prompt wraps:
-  # 1. Keep "unspecified" and other types at the top
-  # 2. Place "mode" below them
-  # 3. Place "tool" at the bottom
   reordered_prompt_wraps <- c(
-    prompt_wraps[types != "mode" & types != "tool"],
+    prompt_wraps[types == "unspecified"],
     prompt_wraps[types == "mode"],
     prompt_wraps[types == "tool"]
   )
+
+  if (length(prompt_wraps) != length(reordered_prompt_wraps))
+    stop("Some prompt wraps have an invalid type")
 
   return(reordered_prompt_wraps)
 }

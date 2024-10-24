@@ -1,12 +1,12 @@
 #' Extract a specific section from a function's docstring-like documentation block
 #'
-#' This is a helper function for extract_function_docs.
+#' This is an internal helper function for extract_tool_function_docs_for_llm
 #'
 #' @param doc_lines A character vector of lines from a function's documentation block
-#' @param section_keyword The keyword to search for in the documentation block, e.g., '@param'
+#' @param section_keyword The keyword to search for in the documentation block,
+#' e.g., 'llm_tool::description'
 #'
 #' @return The extracted section as a character string or list
-#' @export
 extract_doc_section <- function(doc_lines, section_keyword) {
   # Identify lines that contain the section keyword
   section_starts <- grep(paste0("^\\s*#'\\s*", section_keyword), doc_lines)
@@ -93,7 +93,7 @@ extract_doc_section <- function(doc_lines, section_keyword) {
 #'  - return_value: A description of the return value
 #'  - example: An example of how the LLM should call the function
 #' @export
-extract_function_docs <- function(func) {
+extract_tool_function_docs_for_llm <- function(func) {
   # Convert the function to a character string
   func_text <- utils::capture.output(print(func))
 
@@ -145,7 +145,7 @@ add_tools <- function(prompt, tool_functions = list()) {
 
   # Convert tool_functions to named list, taking the name from the function documentation
   tool_functions <- setNames(tool_functions, sapply(tool_functions, function(f) {
-    docs <- extract_function_docs(f)
+    docs <- extract_tool_function_docs_for_llm(f)
     return(docs$name)
   }))
 
@@ -161,7 +161,7 @@ add_tools <- function(prompt, tool_functions = list()) {
     )
 
     for (tool_function in tool_functions) {
-      docs <- extract_function_docs(tool_function)
+      docs <- extract_tool_function_docs_for_llm(tool_function)
 
       new_prompt <- glue::glue(
         "{new_prompt}
@@ -229,17 +229,21 @@ add_tools <- function(prompt, tool_functions = list()) {
 
     if (!error) {
       # Create some context around the result
+      argument_names <- names(formals(tool_function))
+      string_of_named_arguments <-
+        paste(argument_names, arguments_list, sep = " = ") |>
+        paste(collapse = ", ")
+
       result <- glue::glue(
         "function called: {function_name}
-      arguments used: {glue::glue_collapse(arguments_list, sep = ', ')}
-      result: {result}"
+        arguments used: {string_of_named_arguments}
+        result: {result}"
       )
     }
 
     # Return the result (or the error feedback)
     return(create_llm_feedback(as.character(result)))
   }
-
   # Add tool_functions as an attribute to the extraction
   attr(extraction_fn, "tool_functions") <- tool_functions
 
