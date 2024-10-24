@@ -13,6 +13,11 @@ create_ollama_llm_provider(
 \itemize{
 \item model: The name of the model to use (e.g., "llama3.1:8b")
 \item url: The URL of the Ollama API endpoint
+Additional parameters may be passed by adding them to the parameters list;
+these parameters will be passed to the Ollama API via the body of the POST request.
+Options specifically can be set with the $set_option function (e.g.,
+ollama$set_option("option_name", "option_value")). See options at
+https://ollama.com/docs/api/chat.
 }}
 }
 \value{
