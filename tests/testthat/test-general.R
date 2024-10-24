@@ -1,5 +1,5 @@
-testthat::test_that("send message with ollama", {
-  ollama <- create_ollama_llm_provider()
+testthat::test_that("send message with fake llm provider", {
+  ollama <- create_fake_llm_provider()
   result <- ollama$complete_chat("Hi!")
 
   # Check length of result
@@ -19,7 +19,7 @@ testthat::test_that("send message with ollama", {
 
 testthat::test_that("send basic prompt", {
   result <- "Hi" |>
-    send_prompt(llm_provider = create_ollama_llm_provider())
+    send_prompt(create_fake_llm_provider())
 
   # Check that the result is a single character string
   testthat::expect_true(is.character(result))
@@ -29,7 +29,7 @@ testthat::test_that("send basic prompt", {
 testthat::test_that("send prompt with text added", {
   result <- "Hi" |>
     add_text("How are you?") |>
-    send_prompt(llm_provider = create_ollama_llm_provider())
+    send_prompt(create_fake_llm_provider())
 
   testthat::expect_true(is.character(result))
   testthat::expect_length(result, 1)
@@ -37,20 +37,21 @@ testthat::test_that("send prompt with text added", {
 
 testthat::test_that("send prompt with validation & extraction added", {
   result <- "Hi" |>
-    add_text("What is 5+5?") |>
+    add_text("What is 2 + 2?") |>
     answer_as_integer() |>
-    send_prompt(llm_provider = create_ollama_llm_provider())
+    send_prompt(create_fake_llm_provider())
 
   testthat::expect_true(is.integer(result))
   testthat::expect_length(result, 1)
 })
 
 testthat::test_that("send prompt with mode added", {
-  result <- "Hi" |>
+  result <- "What is 2 + 2?" |>
     answer_by_chain_of_thought() |>
-    send_prompt(llm_provider = create_ollama_llm_provider())
+    answer_as_integer() |>
+    send_prompt(create_fake_llm_provider())
 
-  testthat::expect_true(is.character(result))
+  testthat::expect_true(is.integer(result))
   testthat::expect_length(result, 1)
 })
 
@@ -88,10 +89,12 @@ testthat::test_that("send prompt with tool added", {
     }
   }
 
-  result <- "Hi, what is the weather in Enschede? Give me Celcius degrees" |>
-    add_tools(tool_functions = list(temperature_in_location)) |>
-    send_prompt(llm_provider = create_ollama_llm_provider())
+  result <- "Hi, what is the weather temperature in Enschede?" |>
+    add_text("I want to know the Celcius degrees.") |>
+    answer_as_integer() |>
+    add_tools(temperature_in_location) |>
+    send_prompt(create_fake_llm_provider())
 
-  testthat::expect_true(is.character(result))
+  testthat::expect_true(is.integer(result))
   testthat::expect_length(result, 1)
 })
