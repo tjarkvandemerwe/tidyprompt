@@ -2,7 +2,7 @@
 % Please edit documentation in R/prompt.R
 \name{prompt.prompt}
 \alias{prompt.prompt}
-\title{Method to validate a prompt object}
+\title{Validate and return prompt}
 \usage{
 \method{prompt}{prompt}(input)
 }
@@ -13,5 +13,5 @@
 A validated prompt object
 }
 \description{
-Method to validate a prompt object
+Validate and return prompt
 }

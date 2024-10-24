@@ -50,36 +50,66 @@ prompt.character <- function(input) {
 
 
 
-#' Method to validate a prompt object
+#' Validate and return prompt
 #'
 #' @param input A prompt object
 #'
 #' @return A validated prompt object
 #' @exportS3Method prompt prompt
 prompt.prompt <- function(input) {
-  # TODO: write validations
+  validate_prompt(input)
+  return(input)
+}
 
-  if (!"base_prompt" %in% names(input))
+
+
+#' Validate prompt
+#'
+#' @param prompt A prompt object
+#'
+#' @return TRUE if the prompt is valid, otherwise an error is thrown
+#' @export
+validate_prompt <- function(prompt) {
+  if (!inherits(prompt, "prompt"))
+    stop("Prompt is not of class 'prompt'")
+
+  if (!"base_prompt" %in% names(prompt))
     stop("The prompt object must have a base prompt")
 
   if (
-    !is.character(input$base_prompt) |
-    input$base_prompt |> length() != 1
+    !is.character(prompt$base_prompt) |
+    prompt$base_prompt |> length() != 1
   )
     stop("The base prompt must be a single character string")
 
-  if ("prompt_wrap" %in% names(input)) {
-    if (!is.list(input$prompt_wraps))
+  if ("prompt_wrap" %in% names(prompt)) {
+    if (!is.list(prompt$prompt_wraps))
       stop("The prompt_wraps must be a list")
 
-    if (!all(sapply(input$prompt_wraps, function(x) inherits(x, "prompt_wrap"))))
+    if (!all(sapply(prompt$prompt_wraps, function(x) inherits(x, "prompt_wrap"))))
       stop(paste0(
         "All elements of prompt_wraps must be of class 'prompt_wrap'.",
         " Create a prompt_wrap object with the prompt_wrap() function."
       ))
   }
 
-  return(input)
+  return(invisible(TRUE))
+}
+
+
+
+#' Check if object is a valid prompt
+#'
+#' @param prompt A prompt object
+#'
+#' @return TRUE if the object is a valid prompt, otherwise FALSE
+#' @export
+is_prompt <- function(prompt) {
+  tryCatch({
+    validate_prompt(prompt)
+  }, error = function(e) {
+    FALSE
+  })
 }
 
 
