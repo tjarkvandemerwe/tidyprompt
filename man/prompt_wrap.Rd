@@ -9,7 +9,6 @@ prompt_wrap(
   modify_fn = NULL,
   extraction_fn = NULL,
   validation_fn = NULL,
-  max_retries = 10,
   type = c("unspecified", "mode", "tool")
 )
 }
@@ -27,9 +26,6 @@ back to the LLM (the feedback message should be of class 'llm_feedback').}
 Upon succesful validation, the function should return TRUE.
 If the validation fails, the function should return a feedback message which will be sent
 back to the LLM (the feedback message should be of class 'llm_feedback').#'}
-
-\item{max_retries}{The maximum number of retries allowed for this prompt wrap;
-each failure of extraction or validation will count as a retry.}
 
 \item{type}{The type of prompt wrap; one of 'unspecified', 'mode', or 'tool'.
 Types are used to determine the order in which prompt wraps are applied.

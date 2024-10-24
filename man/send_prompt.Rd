@@ -7,8 +7,8 @@
 send_prompt(
   prompt,
   llm_provider,
-  verbose = getOption("tidyprompt.verbose", FALSE),
-  extract_validate_mode = c("wrap_by_wrap", "extraction_then_validation")
+  max_interactions = 10,
+  verbose = getOption("tidyprompt.verbose", FALSE)
 )
 }
 \arguments{
@@ -16,9 +16,9 @@ send_prompt(
 
 \item{llm_provider}{'llm_provider' object}
 
-\item{verbose}{If the interaction with the LLM provider should be printed}
+\item{max_interactions}{Maximum number of interactions before stopping}
 
-\item{extract_validate_mode}{...}
+\item{verbose}{If the interaction with the LLM provider should be printed}
 }
 \value{
 ...

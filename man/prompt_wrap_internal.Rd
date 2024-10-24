@@ -9,7 +9,6 @@ prompt_wrap_internal(
   modify_fn = NULL,
   extraction_fn = NULL,
   validation_fn = NULL,
-  max_retries = 10,
   type = c("unspecified", "mode", "tool")
 )
 }
@@ -21,8 +20,6 @@ prompt_wrap_internal(
 \item{extraction_fn}{See prompt_wrap}
 
 \item{validation_fn}{See prompt_wrap}
-
-\item{max_retries}{See prompt_wrap}
 
 \item{type}{See prompt_wrap}
 }
