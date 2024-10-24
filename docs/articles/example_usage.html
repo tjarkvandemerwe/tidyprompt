@@ -5,61 +5,47 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="tidyprompt">
 <title>Example usage • tidyprompt</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js" integrity="sha512-7O5pXpc0oCRrxk8RUfDYFgn0nO1t+jLuIOQdOMRp4APB7uZ4vSjspzp5y6YDtDs4VzUSTbWzBFZ/LKJhnyFOKw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Example usage">
-<meta property="og:description" content="tidyprompt">
-<!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]-->
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Example usage">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
-    
 
-    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light" data-bs-theme="light"><div class="container">
-    
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
     <a class="navbar-brand me-2" href="../index.html">tidyprompt</a>
 
     <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
 
-    
+
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item">
-  <a class="nav-link" href="../reference/index.html">Reference</a>
-</li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="active nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
-  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/example_usage.html">Example usage</a>
-  </div>
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><a class="dropdown-item" href="../articles/example_usage.html">Example usage</a></li>
+  </ul>
 </li>
       </ul>
-<form class="form-inline my-2 my-lg-0" role="search">
-        <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off">
-</form>
-
-      <ul class="navbar-nav">
-<li class="nav-item">
-  <a class="external-link nav-link" href="https://github.com/tjarkvandemerwe/tidyprompt/" aria-label="github">
-    <span class="fab fa fab fa-github fa-lg"></span>
-     
-  </a>
-</li>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/tjarkvandemerwe/tidyprompt/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
-    
+
   </div>
 </nav><div class="container template-article">
 
@@ -68,7 +54,8 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="" class="logo" alt=""><h1>Example usage</h1>
+
+      <h1>Example usage</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/tjarkvandemerwe/tidyprompt/blob/HEAD/vignettes/example_usage.Rmd" class="external-link"><code>vignettes/example_usage.Rmd</code></a></small>
@@ -114,21 +101,20 @@ a hook for the LLM provider you want to use.</p>
 <h3 id="basic-prompting">Basic prompting<a class="anchor" aria-label="anchor" href="#basic-prompting"></a>
 </h3>
 <p>A simple string serves as the base for a prompt.</p>
-<p>By adding prompt wrappers, you can influence various aspects of how
-the LLM handles the prompt, while verifying that the output is
-structured and valid (including retries with feedback to the LLM if it
-is not).</p>
+<p>By adding prompt wraps, you can influence various aspects of how the
+LLM handles the prompt, while verifying that the output is structured
+and valid (including retries with feedback to the LLM if it is not).</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  <span class="st">"Hi there!"</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="va">ollama</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "It's nice to meet you. Is there something I can help you with, or would you like to chat?"</span></span></code></pre></div>
-<p><code>add_text</code> is a simple example of a prompt wrapper. It
-simply adds some text at the end of the base prompt.</p>
+<span><span class="co">#&gt; [1] "It's nice to meet you. Is there something I can help you with or would you like to chat?"</span></span></code></pre></div>
+<p><code>add_text</code> is a simple example of a prompt wrap. It simply
+adds some text at the end of the base prompt.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  <span class="st">"Hi there!"</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/add_text.html">add_text</a></span><span class="op">(</span><span class="st">"What is a large language model? Explain in 10 words."</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="va">ollama</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "Sophisticated computer program that processes and generates human-like written language rapidly."</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "Complex computer program trained on vast texts to generate human-like responses."</span></span></code></pre></div>
 <p>You can also construct the final prompt text, without sending it to
 an LLM provider.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
@@ -143,17 +129,17 @@ an LLM provider.</p>
 <div class="section level3">
 <h3 id="retrieving-output-in-a-specific-format">Retrieving output in a specific format<a class="anchor" aria-label="anchor" href="#retrieving-output-in-a-specific-format"></a>
 </h3>
-<p>Using prompt wrappers, you can force the LLM to return the output in
-a specific format. You can also extract the output to turn it from a
+<p>Using prompt wraps, you can force the LLM to return the output in a
+specific format. You can also extract the output to turn it from a
 character into another data type.</p>
-<p>For instance, the <code>answer_as_integer</code> prompt wrapper will
+<p>For instance, the <code>answer_as_integer</code> prompt wrap will
 force the LLM to return an integer.</p>
-<p>To achieve this, the prompt wrapper will add some text to the base
+<p>To achieve this, the prompt wrap will add some text to the base
 prompt, asking the LLM to reply with an integer. However, the prompt
-wrapper does more: it also will attempt to extract and validate the
-integer from the LLM’s response. If extraction or validation fails,
-feedback is sent back to the LLM, after which the LLM can retry
-answering the prompt.</p>
+wrap does more: it also will attempt to extract and validate the integer
+from the LLM’s response. If extraction or validation fails, feedback is
+sent back to the LLM, after which the LLM can retry answering the
+prompt.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  <span class="st">"What is 2 + 2?"</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/answer_as_integer.html">answer_as_integer</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -187,8 +173,8 @@ succeed after a retry.</p>
 <div class="section level3">
 <h3 id="adding-a-reasoning-mode-to-the-llm">Adding a reasoning mode to the LLM<a class="anchor" aria-label="anchor" href="#adding-a-reasoning-mode-to-the-llm"></a>
 </h3>
-<p>Prompt wrappers may also be used to add a reasoning mode to the LLM.
-It is hypothesized that this could improve the LLM’s performance on more
+<p>Prompt wraps may also be used to add a reasoning mode to the LLM. It
+is hypothesized that this could improve the LLM’s performance on more
 complex tasks.</p>
 <p>For instance, function <code>answer_by_chain_of_thought</code> will
 add chain of thought reasoning mode to the LLM. This wraps the base
@@ -221,32 +207,17 @@ extraction function then ensures only the final answer is returned.</final></p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Make sure your final answer follows the logical conclusion of your thought process.</span></span>
 <span><span class="co">#&gt; --- Received response from LLM-provider: ---</span></span>
-<span><span class="co">#&gt; &gt;&gt; step 1: The user is asking for the sum of two numbers, specifically 2 and 2.</span></span>
+<span><span class="co">#&gt; &gt;&gt; step 1: Identify the mathematical operation in the prompt,</span></span>
+<span><span class="co">#&gt; which is a simple addition problem.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; &gt;&gt; step 2: To find this sum, I need to recall basic arithmetic operations, specifically addition.</span></span>
+<span><span class="co">#&gt; &gt;&gt; step 2: Recall the basic arithmetic fact that 2 + 2 equals a specific</span></span>
+<span><span class="co">#&gt; numerical value.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; &gt;&gt; step 3: In mathematics, when adding two numbers together, you combine their values by counting up from one number to the other. For example, if we are adding 1 + 1, you count up from 1: 1, 2 (which is the sum of 1 and 1).</span></span>
+<span><span class="co">#&gt; &gt;&gt; step 3: Apply this knowledge to determine the result of the addition problem,</span></span>
+<span><span class="co">#&gt; using the known facts about numbers and their operations.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; &gt;&gt; step 4: Applying this concept to the user's prompt, I will add 2 to itself by counting up from 2. Starting with 2, we count up by 1s until we reach the second 2: 2, 3 (which is the sum of 2 and 1), but since we're counting up by twos, we only need to count up once more: 4.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; &gt;&gt; step 5: Therefore, the sum of 2 and 2 is 4.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; FINISH 4</span></span>
-<span><span class="co">#&gt; --- Sending message to LLM-provider: ---</span></span>
-<span><span class="co">#&gt; Error, could not parse your final answer.</span></span>
-<span><span class="co">#&gt; Please type: 'FINISH[&lt;put here your final answer to the original prompt&gt;]'</span></span>
-<span><span class="co">#&gt; --- Received response from LLM-provider: ---</span></span>
-<span><span class="co">#&gt; Here is the corrected response:</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; &gt;&gt; step 1: The user is asking for the sum of two numbers, specifically 2 and 2.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; &gt;&gt; step 2: To find this sum, I need to recall basic arithmetic operations, specifically addition.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; &gt;&gt; step 3: In mathematics, when adding two numbers together, you combine their values by counting up from one number to the other. For example, if we are adding 1 + 1, you count up from 1: 1, 2 (which is the sum of 1 and 1).</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; &gt;&gt; step 4: Applying this concept to the user's prompt, I will add 2 to itself by counting up from 2. Starting with 2, we count up by 1s until we reach the second 2: 2, 3 (which is the sum of 2 and 1), but since we're counting up by twos, we only need to count up once more: 4.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; &gt;&gt; step 5: Therefore, the sum of 2 and 2 is 4.</span></span>
+<span><span class="co">#&gt; &gt;&gt; step 4: Conclude that based on this mathematical understanding, the</span></span>
+<span><span class="co">#&gt; solution to the prompt "What is 2 + 2?" is a fixed numerical quantity.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; FINISH[4]</span></span>
 <span><span class="co">#&gt; [1] 4</span></span></code></pre></div>
@@ -325,13 +296,15 @@ additional information or take other actions.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; After you call a function, wait until you receive more information.</span></span>
 <span><span class="co">#&gt; --- Received response from LLM-provider: ---</span></span>
+<span><span class="co">#&gt; I'll use the provided function to get the current temperature in Enschede.</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; FUNCTION[temperature_in_location]("Enschede", "Celcius")</span></span>
 <span><span class="co">#&gt; --- Sending message to LLM-provider: ---</span></span>
 <span><span class="co">#&gt; function called: temperature_in_location</span></span>
-<span><span class="co">#&gt; arguments used: Enschede, Celcius</span></span>
+<span><span class="co">#&gt; arguments used: location = Enschede, unit = Celcius</span></span>
 <span><span class="co">#&gt; result: 22.7</span></span>
 <span><span class="co">#&gt; --- Received response from LLM-provider: ---</span></span>
-<span><span class="co">#&gt; The weather temperature in Enschede is 22 degrees Celsius.</span></span>
+<span><span class="co">#&gt; So the current temperature in Enschede is 22.7 degrees Celsius.</span></span>
 <span><span class="co">#&gt; --- Sending message to LLM-provider: ---</span></span>
 <span><span class="co">#&gt; You must answer with only an integer (use no other characters).</span></span>
 <span><span class="co">#&gt; --- Received response from LLM-provider: ---</span></span>
@@ -339,12 +312,12 @@ additional information or take other actions.</p>
 <span><span class="co">#&gt; [1] 22</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="creating-your-own-prompt-wrappers">Creating your own prompt wrappers<a class="anchor" aria-label="anchor" href="#creating-your-own-prompt-wrappers"></a>
+<h3 id="creating-your-own-prompt-wraps">Creating your own prompt wraps<a class="anchor" aria-label="anchor" href="#creating-your-own-prompt-wraps"></a>
 </h3>
 <p>Under the hood, prompts are just lists of a base prompt (a string)
-and a series of prompt wrappers.</p>
+and a series of prompt wraps.</p>
 <p>You can thus create a function which takes a prompt and appends a new
-prompt wrapper to it.</p>
+prompt wrap to it.</p>
 <p>Take a look at the source code for function
 <code>add_text</code>:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
@@ -362,13 +335,9 @@ prompt wrapper to it.</p>
 <span>    <span class="op">}</span></span>
 <span>  <span class="op">}</span></span>
 <span></span>
-<span>  <span class="va">new_wrap</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prompt_wrap.html">prompt_wrap</a></span><span class="op">(</span></span>
-<span>    modify_fn <span class="op">=</span> <span class="va">modify_fn</span></span>
-<span>  <span class="op">)</span></span>
-<span></span>
-<span>  <span class="fu">append_prompt_wrap</span><span class="op">(</span><span class="va">prompt</span>, <span class="va">new_wrap</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="../reference/prompt_wrap.html">prompt_wrap</a></span><span class="op">(</span><span class="va">prompt</span>, <span class="va">modify_fn</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p>More complex prompt wrappers may also add extraction and validation
+<p>More complex prompt wraps may also add extraction and validation
 functions. Take a look at the source code for function
 <code>answer_as_integer</code>:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
@@ -420,13 +389,7 @@ functions. Take a look at the source code for function
 <span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span>  <span class="op">}</span></span>
 <span></span>
-<span>  <span class="va">new_wrap</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prompt_wrap.html">prompt_wrap</a></span><span class="op">(</span></span>
-<span>    modify_fn <span class="op">=</span> <span class="va">modify_fn</span>,</span>
-<span>    extraction_functions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">extraction_fn</span><span class="op">)</span>,</span>
-<span>    validation_functions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">validation_fn</span><span class="op">)</span></span>
-<span>  <span class="op">)</span></span>
-<span></span>
-<span>  <span class="fu">append_prompt_wrap</span><span class="op">(</span><span class="va">prompt</span>, <span class="va">new_wrap</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="../reference/prompt_wrap.html">prompt_wrap</a></span><span class="op">(</span><span class="va">prompt</span>, <span class="va">modify_fn</span>, <span class="va">extraction_fn</span>, <span class="va">validation_fn</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 <p>They key difference between an extraction and validation function is
 that an extraction function alters the LLM’s response and passes on the
@@ -435,14 +398,14 @@ eventually to the return statement of send_prompt (if extractions and
 validations are succesful). A validation function, on the other hand,
 only checks if the LLM’s response passes a logical test. Both extraction
 and validation functions can return feedback to the LLM.</p>
-<p>For more information, on what you can do with prompt wrappers, see
-the documentation of the <code>prompt_wrap</code> class creator
-function: <code>create_prompt_wrap</code>. For examples of prompt
-wrapper functions, see, for instance the documentation and source code
-of <code>add_text</code>, <code>answer_as_integer</code>,
+<p>For more information, on what you can do with prompt wraps, see the
+documentation of the <code>prompt_wrap</code> class creator function:
+<code>create_prompt_wrap</code>. For examples of prompt wrap functions,
+see, for instance the documentation and source code of
+<code>add_text</code>, <code>answer_as_integer</code>,
 <code>answer_by_chain_of_thought</code>, and <code>add_tools</code>.</p>
 </div>
-  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
 </div>
 
@@ -453,15 +416,15 @@ of <code>add_text</code>, <code>answer_as_integer</code>,
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
     </footer>
 </div>
 
-  
 
-  
+
+
 
   </body>
 </html>
