@@ -49,6 +49,10 @@ create_llm_provider <- function(
     return(fn)
   }
 
+  llm_provider$get_env <- create_function(function() {
+    return(llm_provider_env)
+  })
+
   # Get parameters attached this llm_provider
   llm_provider$get_parameters <- create_function(function() {
     return(parameters)
@@ -71,6 +75,7 @@ create_llm_provider <- function(
   #   wrap some validation of chat_history around it
   llm_provider$complete_chat <- create_function(function(chat_history) {
     chat_history <- validate_chat_history(chat_history)
+    environment(complete_chat_function) <- llm_provider_env
 
     # Call original function
     complete_chat_function(chat_history)
@@ -136,6 +141,12 @@ create_openai_llm_provider <- function(parameters = list(
 #' @param parameters A named list of parameters. Currently the following parameters are required:
 #' - model: The name of the model to use (e.g., "llama3.1:8b")
 #' - url: The URL of the Ollama API endpoint
+
+#' Additional parameters may be passed by adding them to the parameters list;
+#' these parameters will be passed to the Ollama API via the body of the POST request.
+#' Options specifically can be set with the $set_option function (e.g.,
+#' ollama$set_option("option_name", "option_value")). See options at
+#' https://ollama.com/docs/api/chat.
 #'
 #' @return A new llm_provider object for use of the Ollama API
 #' @export
@@ -154,6 +165,13 @@ create_ollama_llm_provider <- function(parameters = list(
       stream = FALSE
     )
 
+    # Append all other parameters to the body
+    for (name in names(parameters)) {
+      if (!(name %in% c("model", "url"))) {
+        body[[name]] <- parameters[[name]]
+      }
+    }
+
     # Make the POST request
     response <- httr::POST(url, body = body, encode = "json")
 
@@ -169,10 +187,30 @@ create_ollama_llm_provider <- function(parameters = list(
     }
   }
 
-  create_llm_provider(
+  ollama <- create_llm_provider(
     complete_chat_function = complete_chat,
     parameters = parameters
   )
+
+  # Additional function to set options for the Ollama API
+  #   (These options are a list within the regular parameters list)
+  set_option <- function(option_name, value) {
+    if (!is.character(option_name) | length(option_name) != 1)
+      stop("option_name must be a single string")
+
+    options <- parameters$options
+    if (length(options) == 0)
+      options <- list()
+
+    options[[option_name]] <- value
+    parameters$options <<- options
+  }
+  # Connect function to the provider environment
+  environment(set_option) <- ollama$get_env()
+  # Add the function to the provider object
+  ollama$set_option <- set_option
+
+  return(ollama)
 }
 
 
