@@ -8,7 +8,7 @@ send_prompt(
   prompt,
   llm_provider,
   verbose = getOption("tidyprompt.verbose", FALSE),
-  extract_validate_mode = c("extraction_then_validation", "wrap_by_wrap")
+  extract_validate_mode = c("wrap_by_wrap", "extraction_then_validation")
 )
 }
 \arguments{

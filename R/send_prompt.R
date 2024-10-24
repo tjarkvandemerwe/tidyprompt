@@ -3,20 +3,29 @@
 #' @param prompt A prompt object or a single string
 #' @param llm_provider 'llm_provider' object
 #' @param verbose If the interaction with the LLM provider should be printed
-#' @param extract_validate_mode ...
+#' @param max_interactions Maximum number of interactions before stopping
 #'
 #' @return ...
 #' @export
 send_prompt <- function(
     prompt,
     llm_provider,
-    verbose = getOption("tidyprompt.verbose", FALSE),
-    extract_validate_mode = c("extraction_then_validation", "wrap_by_wrap")
+    max_interactions = 10,
+    verbose = getOption("tidyprompt.verbose", FALSE)
 ) {
   ## 1 Validate arguments
 
   prompt <- prompt(prompt)
-  extract_validate_mode <- match.arg(extract_validate_mode)
+
+  if (!inherits(llm_provider, "llm_provider"))
+    stop("llm_provider must be an object of class 'llm_provider'")
+
+  is_whole_number <- function(x) { x == floor(x) }
+  if (!is_whole_number(max_interactions))
+    stop("max_interactions should be a whole number.")
+
+  if (!is.logical(verbose))
+    stop("verbose should be a logical.")
 
 
   ## 2 Retrieve prompt evaluation settings
@@ -40,7 +49,7 @@ send_prompt <- function(
     chat_history <- create_chat_df("system", prompt$system_prompt)
 
   # Create internal function to send_chat to the given LLM-provider
-  send_chat <- function(message) {
+  send_chat <- function(message, role = "user") {
     message <- as.character(message)
 
     if (verbose) {
@@ -49,7 +58,7 @@ send_prompt <- function(
     }
 
     chat_history <<- chat_history |>
-      dplyr::bind_rows(create_chat_df("user", message)) # TODO: remove dplyr
+      dplyr::bind_rows(create_chat_df(role, message)) # TODO: remove dplyr
 
     completion <- llm_provider$complete_chat(chat_history)
 
@@ -72,74 +81,67 @@ send_prompt <- function(
 
   ## 5 Apply extractions and validations
 
-  # TODO: wrap by wrap mode
-  max_retries <- 10 # TODO: use max_retries from wraps in prompt object
+  prompt_wraps <- get_prompt_wraps_ordered(prompt) |> rev() # In reverse order
+  # (Tools, then modes, then unspecified prompt_wraps)
 
-  # Mode for first all extractions, then all validations:
-  if (extract_validate_mode == "extraction_then_validation") {
-    tries <- 0; successful_output <- FALSE
-    while (tries < max_retries & !successful_output) {
-      tries <- tries + 1
+  tries <- 0; successful_output <- FALSE
+  while (tries < max_interactions & !successful_output) {
+    tries <- tries + 1
 
-      # Apply extraction functions
-      extraction_error <- FALSE
-      if (length(extraction_functions) > 0) {
-        for (i in 1:length(extraction_functions)) {
-          extraction_function <- extraction_functions[[i]]
+    for (prompt_wrap in prompt_wraps) {
+      role <- "user"
 
-          # If extraction function has attribute 'tool_functions':
-          if (!is.null(attr(extraction_function, "tool_functions"))) {
-            tool_functions <- attr(extraction_function, "tool_functions")
-            extraction_result <- extraction_function(response, tool_functions)
-          } else {
-            extraction_result <- extraction_function(response)
-          }
+      # Apply extraction function
+      if (!is.null(prompt_wrap$extraction_fn)) {
+        extraction_function <- prompt_wrap$extraction_fn
 
-          # If it inherits llm_feedback, send the feedback to the LLM & get new response
-          if (inherits(extraction_result, "llm_feedback")) {
-            extraction_error <- TRUE
-            response <- send_chat(extraction_result)
-            break
-          }
+        # If extraction function has attribute 'tool_functions':
+        tool_called <- FALSE
 
-          # If no llm_feedback, extraction was succesful
-          response <- extraction_result
+        if (!is.null(attr(extraction_function, "tool_functions"))) {
+          tool_functions <- attr(extraction_function, "tool_functions")
+          extraction_result <- extraction_function(response, tool_functions)
+          tool_called <- TRUE
+        } else {
+          extraction_result <- extraction_function(response)
+        }
+
+        # If it inherits llm_feedback, send the feedback to the LLM & get new response
+        if (inherits(extraction_result, "llm_feedback")) {
+          if (tool_called) role <- "system"
+          response <- send_chat(extraction_result, role)
+          break
+        }
+
+        # If no llm_feedback, extraction was succesful
+        response <- extraction_result
+      }
+
+      # Apply validation function
+      if (!is.null(prompt_wrap$validation_fn)) {
+        validation_result <- prompt_wrap$validation_fn(response)
+
+        # If it inherits llm_feedback, send the feedback to the LLM & get new response
+        if (inherits(validation_result, "llm_feedback")) {
+          response <- send_chat(validation_result)
+          break
         }
       }
-      if (extraction_error) next
 
-      # Apply validation functions
-      validation_error <- FALSE
-      if (length(validation_functions) > 0) {
-        for (i in 1:length(validation_functions)) {
-          validation_function <- validation_functions[[i]]
-          validation_result <- validation_function(response)
-
-          # If it inherits llm_feedback, send the feedback to the LLM & get new response
-          if (inherits(validation_result, "llm_feedback")) {
-            validation_error <- TRUE
-            response <- send_chat(validation_result)
-            break
-          }
-        }
-      }
-      if (validation_error) next
-
-      # If no errors, break the loop
-      successful_output <- TRUE
+      # If no errors, break both loops
+      successful_output <- TRUE # To break the while-loop
+      break # To break the for-loop
     }
   }
 
-  # Wrap by wrap
-  if (extract_validate_mode == "wrap_by_wrap") {
-    # TODO: implementation
-  }
 
-
-  ## 7 Final evaluation
+  ## 6 Final evaluation
 
   if (!successful_output)
-    stop("Failed to reach a valid answer after ", max_retries, " tries.")
+    stop(paste0(
+      "Failed to reach a valid answer after the maximum of ",
+      max_interactions, " interactions."
+    ))
 
   return(response)
 }

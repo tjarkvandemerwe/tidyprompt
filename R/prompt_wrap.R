@@ -10,8 +10,6 @@
 #' Upon succesful validation, the function should return TRUE.
 #' If the validation fails, the function should return a feedback message which will be sent
 #' back to the LLM (the feedback message should be of class 'llm_feedback').#'
-#' @param max_retries The maximum number of retries allowed for this prompt wrap;
-#' each failure of extraction or validation will count as a retry.
 #' @param type The type of prompt wrap; one of 'unspecified', 'mode', or 'tool'.
 #' Types are used to determine the order in which prompt wraps are applied.
 #' Typically, tools are applied first, then modes, then unspecified wraps.
@@ -23,7 +21,6 @@ prompt_wrap <- function(
     modify_fn = NULL,
     extraction_fn = NULL,
     validation_fn = NULL,
-    max_retries = 10,
     type = c("unspecified", "mode", "tool")
 ) {
   UseMethod("prompt_wrap")
@@ -65,7 +62,6 @@ prompt_wrap.default <- function(prompt, ...) {
 #' @param modify_fn See prompt_wrap
 #' @param extraction_fn See prompt_wrap
 #' @param validation_fn See prompt_wrap
-#' @param max_retries See prompt_wrap
 #' @param type See prompt_wrap
 #'
 #' @return A prompt object with the new prompt wrap appended to it.
@@ -74,7 +70,6 @@ prompt_wrap_internal <- function(
     modify_fn = NULL,
     extraction_fn = NULL,
     validation_fn = NULL,
-    max_retries = 10,
     type = c("unspecified", "mode", "tool")
 ) {
   if (
@@ -97,18 +92,13 @@ prompt_wrap_internal <- function(
   if (!is.null(extraction_fn) && !is.function(extraction_fn))
     stop("Extraction_fn should be a function.")
 
-  is_whole_number <- function(x) { x == floor(x) }
-  if (!is_whole_number(max_retries))
-    stop("Max_retries should be a whole number.")
-
   # Create prompt wrap
   prompt_wrap <- structure(
     list(
       type = type,
       modify_fn = modify_fn,
       extraction_fn = extraction_fn,
-      validation_fn = validation_fn,
-      max_retries = max_retries
+      validation_fn = validation_fn
     ),
     class = "prompt_wrap"
   )
