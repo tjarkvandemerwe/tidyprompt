@@ -24,7 +24,7 @@ the tidy way.
 Key features of `tidyprompt` are:
 
 * **tidy prompting**: Quickly and elegantly construct prompts for LLMs, using piping syntax (inspired by the `tidyverse`). 
-Wrap a base prompt in prompt wrappers to influence how the LLM handles the prompt. A library of pre-built prompt wrappers is included, but you can
+Wrap a base prompt in prompt wraps to influence how the LLM handles the prompt. A library of pre-built prompt wraps is included, but you can
 also write your own.
 
 * **structured output**: Extract structured output from the LLM's response, and validate it. Automatic retries with feedback to the LLM, if the output is not as expected.

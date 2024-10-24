@@ -13,9 +13,9 @@ Key features of `tidyprompt` are:
 
 - **tidy prompting**: Quickly and elegantly construct prompts for LLMs,
   using piping syntax (inspired by the `tidyverse`). Wrap a base prompt
-  in prompt wrappers to influence how the LLM handles the prompt. A
-  library of pre-built prompt wrappers is included, but you can also
-  write your own.
+  in prompt wraps to influence how the LLM handles the prompt. A library
+  of pre-built prompt wraps is included, but you can also write your
+  own.
 
 - **structured output**: Extract structured output from the LLM’s
   response, and validate it. Automatic retries with feedback to the LLM,
@@ -87,9 +87,9 @@ openai <- create_openai_llm_provider(
 
 A simple string serves as the base for a prompt.
 
-By adding prompt wrappers, you can influence various aspects of how the
-LLM handles the prompt, while verifying that the output is structured
-and valid (including retries with feedback to the LLM if it is not).
+By adding prompt wraps, you can influence various aspects of how the LLM
+handles the prompt, while verifying that the output is structured and
+valid (including retries with feedback to the LLM if it is not).
 
 ``` r
   "Hi there!" |>
@@ -97,7 +97,7 @@ and valid (including retries with feedback to the LLM if it is not).
 #> [1] "It's nice to meet you. Is there something I can help you with or would you like to chat?"
 ```
 
-`add_text` is a simple example of a prompt wrapper. It simply adds some
+`add_text` is a simple example of a prompt wrap. It simply adds some
 text at the end of the base prompt.
 
 ``` r
@@ -122,19 +122,18 @@ LLM provider.
 
 ### Retrieving output in a specific format
 
-Using prompt wrappers, you can force the LLM to return the output in a
+Using prompt wraps, you can force the LLM to return the output in a
 specific format. You can also extract the output to turn it from a
 character into another data type.
 
-For instance, the `answer_as_integer` prompt wrapper will force the LLM
-to return an integer.
+For instance, the `answer_as_integer` prompt wrap will force the LLM to
+return an integer.
 
-To achieve this, the prompt wrapper will add some text to the base
-prompt, asking the LLM to reply with an integer. However, the prompt
-wrapper does more: it also will attempt to extract and validate the
-integer from the LLM’s response. If extraction or validation fails,
-feedback is sent back to the LLM, after which the LLM can retry
-answering the prompt.
+To achieve this, the prompt wrap will add some text to the base prompt,
+asking the LLM to reply with an integer. However, the prompt wrap does
+more: it also will attempt to extract and validate the integer from the
+LLM’s response. If extraction or validation fails, feedback is sent back
+to the LLM, after which the LLM can retry answering the prompt.
 
 ``` r
   "What is 2 + 2?" |>
@@ -172,8 +171,8 @@ succeed after a retry.
 
 ### Adding a reasoning mode to the LLM
 
-Prompt wrappers may also be used to add a reasoning mode to the LLM. It
-is hypothesized that this could improve the LLM’s performance on more
+Prompt wraps may also be used to add a reasoning mode to the LLM. It is
+hypothesized that this could improve the LLM’s performance on more
 complex tasks.
 
 For instance, function `answer_by_chain_of_thought` will add chain of
@@ -314,13 +313,13 @@ information or take other actions.
 #> [1] 22
 ```
 
-### Creating your own prompt wrappers
+### Creating your own prompt wraps
 
 Under the hood, prompts are just lists of a base prompt (a string) and a
-series of prompt wrappers.
+series of prompt wraps.
 
 You can thus create a function which takes a prompt and appends a new
-prompt wrapper to it.
+prompt wrap to it.
 
 Take a look at the source code for function `add_text`:
 
@@ -343,7 +342,7 @@ add_text <- function(
 }
 ```
 
-More complex prompt wrappers may also add extraction and validation
+More complex prompt wraps may also add extraction and validation
 functions. Take a look at the source code for function
 `answer_as_integer`:
 
@@ -408,9 +407,9 @@ validations are succesful). A validation function, on the other hand,
 only checks if the LLM’s response passes a logical test. Both extraction
 and validation functions can return feedback to the LLM.
 
-For more information, on what you can do with prompt wrappers, see the
+For more information, on what you can do with prompt wraps, see the
 documentation of the `prompt_wrap` class creator function:
-`create_prompt_wrap`. For examples of prompt wrapper functions, see, for
+`create_prompt_wrap`. For examples of prompt wrap functions, see, for
 instance the documentation and source code of `add_text`,
 `answer_as_integer`, `answer_by_chain_of_thought`, and `add_tools`.
 

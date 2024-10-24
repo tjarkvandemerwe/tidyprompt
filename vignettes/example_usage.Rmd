@@ -56,14 +56,14 @@ ollama <- create_fake_llm_provider()
 
 A simple string serves as the base for a prompt. 
 
-By adding prompt wrappers, you can influence various aspects of how the LLM handles the prompt, 
+By adding prompt wraps, you can influence various aspects of how the LLM handles the prompt, 
 while verifying that the output is structured and valid (including retries with feedback to the LLM if it is not).
 
 ```{r prompt_example1, cache=TRUE}
   "Hi there!" |>
     send_prompt(ollama)
 ```
-`add_text` is a simple example of a prompt wrapper. It simply adds some text at the end of the base prompt.
+`add_text` is a simple example of a prompt wrap. It simply adds some text at the end of the base prompt.
 
 ```{r prompt_example2, cache=TRUE}
   "Hi there!" |>
@@ -81,13 +81,13 @@ You can also construct the final prompt text, without sending it to an LLM provi
 
 ### Retrieving output in a specific format
 
-Using prompt wrappers, you can force the LLM to return the output in a specific format.
+Using prompt wraps, you can force the LLM to return the output in a specific format.
 You can also extract the output to turn it from a character into another data type.
 
-For instance, the `answer_as_integer` prompt wrapper will force the LLM to return an integer.
+For instance, the `answer_as_integer` prompt wrap will force the LLM to return an integer.
 
-To achieve this, the prompt wrapper will add some text to the base prompt, asking
-the LLM to reply with an integer. However, the prompt wrapper does more: it also
+To achieve this, the prompt wrap will add some text to the base prompt, asking
+the LLM to reply with an integer. However, the prompt wrap does more: it also
 will attempt to extract and validate the integer from the LLM's response. If
 extraction or validation fails, feedback is sent back to the LLM, after which 
 the LLM can retry answering the prompt.
@@ -108,7 +108,7 @@ Below is an example of a prompt which will initially fail, but will succeed afte
 
 ### Adding a reasoning mode to the LLM
 
-Prompt wrappers may also be used to add a reasoning mode to the LLM. It is hypothesized that this could
+Prompt wraps may also be used to add a reasoning mode to the LLM. It is hypothesized that this could
 improve the LLM's performance on more complex tasks. 
 
 For instance, function `answer_by_chain_of_thought` will add chain of thought reasoning mode to the LLM.
@@ -175,15 +175,15 @@ This enables the LLM to retrieve additional information or take other actions.
     send_prompt(ollama, verbose = TRUE)
 ```
 
-### Creating your own prompt wrappers
+### Creating your own prompt wraps
 
-Under the hood, prompts are just lists of a base prompt (a string) and a series of prompt wrappers.
+Under the hood, prompts are just lists of a base prompt (a string) and a series of prompt wraps.
 
-You can thus create a function which takes a prompt and appends a new prompt wrapper to it.
+You can thus create a function which takes a prompt and appends a new prompt wrap to it.
 
 Take a look at the source code for function `add_text`:
 
-```{r wrapper, echo=TRUE, eval=FALSE}
+```{r wrap, echo=TRUE, eval=FALSE}
 add_text <- function(
     prompt,
     text, position = c("after", "before"), sep = "\n\n"
@@ -202,10 +202,10 @@ add_text <- function(
 }
 ```
 
-More complex prompt wrappers may also add extraction and validation functions. Take a look
+More complex prompt wraps may also add extraction and validation functions. Take a look
 at the source code for function `answer_as_integer`:
 
-```{r wrapper_extract_validate, echo=TRUE, eval=FALSE}
+```{r wrap_extract_validate, echo=TRUE, eval=FALSE}
 answer_as_integer <- function(
     prompt,
     min = NULL,
@@ -265,7 +265,7 @@ return statement of send_prompt (if extractions and validations are succesful).
 A validation function, on the other hand, only checks if the LLM's response passes a logical test. Both
 extraction and validation functions can return feedback to the LLM.
 
-For more information, on what you can do with prompt wrappers, see the documentation
-of the `prompt_wrap` class creator function: `create_prompt_wrap`. For examples of prompt wrapper functions, 
+For more information, on what you can do with prompt wraps, see the documentation
+of the `prompt_wrap` class creator function: `create_prompt_wrap`. For examples of prompt wrap functions, 
 see, for instance the documentation and source code of `add_text`, `answer_as_integer`, 
 `answer_by_chain_of_thought`, and `add_tools`.
