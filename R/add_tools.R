@@ -217,32 +217,26 @@ add_tools <- function(prompt, tool_functions = list()) {
     }
 
     # Call the tool function with the arguments and capture errors
-    error <- FALSE
     result <- tryCatch({
-      # Call the tool function with the arguments
       do.call(tool_function, as.list(arguments_list))
     }, error = function(e) {
-      error <- TRUE
-      # Capture the error message
-      glue::glue("Error: {e$message}")
+      glue::glue("Error in {print(e$call) |> capture.output()}: {e$message}")
     })
 
-    if (!error) {
-      # Create some context around the result
-      argument_names <- names(formals(tool_function))
-      string_of_named_arguments <-
-        paste(argument_names, arguments_list, sep = " = ") |>
-        paste(collapse = ", ")
+    # Create some context around the result
+    argument_names <- names(formals(tool_function))
+    string_of_named_arguments <-
+      paste(argument_names, arguments_list, sep = " = ") |>
+      paste(collapse = ", ")
 
-      result <- glue::glue(
-        "function called: {function_name}
-        arguments used: {string_of_named_arguments}
-        result: {result}"
-      )
-    }
+    result_string <- glue::glue(
+      "function called: {function_name}
+      arguments used: {string_of_named_arguments}
+      result: {result}"
+    )
 
     # Return the result (or the error feedback)
-    return(create_llm_feedback(as.character(result)))
+    return(create_llm_feedback(result_string))
   }
   # Add tool_functions as an attribute to the extraction
   attr(extraction_fn, "tool_functions") <- tool_functions
