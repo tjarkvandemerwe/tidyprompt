@@ -88,6 +88,10 @@ send_prompt <- function(
   while (tries < max_interactions & !successful_output) {
     tries <- tries + 1
 
+    if (length(prompt_wraps) == 0)
+      successful_output <- TRUE
+
+    any_prompt_wrap_not_done <- FALSE
     for (prompt_wrap in prompt_wraps) {
       role <- "user"
 
@@ -110,7 +114,7 @@ send_prompt <- function(
         if (inherits(extraction_result, "llm_feedback")) {
           if (tool_called) role <- "system"
           response <- send_chat(extraction_result, role)
-          break
+          any_prompt_wrap_not_done <- TRUE; break
         }
 
         # If no llm_feedback, extraction was succesful
@@ -124,14 +128,13 @@ send_prompt <- function(
         # If it inherits llm_feedback, send the feedback to the LLM & get new response
         if (inherits(validation_result, "llm_feedback")) {
           response <- send_chat(validation_result)
-          break
+          any_prompt_wrap_not_done <- TRUE; break
         }
       }
-
-      # If no errors, break both loops
-      successful_output <- TRUE # To break the while-loop
-      break # To break the for-loop
     }
+
+    if (!any_prompt_wrap_not_done)
+      successful_output <- TRUE
   }
 
 

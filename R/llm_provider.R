@@ -174,3 +174,154 @@ create_ollama_llm_provider <- function(parameters = list(
     parameters = parameters
   )
 }
+
+
+#' Create a fake LLM provider (for development and testing purposes)
+#'
+#' This function creates a fake LLM provider that can be used for development
+#' and testing purposes. It is hardcoded to send back specific responses to
+#' specific prompts that are used in vignettes, tests, and examples.
+#' This is useful for running tests and builds in environments in which an
+#' actual LLM provider is not available.
+#'
+#' @return A new llm_provider object for use of the fake LLM provider
+#' @export
+create_fake_llm_provider <- function() {
+  complete_chat <- function(chat_history) {
+    last_msg <- tail(chat_history$content, 1)
+
+    answer_as_integer_input <-
+      "You must answer with only an integer (use no other characters)."
+
+    chain_of_thought_input <-
+      "To answer the user's prompt, you need to think step by step to arrive at a final answer."
+
+    if (last_msg == "Hi there!") {
+      return(list(
+        role = "assistant",
+        content = paste0(
+          "It's nice to meet you.",
+          " Is there something I can help you with or would you like to chat?"
+        )
+      ))
+    }
+
+    if (grepl(
+      "What is a large language model? Explain in 10 words.", last_msg,
+      fixed = TRUE
+    )) {
+      return(list(
+        role = "assistant",
+        content = paste0(
+          "Complex computer program trained on vast texts to generate human-like",
+          " responses."
+        )
+      ))
+    }
+
+    if (
+      grepl("What is 2 + 2?", last_msg, fixed = TRUE)
+      & grepl(answer_as_integer_input, last_msg, fixed = TRUE)
+      & !grepl(chain_of_thought_input, last_msg, fixed = TRUE)
+    ) {
+      return(list(
+        role = "assistant",
+        content = "4"
+      ))
+    }
+
+    if (
+      grepl("What is 2 + 2?", last_msg, fixed = TRUE)
+      & !grepl(answer_as_integer_input, last_msg, fixed = TRUE)
+    ) {
+      return(list(
+        role = "assistant",
+        content = "Four."
+      ))
+    }
+
+    if (
+      any(grepl("What is 2 + 2?", chat_history$content[chat_history$role == "user"], fixed = TRUE))
+      & grepl(answer_as_integer_input, last_msg, fixed = TRUE)
+      & !grepl(chain_of_thought_input, last_msg, fixed = TRUE)
+    ) {
+      return(list(
+        role = "assistant",
+        content = "4"
+      ))
+    }
+
+    if (
+      grepl("What is 2 + 2?", last_msg,  fixed = TRUE)
+      & grepl(chain_of_thought_input, last_msg,  fixed = TRUE)
+      & grepl(answer_as_integer_input, last_msg,  fixed = TRUE)
+    ) {
+      return(list(
+        role = "assistant",
+        content = glue::glue(
+          ">> step 1: Identify the mathematical operation in the prompt,
+          which is a simple addition problem.
+
+          >> step 2: Recall the basic arithmetic fact that 2 + 2 equals a specific
+          numerical value.
+
+          >> step 3: Apply this knowledge to determine the result of the addition problem,
+          using the known facts about numbers and their operations.
+
+          >> step 4: Conclude that based on this mathematical understanding, the
+          solution to the prompt \"What is 2 + 2?\" is a fixed numerical quantity.
+
+          FINISH[4]"
+        )
+      ))
+    }
+
+    if (grepl(
+      'example usage: FUNCTION[temperature_in_location]("Amsterdam", "Fahrenheit")',
+      last_msg,
+      fixed = TRUE
+    )) {
+      return(list(
+        role = "assistant",
+        content = glue::glue(
+          "I'll use the provided function to get the current temperature in Enschede.
+
+          FUNCTION[temperature_in_location](\"Enschede\", \"Celcius\")"
+        )
+      ))
+    }
+
+    if (
+      grepl("function called: temperature_in_location", last_msg, fixed = TRUE)
+      & grepl("arguments used: location = Enschede", last_msg, fixed = TRUE)
+    ) {
+      return(list(
+        role = "assistant",
+        content = "So the current temperature in Enschede is 22.7 degrees Celsius."
+      ))
+    }
+
+    if (
+      any(grepl(
+        "So the current temperature in Enschede is 22.7 degrees Celsius.",
+        chat_history$content[chat_history$role == "assistant"],
+        fixed = TRUE
+      ))
+      & grepl(last_msg, answer_as_integer_input, fixed = TRUE)
+    ) {
+      return(list(
+        role = "assistant",
+        content = "22"
+      ))
+    }
+
+    return(list(
+      role = "assistant",
+      content = "I'm a fake LLM! This is my default response."
+    ))
+  }
+
+  create_llm_provider(
+    complete_chat_function = complete_chat
+  )
+}

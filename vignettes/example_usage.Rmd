@@ -7,7 +7,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r chunk_options, include = FALSE, cache=TRUE}
+```{r chunk_options, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -42,6 +42,14 @@ openai <- create_openai_llm_provider(
 # Create your own LLM provider hook using create_llm_provider(); 
 #   see ?create_llm_provider for more information, and take a look at
 #   the source code of create_ollama_llm_provider() and create_openai_llm_provider()
+```
+
+```{r chunk_options, include = FALSE}
+
+# Setting up a fake LLM provider for environments in which a real LLM
+#   provider is not available
+ollama <- create_fake_llm_provider()
+
 ```
 
 ### Basic prompting
@@ -190,11 +198,7 @@ add_text <- function(
     }
   }
 
-  new_wrap <- prompt_wrap(
-    modify_fn = modify_fn
-  )
-
-  append_prompt_wrap(prompt, new_wrap)
+  prompt_wrap(prompt, modify_fn)
 }
 ```
 
@@ -250,13 +254,7 @@ answer_as_integer <- function(
     return(TRUE)
   }
 
-  new_wrap <- prompt_wrap(
-    modify_fn = modify_fn,
-    extraction_functions = list(extraction_fn),
-    validation_functions = list(validation_fn)
-  )
-
-  append_prompt_wrap(prompt, new_wrap)
+  prompt_wrap(prompt, modify_fn, extraction_fn, validation_fn)
 }
 ```
 
