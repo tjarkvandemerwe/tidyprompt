@@ -44,7 +44,7 @@ openai <- create_openai_llm_provider(
 #   the source code of create_ollama_llm_provider() and create_openai_llm_provider()
 ```
 
-```{r chunk_options, include = FALSE}
+```{r fake_llm_provider, include = FALSE}
 
 # Setting up a fake LLM provider for environments in which a real LLM
 #   provider is not available

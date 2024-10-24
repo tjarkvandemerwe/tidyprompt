@@ -33,5 +33,6 @@ Imports:
     httr,
     methods,
     stats,
-    stringr
+    stringr,
+    utils
 Config/testthat/edition: 3
