@@ -272,8 +272,8 @@ additional information or take other actions.</p>
 <span>    <span class="fu"><a href="../reference/add_text.html">add_text</a></span><span class="op">(</span><span class="st">"I want to know the Celcius degrees."</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/answer_as_integer.html">answer_as_integer</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/add_tools.html">add_tools</a></span><span class="op">(</span><span class="va">temperature_in_location</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="../reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="va">ollama</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; --- Sending message to LLM-provider: ---</span></span>
+<span>    <span class="fu"><a href="../reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="va">ollama</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; --- Sending message to LLM-provider: ---</span></span>
 <span><span class="co">#&gt; Hi, what is the weather temperature in Enschede?</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; I want to know the Celcius degrees.</span></span>
@@ -309,7 +309,7 @@ additional information or take other actions.</p>
 <span><span class="co">#&gt; You must answer with only an integer (use no other characters).</span></span>
 <span><span class="co">#&gt; --- Received response from LLM-provider: ---</span></span>
 <span><span class="co">#&gt; 22</span></span>
-<span><span class="co">#&gt; [1] 22</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 22</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="creating-your-own-prompt-wraps">Creating your own prompt wraps<a class="anchor" aria-label="anchor" href="#creating-your-own-prompt-wraps"></a>
@@ -320,7 +320,7 @@ and a series of prompt wraps.</p>
 prompt wrap to it.</p>
 <p>Take a look at the source code for function
 <code>add_text</code>:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">add_text</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span></span>
 <span>    <span class="va">prompt</span>,</span>
 <span>    <span class="va">text</span>, <span class="va">position</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"after"</span>, <span class="st">"before"</span><span class="op">)</span>, <span class="va">sep</span> <span class="op">=</span> <span class="st">"\n\n"</span></span>
@@ -340,7 +340,7 @@ prompt wrap to it.</p>
 <p>More complex prompt wraps may also add extraction and validation
 functions. Take a look at the source code for function
 <code>answer_as_integer</code>:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">answer_as_integer</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span></span>
 <span>    <span class="va">prompt</span>,</span>
 <span>    <span class="va">min</span> <span class="op">=</span> <span class="cn">NULL</span>,</span>
