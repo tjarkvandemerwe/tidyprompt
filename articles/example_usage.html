@@ -119,12 +119,16 @@ adds some text at the end of the base prompt.</p>
 an LLM provider.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  <span class="st">"Hi there!"</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="../reference/add_text.html">add_text</a></span><span class="op">(</span><span class="st">"What is a large language model? Explain in 10 words."</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="../reference/construct_prompt_text.html">construct_prompt_text</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Hi there!</span></span>
+<span>    <span class="fu"><a href="../reference/add_text.html">add_text</a></span><span class="op">(</span><span class="st">"What is a large language model? Explain in 10 words."</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #0000BB;">&lt;prompt&gt;</span></span></span>
+<span><span class="co"><span style="color: #0000BB;">#&gt; </span><span style="color: #555555;">The base prompt is modified by 1 wrapper functions, resulting in:</span></span></span>
+<span><span class="co"><span style="color: #555555;">#&gt; </span><span style="color: #00BB00;">&gt; </span>Hi there!</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">&gt; </span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">&gt; </span>What is a large language model? Explain in 10 words. </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; What is a large language model? Explain in 10 words.</span></span></code></pre></div>
+<span><span class="co"><span style="color: #555555;">#&gt; Use &lt;prompt&gt;$prompt_wraps to show the wrapper functions.</span></span></span>
+<span><span class="co"><span style="color: #555555;">#&gt; Use &lt;prompt&gt;$base_prompt to show the base prompt.</span></span></span>
+<span><span class="co"><span style="color: #555555;">#&gt; </span></span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="retrieving-output-in-a-specific-format">Retrieving output in a specific format<a class="anchor" aria-label="anchor" href="#retrieving-output-in-a-specific-format"></a>
