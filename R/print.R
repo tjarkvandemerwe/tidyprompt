@@ -20,23 +20,19 @@
 #'   readability, similar to the printing of tibbles in the tidyverse.
 #'
 #' @return This function is used for its side effect of printing the prompt
-#'   to the console. It returns `NULL` invisibly.
+#'   to the console. It returns `p` invisibly.
 #'
 #' @examples
 #' \dontrun{
 #'   # Creating a simple prompt object
-#'   prompt_obj <- list(
-#'     base_prompt = "What is the capital of France?",
-#'     prompt_wraps = list()  # No wrappers in this example
-#'   )
+#'   prompt_obj <- prompt("What is the capital of France?")
 #'
 #'   # Print the prompt object
 #'   print(prompt_obj)
 #'
 #'   # Adding some wrapper functions
-#'   prompt_obj$prompt_wraps <- list(
-#'     function(x) paste0("Answer concisely: ", x)
-#'   )
+#'   prompt_obj <- prompt_obj |>
+#'     prompt_wrap(modify_fn = \(x) paste0("Answer concisely: ", x))
 #'
 #'   # Print the modified prompt object
 #'   print(prompt_obj)
@@ -69,8 +65,10 @@ print.prompt <- function(p) {
     full_text <- p |> construct_prompt_text()
     formatted_text <- format_with_prefix(full_text, line_prefix)
     cat(formatted_text, "\n")
-    cat(crayon::silver("\nUse prompt$prompt_wraps to show the wrapper functions.\n"))
+    cat(crayon::silver("\nUse <prompt>$prompt_wraps to show the wrapper functions.\n"))
   }
 
-  cat(crayon::silver("Use prompt$base_prompt to show the base prompt.\n"))
+  cat(crayon::silver("Use <prompt>$base_prompt to show the base prompt.\n"))
+
+  return(invisible(p))
 }
