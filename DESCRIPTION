@@ -28,6 +28,7 @@ Suggests:
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Imports: 
+    crayon,
     dplyr,
     glue,
     httr,
