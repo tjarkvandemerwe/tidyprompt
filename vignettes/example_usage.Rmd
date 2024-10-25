@@ -74,9 +74,7 @@ You can also construct the final prompt text, without sending it to an LLM provi
 
 ```{r prompt_example3}
   "Hi there!" |>
-    add_text("What is a large language model? Explain in 10 words.") |>
-    construct_prompt_text() |>
-    cat()
+    add_text("What is a large language model? Explain in 10 words.")
 ```
 
 ### Retrieving output in a specific format
