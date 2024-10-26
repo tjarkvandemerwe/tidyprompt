@@ -14,6 +14,7 @@
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/create_fake_llm_provider.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/create_llm_feedback.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/create_llm_provider.html</loc></url>
+<url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/create_mistral_llm_provider.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/create_ollama_llm_provider.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/create_openai_llm_provider.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/extract_doc_section.html</loc></url>
