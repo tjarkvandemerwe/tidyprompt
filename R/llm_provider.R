@@ -89,14 +89,13 @@ create_llm_provider <- function(
 #' Create a new Ollama llm_provider instance
 #'
 #' @param parameters A named list of parameters. Currently the following parameters are required:
-#' - model: The name of the model to use (e.g., "llama3.1:8b")
-#' - url: The URL of the Ollama API endpoint
-
-#' Additional parameters may be passed by adding them to the parameters list;
-#' these parameters will be passed to the Ollama API via the body of the POST request.
-#' Options specifically can be set with the $set_option function (e.g.,
-#' ollama$set_option("option_name", "option_value")). See options at
-#' https://ollama.com/docs/api/chat.
+#'    - model: The name of the model to use (e.g., "llama3.1:8b")
+#'    - url: The URL of the Ollama API endpoint
+#'  Additional parameters may be passed by adding them to the parameters list;
+#'  these parameters will be passed to the Ollama API via the body of the POST request.
+#'  Options specifically can be set with the $set_options function (e.g.,
+#'  ollama$set_options(list(temperature = 0.8))). See available options at
+#'  https://ollama.com/docs/api/chat.
 #'
 #' @return A new llm_provider object for use of the Ollama API
 #' @export
@@ -243,6 +242,31 @@ create_openai_llm_provider <- function(parameters = list(
 
 
 
+#' Create a new OpenRouter llm_provider instance
+#'
+#'
+#' @param parameters A named list of parameters. Currently the following parameters are required:
+#'  - model: The name of the model to use (e.g., "qwen/qwen-2.5-7b-instruct"; see
+#'  https://openrouter.ai/docs/models).
+#'  - api_key: The API key to use for authentication with the OpenRouter API (see
+#'  https://openrouter.ai/docs/api-keys).
+#'  - url: The URL to the OpenRouter API (default: "https://openrouter.ai/api/v1/chat/completions").
+#'  Additional parameters are appended to the request body; see the OpenRouter API
+#'  documentation for more information: https://openrouter.ai/docs/parameters
+#'
+#' @return A new llm_provider object for use of the OpenRouter API
+#' @export
+create_openrouter_llm_provider <- function(parameters = list(
+  model = "qwen/qwen-2.5-7b-instruct",
+  api_key = Sys.getenv("OPENROUTER_API_KEY"),
+  url = "https://openrouter.ai/api/v1/chat/completions"
+)) {
+  # OpenRouter follows the same API structure as OpenAI
+  create_openai_llm_provider(parameters)
+}
+
+
+
 #' Create a new Mistral llm_provider instance
 #'
 #' This function creates a new llm_provider that interacts with the Mistral API.
@@ -309,6 +333,7 @@ create_xai_llm_provider <- function(parameters = list(
   # XAI follows the same API structure as OpenAI
   create_openai_llm_provider(parameters)
 }
+
 
 
 #' Create a new Google Gemini llm_provider instance
