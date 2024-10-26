@@ -12,6 +12,7 @@
 #'     \item{`prompt_wraps`}{A list containing wrapper functions that modify
 #'     the base prompt.}
 #'   }
+#' @param ... Additional arguments (not used)
 #'
 #' @details The `print.prompt` function displays the base prompt and, if applicable,
 #'   the modified prompt after applying the wrapper functions. The output is formatted
@@ -40,7 +41,7 @@
 #'
 #' @importFrom crayon blue green silver
 #' @export
-print.prompt <- function(p) {
+print.prompt <- function(p, ...) {
   cat(crayon::blue("<prompt>\n"))
 
   line_prefix <- crayon::green("> ")
