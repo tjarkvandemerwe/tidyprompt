@@ -268,6 +268,28 @@ create_mistral_llm_provider <- function(parameters = list(
 
 
 
+#' Create a new Groq llm_provider instance
+#'
+#' @param parameters A named list of parameters. Currently the following parameters are required:
+#'   - model: The name of the model to use (e.g., "llama-3.1-8b-instant")
+#'   - api_key: The API key to use for authentication with the Groq API
+#'   - url: The URL to the Groq API (default: "https://api.groq.com/openai/v1/chat/completions")
+#'  Additional parameters are appended to the request body; see the Groq API
+#'  documentation for more information: https://console.groq.com/docs/api-reference#chat-create
+#'
+#' @return A new llm_provider object for use of the Groq API
+#' @export
+create_groq_llm_provider <- function(parameters = list(
+  model = "llama-3.1-8b-instant",
+  api_key = Sys.getenv("GROQ_API_KEY"),
+  url = "https://api.groq.com/openai/v1/chat/completions"
+)) {
+  # Groq follows the same API structure as OpenAI
+  create_openai_llm_provider(parameters)
+}
+
+
+
 #' Create a new XAI (Grok) llm_provider instance
 #'
 #' @param parameters A named list of parameters. Currently the following parameters are required:
@@ -286,6 +308,81 @@ create_xai_llm_provider <- function(parameters = list(
 )) {
   # XAI follows the same API structure as OpenAI
   create_openai_llm_provider(parameters)
+}
+
+
+#' Create a new Google Gemini llm_provider instance
+#'
+#' @param parameters A named list of parameters. Currently the following parameters are required:
+#'  - model: The name of the model to use (e.g., "gemini-1.5-flash")
+#'  - api_key: The API key to use for authentication with the Google AI Studio API
+#'  - base_url: The URL to the Google AI Studio API (default: "https://generativelanguage.googleapis.com/v1beta/models/")
+#'  Additional parameters are appended to the request body; see the Google AI Studio API
+#'  documentation for more information: https://ai.google.dev/gemini-api/docs/text-generation
+#'  and https://github.com/google/generative-ai-docs/blob/main/site/en/gemini-api/docs/get-started/rest.ipynb
+#'
+#' @return A new llm_provider object for use of the Google Gemini API
+#' @export
+create_google_gemini_llm_provider <- function(parameters = list(
+  model = "gemini-1.5-flash",
+  api_key = Sys.getenv("GOOGLE_AI_STUDIO_API_KEY"),
+  base_url = "https://generativelanguage.googleapis.com/v1beta/models/"
+)) {
+  complete_chat <- function(chat_history) {
+    # Construct URL for the API request
+    url <- paste0(
+      parameters$base_url,
+      parameters$model,
+      ":generateContent",
+      "?key=", parameters$api_key
+    )
+
+    headers <- c(
+      "Content-Type" = "application/json"
+    )
+
+    # Format chat_history for API compatibility with the 'contents' format
+    formatted_contents <- lapply(seq_len(nrow(chat_history)), function(i) {
+      list(
+        role = ifelse(chat_history$role[i] == "assistant", "model", chat_history$role[i]),
+        parts = list(list(text = chat_history$content[i]))
+      )
+    })
+
+    # Build the request body with 'contents' field
+    body <- list(
+      contents = formatted_contents
+    )
+
+    # Add aditional parameters to the body
+    body <- c(body,
+      parameters[
+        names(parameters) != "api_key"
+        & names(parameters) != "base_url"
+        & names(parameters) != "model"
+      ]
+    )
+
+    # Send the POST request with the properly formatted body
+    response <- httr::POST(url, httr::add_headers(.headers = headers), body = body, encode = "json")
+
+    # Check if the request was successful
+    if (httr::status_code(response) == 200) {
+      content <- httr::content(response, as = "parsed")
+
+      return(list(
+        role = "assistant",
+        content = content$candidates[[1]]$content$parts[[1]]$text
+      ))
+    } else {
+      stop("Error: ", httr::status_code(response), " - ", httr::content(response, as = "text"))
+    }
+  }
+
+  create_llm_provider(
+    complete_chat_function = complete_chat,
+    parameters = parameters
+  )
 }
 
 
