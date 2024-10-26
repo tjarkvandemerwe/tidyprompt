@@ -5,7 +5,8 @@
 \title{Create a new OpenAI llm_provider instance}
 \usage{
 create_openai_llm_provider(
-  parameters = list(model = "gpt-4o-mini", api_key = Sys.getenv("OPENAI_API_KEY"))
+  parameters = list(model = "gpt-4o-mini", api_key = Sys.getenv("OPENAI_API_KEY"), url =
+    "https://api.openai.com/v1/chat/completions")
 )
 }
 \arguments{
@@ -14,7 +15,10 @@ create_openai_llm_provider(
 \item model: The name of the model to use (e.g., "gpt-4o-mini")
 \item api_key: The API key to use for authentication with the OpenAI API. This should be
 a project API key (not a user API key) and it should have sufficient permissions.
-It is recommended to safely store the API key in an environment variable.
+\item url: The URL to the OpenAI API (default: "https://api.openai.com/v1/chat/completions").
+(May also be an alternative endpoint that provides a similar API.)
+Additional parameters are appended to the request body; see the OpenAI API
+documentation for more information: https://platform.openai.com/docs/api-reference/chat
 }}
 }
 \value{

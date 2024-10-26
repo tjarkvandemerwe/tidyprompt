@@ -84,57 +84,7 @@ create_llm_provider <- function(
   return(llm_provider)
 }
 
-#' Create a new OpenAI llm_provider instance
-#'
-#' This function creates a new llm_provider that interacts with the Open AI API
-#'
-#' @param parameters A named list of parameters. Currently the following parameters are required:
-#'  - model: The name of the model to use (e.g., "gpt-4o-mini")
-#'  - api_key: The API key to use for authentication with the OpenAI API. This should be
-#'  a project API key (not a user API key) and it should have sufficient permissions.
-#'  It is recommended to safely store the API key in an environment variable.
-#'
-#' @return A new llm_provider object for use of the OpenAI API
-#'
-#' @export
-create_openai_llm_provider <- function(parameters = list(
-  model = "gpt-4o-mini",
-  api_key = Sys.getenv("OPENAI_API_KEY")
-)) {
-  complete_chat <- function(chat_history) {
-    url <- "https://api.openai.com/v1/chat/completions"
-    headers <- c(
-      "Content-Type" = "application/json",
-      "Authorization" = paste("Bearer", parameters$api_key)
-    )
 
-    # Prepare the body by converting chat_history dataframe to list of lists
-    body <- list(
-      model = parameters$model,
-      messages = lapply(seq_len(nrow(chat_history)), function(i) {
-        list(role = chat_history$role[i], content = chat_history$content[i])
-      })
-    )
-
-    response <- httr::POST(url, httr::add_headers(.headers = headers), body = body, encode = "json")
-
-    # Check if the request was successful
-    if (httr::status_code(response) == 200) {
-      content <- httr::content(response, as = "parsed")
-      return(list(
-        role = content$choices[[1]]$message$role,
-        content = content$choices[[1]]$message$content
-      ))
-    } else {
-      stop("Error: ", httr::status_code(response))
-    }
-  }
-
-  create_llm_provider(
-    complete_chat_function = complete_chat,
-    parameters = parameters
-  )
-}
 
 #' Create a new Ollama llm_provider instance
 #'
@@ -192,26 +142,163 @@ create_ollama_llm_provider <- function(parameters = list(
     parameters = parameters
   )
 
-  # Additional function to set options for the Ollama API
-  #   (These options are a list within the regular parameters list)
-  set_option <- function(option_name, value) {
-    if (!is.character(option_name) | length(option_name) != 1)
-      stop("option_name must be a single string")
+  # Additional functions to get/set options for the Ollama API
+  #   These options are a list within the regular parameters list
+  #   While they can be set directly within the parameters list,
+  #   these functions provide a more convenient way to manage them
+  #   (given their position in the body of the POST request sent to Ollama)
+  set_options <- function(named_list_of_options) {
+    if (length(named_list_of_options) == 0)
+      stop("No options provided")
 
+    if (length(named_list_of_options) > 0 & is.null(names(named_list_of_options))) {
+      stop("named_list_of_options must be a named list")
+    }
+
+    # Merge new options with existing ones
     options <- parameters$options
     if (length(options) == 0)
       options <- list()
 
-    options[[option_name]] <- value
-    parameters$options <<- options
+    updated_options <- utils::modifyList(options, named_list_of_options)
+    for (name in names(updated_options)) {
+      assign(name, updated_options[[name]], envir = environment())
+    }
+    parameters$options <<- updated_options
   }
-  # Connect function to the provider environment
-  environment(set_option) <- ollama$get_env()
-  # Add the function to the provider object
-  ollama$set_option <- set_option
+  # Connect function to the provider environment:
+  environment(set_options) <- ollama$get_env()
+  # Add the function to the provider object:
+  ollama$set_options <- set_options
+
+  # Function to get the options
+  get_options <- function() {
+    return(parameters$options)
+  }
+  environment(get_options) <- ollama$get_env()
+  ollama$get_options <- get_options
 
   return(ollama)
 }
+
+
+
+#' Create a new OpenAI llm_provider instance
+#'
+#' This function creates a new llm_provider that interacts with the Open AI API
+#'
+#' @param parameters A named list of parameters. Currently the following parameters are required:
+#'    - model: The name of the model to use (e.g., "gpt-4o-mini")
+#'    - api_key: The API key to use for authentication with the OpenAI API. This should be
+#'      a project API key (not a user API key) and it should have sufficient permissions.
+#'    - url: The URL to the OpenAI API (default: "https://api.openai.com/v1/chat/completions").
+#'      (May also be an alternative endpoint that provides a similar API.)
+#'  Additional parameters are appended to the request body; see the OpenAI API
+#'  documentation for more information: https://platform.openai.com/docs/api-reference/chat
+#'
+#' @return A new llm_provider object for use of the OpenAI API
+#'
+#' @export
+create_openai_llm_provider <- function(parameters = list(
+  model = "gpt-4o-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  url = "https://api.openai.com/v1/chat/completions"
+)) {
+  complete_chat <- function(chat_history) {
+    url <- "https://api.openai.com/v1/chat/completions"
+    headers <- c(
+      "Content-Type" = "application/json",
+      "Authorization" = paste("Bearer", parameters$api_key)
+    )
+
+    # Prepare the body by converting chat_history dataframe to list of lists
+    body <- list(
+      messages = lapply(seq_len(nrow(chat_history)), function(i) {
+        list(role = chat_history$role[i], content = chat_history$content[i])
+      })
+    )
+
+    # Add all other parameters to the body
+    body <- c(body, parameters[names(parameters) != "api_key" & names(parameters) != "url"])
+
+    response <- httr::POST(url, httr::add_headers(.headers = headers), body = body, encode = "json")
+
+    # Check if the request was successful
+    if (httr::status_code(response) == 200) {
+      content <- httr::content(response, as = "parsed")
+      return(list(
+        role = content$choices[[1]]$message$role,
+        content = content$choices[[1]]$message$content
+      ))
+    } else {
+      stop("Error: ", httr::status_code(response))
+    }
+  }
+
+  create_llm_provider(
+    complete_chat_function = complete_chat,
+    parameters = parameters
+  )
+}
+
+
+
+#' Create a new Mistral llm_provider instance
+#'
+#' This function creates a new llm_provider that interacts with the Mistral API.
+#'
+#' @param parameters A named list of parameters. Currently the following parameters are required:
+#'    - model: The name of the model to use (e.g., "mistral-small-latest")
+#'    - api_key: The API key to use for authentication with the Mistral API
+#'    - url: The URL to the Mistral API (default: "https://api.mistral.ai/v1/chat/completions")
+#'  Additional parameters are appended to the request body; see the Mistral API
+#'  documentation for more information: https://docs.mistral.ai/api/#tag/chat
+#'
+#' @return A new llm_provider object for use of the Mistral API
+#'
+#' @export
+create_mistral_llm_provider <- function(parameters = list(
+  model = "mistral-small-latest",
+  api_key = Sys.getenv("MISTRAL_API_KEY"),
+  url = "https://api.mistral.ai/v1/chat/completions"
+)) {
+  complete_chat <- function(chat_history) {
+    url <- "https://api.mistral.ai/v1/chat/completions"
+    headers <- c(
+      "Content-Type" = "application/json",
+      "Authorization" = paste("Bearer", parameters$api_key)
+    )
+
+    # Prepare the body by converting chat_history dataframe to list of lists
+    body <- list(
+      messages = lapply(seq_len(nrow(chat_history)), function(i) {
+        list(role = chat_history$role[i], content = chat_history$content[i])
+      })
+    )
+
+    # Append parameters to the body (except for api_key and url)
+    body <- c(body, parameters[names(parameters) != "api_key" & names(parameters) != "url"])
+
+    response <- httr::POST(url, httr::add_headers(.headers = headers), body = body, encode = "json")
+
+    # Check if the request was successful
+    if (httr::status_code(response) == 200) {
+      content <- httr::content(response, as = "parsed")
+      return(list(
+        role = content$choices[[1]]$message$role,
+        content = content$choices[[1]]$message$content
+      ))
+    } else {
+      stop("Error: ", httr::status_code(response))
+    }
+  }
+
+  create_llm_provider(
+    complete_chat_function = complete_chat,
+    parameters = parameters
+  )
+}
+
 
 
 #' Create a fake LLM provider (for development and testing purposes)
