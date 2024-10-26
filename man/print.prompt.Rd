@@ -4,15 +4,18 @@
 \alias{print.prompt}
 \title{Print Method for Prompt Objects}
 \usage{
-\method{print}{prompt}(p)
+\method{print}{prompt}(x, ...)
 }
 \arguments{
-\item{p}{A \code{prompt} object. The object should contain:
+\item{x}{A \code{prompt} object. The object should contain:
 \describe{
 \item{\code{base_prompt}}{A character string containing the base prompt text.}
 \item{\code{prompt_wraps}}{A list containing wrapper functions that modify
 the base prompt.}
 }}
+
+\item{...}{Additional arguments passed to \code{print.prompt}
+(not used; needs to be present in line with guidelines for generic functions).}
 }
 \value{
 This function is used for its side effect of printing the prompt
