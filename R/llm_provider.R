@@ -205,7 +205,7 @@ create_openai_llm_provider <- function(parameters = list(
   url = "https://api.openai.com/v1/chat/completions"
 )) {
   complete_chat <- function(chat_history) {
-    url <- "https://api.openai.com/v1/chat/completions"
+    url <- parameters$url
     headers <- c(
       "Content-Type" = "application/json",
       "Authorization" = paste("Bearer", parameters$api_key)
@@ -262,41 +262,30 @@ create_mistral_llm_provider <- function(parameters = list(
   api_key = Sys.getenv("MISTRAL_API_KEY"),
   url = "https://api.mistral.ai/v1/chat/completions"
 )) {
-  complete_chat <- function(chat_history) {
-    url <- "https://api.mistral.ai/v1/chat/completions"
-    headers <- c(
-      "Content-Type" = "application/json",
-      "Authorization" = paste("Bearer", parameters$api_key)
-    )
+  # Mistral follows the same API structure as OpenAI
+  create_openai_llm_provider(parameters)
+}
 
-    # Prepare the body by converting chat_history dataframe to list of lists
-    body <- list(
-      messages = lapply(seq_len(nrow(chat_history)), function(i) {
-        list(role = chat_history$role[i], content = chat_history$content[i])
-      })
-    )
 
-    # Append parameters to the body (except for api_key and url)
-    body <- c(body, parameters[names(parameters) != "api_key" & names(parameters) != "url"])
 
-    response <- httr::POST(url, httr::add_headers(.headers = headers), body = body, encode = "json")
-
-    # Check if the request was successful
-    if (httr::status_code(response) == 200) {
-      content <- httr::content(response, as = "parsed")
-      return(list(
-        role = content$choices[[1]]$message$role,
-        content = content$choices[[1]]$message$content
-      ))
-    } else {
-      stop("Error: ", httr::status_code(response))
-    }
-  }
-
-  create_llm_provider(
-    complete_chat_function = complete_chat,
-    parameters = parameters
-  )
+#' Create a new XAI (Grok) llm_provider instance
+#'
+#' @param parameters A named list of parameters. Currently the following parameters are required:
+#'   - model: The name of the model to use (e.g., "grok-beta")
+#'   - api_key: The API key to use for authentication with the XAI API
+#'   - url: The URL to the XAI API (default: "https://api.xai.ai/v1/chat/completions")
+#'  Additional parameters are appended to the request body; see the XAI API
+#'  documentation for more information: https://docs.x.ai/api/endpoints#chat-completions
+#'
+#' @return A new llm_provider object for use of the XAI API
+#' @export
+create_xai_llm_provider <- function(parameters = list(
+  model = "grok-beta",
+  api_key = Sys.getenv("XAI_API_KEY"),
+  url = "https://api.x.ai/v1/chat/completions"
+)) {
+  # XAI follows the same API structure as OpenAI
+  create_openai_llm_provider(parameters)
 }
 
 
