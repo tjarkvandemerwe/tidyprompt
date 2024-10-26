@@ -34,7 +34,7 @@ also write your own.
 
 * **function calling**: Give your LLM the ability to autonomously call R functions ('tools'). With this, the LLM can retrieve information or take other actions.
 
-* **compatible with all LLM providers**: Usable with any LLM provider that supports chat completion. Use included LLM providers such as Ollama (on your local PC or your own server) or the OpenAI API. Or easily write a hook for any other LLM provider.
+* **compatible with all LLM providers**: Usable with any LLM provider that supports chat completion. Use included LLM providers such as Ollama (local PC/on your own server), OpenAI, Mistral, Groq, XAI (Grok), or Google Gemini. Or easily write your own hook for any other LLM provider. 
 
 ## Installation
 

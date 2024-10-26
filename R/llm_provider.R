@@ -314,8 +314,8 @@ create_xai_llm_provider <- function(parameters = list(
 #' Create a new Google Gemini llm_provider instance
 #'
 #' @param parameters A named list of parameters. Currently the following parameters are required:
-#'  - model: The name of the model to use (e.g., "gemini-1.5-flash")
-#'  - api_key: The API key to use for authentication with the Google AI Studio API
+#'  - model: The name of the model to use (e.g., "gemini-1.5-flash"; see https://ai.google.dev/gemini-api/docs/models/gemini)
+#'  - api_key: The API key to use for authentication (get at https://aistudio.google.com/app/apikey)
 #'  - base_url: The URL to the Google AI Studio API (default: "https://generativelanguage.googleapis.com/v1beta/models/")
 #'  Additional parameters are appended to the request body; see the Google AI Studio API
 #'  documentation for more information: https://ai.google.dev/gemini-api/docs/text-generation

@@ -32,8 +32,9 @@ Key features of `tidyprompt` are:
 
 - **compatible with all LLM providers**: Usable with any LLM provider
   that supports chat completion. Use included LLM providers such as
-  Ollama (on your local PC or your own server) or the OpenAI API. Or
-  easily write a hook for any other LLM provider.
+  Ollama (local PC/on your own server), OpenAI, Mistral, Groq, XAI
+  (Grok), or Google Gemini. Or easily write your own hook for any other
+  LLM provider.
 
 ## Installation
 
