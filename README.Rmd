@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 # tidyprompt
 
 <!-- badges: start -->
+[![R-CMD-check](https://github.com/tjarkvandemerwe/tidyprompt/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/tjarkvandemerwe/tidyprompt/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 `tidyprompt` is an R package to prompt and empower your large language models (LLMs), 
