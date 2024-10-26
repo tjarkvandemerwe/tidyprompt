@@ -4,6 +4,8 @@
 # tidyprompt
 
 <!-- badges: start -->
+
+[![R-CMD-check](https://github.com/tjarkvandemerwe/tidyprompt/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/tjarkvandemerwe/tidyprompt/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 `tidyprompt` is an R package to prompt and empower your large language
@@ -112,12 +114,15 @@ LLM provider.
 
 ``` r
   "Hi there!" |>
-    add_text("What is a large language model? Explain in 10 words.") |>
-    construct_prompt_text() |>
-    cat()
-#> Hi there!
+    add_text("What is a large language model? Explain in 10 words.")
+#> <prompt>
+#> The base prompt is modified by 1 wrapper functions, resulting in:
+#> > Hi there!
+#> > 
+#> > What is a large language model? Explain in 10 words. 
 #> 
-#> What is a large language model? Explain in 10 words.
+#> Use <prompt>$prompt_wraps to show the wrapper functions.
+#> Use <prompt>$base_prompt to show the base prompt.
 ```
 
 ### Retrieving output in a specific format
@@ -274,44 +279,45 @@ information or take other actions.
     answer_as_integer() |>
     add_tools(temperature_in_location) |>
     send_prompt(ollama, verbose = TRUE)
-#> --- Sending message to LLM-provider: ---
-#> Hi, what is the weather temperature in Enschede?
-#> 
-#> I want to know the Celcius degrees.
-#> 
-#> You must answer with only an integer (use no other characters).
-#> 
-#> If you need more information, you can call functions to help you.
-#> To call a function, type:
-#>   FUNCTION[<function name here>](<argument 1>, <argument 2>, etc...)
-#> 
-#> The following functions are available:
-#> 
-#> function name: temperature_in_location
-#> description: Get the temperature in a location
-#> arguments:
-#>     - location: Location, must be one of: "Amsterdam", "Utrecht", "Enschede"
-#>     - unit: Unit, must be one of: "Celcius", "Fahrenheit"
-#> return value: The temperature in the specified location and unit
-#> example usage: FUNCTION[temperature_in_location]("Amsterdam", "Fahrenheit")
-#> 
-#> After you call a function, wait until you receive more information.
-#> --- Received response from LLM-provider: ---
-#> I'll use the provided function to get the current temperature in Enschede.
-#> 
-#> FUNCTION[temperature_in_location]("Enschede", "Celcius")
-#> --- Sending message to LLM-provider: ---
-#> function called: temperature_in_location
-#> arguments used: location = Enschede, unit = Celcius
-#> result: 22.7
-#> --- Received response from LLM-provider: ---
-#> So the current temperature in Enschede is 22.7 degrees Celsius.
-#> --- Sending message to LLM-provider: ---
-#> You must answer with only an integer (use no other characters).
-#> --- Received response from LLM-provider: ---
-#> 22
-#> [1] 22
 ```
+
+    #> --- Sending message to LLM-provider: ---
+    #> Hi, what is the weather temperature in Enschede?
+    #> 
+    #> I want to know the Celcius degrees.
+    #> 
+    #> You must answer with only an integer (use no other characters).
+    #> 
+    #> If you need more information, you can call functions to help you.
+    #> To call a function, type:
+    #>   FUNCTION[<function name here>](<argument 1>, <argument 2>, etc...)
+    #> 
+    #> The following functions are available:
+    #> 
+    #> function name: temperature_in_location
+    #> description: Get the temperature in a location
+    #> arguments:
+    #>     - location: Location, must be one of: "Amsterdam", "Utrecht", "Enschede"
+    #>     - unit: Unit, must be one of: "Celcius", "Fahrenheit"
+    #> return value: The temperature in the specified location and unit
+    #> example usage: FUNCTION[temperature_in_location]("Amsterdam", "Fahrenheit")
+    #> 
+    #> After you call a function, wait until you receive more information.
+    #> --- Received response from LLM-provider: ---
+    #> I'll use the provided function to get the current temperature in Enschede.
+    #> 
+    #> FUNCTION[temperature_in_location]("Enschede", "Celcius")
+    #> --- Sending message to LLM-provider: ---
+    #> function called: temperature_in_location
+    #> arguments used: location = Enschede, unit = Celcius
+    #> result: 22.7
+    #> --- Received response from LLM-provider: ---
+    #> So the current temperature in Enschede is 22.7 degrees Celsius.
+    #> --- Sending message to LLM-provider: ---
+    #> You must answer with only an integer (use no other characters).
+    #> --- Received response from LLM-provider: ---
+    #> 22
+    #> [1] 22
 
 ### Creating your own prompt wraps
 
