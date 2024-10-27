@@ -124,8 +124,8 @@ create_llm_provider <- function(
 #'  Options specifically can be set with the $set_options function (e.g.,
 #'  ollama$set_options(list(temperature = 0.8))). See available options at
 #'  https://ollama.com/docs/api/chat.#'
-#'  @param verbose A logical indicating whether the interaction with the LLM
-#'  provider should be printed to the console. Default is TRUE.
+#' @param verbose A logical indicating whether the interaction with the LLM provider
+#' should be printed to the console. Default is TRUE.
 #'
 #' @return A new llm_provider object for use of the Ollama API
 #' @export

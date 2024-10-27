@@ -21,9 +21,10 @@ these parameters will be passed to the Ollama API via the body of the POST reque
 Options specifically can be set with the $set_options function (e.g.,
 ollama$set_options(list(temperature = 0.8))). See available options at
 https://ollama.com/docs/api/chat.#'
-@param verbose A logical indicating whether the interaction with the LLM
-provider should be printed to the console. Default is TRUE.
 }}
+
+\item{verbose}{A logical indicating whether the interaction with the LLM provider
+should be printed to the console. Default is TRUE.}
 }
 \value{
 A new llm_provider object for use of the Ollama API
