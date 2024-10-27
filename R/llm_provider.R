@@ -127,7 +127,7 @@ create_llm_provider <- function(
 #' @return A list with the role and content of the response from the LLM provider
 #' @export
 make_llm_provider_request <- function(
-  url, body, stream, verbose = getOption("tidyprompt.verbose", TRUE)
+  url, headers, body, stream, verbose = getOption("tidyprompt.verbose", TRUE)
 ) {
   if (stream == TRUE) {
     # Make the POST request with streaming
@@ -137,17 +137,20 @@ make_llm_provider_request <- function(
     httr::handle_reset(url)
     response <- httr::POST(
       url,
-      config = httr::write_stream(function(x) {
-        content <- x |> rawToChar() |> jsonlite::fromJSON()
+      config = list(
+        httr::add_headers(.headers = headers),
+        httr::write_stream(function(x) {
+          content <- x |> rawToChar() |> jsonlite::fromJSON()
 
-        if (verbose)
-          cat(content$message$content)
+          if (verbose)
+            cat(content$message$content)
 
-        if (is.null(role))
-          role <<- content$message$role
+          if (is.null(role))
+            role <<- content$message$role
 
-        message <<- paste0(message, content$message$content)
-      }),
+          message <<- paste0(message, content$message$content)
+        })
+      ),
       body = body,
       encode = "json"
     )
@@ -156,7 +159,12 @@ make_llm_provider_request <- function(
       cat("\n")
   } else {
     # Make the POST request without streaming
-    response <- httr::POST(url, body = body, encode = "json")
+    response <- httr::POST(
+      url,
+      config = list(httr::add_headers(.headers = headers)),
+      body = body,
+      encode = "json"
+    )
   }
 
   if (httr::status_code(response) != 200)
