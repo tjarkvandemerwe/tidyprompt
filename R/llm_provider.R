@@ -127,9 +127,9 @@ create_llm_provider <- function(
 #' @return A list with the role and content of the response from the LLM provider
 #' @export
 make_llm_provider_request <- function(
-  url, headers, body, stream, verbose = getOption("tidyprompt.verbose", TRUE)
+    url, headers, body, stream, verbose = getOption("tidyprompt.verbose", TRUE)
 ) {
-  if (stream == TRUE) {
+  if (stream) {
     # Make the POST request with streaming
     role <- NULL
     message <- ""
@@ -137,22 +137,20 @@ make_llm_provider_request <- function(
     httr::handle_reset(url)
     response <- httr::POST(
       url,
-      config = list(
-        httr::add_headers(.headers = headers),
-        httr::write_stream(function(x) {
-          content <- x |> rawToChar() |> jsonlite::fromJSON()
-
-          if (verbose)
-            cat(content$message$content)
-
-          if (is.null(role))
-            role <<- content$message$role
-
-          message <<- paste0(message, content$message$content)
-        })
-      ),
+      httr::add_headers(.headers = headers),  # Set headers correctly
       body = body,
-      encode = "json"
+      encode = "json",
+      httr::write_stream(function(x) {
+        content <- x |> rawToChar() |> jsonlite::fromJSON()
+
+        if (verbose)
+          cat(content$message$content)
+
+        if (is.null(role))
+          role <<- content$message$role
+
+        message <<- paste0(message, content$message$content)
+      })
     )
 
     if (verbose)
@@ -161,15 +159,17 @@ make_llm_provider_request <- function(
     # Make the POST request without streaming
     response <- httr::POST(
       url,
-      config = list(httr::add_headers(.headers = headers)),
+      httr::add_headers(.headers = headers),  # Set headers correctly
       body = body,
       encode = "json"
     )
   }
 
+  # Check for errors
   if (httr::status_code(response) != 200)
     stop("Error: ", httr::status_code(response), " - ", httr::content(response, as = "text"))
 
+  # If not streaming, parse the response content
   if (!stream) {
     content <- httr::content(response, as = "parsed")
     role <- content$message$role
@@ -181,6 +181,7 @@ make_llm_provider_request <- function(
     content = message
   ))
 }
+
 
 
 
