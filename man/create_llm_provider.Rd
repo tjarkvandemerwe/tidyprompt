@@ -4,7 +4,11 @@
 \alias{create_llm_provider}
 \title{Generic function to assist in creating llm_provider objects}
 \usage{
-create_llm_provider(complete_chat_function, parameters = list())
+create_llm_provider(
+  complete_chat_function,
+  parameters = list(),
+  verbose = getOption("tidyprompt.verbose", TRUE)
+)
 }
 \arguments{
 \item{complete_chat_function}{Function that will be called by the llm_provider
@@ -25,6 +29,9 @@ this may be used to, for instance, store an API key, the name of the model to us
 llm_provider object. These parameters can be used to configure the llm_provider.
 For instance, they can be used to store a model's name, an API key, or an endpoint.
 E.g., list(model = "my-llm-model", api_key = "my-api-key").}
+
+\item{verbose}{A logical indicating whether the interaction with the LLM provider
+should be printed to the console. Default is TRUE.}
 }
 \value{
 A new llm_provider object

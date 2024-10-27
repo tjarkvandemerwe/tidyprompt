@@ -21,13 +21,22 @@
 #'  llm_provider object. These parameters can be used to configure the llm_provider.
 #'  For instance, they can be used to store a model's name, an API key, or an endpoint.
 #'  E.g., list(model = "my-llm-model", api_key = "my-api-key").
+#' @param verbose A logical indicating whether the interaction with the LLM provider
+#' should be printed to the console. Default is TRUE.
 #'
 #' @return A new llm_provider object
 #'
 #' @export
 create_llm_provider <- function(
-    complete_chat_function, parameters = list()
+    complete_chat_function,
+    parameters = list(),
+    verbose = getOption("tidyprompt.verbose", TRUE)
 ) {
+  if (length(parameters) > 0 & is.null(names(parameters))) {
+    stop("parameters must be a named list")
+  }
+
+  # Create llm_provider structure
   llm_provider <- structure(
     list(),
     class = "llm_provider"
@@ -35,52 +44,70 @@ create_llm_provider <- function(
 
   # Create a new environment for the llm_provider
   llm_provider_env <- new.env()
-  if (length(parameters) > 0 & is.null(names(parameters))) {
-    stop("parameters must be a named list")
-  }
-  # Assign the parameters to the environment
-  for (name in names(parameters)) {
-    assign(name, parameters[[name]], envir = llm_provider_env)
-  }
 
-  # Helper function to create functions with the shared environment
+  # Store initial parameters in the environment
+  llm_provider_env$parameters <- parameters
+
+  # Helper function to create functions within llm_provider_env
   create_function <- function(fn) {
     environment(fn) <- llm_provider_env
     return(fn)
   }
 
-  llm_provider$get_env <- create_function(function() {
-    return(llm_provider_env)
-  })
-
-  # Get parameters attached this llm_provider
+  # Access parameters
   llm_provider$get_parameters <- create_function(function() {
-    return(parameters)
+    return(llm_provider_env$parameters)
   })
 
-  # Set parameters attached this llm_provider
+  # Update parameters
   llm_provider$set_parameters <- create_function(function(new_parameters) {
     if (length(new_parameters) > 0 & is.null(names(new_parameters))) {
       stop("new_parameters must be a named list")
     }
-    # Merge new parameters with existing ones
-    updated_parameters <- utils::modifyList(parameters, new_parameters)
-    for (name in names(updated_parameters)) {
-      assign(name, updated_parameters[[name]], envir = llm_provider_env)
-    }
-    parameters <<- updated_parameters
+    # Update environment parameters directly
+    llm_provider_env$parameters <- utils::modifyList(llm_provider_env$parameters, new_parameters)
   })
 
-  # Install the provided complete_chat for this llm_provider;
-  #   wrap some validation of chat_history around it
+  # Get environment
+  llm_provider$get_env <- create_function(function() {
+    return(llm_provider_env)
+  })
+
+  # Attach complete_chat with chat_history validation
   llm_provider$complete_chat <- create_function(function(chat_history) {
     chat_history <- validate_chat_history(chat_history)
+    if (verbose) {
+      message("--- Sending message to LLM provider: ---")
+      message(chat_history$content[nrow(chat_history)])
+    }
+
     environment(complete_chat_function) <- llm_provider_env
 
-    # Call original function
-    complete_chat_function(chat_history)
+    if (verbose)
+      message("--- Receiving response from LLM provider: ---")
+
+    response <- complete_chat_function(chat_history)
+
+    if (verbose & isTRUE(parameters$stream == FALSE)) {
+      message(response$content)
+    }
+
+    return(response)
   })
 
+  # Get verbose setting
+  llm_provider$get_verbose <- create_function(function() {
+    return(verbose)
+  })
+  # Set verbose setting
+  llm_provider$set_verbose <- create_function(function(new_verbose) {
+    if (!is.logical(new_verbose)) {
+      stop("new_verbose must be a logical")
+    }
+    verbose <<- new_verbose
+  })
+
+  # Return the llm_provider object
   return(llm_provider)
 }
 
@@ -91,19 +118,23 @@ create_llm_provider <- function(
 #' @param parameters A named list of parameters. Currently the following parameters are required:
 #'    - model: The name of the model to use (e.g., "llama3.1:8b")
 #'    - url: The URL of the Ollama API endpoint
+#'    - stream: A logical indicating whether the API should stream responses (default: TRUE)
 #'  Additional parameters may be passed by adding them to the parameters list;
 #'  these parameters will be passed to the Ollama API via the body of the POST request.
 #'  Options specifically can be set with the $set_options function (e.g.,
 #'  ollama$set_options(list(temperature = 0.8))). See available options at
-#'  https://ollama.com/docs/api/chat.
+#'  https://ollama.com/docs/api/chat.#'
+#'  @param verbose A logical indicating whether the interaction with the LLM
+#'  provider should be printed to the console. Default is TRUE.
 #'
 #' @return A new llm_provider object for use of the Ollama API
 #' @export
 create_ollama_llm_provider <- function(parameters = list(
   model = "llama3.1:8b",
-  url = "http://localhost:11434/api/chat"
-)) {
-  complete_chat <- function(chat_history) {
+  url = "http://localhost:11434/api/chat",
+  stream = TRUE
+), verbose = getOption("tidyprompt.verbose", TRUE)) {
+  complete_chat <- function(chat_history, stream = parameters$stream) {
     url <- parameters$url
 
     body <- list(
@@ -111,41 +142,67 @@ create_ollama_llm_provider <- function(parameters = list(
       messages = lapply(seq_len(nrow(chat_history)), function(i) {
         list(role = chat_history$role[i], content = chat_history$content[i])
       }),
-      stream = FALSE
+      stream = stream
     )
 
     # Append all other parameters to the body
     for (name in names(parameters)) {
-      if (!(name %in% c("model", "url"))) {
+      if (!(name %in% c("model", "url", "stream"))) {
         body[[name]] <- parameters[[name]]
       }
     }
 
-    # Make the POST request
-    response <- httr::POST(url, body = body, encode = "json")
+    if (parameters$stream == TRUE) {
+      # Make the POST request with streaming
+      role <- NULL
+      message <- ""
 
-    # Check if the request was successful
-    if (httr::status_code(response) == 200) {
-      content <- httr::content(response, as = "parsed")
-      return(list(
-        role = content$message$role,
-        content = content$message$content
-      ))
+      response <- httr::POST(
+        url,
+        config = httr::write_stream(function(x) {
+          content <- x |> rawToChar() |> jsonlite::fromJSON()
+
+          if (verbose)
+            cat(content$message$content)
+
+          if (is.null(role))
+            role <<- content$message$role
+
+          message <<- paste0(message, content$message$content)
+        }),
+        body = body,
+        encode = "json"
+      )
+      cat("\n")
     } else {
+      # Make the POST request without streaming
+      response <- httr::POST(url, body = body, encode = "json")
+    }
+
+    if (httr::status_code(response) != 200) {
+      httr::stop_for_status(response)
       stop("Error: ", httr::status_code(response), " - ", httr::content(response, as = "text"))
     }
+
+    if (!parameters$stream) {
+      content <- httr::content(response, as = "parsed")
+      role <- content$message$role
+      message <- content$message$content
+    }
+
+    return(list(
+      role = role,
+      content = message
+    ))
   }
 
   ollama <- create_llm_provider(
     complete_chat_function = complete_chat,
-    parameters = parameters
+    parameters = parameters,
+    verbose = verbose
   )
 
   # Additional functions to get/set options for the Ollama API
-  #   These options are a list within the regular parameters list
-  #   While they can be set directly within the parameters list,
-  #   these functions provide a more convenient way to manage them
-  #   (given their position in the body of the POST request sent to Ollama)
   set_options <- function(named_list_of_options) {
     if (length(named_list_of_options) == 0)
       stop("No options provided")
@@ -165,9 +222,7 @@ create_ollama_llm_provider <- function(parameters = list(
     }
     parameters$options <<- updated_options
   }
-  # Connect function to the provider environment:
   environment(set_options) <- ollama$get_env()
-  # Add the function to the provider object:
   ollama$set_options <- set_options
 
   # Function to get the options

@@ -1,1 +1,1 @@
-options(tidyprompt.verbose = FALSE)
+options(tidyprompt.verbose = TRUE)
