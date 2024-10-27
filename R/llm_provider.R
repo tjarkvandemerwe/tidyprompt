@@ -113,6 +113,69 @@ create_llm_provider <- function(
 
 
 
+#' Make a request to an LLM provider
+#'
+#' Helper function to handle making requests to LLM providers, to be used
+#' within a complete_chat() function for a LLM provider.
+#'
+#' @param url The URL of the LLM provider API endpoint
+#' @param body The body of the POST request
+#' @param stream A logical indicating whether the API should stream responses
+#' @param verbose A logical indicating whether the interaction with the LLM provider
+#' should be printed to the console. Default is TRUE.
+#'
+#' @return A list with the role and content of the response from the LLM provider
+#' @export
+make_llm_provider_request <- function(
+  url, body, stream, verbose = getOption("tidyprompt.verbose", TRUE)
+) {
+  if (stream == TRUE) {
+    # Make the POST request with streaming
+    role <- NULL
+    message <- ""
+
+    httr::handle_reset(url)
+    response <- httr::POST(
+      url,
+      config = httr::write_stream(function(x) {
+        content <- x |> rawToChar() |> jsonlite::fromJSON()
+
+        if (verbose)
+          cat(content$message$content)
+
+        if (is.null(role))
+          role <<- content$message$role
+
+        message <<- paste0(message, content$message$content)
+      }),
+      body = body,
+      encode = "json"
+    )
+
+    if (verbose)
+      cat("\n")
+  } else {
+    # Make the POST request without streaming
+    response <- httr::POST(url, body = body, encode = "json")
+  }
+
+  if (httr::status_code(response) != 200)
+    stop("Error: ", httr::status_code(response), " - ", httr::content(response, as = "text"))
+
+  if (!stream) {
+    content <- httr::content(response, as = "parsed")
+    role <- content$message$role
+    message <- content$message$content
+  }
+
+  return(list(
+    role = role,
+    content = message
+  ))
+}
+
+
+
 #' Create a new Ollama llm_provider instance
 #'
 #' @param parameters A named list of parameters. Currently the following parameters are required:
@@ -134,7 +197,7 @@ create_ollama_llm_provider <- function(parameters = list(
   url = "http://localhost:11434/api/chat",
   stream = TRUE
 ), verbose = getOption("tidyprompt.verbose", TRUE)) {
-  complete_chat <- function(chat_history, stream = parameters$stream) {
+  complete_chat <- function(chat_history) {
     url <- parameters$url
 
     body <- list(
@@ -142,7 +205,7 @@ create_ollama_llm_provider <- function(parameters = list(
       messages = lapply(seq_len(nrow(chat_history)), function(i) {
         list(role = chat_history$role[i], content = chat_history$content[i])
       }),
-      stream = stream
+      stream = parameters$stream
     )
 
     # Append all other parameters to the body
@@ -152,48 +215,7 @@ create_ollama_llm_provider <- function(parameters = list(
       }
     }
 
-    if (parameters$stream == TRUE) {
-      # Make the POST request with streaming
-      role <- NULL
-      message <- ""
-
-      response <- httr::POST(
-        url,
-        config = httr::write_stream(function(x) {
-          content <- x |> rawToChar() |> jsonlite::fromJSON()
-
-          if (verbose)
-            cat(content$message$content)
-
-          if (is.null(role))
-            role <<- content$message$role
-
-          message <<- paste0(message, content$message$content)
-        }),
-        body = body,
-        encode = "json"
-      )
-      cat("\n")
-    } else {
-      # Make the POST request without streaming
-      response <- httr::POST(url, body = body, encode = "json")
-    }
-
-    if (httr::status_code(response) != 200) {
-      httr::stop_for_status(response)
-      stop("Error: ", httr::status_code(response), " - ", httr::content(response, as = "text"))
-    }
-
-    if (!parameters$stream) {
-      content <- httr::content(response, as = "parsed")
-      role <- content$message$role
-      message <- content$message$content
-    }
-
-    return(list(
-      role = role,
-      content = message
-    ))
+    return(make_llm_provider_request(url, body, parameters$stream, verbose))
   }
 
   ollama <- create_llm_provider(
