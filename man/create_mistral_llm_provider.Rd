@@ -6,7 +6,8 @@
 \usage{
 create_mistral_llm_provider(
   parameters = list(model = "mistral-small-latest", api_key =
-    Sys.getenv("MISTRAL_API_KEY"), url = "https://api.mistral.ai/v1/chat/completions")
+    Sys.getenv("MISTRAL_API_KEY"), url = "https://api.mistral.ai/v1/chat/completions"),
+  verbose = getOption("tidyprompt.verbose", TRUE)
 )
 }
 \arguments{
@@ -18,6 +19,9 @@ create_mistral_llm_provider(
 Additional parameters are appended to the request body; see the Mistral API
 documentation for more information: https://docs.mistral.ai/api/#tag/chat
 }}
+
+\item{verbose}{A logical indicating whether the interaction with the LLM provider
+should be printed to the console. Default is TRUE.}
 }
 \value{
 A new llm_provider object for use of the Mistral API

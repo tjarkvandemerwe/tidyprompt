@@ -6,7 +6,8 @@
 \usage{
 create_groq_llm_provider(
   parameters = list(model = "llama-3.1-8b-instant", api_key = Sys.getenv("GROQ_API_KEY"),
-    url = "https://api.groq.com/openai/v1/chat/completions")
+    url = "https://api.groq.com/openai/v1/chat/completions"),
+  verbose = getOption("tidyprompt.verbose", TRUE)
 )
 }
 \arguments{
@@ -18,6 +19,9 @@ create_groq_llm_provider(
 Additional parameters are appended to the request body; see the Groq API
 documentation for more information: https://console.groq.com/docs/api-reference#chat-create
 }}
+
+\item{verbose}{A logical indicating whether the interaction with the LLM provider
+should be printed to the console. Default is TRUE.}
 }
 \value{
 A new llm_provider object for use of the Groq API

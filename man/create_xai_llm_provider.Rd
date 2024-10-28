@@ -6,7 +6,8 @@
 \usage{
 create_xai_llm_provider(
   parameters = list(model = "grok-beta", api_key = Sys.getenv("XAI_API_KEY"), url =
-    "https://api.x.ai/v1/chat/completions")
+    "https://api.x.ai/v1/chat/completions"),
+  verbose = getOption("tidyprompt.verbose", TRUE)
 )
 }
 \arguments{
@@ -18,6 +19,9 @@ create_xai_llm_provider(
 Additional parameters are appended to the request body; see the XAI API
 documentation for more information: https://docs.x.ai/api/endpoints#chat-completions
 }}
+
+\item{verbose}{A logical indicating whether the interaction with the LLM provider
+should be printed to the console. Default is TRUE.}
 }
 \value{
 A new llm_provider object for use of the XAI API

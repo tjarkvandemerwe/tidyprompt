@@ -7,7 +7,8 @@
 create_google_gemini_llm_provider(
   parameters = list(model = "gemini-1.5-flash", api_key =
     Sys.getenv("GOOGLE_AI_STUDIO_API_KEY"), base_url =
-    "https://generativelanguage.googleapis.com/v1beta/models/")
+    "https://generativelanguage.googleapis.com/v1beta/models/"),
+  verbose = getOption("tidyprompt.verbose", TRUE)
 )
 }
 \arguments{
@@ -20,10 +21,14 @@ Additional parameters are appended to the request body; see the Google AI Studio
 documentation for more information: https://ai.google.dev/gemini-api/docs/text-generation
 and https://github.com/google/generative-ai-docs/blob/main/site/en/gemini-api/docs/get-started/rest.ipynb
 }}
+
+\item{verbose}{A logical indicating whether the interaction with the LLM provider
+should be printed to the console. Default is TRUE.}
 }
 \value{
 A new llm_provider object for use of the Google Gemini API
 }
 \description{
-Create a new Google Gemini llm_provider instance
+Creates an llm_provider object that interacts with the Google Gemini API.
+Streaming is not yet supported in this implementation.
 }

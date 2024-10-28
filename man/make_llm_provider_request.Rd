@@ -6,13 +6,17 @@
 \usage{
 make_llm_provider_request(
   url,
+  headers = NULL,
   body,
   stream,
-  verbose = getOption("tidyprompt.verbose", TRUE)
+  verbose = getOption("tidyprompt.verbose", TRUE),
+  api_type = c("openai", "ollama")
 )
 }
 \arguments{
 \item{url}{The URL of the LLM provider API endpoint}
+
+\item{headers}{A list of headers to be passed to the API (can be NULL)}
 
 \item{body}{The body of the POST request}
 
@@ -20,6 +24,12 @@ make_llm_provider_request(
 
 \item{verbose}{A logical indicating whether the interaction with the LLM provider
 should be printed to the console. Default is TRUE.}
+
+\item{api_type}{The type of API to use; specifically required to handle streaming.
+Currently, "openai" and "ollama" have been implemented. "openai" should also work
+with other similar APIs for chat completion. If your API handles streaming in a
+different way, you may need to implement your own version of this function
+(you are then encouraged to submit a pull request to the GitHub repo of 'tidyprompt').}
 }
 \value{
 A list with the role and content of the response from the LLM provider

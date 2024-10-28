@@ -7,7 +7,8 @@
 create_openrouter_llm_provider(
   parameters = list(model = "qwen/qwen-2.5-7b-instruct", api_key =
     Sys.getenv("OPENROUTER_API_KEY"), url =
-    "https://openrouter.ai/api/v1/chat/completions")
+    "https://openrouter.ai/api/v1/chat/completions"),
+  verbose = getOption("tidyprompt.verbose", TRUE)
 )
 }
 \arguments{
@@ -21,6 +22,9 @@ https://openrouter.ai/docs/api-keys).
 Additional parameters are appended to the request body; see the OpenRouter API
 documentation for more information: https://openrouter.ai/docs/parameters
 }}
+
+\item{verbose}{A logical indicating whether the interaction with the LLM provider
+should be printed to the console. Default is TRUE.}
 }
 \value{
 A new llm_provider object for use of the OpenRouter API

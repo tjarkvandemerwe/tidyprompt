@@ -6,7 +6,8 @@
 \usage{
 create_openai_llm_provider(
   parameters = list(model = "gpt-4o-mini", api_key = Sys.getenv("OPENAI_API_KEY"), url =
-    "https://api.openai.com/v1/chat/completions")
+    "https://api.openai.com/v1/chat/completions", stream = TRUE),
+  verbose = getOption("tidyprompt.verbose", TRUE)
 )
 }
 \arguments{
@@ -17,9 +18,13 @@ create_openai_llm_provider(
 a project API key (not a user API key) and it should have sufficient permissions.
 \item url: The URL to the OpenAI API (default: "https://api.openai.com/v1/chat/completions").
 (May also be an alternative endpoint that provides a similar API.)
+\item stream: A logical indicating whether the API should stream responses (default: TRUE)
 Additional parameters are appended to the request body; see the OpenAI API
 documentation for more information: https://platform.openai.com/docs/api-reference/chat
 }}
+
+\item{verbose}{A logical indicating whether the interaction with the LLM provider
+should be printed to the console. Default is TRUE.}
 }
 \value{
 A new llm_provider object for use of the OpenAI API

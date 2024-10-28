@@ -4,7 +4,11 @@
 \alias{create_fake_llm_provider}
 \title{Create a fake LLM provider (for development and testing purposes)}
 \usage{
-create_fake_llm_provider()
+create_fake_llm_provider(verbose = getOption("tidyprompt.verbose", TRUE))
+}
+\arguments{
+\item{verbose}{A logical indicating whether the interaction with the LLM provider
+should be printed to the console. Default is TRUE.}
 }
 \value{
 A new llm_provider object for use of the fake LLM provider
