@@ -44,7 +44,8 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">create_openai_llm_provider</span><span class="op">(</span></span>
 <span>  parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>model <span class="op">=</span> <span class="st">"gpt-4o-mini"</span>, api_key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"OPENAI_API_KEY"</span><span class="op">)</span>, url <span class="op">=</span></span>
-<span>    <span class="st">"https://api.openai.com/v1/chat/completions"</span><span class="op">)</span></span>
+<span>    <span class="st">"https://api.openai.com/v1/chat/completions"</span>, stream <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"tidyprompt.verbose"</span>, <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -57,10 +58,16 @@
 <li><p>api_key: The API key to use for authentication with the OpenAI API. This should be
 a project API key (not a user API key) and it should have sufficient permissions.</p></li>
 <li><p>url: The URL to the OpenAI API (default: "https://api.openai.com/v1/chat/completions").
-(May also be an alternative endpoint that provides a similar API.)
+(May also be an alternative endpoint that provides a similar API.)</p></li>
+<li><p>stream: A logical indicating whether the API should stream responses (default: TRUE)
 Additional parameters are appended to the request body; see the OpenAI API
 documentation for more information: https://platform.openai.com/docs/api-reference/chat</p></li>
 </ul></dd>
+
+
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
+<dd><p>A logical indicating whether the interaction with the LLM provider
+should be printed to the console. Default is TRUE.</p></dd>
 
 </dl></div>
     <div class="section level2">

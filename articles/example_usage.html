@@ -107,6 +107,9 @@ and valid (including retries with feedback to the LLM if it is not).</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  <span class="st">"Hi there!"</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="va">ollama</span><span class="op">)</span></span>
+<span><span class="co">#&gt; --- Sending message to LLM provider: ---</span></span>
+<span><span class="co">#&gt; Hi there!</span></span>
+<span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
 <span><span class="co">#&gt; [1] "It's nice to meet you. Is there something I can help you with or would you like to chat?"</span></span></code></pre></div>
 <p><code>add_text</code> is a simple example of a prompt wrap. It simply
 adds some text at the end of the base prompt.</p>
@@ -114,6 +117,11 @@ adds some text at the end of the base prompt.</p>
 <code class="sourceCode R"><span>  <span class="st">"Hi there!"</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/add_text.html">add_text</a></span><span class="op">(</span><span class="st">"What is a large language model? Explain in 10 words."</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="va">ollama</span><span class="op">)</span></span>
+<span><span class="co">#&gt; --- Sending message to LLM provider: ---</span></span>
+<span><span class="co">#&gt; Hi there!</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; What is a large language model? Explain in 10 words.</span></span>
+<span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
 <span><span class="co">#&gt; [1] "Complex computer program trained on vast texts to generate human-like responses."</span></span></code></pre></div>
 <p>You can also construct the final prompt text, without sending it to
 an LLM provider.</p>
@@ -148,12 +156,11 @@ prompt.</p>
 <code class="sourceCode R"><span>  <span class="st">"What is 2 + 2?"</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/answer_as_integer.html">answer_as_integer</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="va">ollama</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; --- Sending message to LLM-provider: ---</span></span>
+<span><span class="co">#&gt; --- Sending message to LLM provider: ---</span></span>
 <span><span class="co">#&gt; What is 2 + 2?</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; You must answer with only an integer (use no other characters).</span></span>
-<span><span class="co">#&gt; --- Received response from LLM-provider: ---</span></span>
-<span><span class="co">#&gt; 4</span></span>
+<span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
 <span><span class="co">#&gt; [1] 4</span></span></code></pre></div>
 <p>Below is an example of a prompt which will initially fail, but will
 succeed after a retry.</p>
@@ -162,16 +169,14 @@ succeed after a retry.</p>
 <span>    <span class="fu"><a href="../reference/add_text.html">add_text</a></span><span class="op">(</span><span class="st">"Please write out your reply in words, use no numbers."</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/answer_as_integer.html">answer_as_integer</a></span><span class="op">(</span>add_instruction_to_prompt <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="va">ollama</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; --- Sending message to LLM-provider: ---</span></span>
+<span><span class="co">#&gt; --- Sending message to LLM provider: ---</span></span>
 <span><span class="co">#&gt; What is 2 + 2?</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Please write out your reply in words, use no numbers.</span></span>
-<span><span class="co">#&gt; --- Received response from LLM-provider: ---</span></span>
-<span><span class="co">#&gt; Four.</span></span>
-<span><span class="co">#&gt; --- Sending message to LLM-provider: ---</span></span>
+<span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
+<span><span class="co">#&gt; --- Sending message to LLM provider: ---</span></span>
 <span><span class="co">#&gt; You must answer with only an integer (use no other characters).</span></span>
-<span><span class="co">#&gt; --- Received response from LLM-provider: ---</span></span>
-<span><span class="co">#&gt; 4</span></span>
+<span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
 <span><span class="co">#&gt; [1] 4</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -190,7 +195,7 @@ extraction function then ensures only the final answer is returned.</final></p>
 <span>    <span class="fu"><a href="../reference/answer_by_chain_of_thought.html">answer_by_chain_of_thought</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/answer_as_integer.html">answer_as_integer</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="va">ollama</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; --- Sending message to LLM-provider: ---</span></span>
+<span><span class="co">#&gt; --- Sending message to LLM provider: ---</span></span>
 <span><span class="co">#&gt; You are given a user's prompt.</span></span>
 <span><span class="co">#&gt; To answer the user's prompt, you need to think step by step to arrive at a final answer.</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -210,20 +215,7 @@ extraction function then ensures only the final answer is returned.</final></p>
 <span><span class="co">#&gt; FINISH[&lt;put here your final answer to the user's prompt&gt;]</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Make sure your final answer follows the logical conclusion of your thought process.</span></span>
-<span><span class="co">#&gt; --- Received response from LLM-provider: ---</span></span>
-<span><span class="co">#&gt; &gt;&gt; step 1: Identify the mathematical operation in the prompt,</span></span>
-<span><span class="co">#&gt; which is a simple addition problem.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; &gt;&gt; step 2: Recall the basic arithmetic fact that 2 + 2 equals a specific</span></span>
-<span><span class="co">#&gt; numerical value.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; &gt;&gt; step 3: Apply this knowledge to determine the result of the addition problem,</span></span>
-<span><span class="co">#&gt; using the known facts about numbers and their operations.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; &gt;&gt; step 4: Conclude that based on this mathematical understanding, the</span></span>
-<span><span class="co">#&gt; solution to the prompt "What is 2 + 2?" is a fixed numerical quantity.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; FINISH[4]</span></span>
+<span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
 <span><span class="co">#&gt; [1] 4</span></span></code></pre></div>
 </div>
 <div class="section level3">

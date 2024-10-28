@@ -45,7 +45,8 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">create_openrouter_llm_provider</span><span class="op">(</span></span>
 <span>  parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>model <span class="op">=</span> <span class="st">"qwen/qwen-2.5-7b-instruct"</span>, api_key <span class="op">=</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"OPENROUTER_API_KEY"</span><span class="op">)</span>, url <span class="op">=</span></span>
-<span>    <span class="st">"https://openrouter.ai/api/v1/chat/completions"</span><span class="op">)</span></span>
+<span>    <span class="st">"https://openrouter.ai/api/v1/chat/completions"</span><span class="op">)</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"tidyprompt.verbose"</span>, <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -62,6 +63,11 @@ https://openrouter.ai/docs/api-keys).</p></li>
 Additional parameters are appended to the request body; see the OpenRouter API
 documentation for more information: https://openrouter.ai/docs/parameters</p></li>
 </ul></dd>
+
+
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
+<dd><p>A logical indicating whether the interaction with the LLM provider
+should be printed to the console. Default is TRUE.</p></dd>
 
 </dl></div>
     <div class="section level2">
