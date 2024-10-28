@@ -13,11 +13,11 @@
 #' @param stream If the interaction with the LLM provider should be streamed.
 #' Default is TRUE. This setting only be used if the LLM provider already has a
 #' 'stream' parameter (which indicates there is support for streaming).
-#' @param return_mode One of 'full' or 'only_response'. If 'full', the function
-#' will return a list with the following elements: 'success', 'response' (if
-#' successful), 'failed_response' (if unsuccessful), 'chat_history', 'start_time',
-#' 'end_time', and 'duration_seconds'. If 'only_response', the function will only
-#' return the response (or NULL if unsuccessful).
+#' @param return_mode One of 'full' or 'only_response'. If 'only_response',
+#' the function will only return the response (or NULL if unsuccessful).
+#' If 'full', the function will return a list with the following elements:
+#' 'success', 'response' (if successful), 'failed_response' (if unsuccessful),
+#' 'chat_history', 'start_time', 'end_time', and 'duration_seconds'.
 #'
 #' @return ...
 #' @export
@@ -28,7 +28,7 @@ send_prompt <- function(
     clean_chat_history = TRUE,
     verbose = getOption("tidyprompt.verbose", TRUE),
     stream = TRUE,
-    return_mode = c("full", "only_response")
+    return_mode = c("only_response", "full")
 ) {
   ## 1 Validate arguments
 
