@@ -49,7 +49,7 @@
 <span>  clean_chat_history <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"tidyprompt.verbose"</span>, <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>  stream <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  return_mode <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"full"</span>, <span class="st">"only_response"</span><span class="op">)</span></span>
+<span>  return_mode <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"only_response"</span>, <span class="st">"full"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -89,11 +89,11 @@ Default is TRUE. This setting only be used if the LLM provider already has a
 
 
 <dt id="arg-return-mode">return_mode<a class="anchor" aria-label="anchor" href="#arg-return-mode"></a></dt>
-<dd><p>One of 'full' or 'only_response'. If 'full', the function
-will return a list with the following elements: 'success', 'response' (if
-successful), 'failed_response' (if unsuccessful), 'chat_history', 'start_time',
-'end_time', and 'duration_seconds'. If 'only_response', the function will only
-return the response (or NULL if unsuccessful).</p></dd>
+<dd><p>One of 'full' or 'only_response'. If 'only_response',
+the function will only return the response (or NULL if unsuccessful).
+If 'full', the function will return a list with the following elements:
+'success', 'response' (if successful), 'failed_response' (if unsuccessful),
+'chat_history', 'start_time', 'end_time', and 'duration_seconds'.</p></dd>
 
 </dl></div>
     <div class="section level2">

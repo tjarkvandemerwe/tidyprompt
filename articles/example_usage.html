@@ -110,28 +110,7 @@ and valid (including retries with feedback to the LLM if it is not).</p>
 <span><span class="co">#&gt; --- Sending message to LLM provider: ---</span></span>
 <span><span class="co">#&gt; Hi there!</span></span>
 <span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
-<span><span class="co">#&gt; $success</span></span>
-<span><span class="co">#&gt; [1] TRUE</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $response</span></span>
-<span><span class="co">#&gt; [1] "It's nice to meet you. Is there something I can help you with or would you like to chat?"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $chat_history</span></span>
-<span><span class="co">#&gt;        role</span></span>
-<span><span class="co">#&gt; 1      user</span></span>
-<span><span class="co">#&gt; 2 assistant</span></span>
-<span><span class="co">#&gt;                                                                                    content</span></span>
-<span><span class="co">#&gt; 1                                                                                Hi there!</span></span>
-<span><span class="co">#&gt; 2 It's nice to meet you. Is there something I can help you with or would you like to chat?</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $start_time</span></span>
-<span><span class="co">#&gt; [1] "2024-10-28 09:25:27 UTC"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $end_time</span></span>
-<span><span class="co">#&gt; [1] "2024-10-28 09:25:27 UTC"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $duration_seconds</span></span>
-<span><span class="co">#&gt; [1] 0.002085209</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "It's nice to meet you. Is there something I can help you with or would you like to chat?"</span></span></code></pre></div>
 <p><code>add_text</code> is a simple example of a prompt wrap. It simply
 adds some text at the end of the base prompt.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
@@ -143,28 +122,7 @@ adds some text at the end of the base prompt.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; What is a large language model? Explain in 10 words.</span></span>
 <span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
-<span><span class="co">#&gt; $success</span></span>
-<span><span class="co">#&gt; [1] TRUE</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $response</span></span>
-<span><span class="co">#&gt; [1] "Complex computer program trained on vast texts to generate human-like responses."</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $chat_history</span></span>
-<span><span class="co">#&gt;        role</span></span>
-<span><span class="co">#&gt; 1      user</span></span>
-<span><span class="co">#&gt; 2 assistant</span></span>
-<span><span class="co">#&gt;                                                                            content</span></span>
-<span><span class="co">#&gt; 1                Hi there!\n\nWhat is a large language model? Explain in 10 words.</span></span>
-<span><span class="co">#&gt; 2 Complex computer program trained on vast texts to generate human-like responses.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $start_time</span></span>
-<span><span class="co">#&gt; [1] "2024-10-28 09:25:27 UTC"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $end_time</span></span>
-<span><span class="co">#&gt; [1] "2024-10-28 09:25:27 UTC"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $duration_seconds</span></span>
-<span><span class="co">#&gt; [1] 0.001662254</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "Complex computer program trained on vast texts to generate human-like responses."</span></span></code></pre></div>
 <p>You can also construct the final prompt text, without sending it to
 an LLM provider.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
@@ -203,28 +161,7 @@ prompt.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; You must answer with only an integer (use no other characters).</span></span>
 <span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
-<span><span class="co">#&gt; $success</span></span>
-<span><span class="co">#&gt; [1] TRUE</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $response</span></span>
-<span><span class="co">#&gt; [1] 4</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $chat_history</span></span>
-<span><span class="co">#&gt;        role</span></span>
-<span><span class="co">#&gt; 1      user</span></span>
-<span><span class="co">#&gt; 2 assistant</span></span>
-<span><span class="co">#&gt;                                                                             content</span></span>
-<span><span class="co">#&gt; 1 What is 2 + 2?\n\nYou must answer with only an integer (use no other characters).</span></span>
-<span><span class="co">#&gt; 2                                                                                 4</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $start_time</span></span>
-<span><span class="co">#&gt; [1] "2024-10-28 09:25:27 UTC"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $end_time</span></span>
-<span><span class="co">#&gt; [1] "2024-10-28 09:25:27 UTC"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $duration_seconds</span></span>
-<span><span class="co">#&gt; [1] 0.03693295</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 4</span></span></code></pre></div>
 <p>Below is an example of a prompt which will initially fail, but will
 succeed after a retry.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
@@ -240,32 +177,7 @@ succeed after a retry.</p>
 <span><span class="co">#&gt; --- Sending message to LLM provider: ---</span></span>
 <span><span class="co">#&gt; You must answer with only an integer (use no other characters).</span></span>
 <span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
-<span><span class="co">#&gt; $success</span></span>
-<span><span class="co">#&gt; [1] TRUE</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $response</span></span>
-<span><span class="co">#&gt; [1] 4</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $chat_history</span></span>
-<span><span class="co">#&gt;        role</span></span>
-<span><span class="co">#&gt; 1      user</span></span>
-<span><span class="co">#&gt; 2 assistant</span></span>
-<span><span class="co">#&gt; 3      user</span></span>
-<span><span class="co">#&gt; 4 assistant</span></span>
-<span><span class="co">#&gt;                                                                   content</span></span>
-<span><span class="co">#&gt; 1 What is 2 + 2?\n\nPlease write out your reply in words, use no numbers.</span></span>
-<span><span class="co">#&gt; 2                                                                   Four.</span></span>
-<span><span class="co">#&gt; 3         You must answer with only an integer (use no other characters).</span></span>
-<span><span class="co">#&gt; 4                                                                       4</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $start_time</span></span>
-<span><span class="co">#&gt; [1] "2024-10-28 09:25:27 UTC"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $end_time</span></span>
-<span><span class="co">#&gt; [1] "2024-10-28 09:25:27 UTC"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $duration_seconds</span></span>
-<span><span class="co">#&gt; [1] 0.002808809</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 4</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="adding-a-reasoning-mode-to-the-llm">Adding a reasoning mode to the LLM<a class="anchor" aria-label="anchor" href="#adding-a-reasoning-mode-to-the-llm"></a>
@@ -304,28 +216,7 @@ extraction function then ensures only the final answer is returned.</final></p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Make sure your final answer follows the logical conclusion of your thought process.</span></span>
 <span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
-<span><span class="co">#&gt; $success</span></span>
-<span><span class="co">#&gt; [1] TRUE</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $response</span></span>
-<span><span class="co">#&gt; [1] 4</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $chat_history</span></span>
-<span><span class="co">#&gt;        role</span></span>
-<span><span class="co">#&gt; 1      user</span></span>
-<span><span class="co">#&gt; 2 assistant</span></span>
-<span><span class="co">#&gt;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                content</span></span>
-<span><span class="co">#&gt; 1 You are given a user's prompt.\nTo answer the user's prompt, you need to think step by step to arrive at a final answer.\n\n----- START OF USER'S PROMPT -----\nWhat is 2 + 2?\n\nYou must answer with only an integer (use no other characters).\n----- END OF USER'S PROMPT -----\n\nWhat are the steps you would take to answer the user's prompt?\nDescribe your thought process in the following format:\n  &gt;&gt; step 1: &lt;step 1 description&gt;\n  &gt;&gt; step 2: &lt;step 2 description&gt;\n  (etc.)\n\nWhen you are done, you must type:\nFINISH[&lt;put here your final answer to the user's prompt&gt;]\n\nMake sure your final answer follows the logical conclusion of your thought process.</span></span>
-<span><span class="co">#&gt; 2                                                                                                                                                                       &gt;&gt; step 1: Identify the mathematical operation in the prompt,\nwhich is a simple addition problem.\n\n&gt;&gt; step 2: Recall the basic arithmetic fact that 2 + 2 equals a specific\nnumerical value.\n\n&gt;&gt; step 3: Apply this knowledge to determine the result of the addition problem,\nusing the known facts about numbers and their operations.\n\n&gt;&gt; step 4: Conclude that based on this mathematical understanding, the\nsolution to the prompt "What is 2 + 2?" is a fixed numerical quantity.\n\nFINISH[4]</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $start_time</span></span>
-<span><span class="co">#&gt; [1] "2024-10-28 09:25:27 UTC"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $end_time</span></span>
-<span><span class="co">#&gt; [1] "2024-10-28 09:25:27 UTC"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $duration_seconds</span></span>
-<span><span class="co">#&gt; [1] 0.1263194</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 4</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="giving-tools-to-the-llm-autonomous-function-calling">Giving tools to the LLM (autonomous function-calling)<a class="anchor" aria-label="anchor" href="#giving-tools-to-the-llm-autonomous-function-calling"></a>
