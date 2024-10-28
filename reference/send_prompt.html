@@ -46,6 +46,7 @@
 <span>  <span class="va">prompt</span>,</span>
 <span>  llm_provider <span class="op">=</span> <span class="fu"><a href="create_ollama_llm_provider.html">create_ollama_llm_provider</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  max_interactions <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  clean_chat_history <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"tidyprompt.verbose"</span>, <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>  stream <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -65,6 +66,14 @@
 
 <dt id="arg-max-interactions">max_interactions<a class="anchor" aria-label="anchor" href="#arg-max-interactions"></a></dt>
 <dd><p>Maximum number of interactions before stopping</p></dd>
+
+
+<dt id="arg-clean-chat-history">clean_chat_history<a class="anchor" aria-label="anchor" href="#arg-clean-chat-history"></a></dt>
+<dd><p>If the chat history should be cleaned after each
+interaction. Default is TRUE. Cleaning the chat history means that only the
+first and last message from the user, the last message from the assistant,
+and all messages from the system are used when requesting a new answer from
+the LLM; keeping the context window clean may increase the LLM's performance.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
