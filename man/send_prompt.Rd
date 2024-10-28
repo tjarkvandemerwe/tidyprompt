@@ -8,6 +8,7 @@ send_prompt(
   prompt,
   llm_provider = create_ollama_llm_provider(),
   max_interactions = 10,
+  clean_chat_history = TRUE,
   verbose = getOption("tidyprompt.verbose", TRUE),
   stream = TRUE
 )
@@ -18,6 +19,12 @@ send_prompt(
 \item{llm_provider}{'llm_provider' object (default is 'ollama')}
 
 \item{max_interactions}{Maximum number of interactions before stopping}
+
+\item{clean_chat_history}{If the chat history should be cleaned after each
+interaction. Default is TRUE. Cleaning the chat history means that only the
+first and last message from the user, the last message from the assistant,
+and all messages from the system are used when requesting a new answer from
+the LLM; keeping the context window clean may increase the LLM's performance.}
 
 \item{verbose}{If the interaction with the LLM provider should be printed
 to the console. Default is TRUE.}

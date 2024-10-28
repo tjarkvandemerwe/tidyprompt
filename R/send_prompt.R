@@ -3,6 +3,11 @@
 #' @param prompt A prompt object or a single string
 #' @param llm_provider 'llm_provider' object (default is 'ollama')
 #' @param max_interactions Maximum number of interactions before stopping
+#' @param clean_chat_history If the chat history should be cleaned after each
+#' interaction. Default is TRUE. Cleaning the chat history means that only the
+#' first and last message from the user, the last message from the assistant,
+#' and all messages from the system are used when requesting a new answer from
+#' the LLM; keeping the context window clean may increase the LLM's performance.
 #' @param verbose If the interaction with the LLM provider should be printed
 #' to the console. Default is TRUE.
 #' @param stream If the interaction with the LLM provider should be streamed.
@@ -15,6 +20,7 @@ send_prompt <- function(
     prompt,
     llm_provider = create_ollama_llm_provider(),
     max_interactions = 10,
+    clean_chat_history = TRUE,
     verbose = getOption("tidyprompt.verbose", TRUE),
     stream = TRUE
 ) {
@@ -63,11 +69,30 @@ send_prompt <- function(
   # Create internal function to send_chat to the given LLM-provider
   send_chat <- function(message, role = "user") {
     message <- as.character(message)
-
     chat_history <<- rbind(chat_history, create_chat_df(role, message))
 
-    completion <- llm_provider$complete_chat(chat_history)
+    if (clean_chat_history) {
+      # Keep only first and last message from user;
+      # keep only last message from assistant;
+      # keep all messages from system
+      user_rows <- which(chat_history$role == "user")
+      assistant_rows <- which(chat_history$role == "assistant")
+      system_rows <- which(chat_history$role == "system")
 
+      keep_rows <- c(
+        system_rows,
+        user_rows[c(1, length(user_rows))],
+        tail(assistant_rows, 1)
+      )
+
+      # Subset the dataframe with these rows
+      cleaned_chat_history <- chat_history[sort(unique(keep_rows)), ]
+      # (sort(unique()) is used to ensure that the rows are in order)
+
+      completion <- llm_provider$complete_chat(cleaned_chat_history)
+    } else {
+      completion <- llm_provider$complete_chat(chat_history)
+    }
     chat_history <<- rbind(chat_history, create_chat_df(completion$role, completion$content))
 
     return(invisible(completion$content))
