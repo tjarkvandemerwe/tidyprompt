@@ -1,17 +1,22 @@
 #' Send a prompt to a LLM provider
 #'
 #' @param prompt A prompt object or a single string
-#' @param llm_provider 'llm_provider' object
-#' @param verbose If the interaction with the LLM provider should be printed
+#' @param llm_provider 'llm_provider' object (default is 'ollama')
 #' @param max_interactions Maximum number of interactions before stopping
+#' @param verbose If the interaction with the LLM provider should be printed
+#' to the console. Default is TRUE.
+#' @param stream If the interaction with the LLM provider should be streamed.
+#' Default is TRUE. This setting only be used if the LLM provider already has a
+#' 'stream' parameter (which indicates there is support for streaming).
 #'
 #' @return ...
 #' @export
 send_prompt <- function(
     prompt,
-    llm_provider,
+    llm_provider = create_ollama_llm_provider(),
     max_interactions = 10,
-    verbose = getOption("tidyprompt.verbose", FALSE)
+    verbose = getOption("tidyprompt.verbose", TRUE),
+    stream = TRUE
 ) {
   ## 1 Validate arguments
 
@@ -26,6 +31,13 @@ send_prompt <- function(
 
   if (!is.logical(verbose))
     stop("verbose should be a logical.")
+  llm_provider$set_verbose(verbose)
+
+  if (!is.logical(stream))
+    stop("stream should be a logical.")
+  parameters <- llm_provider$get_parameters()
+  if (!is.null(parameters$stream))
+    llm_provider$set_parameters(list(stream = stream))
 
 
   ## 2 Retrieve prompt evaluation settings
@@ -52,23 +64,11 @@ send_prompt <- function(
   send_chat <- function(message, role = "user") {
     message <- as.character(message)
 
-    if (verbose) {
-      message("--- Sending message to LLM-provider: ---")
-      message(message)
-    }
-
-    chat_history <<- chat_history |>
-      dplyr::bind_rows(create_chat_df(role, message)) # TODO: remove dplyr
+    chat_history <<- rbind(chat_history, create_chat_df(role, message))
 
     completion <- llm_provider$complete_chat(chat_history)
 
-    if (verbose) {
-      message("--- Received response from LLM-provider: ---")
-      message(completion$content)
-    }
-
-    chat_history <<- chat_history |>
-      dplyr::bind_rows(create_chat_df(completion$role, completion$content))
+    chat_history <<- rbind(chat_history, create_chat_df(completion$role, completion$content))
 
     return(invisible(completion$content))
   }

@@ -6,19 +6,25 @@
 \usage{
 send_prompt(
   prompt,
-  llm_provider,
+  llm_provider = create_ollama_llm_provider(),
   max_interactions = 10,
-  verbose = getOption("tidyprompt.verbose", FALSE)
+  verbose = getOption("tidyprompt.verbose", TRUE),
+  stream = TRUE
 )
 }
 \arguments{
 \item{prompt}{A prompt object or a single string}
 
-\item{llm_provider}{'llm_provider' object}
+\item{llm_provider}{'llm_provider' object (default is 'ollama')}
 
 \item{max_interactions}{Maximum number of interactions before stopping}
 
-\item{verbose}{If the interaction with the LLM provider should be printed}
+\item{verbose}{If the interaction with the LLM provider should be printed
+to the console. Default is TRUE.}
+
+\item{stream}{If the interaction with the LLM provider should be streamed.
+Default is TRUE. This setting only be used if the LLM provider already has a
+'stream' parameter (which indicates there is support for streaming).}
 }
 \value{
 ...
