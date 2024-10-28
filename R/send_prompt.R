@@ -13,6 +13,11 @@
 #' @param stream If the interaction with the LLM provider should be streamed.
 #' Default is TRUE. This setting only be used if the LLM provider already has a
 #' 'stream' parameter (which indicates there is support for streaming).
+#' @param return_mode One of 'full' or 'only_response'. If 'full', the function
+#' will return a list with the following elements: 'success', 'response' (if
+#' successful), 'failed_response' (if unsuccessful), 'chat_history', 'start_time',
+#' 'end_time', and 'duration_seconds'. If 'only_response', the function will only
+#' return the response (or NULL if unsuccessful).
 #'
 #' @return ...
 #' @export
@@ -22,7 +27,8 @@ send_prompt <- function(
     max_interactions = 10,
     clean_chat_history = TRUE,
     verbose = getOption("tidyprompt.verbose", TRUE),
-    stream = TRUE
+    stream = TRUE,
+    return_mode = c("full", "only_response")
 ) {
   ## 1 Validate arguments
 
@@ -44,6 +50,10 @@ send_prompt <- function(
   parameters <- llm_provider$get_parameters()
   if (!is.null(parameters$stream))
     llm_provider$set_parameters(list(stream = stream))
+
+  return_mode <- match.arg(return_mode)
+  if (return_mode == "full")
+    start_time <- Sys.time()
 
 
   ## 2 Retrieve prompt evaluation settings
@@ -109,12 +119,12 @@ send_prompt <- function(
   prompt_wraps <- get_prompt_wraps_ordered(prompt) |> rev() # In reverse order
   # (Tools, then modes, then unspecified prompt_wraps)
 
-  tries <- 0; successful_output <- FALSE
-  while (tries < max_interactions & !successful_output) {
+  tries <- 0; success <- FALSE
+  while (tries < max_interactions & !success) {
     tries <- tries + 1
 
     if (length(prompt_wraps) == 0)
-      successful_output <- TRUE
+      success <- TRUE
 
     any_prompt_wrap_not_done <- FALSE
     for (prompt_wrap in prompt_wraps) {
@@ -159,17 +169,44 @@ send_prompt <- function(
     }
 
     if (!any_prompt_wrap_not_done)
-      successful_output <- TRUE
+      success <- TRUE
   }
 
 
   ## 6 Final evaluation
 
-  if (!successful_output)
-    stop(paste0(
+  if (!success) {
+    warning(paste0(
       "Failed to reach a valid answer after the maximum of ",
       max_interactions, " interactions."
     ))
 
-  return(response)
+    failed_response <- response
+    response <- NULL
+  }
+
+  if (return_mode == "only_response")
+    return(response)
+
+  if (return_mode == "full") {
+    return_list <- list()
+    return_list$success <- success
+
+    if (success) {
+      return_list$response <- response
+    } else {
+      return_list$failed_response <- failed_response
+    }
+
+    return_list$chat_history <- chat_history
+
+    return_list$start_time <- start_time
+    return_list$end_time <- Sys.time()
+    return_list$duration_seconds <-
+      as.numeric(difftime(
+        return_list$end_time, return_list$start_time, units = "secs"
+      ))
+
+    return(return_list)
+  }
 }
