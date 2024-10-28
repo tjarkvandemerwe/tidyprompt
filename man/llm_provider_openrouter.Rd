@@ -5,27 +5,27 @@
 \title{Create a new OpenRouter llm_provider instance}
 \usage{
 llm_provider_openrouter(
-  parameters = list(model = "qwen/qwen-2.5-7b-instruct", api_key =
-    Sys.getenv("OPENROUTER_API_KEY"), url =
-    "https://openrouter.ai/api/v1/chat/completions", stream = TRUE),
-  verbose = getOption("tidyprompt.verbose", TRUE)
+  parameters = list(model = "qwen/qwen-2.5-7b-instruct", stream = TRUE),
+  verbose = getOption("tidyprompt.verbose", TRUE),
+  url = "https://openrouter.ai/api/v1/chat/completions",
+  api_key = Sys.getenv("OPENROUTER_API_KEY")
 )
 }
 \arguments{
 \item{parameters}{A named list of parameters. Currently the following parameters are required:
 \itemize{
-\item model: The name of the model to use (e.g., "qwen/qwen-2.5-7b-instruct"; see
-https://openrouter.ai/docs/models).
-\item api_key: The API key to use for authentication with the OpenRouter API (see
-https://openrouter.ai/docs/api-keys).
-\item url: The URL to the OpenRouter API (default: "https://openrouter.ai/api/v1/chat/completions").
-\item stream: A logical indicating whether the API should stream responses (default: TRUE)
+\item model: The name of the model to use
+\item stream: A logical indicating whether the API should stream responses
 Additional parameters are appended to the request body; see the OpenRouter API
 documentation for more information: https://openrouter.ai/docs/parameters
 }}
 
 \item{verbose}{A logical indicating whether the interaction with the LLM provider
-should be printed to the console. Default is TRUE.}
+should be printed to the console.}
+
+\item{url}{The URL to the OpenRouter API}
+
+\item{api_key}{The API key to use for authentication with the OpenRouter API}
 }
 \value{
 A new llm_provider object for use of the OpenRouter API

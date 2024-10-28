@@ -5,24 +5,27 @@
 \title{Create a new Groq llm_provider instance}
 \usage{
 llm_provider_groq(
-  parameters = list(model = "llama-3.1-8b-instant", api_key = Sys.getenv("GROQ_API_KEY"),
-    url = "https://api.groq.com/openai/v1/chat/completions", stream = TRUE),
-  verbose = getOption("tidyprompt.verbose", TRUE)
+  parameters = list(model = "llama-3.1-8b-instant", stream = TRUE),
+  verbose = getOption("tidyprompt.verbose", TRUE),
+  url = "https://api.groq.com/openai/v1/chat/completions",
+  api_key = Sys.getenv("GROQ_API_KEY")
 )
 }
 \arguments{
 \item{parameters}{A named list of parameters. Currently the following parameters are required:
 \itemize{
-\item model: The name of the model to use (e.g., "llama-3.1-8b-instant")
-\item api_key: The API key to use for authentication with the Groq API
-\item url: The URL to the Groq API (default: "https://api.groq.com/openai/v1/chat/completions")
-\item stream: A logical indicating whether the API should stream responses (default: TRUE)
+\item model: The name of the model to use
+\item stream: A logical indicating whether the API should stream responses
 Additional parameters are appended to the request body; see the Groq API
 documentation for more information: https://console.groq.com/docs/api-reference#chat-create
 }}
 
 \item{verbose}{A logical indicating whether the interaction with the LLM provider
-should be printed to the console. Default is TRUE.}
+should be printed to the console}
+
+\item{url}{The URL to the Groq API}
+
+\item{api_key}{The API key to use for authentication with the Groq API}
 }
 \value{
 A new llm_provider object for use of the Groq API

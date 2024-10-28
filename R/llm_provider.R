@@ -23,6 +23,8 @@
 #'  E.g., list(model = "my-llm-model", api_key = "my-api-key").
 #' @param verbose A logical indicating whether the interaction with the LLM provider
 #' should be printed to the console. Default is TRUE.
+#' @param url The URL to the LLM provider API endpoint for chat completion
+#' @param api_key The API key to use for authentication with the LLM provider API
 #'
 #' @return A new llm_provider object
 #'
@@ -30,7 +32,9 @@
 llm_provider <- function(
     complete_chat_function,
     parameters = list(),
-    verbose = getOption("tidyprompt.verbose", TRUE)
+    verbose = getOption("tidyprompt.verbose", TRUE),
+    url = NULL,
+    api_key = NULL
 ) {
   if (length(parameters) > 0 & is.null(names(parameters))) {
     stop("parameters must be a named list")
@@ -113,6 +117,24 @@ llm_provider <- function(
       stop("new_verbose must be a logical")
     }
     verbose <<- new_verbose
+  })
+
+  # Get URL
+  llm_provider$get_url <- create_function(function() {
+    return(url)
+  })
+  # Set URL
+  llm_provider$set_url <- create_function(function(new_url) {
+    url <<- new_url
+  })
+
+  # Get api_key
+  llm_provider$get_api_key <- create_function(function() {
+    return(api_key)
+  })
+  # Set api_key
+  llm_provider$set_api_key <- create_function(function(new_api_key) {
+    api_key <<- new_api_key
   })
 
   # Return the llm_provider object
@@ -236,27 +258,28 @@ make_llm_provider_request <- function(
 #' Create a new Ollama llm_provider instance
 #'
 #' @param parameters A named list of parameters. Currently the following parameters are required:
-#'    - model: The name of the model to use (e.g., "llama3.1:8b")
-#'    - url: The URL of the Ollama API endpoint
-#'    - stream: A logical indicating whether the API should stream responses (default: TRUE)
+#'    - model: The name of the model to use
+#'    - stream: A logical indicating whether the API should stream responses
 #'  Additional parameters may be passed by adding them to the parameters list;
 #'  these parameters will be passed to the Ollama API via the body of the POST request.
 #'  Options specifically can be set with the $set_options function (e.g.,
 #'  ollama$set_options(list(temperature = 0.8))). See available options at
-#'  https://ollama.com/docs/api/chat.#'
+#'  https://ollama.com/docs/api/chat
 #' @param verbose A logical indicating whether the interaction with the LLM provider
-#' should be printed to the console. Default is TRUE.
+#' should be printed to the console
+#' @param url The URL to the Ollama API
 #'
 #' @return A new llm_provider object for use of the Ollama API
 #' @export
-llm_provider_ollama <- function(parameters = list(
-  model = "llama3.1:8b",
-  url = "http://localhost:11434/api/chat",
-  stream = TRUE
-), verbose = getOption("tidyprompt.verbose", TRUE)) {
+llm_provider_ollama <- function(
+    parameters = list(
+      model = "llama3.1:8b",
+      stream = TRUE
+    ),
+    verbose = getOption("tidyprompt.verbose", TRUE),
+    url = "http://localhost:11434/api/chat"
+) {
   complete_chat <- function(chat_history) {
-    url <- parameters$url
-
     body <- list(
       model = parameters$model,
       messages = lapply(seq_len(nrow(chat_history)), function(i) {
@@ -266,11 +289,8 @@ llm_provider_ollama <- function(parameters = list(
     )
 
     # Append all other parameters to the body
-    for (name in names(parameters)) {
-      if (!(name %in% c("model", "url", "stream"))) {
-        body[[name]] <- parameters[[name]]
-      }
-    }
+    for (name in names(parameters))
+      body[[name]] <- parameters[[name]]
 
     return(make_llm_provider_request(
       url = url,
@@ -285,7 +305,8 @@ llm_provider_ollama <- function(parameters = list(
   ollama <- llm_provider(
     complete_chat_function = complete_chat,
     parameters = parameters,
-    verbose = verbose
+    verbose = verbose,
+    url = url
   )
 
   # Additional functions to get/set options for the Ollama API
@@ -328,31 +349,35 @@ llm_provider_ollama <- function(parameters = list(
 #' This function creates a new llm_provider that interacts with the Open AI API
 #'
 #' @param parameters A named list of parameters. Currently the following parameters are required:
-#'    - model: The name of the model to use (e.g., "gpt-4o-mini")
-#'    - api_key: The API key to use for authentication with the OpenAI API. This should be
-#'      a project API key (not a user API key) and it should have sufficient permissions.
-#'    - url: The URL to the OpenAI API (default: "https://api.openai.com/v1/chat/completions").
-#'      (May also be an alternative endpoint that provides a similar API.)
-#'    - stream: A logical indicating whether the API should stream responses (default: TRUE)
+#'    - model: The name of the model to use
+#'    - api_key: The API key to use for authentication with the OpenAI API. This
+#'    should be a project API key (not a user API key)
+#'    - url: The URL to the OpenAI API (may also be an alternative endpoint
+#'    that provides a similar API.)
+#'    - stream: A logical indicating whether the API should stream responses
 #'  Additional parameters are appended to the request body; see the OpenAI API
 #'  documentation for more information: https://platform.openai.com/docs/api-reference/chat
 #' @param verbose A logical indicating whether the interaction with the LLM provider
 #' should be printed to the console. Default is TRUE.
+#' @param url The URL to the OpenAI API
+#' @param api_key The API key to use for authentication with the OpenAI API
 #'
 #' @return A new llm_provider object for use of the OpenAI API
 #'
 #' @export
-llm_provider_openai <- function(parameters = list(
-  model = "gpt-4o-mini",
-  api_key = Sys.getenv("OPENAI_API_KEY"),
-  url = "https://api.openai.com/v1/chat/completions",
-  stream = TRUE
-), verbose = getOption("tidyprompt.verbose", TRUE)) {
+llm_provider_openai <- function(
+    parameters = list(
+      model = "gpt-4o-mini",
+      stream = TRUE
+    ),
+    verbose = getOption("tidyprompt.verbose", TRUE),
+    url = "https://api.openai.com/v1/chat/completions",
+    api_key = Sys.getenv("OPENAI_API_KEY")
+) {
   complete_chat <- function(chat_history) {
-    url <- parameters$url
     headers <- c(
       "Content-Type" = "application/json",
-      "Authorization" = paste("Bearer", parameters$api_key)
+      "Authorization" = paste("Bearer", api_key)
     )
 
     # Prepare the body by converting chat_history dataframe to list of lists
@@ -362,8 +387,9 @@ llm_provider_openai <- function(parameters = list(
       })
     )
 
-    # Add all other parameters to the body
-    body <- c(body, parameters[names(parameters) != "api_key" & names(parameters) != "url"])
+    # Append all other parameters to the body
+    for (name in names(parameters))
+      body[[name]] <- parameters[[name]]
 
     make_llm_provider_request(
       url = url,
@@ -378,7 +404,9 @@ llm_provider_openai <- function(parameters = list(
   llm_provider(
     complete_chat_function = complete_chat,
     parameters = parameters,
-    verbose = verbose
+    verbose = verbose,
+    url = url,
+    api_key = api_key
   )
 }
 
@@ -387,27 +415,27 @@ llm_provider_openai <- function(parameters = list(
 #' Create a new OpenRouter llm_provider instance
 #'
 #' @param parameters A named list of parameters. Currently the following parameters are required:
-#'  - model: The name of the model to use (e.g., "qwen/qwen-2.5-7b-instruct"; see
-#'  https://openrouter.ai/docs/models).
-#'  - api_key: The API key to use for authentication with the OpenRouter API (see
-#'  https://openrouter.ai/docs/api-keys).
-#'  - url: The URL to the OpenRouter API (default: "https://openrouter.ai/api/v1/chat/completions").
-#'  - stream: A logical indicating whether the API should stream responses (default: TRUE)
+#'    - model: The name of the model to use
+#'    - stream: A logical indicating whether the API should stream responses
 #'  Additional parameters are appended to the request body; see the OpenRouter API
 #'  documentation for more information: https://openrouter.ai/docs/parameters
 #' @param verbose A logical indicating whether the interaction with the LLM provider
-#' should be printed to the console. Default is TRUE.
+#' should be printed to the console.
+#' @param url The URL to the OpenRouter API
+#' @param api_key The API key to use for authentication with the OpenRouter API
 #'
 #' @return A new llm_provider object for use of the OpenRouter API
 #' @export
-llm_provider_openrouter <- function(parameters = list(
-  model = "qwen/qwen-2.5-7b-instruct",
-  api_key = Sys.getenv("OPENROUTER_API_KEY"),
+llm_provider_openrouter <- function(
+  parameters = list(
+    model = "qwen/qwen-2.5-7b-instruct",
+    stream = TRUE
+  ),
+  verbose = getOption("tidyprompt.verbose", TRUE),
   url = "https://openrouter.ai/api/v1/chat/completions",
-  stream = TRUE
-), verbose = getOption("tidyprompt.verbose", TRUE)) {
-  # OpenRouter follows the same API structure as OpenAI
-  llm_provider_openai(parameters, verbose)
+  api_key = Sys.getenv("OPENROUTER_API_KEY")
+) {
+  llm_provider_openai(parameters, verbose, url, api_key)
 }
 
 
@@ -417,24 +445,28 @@ llm_provider_openrouter <- function(parameters = list(
 #' This function creates a new llm_provider that interacts with the Mistral API.
 #'
 #' @param parameters A named list of parameters. Currently the following parameters are required:
-#'    - model: The name of the model to use (e.g., "mistral-small-latest")
-#'    - api_key: The API key to use for authentication with the Mistral API
-#'    - url: The URL to the Mistral API (default: "https://api.mistral.ai/v1/chat/completions")
+#'    - model: The name of the model to use
+#'    - stream: A logical indicating whether the API should stream responses
 #'  Additional parameters are appended to the request body; see the Mistral API
 #'  documentation for more information: https://docs.mistral.ai/api/#tag/chat
 #' @param verbose A logical indicating whether the interaction with the LLM provider
-#' should be printed to the console. Default is TRUE.
+#' should be printed to the consol
+#' @param url The URL to the Mistral API
+#' @param api_key The API key to use for authentication with the Mistral API
 #'
 #' @return A new llm_provider object for use of the Mistral API
 #'
 #' @export
-llm_provider_mistral <- function(parameters = list(
-  model = "mistral-small-latest",
-  api_key = Sys.getenv("MISTRAL_API_KEY"),
-  url = "https://api.mistral.ai/v1/chat/completions"
-), verbose = getOption("tidyprompt.verbose", TRUE)) {
-  # Mistral follows the same API structure as OpenAI
-  llm_provider_openai(parameters, verbose)
+llm_provider_mistral <- function(
+    parameters = list(
+      model = "ministral-3b-latest",
+      stream = TRUE
+    ),
+    verbose = getOption("tidyprompt.verbose", TRUE),
+    url = "https://api.mistral.ai/v1/chat/completions",
+    api_key = Sys.getenv("MISTRAL_API_KEY")
+) {
+  llm_provider_openai(parameters, verbose, url, api_key)
 }
 
 
@@ -442,25 +474,27 @@ llm_provider_mistral <- function(parameters = list(
 #' Create a new Groq llm_provider instance
 #'
 #' @param parameters A named list of parameters. Currently the following parameters are required:
-#'   - model: The name of the model to use (e.g., "llama-3.1-8b-instant")
-#'   - api_key: The API key to use for authentication with the Groq API
-#'   - url: The URL to the Groq API (default: "https://api.groq.com/openai/v1/chat/completions")
-#'   - stream: A logical indicating whether the API should stream responses (default: TRUE)
+#'   - model: The name of the model to use
+#'   - stream: A logical indicating whether the API should stream responses
 #'  Additional parameters are appended to the request body; see the Groq API
 #'  documentation for more information: https://console.groq.com/docs/api-reference#chat-create
 #' @param verbose A logical indicating whether the interaction with the LLM provider
-#' should be printed to the console. Default is TRUE.
+#' should be printed to the console
+#' @param api_key The API key to use for authentication with the Groq API
+#' @param url The URL to the Groq API
 #'
 #' @return A new llm_provider object for use of the Groq API
 #' @export
-llm_provider_groq <- function(parameters = list(
-  model = "llama-3.1-8b-instant",
-  api_key = Sys.getenv("GROQ_API_KEY"),
-  url = "https://api.groq.com/openai/v1/chat/completions",
-  stream = TRUE
-), verbose = getOption("tidyprompt.verbose", TRUE)) {
-  # Groq follows the same API structure as OpenAI
-  llm_provider_openai(parameters, verbose)
+llm_provider_groq <- function(
+    parameters = list(
+      model = "llama-3.1-8b-instant",
+      stream = TRUE
+    ),
+    verbose = getOption("tidyprompt.verbose", TRUE),
+    url = "https://api.groq.com/openai/v1/chat/completions",
+    api_key = Sys.getenv("GROQ_API_KEY")
+) {
+  llm_provider_openai(parameters, verbose, url, api_key)
 }
 
 
@@ -468,25 +502,27 @@ llm_provider_groq <- function(parameters = list(
 #' Create a new XAI (Grok) llm_provider instance
 #'
 #' @param parameters A named list of parameters. Currently the following parameters are required:
-#'   - model: The name of the model to use (e.g., "grok-beta")
-#'   - api_key: The API key to use for authentication with the XAI API
-#'   - url: The URL to the XAI API (default: "https://api.xai.ai/v1/chat/completions")
-#'   - stream: A logical indicating whether the API should stream responses (default: TRUE)
+#'   - model: The name of the model to use
+#'   - stream: A logical indicating whether the API should stream responses
 #'  Additional parameters are appended to the request body; see the XAI API
 #'  documentation for more information: https://docs.x.ai/api/endpoints#chat-completions
 #' @param verbose A logical indicating whether the interaction with the LLM provider
 #' should be printed to the console. Default is TRUE.
+#' @param url The URL to the XAI API
+#' @param api_key The API key to use for authentication with the XAI API
 #'
 #' @return A new llm_provider object for use of the XAI API
 #' @export
-llm_provider_xai <- function(parameters = list(
-  model = "grok-beta",
-  api_key = Sys.getenv("XAI_API_KEY"),
-  url = "https://api.x.ai/v1/chat/completions",
-  stream = TRUE
-), verbose = getOption("tidyprompt.verbose", TRUE)) {
-  # XAI follows the same API structure as OpenAI
-  llm_provider_openai(parameters, verbose)
+llm_provider_xai <- function(
+    parameters = list(
+      model = "grok-beta",
+      stream = TRUE
+    ),
+    verbose = getOption("tidyprompt.verbose", TRUE),
+    url = "https://api.x.ai/v1/chat/completions",
+    api_key = Sys.getenv("XAI_API_KEY")
+) {
+  llm_provider_openai(parameters, verbose, url, api_key)
 }
 
 
@@ -497,29 +533,33 @@ llm_provider_xai <- function(parameters = list(
 #' Streaming is not yet supported in this implementation.
 #'
 #' @param parameters A named list of parameters. Currently the following parameters are required:
-#'  - model: The name of the model to use (e.g., "gemini-1.5-flash"; see https://ai.google.dev/gemini-api/docs/models/gemini)
-#'  - api_key: The API key to use for authentication (get at https://aistudio.google.com/app/apikey)
-#'  - base_url: The URL to the Google AI Studio API (default: "https://generativelanguage.googleapis.com/v1beta/models/")
+#'    - model: The name of the model to use (see: https://ai.google.dev/gemini-api/docs/models/gemini)
 #'  Additional parameters are appended to the request body; see the Google AI Studio API
 #'  documentation for more information: https://ai.google.dev/gemini-api/docs/text-generation
-#'  and https://github.com/google/generative-ai-docs/blob/main/site/en/gemini-api/docs/get-started/rest.ipynb
+#'  & https://github.com/google/generative-ai-docs/blob/main/site/en/gemini-api/docs/get-started/rest.ipynb
 #' @param verbose A logical indicating whether the interaction with the LLM provider
-#' should be printed to the console. Default is TRUE.
+#' should be printed to the console
+#' @param url The URL to the Google Gemini API
+#' @param api_key The API key to use for authentication with the Google Gemini API
+#' (see: https://aistudio.google.com/app/apikey)
 #'
 #' @return A new llm_provider object for use of the Google Gemini API
 #' @export
-llm_provider_google_gemini <- function(parameters = list(
-  model = "gemini-1.5-flash",
-  api_key = Sys.getenv("GOOGLE_AI_STUDIO_API_KEY"),
-  base_url = "https://generativelanguage.googleapis.com/v1beta/models/"
-), verbose = getOption("tidyprompt.verbose", TRUE)) {
+llm_provider_google_gemini <- function(
+    parameters = list(
+      model = "gemini-1.5-flash"
+    ),
+    verbose = getOption("tidyprompt.verbose", TRUE),
+    url = "https://generativelanguage.googleapis.com/v1beta/models/",
+    api_key = Sys.getenv("GOOGLE_AI_STUDIO_API_KEY")
+) {
   complete_chat <- function(chat_history) {
     # Construct URL for the API request
     url <- paste0(
-      parameters$base_url,
+      url,
       parameters$model,
       ":generateContent",
-      "?key=", parameters$api_key
+      "?key=", api_key
     )
 
     headers <- c(
@@ -539,14 +579,10 @@ llm_provider_google_gemini <- function(parameters = list(
       contents = formatted_contents
     )
 
-    # Add aditional parameters to the body
-    body <- c(body,
-      parameters[
-        names(parameters) != "api_key"
-        & names(parameters) != "base_url"
-        & names(parameters) != "model"
-      ]
-    )
+    # Append all other parameters to the body
+    for (name in names(parameters))
+      body[[name]] <- parameters[[name]]
+
 
     # Send the POST request with the properly formatted body
     response <- httr::POST(url, httr::add_headers(.headers = headers), body = body, encode = "json")
@@ -567,7 +603,9 @@ llm_provider_google_gemini <- function(parameters = list(
   llm_provider(
     complete_chat_function = complete_chat,
     parameters = parameters,
-    verbose = verbose
+    verbose = verbose,
+    url = url,
+    api_key = api_key
   )
 }
 

@@ -5,23 +5,27 @@
 \title{Create a new Mistral llm_provider instance}
 \usage{
 llm_provider_mistral(
-  parameters = list(model = "mistral-small-latest", api_key =
-    Sys.getenv("MISTRAL_API_KEY"), url = "https://api.mistral.ai/v1/chat/completions"),
-  verbose = getOption("tidyprompt.verbose", TRUE)
+  parameters = list(model = "ministral-3b-latest", stream = TRUE),
+  verbose = getOption("tidyprompt.verbose", TRUE),
+  url = "https://api.mistral.ai/v1/chat/completions",
+  api_key = Sys.getenv("MISTRAL_API_KEY")
 )
 }
 \arguments{
 \item{parameters}{A named list of parameters. Currently the following parameters are required:
 \itemize{
-\item model: The name of the model to use (e.g., "mistral-small-latest")
-\item api_key: The API key to use for authentication with the Mistral API
-\item url: The URL to the Mistral API (default: "https://api.mistral.ai/v1/chat/completions")
+\item model: The name of the model to use
+\item stream: A logical indicating whether the API should stream responses
 Additional parameters are appended to the request body; see the Mistral API
 documentation for more information: https://docs.mistral.ai/api/#tag/chat
 }}
 
 \item{verbose}{A logical indicating whether the interaction with the LLM provider
-should be printed to the console. Default is TRUE.}
+should be printed to the consol}
+
+\item{url}{The URL to the Mistral API}
+
+\item{api_key}{The API key to use for authentication with the Mistral API}
 }
 \value{
 A new llm_provider object for use of the Mistral API

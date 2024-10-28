@@ -5,26 +5,27 @@
 \title{Create a new Ollama llm_provider instance}
 \usage{
 llm_provider_ollama(
-  parameters = list(model = "llama3.1:8b", url = "http://localhost:11434/api/chat",
-    stream = TRUE),
-  verbose = getOption("tidyprompt.verbose", TRUE)
+  parameters = list(model = "llama3.1:8b", stream = TRUE),
+  verbose = getOption("tidyprompt.verbose", TRUE),
+  url = "http://localhost:11434/api/chat"
 )
 }
 \arguments{
 \item{parameters}{A named list of parameters. Currently the following parameters are required:
 \itemize{
-\item model: The name of the model to use (e.g., "llama3.1:8b")
-\item url: The URL of the Ollama API endpoint
-\item stream: A logical indicating whether the API should stream responses (default: TRUE)
+\item model: The name of the model to use
+\item stream: A logical indicating whether the API should stream responses
 Additional parameters may be passed by adding them to the parameters list;
 these parameters will be passed to the Ollama API via the body of the POST request.
 Options specifically can be set with the $set_options function (e.g.,
 ollama$set_options(list(temperature = 0.8))). See available options at
-https://ollama.com/docs/api/chat.#'
+https://ollama.com/docs/api/chat
 }}
 
 \item{verbose}{A logical indicating whether the interaction with the LLM provider
-should be printed to the console. Default is TRUE.}
+should be printed to the console}
+
+\item{url}{The URL to the Ollama API}
 }
 \value{
 A new llm_provider object for use of the Ollama API

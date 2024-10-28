@@ -104,9 +104,10 @@ valid (including retries with feedback to the LLM if it is not).
 ``` r
   "Hi there!" |>
     send_prompt(ollama)
-#> --- Sending message to LLM provider: ---
+#> --- Sending request to LLM provider (llama3.1:8b): ---
 #> Hi there!
 #> --- Receiving response from LLM provider: ---
+#> It's nice to meet you. Is there something I can help you with or would you like to chat?
 #> [1] "It's nice to meet you. Is there something I can help you with or would you like to chat?"
 ```
 
@@ -117,11 +118,12 @@ text at the end of the base prompt.
   "Hi there!" |>
     add_text("What is a large language model? Explain in 10 words.") |>
     send_prompt(ollama)
-#> --- Sending message to LLM provider: ---
+#> --- Sending request to LLM provider (llama3.1:8b): ---
 #> Hi there!
 #> 
 #> What is a large language model? Explain in 10 words.
 #> --- Receiving response from LLM provider: ---
+#> Complex computer program trained on vast texts to generate human-like responses.
 #> [1] "Complex computer program trained on vast texts to generate human-like responses."
 ```
 
@@ -160,11 +162,12 @@ to the LLM, after which the LLM can retry answering the prompt.
   "What is 2 + 2?" |>
     answer_as_integer() |>
     send_prompt(ollama, verbose = TRUE)
-#> --- Sending message to LLM provider: ---
+#> --- Sending request to LLM provider (llama3.1:8b): ---
 #> What is 2 + 2?
 #> 
 #> You must answer with only an integer (use no other characters).
 #> --- Receiving response from LLM provider: ---
+#> 4
 #> [1] 4
 ```
 
@@ -176,14 +179,16 @@ succeed after a retry.
     add_text("Please write out your reply in words, use no numbers.") |>
     answer_as_integer(add_instruction_to_prompt = FALSE) |>
     send_prompt(ollama, verbose = TRUE)
-#> --- Sending message to LLM provider: ---
+#> --- Sending request to LLM provider (llama3.1:8b): ---
 #> What is 2 + 2?
 #> 
 #> Please write out your reply in words, use no numbers.
 #> --- Receiving response from LLM provider: ---
-#> --- Sending message to LLM provider: ---
+#> Four.
+#> --- Sending request to LLM provider (llama3.1:8b): ---
 #> You must answer with only an integer (use no other characters).
 #> --- Receiving response from LLM provider: ---
+#> 4
 #> [1] 4
 ```
 
@@ -204,7 +209,7 @@ function then ensures only the final answer is returned.
     answer_by_chain_of_thought() |>
     answer_as_integer() |>
     send_prompt(ollama, verbose = TRUE)
-#> --- Sending message to LLM provider: ---
+#> --- Sending request to LLM provider (llama3.1:8b): ---
 #> You are given a user's prompt.
 #> To answer the user's prompt, you need to think step by step to arrive at a final answer.
 #> 
@@ -225,6 +230,19 @@ function then ensures only the final answer is returned.
 #> 
 #> Make sure your final answer follows the logical conclusion of your thought process.
 #> --- Receiving response from LLM provider: ---
+#> >> step 1: Identify the mathematical operation in the prompt,
+#> which is a simple addition problem.
+#> 
+#> >> step 2: Recall the basic arithmetic fact that 2 + 2 equals a specific
+#> numerical value.
+#> 
+#> >> step 3: Apply this knowledge to determine the result of the addition problem,
+#> using the known facts about numbers and their operations.
+#> 
+#> >> step 4: Conclude that based on this mathematical understanding, the
+#> solution to the prompt "What is 2 + 2?" is a fixed numerical quantity.
+#> 
+#> FINISH[4]
 #> [1] 4
 ```
 

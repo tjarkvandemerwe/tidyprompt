@@ -5,25 +5,28 @@
 \title{Create a new Google Gemini llm_provider instance}
 \usage{
 llm_provider_google_gemini(
-  parameters = list(model = "gemini-1.5-flash", api_key =
-    Sys.getenv("GOOGLE_AI_STUDIO_API_KEY"), base_url =
-    "https://generativelanguage.googleapis.com/v1beta/models/"),
-  verbose = getOption("tidyprompt.verbose", TRUE)
+  parameters = list(model = "gemini-1.5-flash"),
+  verbose = getOption("tidyprompt.verbose", TRUE),
+  url = "https://generativelanguage.googleapis.com/v1beta/models/",
+  api_key = Sys.getenv("GOOGLE_AI_STUDIO_API_KEY")
 )
 }
 \arguments{
 \item{parameters}{A named list of parameters. Currently the following parameters are required:
 \itemize{
-\item model: The name of the model to use (e.g., "gemini-1.5-flash"; see https://ai.google.dev/gemini-api/docs/models/gemini)
-\item api_key: The API key to use for authentication (get at https://aistudio.google.com/app/apikey)
-\item base_url: The URL to the Google AI Studio API (default: "https://generativelanguage.googleapis.com/v1beta/models/")
+\item model: The name of the model to use (see: https://ai.google.dev/gemini-api/docs/models/gemini)
 Additional parameters are appended to the request body; see the Google AI Studio API
 documentation for more information: https://ai.google.dev/gemini-api/docs/text-generation
-and https://github.com/google/generative-ai-docs/blob/main/site/en/gemini-api/docs/get-started/rest.ipynb
+& https://github.com/google/generative-ai-docs/blob/main/site/en/gemini-api/docs/get-started/rest.ipynb
 }}
 
 \item{verbose}{A logical indicating whether the interaction with the LLM provider
-should be printed to the console. Default is TRUE.}
+should be printed to the console}
+
+\item{url}{The URL to the Google Gemini API}
+
+\item{api_key}{The API key to use for authentication with the Google Gemini API
+(see: https://aistudio.google.com/app/apikey)}
 }
 \value{
 A new llm_provider object for use of the Google Gemini API

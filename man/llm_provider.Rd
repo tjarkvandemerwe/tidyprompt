@@ -7,7 +7,9 @@
 llm_provider(
   complete_chat_function,
   parameters = list(),
-  verbose = getOption("tidyprompt.verbose", TRUE)
+  verbose = getOption("tidyprompt.verbose", TRUE),
+  url = NULL,
+  api_key = NULL
 )
 }
 \arguments{
@@ -32,6 +34,10 @@ E.g., list(model = "my-llm-model", api_key = "my-api-key").}
 
 \item{verbose}{A logical indicating whether the interaction with the LLM provider
 should be printed to the console. Default is TRUE.}
+
+\item{url}{The URL to the LLM provider API endpoint for chat completion}
+
+\item{api_key}{The API key to use for authentication with the LLM provider API}
 }
 \value{
 A new llm_provider object
