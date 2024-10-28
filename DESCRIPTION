@@ -29,7 +29,6 @@ Suggests:
 VignetteBuilder: knitr
 Imports: 
     crayon,
-    dplyr,
     glue,
     httr,
     jsonlite,
