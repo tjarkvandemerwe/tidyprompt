@@ -87,22 +87,26 @@
 <h3 id="setup-an-llm-provider">Setup an LLM provider<a class="anchor" aria-label="anchor" href="#setup-an-llm-provider"></a>
 </h3>
 <p><code>tidyprompt</code> can be used with any LLM provider capable of completing a chat.</p>
-<p>At the moment, <code>tidyprompt</code> includes pre-built functions to connect with Ollama and the OpenAI API.</p>
-<p>With the <code>create_llm_provider</code> function, you can easily write a hook for any other LLM provider. You could make API calls using the <code>httr</code> package or use another R package that already has a hook for the LLM provider you want to use.</p>
+<p>At the moment, <code>tidyprompt</code> includes pre-built functions to connect with various LLM providers, such as Ollama, OpenAI, OpenRouter, Mistral, Groq, XAI (Grok), and Google Gemini.</p>
+<p>With the <code>llm_provider</code> function, you can easily write a hook for any other LLM provider. You could make API calls using the <code>httr</code> package or use another R package that already has a hook for the LLM provider you want to use. If your API of choice follows the structure of the OpenAI API, you can very easily call the <code>llm_provider_openai</code> function and change the relevant parameters (like the url and the API key).</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Ollama running on local PC</span></span>
-<span><span class="va">ollama</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_ollama_llm_provider.html">create_ollama_llm_provider</a></span><span class="op">(</span></span>
+<span><span class="va">ollama</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/llm_provider_ollama.html">llm_provider_ollama</a></span><span class="op">(</span></span>
 <span>  parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>model <span class="op">=</span> <span class="st">"llama3.1:8b"</span>, url <span class="op">=</span> <span class="st">"http://localhost:11434/api/chat"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># OpenAI API</span></span>
-<span><span class="va">openai</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_openai_llm_provider.html">create_openai_llm_provider</a></span><span class="op">(</span></span>
+<span><span class="va">openai</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/llm_provider_openai.html">llm_provider_openai</a></span><span class="op">(</span></span>
 <span>  parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>model <span class="op">=</span> <span class="st">"gpt-4o-mini"</span>, api_key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"OPENAI_API_KEY"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Create your own LLM provider hook using create_llm_provider(); </span></span>
-<span><span class="co">#   see ?create_llm_provider for more information, and take a look at</span></span>
-<span><span class="co">#   the source code of create_ollama_llm_provider() and create_openai_llm_provider()</span></span></code></pre></div>
+<span><span class="co"># ... functions also included for OpenRouter, Mistral, Groq, XAI (Grok), and Google Gemini</span></span>
+<span></span>
+<span><span class="co"># ... or easily create your own hook for any other LLM provider;</span></span>
+<span><span class="co">#   see ?llm_provider for more information; also take a look at the source code of</span></span>
+<span><span class="co">#   llm_provider_ollama() and llm_provider_openai(). For APIs that follow the structure</span></span>
+<span><span class="co">#   of the OpenAI API for chat completion, you can use llm_provider_openai() and change</span></span>
+<span><span class="co">#   the relevant parameters (like the url and the API key).</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="basic-prompting">Basic prompting<a class="anchor" aria-label="anchor" href="#basic-prompting"></a>
@@ -112,12 +116,20 @@
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  <span class="st">"Hi there!"</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="va">ollama</span><span class="op">)</span></span>
+<span><span class="co">#&gt; --- Sending message to LLM provider: ---</span></span>
+<span><span class="co">#&gt; Hi there!</span></span>
+<span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
 <span><span class="co">#&gt; [1] "It's nice to meet you. Is there something I can help you with or would you like to chat?"</span></span></code></pre></div>
 <p><code>add_text</code> is a simple example of a prompt wrap. It simply adds some text at the end of the base prompt.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  <span class="st">"Hi there!"</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="reference/add_text.html">add_text</a></span><span class="op">(</span><span class="st">"What is a large language model? Explain in 10 words."</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="va">ollama</span><span class="op">)</span></span>
+<span><span class="co">#&gt; --- Sending message to LLM provider: ---</span></span>
+<span><span class="co">#&gt; Hi there!</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; What is a large language model? Explain in 10 words.</span></span>
+<span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
 <span><span class="co">#&gt; [1] "Complex computer program trained on vast texts to generate human-like responses."</span></span></code></pre></div>
 <p>You can also construct the final prompt text, without sending it to an LLM provider.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
@@ -142,12 +154,11 @@
 <code class="sourceCode R"><span>  <span class="st">"What is 2 + 2?"</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="reference/answer_as_integer.html">answer_as_integer</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="va">ollama</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; --- Sending message to LLM-provider: ---</span></span>
+<span><span class="co">#&gt; --- Sending message to LLM provider: ---</span></span>
 <span><span class="co">#&gt; What is 2 + 2?</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; You must answer with only an integer (use no other characters).</span></span>
-<span><span class="co">#&gt; --- Received response from LLM-provider: ---</span></span>
-<span><span class="co">#&gt; 4</span></span>
+<span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
 <span><span class="co">#&gt; [1] 4</span></span></code></pre></div>
 <p>Below is an example of a prompt which will initially fail, but will succeed after a retry.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
@@ -155,16 +166,14 @@
 <span>    <span class="fu"><a href="reference/add_text.html">add_text</a></span><span class="op">(</span><span class="st">"Please write out your reply in words, use no numbers."</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="reference/answer_as_integer.html">answer_as_integer</a></span><span class="op">(</span>add_instruction_to_prompt <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="va">ollama</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; --- Sending message to LLM-provider: ---</span></span>
+<span><span class="co">#&gt; --- Sending message to LLM provider: ---</span></span>
 <span><span class="co">#&gt; What is 2 + 2?</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Please write out your reply in words, use no numbers.</span></span>
-<span><span class="co">#&gt; --- Received response from LLM-provider: ---</span></span>
-<span><span class="co">#&gt; Four.</span></span>
-<span><span class="co">#&gt; --- Sending message to LLM-provider: ---</span></span>
+<span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
+<span><span class="co">#&gt; --- Sending message to LLM provider: ---</span></span>
 <span><span class="co">#&gt; You must answer with only an integer (use no other characters).</span></span>
-<span><span class="co">#&gt; --- Received response from LLM-provider: ---</span></span>
-<span><span class="co">#&gt; 4</span></span>
+<span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
 <span><span class="co">#&gt; [1] 4</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -177,7 +186,7 @@
 <span>    <span class="fu"><a href="reference/answer_by_chain_of_thought.html">answer_by_chain_of_thought</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="reference/answer_as_integer.html">answer_as_integer</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="va">ollama</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; --- Sending message to LLM-provider: ---</span></span>
+<span><span class="co">#&gt; --- Sending message to LLM provider: ---</span></span>
 <span><span class="co">#&gt; You are given a user's prompt.</span></span>
 <span><span class="co">#&gt; To answer the user's prompt, you need to think step by step to arrive at a final answer.</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -197,20 +206,7 @@
 <span><span class="co">#&gt; FINISH[&lt;put here your final answer to the user's prompt&gt;]</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Make sure your final answer follows the logical conclusion of your thought process.</span></span>
-<span><span class="co">#&gt; --- Received response from LLM-provider: ---</span></span>
-<span><span class="co">#&gt; &gt;&gt; step 1: Identify the mathematical operation in the prompt,</span></span>
-<span><span class="co">#&gt; which is a simple addition problem.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; &gt;&gt; step 2: Recall the basic arithmetic fact that 2 + 2 equals a specific</span></span>
-<span><span class="co">#&gt; numerical value.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; &gt;&gt; step 3: Apply this knowledge to determine the result of the addition problem,</span></span>
-<span><span class="co">#&gt; using the known facts about numbers and their operations.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; &gt;&gt; step 4: Conclude that based on this mathematical understanding, the</span></span>
-<span><span class="co">#&gt; solution to the prompt "What is 2 + 2?" is a fixed numerical quantity.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; FINISH[4]</span></span>
+<span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
 <span><span class="co">#&gt; [1] 4</span></span></code></pre></div>
 </div>
 <div class="section level3">
