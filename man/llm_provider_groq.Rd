@@ -6,7 +6,7 @@
 \usage{
 llm_provider_groq(
   parameters = list(model = "llama-3.1-8b-instant", api_key = Sys.getenv("GROQ_API_KEY"),
-    url = "https://api.groq.com/openai/v1/chat/completions"),
+    url = "https://api.groq.com/openai/v1/chat/completions", stream = TRUE),
   verbose = getOption("tidyprompt.verbose", TRUE)
 )
 }
@@ -16,6 +16,7 @@ llm_provider_groq(
 \item model: The name of the model to use (e.g., "llama-3.1-8b-instant")
 \item api_key: The API key to use for authentication with the Groq API
 \item url: The URL to the Groq API (default: "https://api.groq.com/openai/v1/chat/completions")
+\item stream: A logical indicating whether the API should stream responses (default: TRUE)
 Additional parameters are appended to the request body; see the Groq API
 documentation for more information: https://console.groq.com/docs/api-reference#chat-create
 }}

@@ -7,7 +7,7 @@
 llm_provider_openrouter(
   parameters = list(model = "qwen/qwen-2.5-7b-instruct", api_key =
     Sys.getenv("OPENROUTER_API_KEY"), url =
-    "https://openrouter.ai/api/v1/chat/completions"),
+    "https://openrouter.ai/api/v1/chat/completions", stream = TRUE),
   verbose = getOption("tidyprompt.verbose", TRUE)
 )
 }
@@ -19,6 +19,7 @@ https://openrouter.ai/docs/models).
 \item api_key: The API key to use for authentication with the OpenRouter API (see
 https://openrouter.ai/docs/api-keys).
 \item url: The URL to the OpenRouter API (default: "https://openrouter.ai/api/v1/chat/completions").
+\item stream: A logical indicating whether the API should stream responses (default: TRUE)
 Additional parameters are appended to the request body; see the OpenRouter API
 documentation for more information: https://openrouter.ai/docs/parameters
 }}

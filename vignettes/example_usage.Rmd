@@ -57,6 +57,7 @@ openai <- llm_provider_openai(
 # Setting up a fake LLM provider for environments in which a real LLM
 #   provider is not available
 ollama <- llm_provider_fake()
+ollama$set_parameters(list(model = "llama3.1:8b"))
 
 ```
 

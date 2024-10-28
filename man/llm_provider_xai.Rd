@@ -6,7 +6,7 @@
 \usage{
 llm_provider_xai(
   parameters = list(model = "grok-beta", api_key = Sys.getenv("XAI_API_KEY"), url =
-    "https://api.x.ai/v1/chat/completions"),
+    "https://api.x.ai/v1/chat/completions", stream = TRUE),
   verbose = getOption("tidyprompt.verbose", TRUE)
 )
 }
@@ -16,6 +16,7 @@ llm_provider_xai(
 \item model: The name of the model to use (e.g., "grok-beta")
 \item api_key: The API key to use for authentication with the XAI API
 \item url: The URL to the XAI API (default: "https://api.xai.ai/v1/chat/completions")
+\item stream: A logical indicating whether the API should stream responses (default: TRUE)
 Additional parameters are appended to the request body; see the XAI API
 documentation for more information: https://docs.x.ai/api/endpoints#chat-completions
 }}

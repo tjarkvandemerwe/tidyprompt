@@ -77,7 +77,10 @@ llm_provider <- function(
   llm_provider$complete_chat <- create_function(function(chat_history) {
     chat_history <- chat_history(chat_history)
     if (verbose) {
-      message("--- Sending message to LLM provider: ---")
+      message(crayon::bold(glue::glue(
+        "--- Sending request to LLM provider ({parameters$model}): ---"
+      )))
+
       cat(chat_history$content[nrow(chat_history)])
       cat("\n")
     }
@@ -85,14 +88,18 @@ llm_provider <- function(
     environment(complete_chat_function) <- llm_provider_env
 
     if (verbose)
-      message("--- Receiving response from LLM provider: ---")
+      message(crayon::bold(glue::glue(
+        "--- Receiving response from LLM provider: ---"
+      )))
 
     response <- complete_chat_function(chat_history)
 
-    if (verbose & isTRUE(parameters$stream == FALSE)) {
+    if (verbose & (is.null(parameters$stream) || !parameters$stream)) {
       message(response$content)
     }
 
+    if (verbose)
+      return(invisible(response))
     return(response)
   })
 
@@ -125,7 +132,7 @@ llm_provider <- function(
 #' @param stream A logical indicating whether the API should stream responses
 #' @param verbose A logical indicating whether the interaction with the LLM provider
 #' should be printed to the console. Default is TRUE.
-#' @param api_type The type of API to use; specifically required to handle streaming.
+#' @param stream_api_type The type of API to use; specifically required to handle streaming.
 #' Currently, "openai" and "ollama" have been implemented. "openai" should also work
 #' with other similar APIs for chat completion. If your API handles streaming in a
 #' different way, you may need to implement your own version of this function
@@ -134,17 +141,17 @@ llm_provider <- function(
 #' @return A list with the role and content of the response from the LLM provider
 #' @export
 make_llm_provider_request <- function(
-    url, headers = NULL, body, stream, verbose = getOption("tidyprompt.verbose", TRUE),
-    api_type = c("openai", "ollama")
+    url, headers = NULL, body, stream = NULL, verbose = getOption("tidyprompt.verbose", TRUE),
+    stream_api_type = c("openai", "ollama")
 ) {
-  if (stream) {
-    api_type <- match.arg(api_type)
+  if (!is.null(stream) && stream) {
+    stream_api_type <- match.arg(stream_api_type)
 
     role <- NULL
     message <- ""
 
     write_stream_function <- function(x) {
-      if (api_type == "ollama") {
+      if (stream_api_type == "ollama") {
         content <- x |> rawToChar() |> jsonlite::fromJSON()
 
         if (verbose)
@@ -156,17 +163,20 @@ make_llm_provider_request <- function(
         message <<- paste0(message, content$message$content)
       }
 
-      if (api_type == "openai") {
+      if (stream_api_type == "openai") {
         char <- x |>
           rawToChar() |>
           strsplit(split = "\ndata: ") |>
           unlist()
 
-        char <- char[char != "[DONE]\n\n"]
-        char <- char[char != ""]
-
-        parsed_data <- char |>
-          lapply(\(chunk) fromJSON(sub("^data:\\s*", "", chunk)))
+        parsed_data <- lapply(char, function(chunk) {
+          json_text <- sub("^data:\\s*", "", chunk)
+          # Use tryCatch to handle potential errors
+          tryCatch(
+            jsonlite::fromJSON(json_text),
+            error = function(e) NULL  # Return NULL if there's an error
+          )
+        })
 
         if (is.null(role)) {
           role <<- parsed_data[[1]]$choices$delta$role
@@ -208,10 +218,10 @@ make_llm_provider_request <- function(
     stop("Error: ", httr::status_code(response), " - ", httr::content(response, as = "text"))
 
   # If not streaming, parse the response content
-  if (!stream) {
+  if (is.null(stream) || isFALSE(stream)) {
     content <- httr::content(response, as = "parsed")
-    role <- content$message$role
-    message <- content$message$content
+    role <- content$choices[[1]]$message$role
+    message <- content$choices[[1]]$message$content
   }
 
   return(list(
@@ -268,7 +278,7 @@ llm_provider_ollama <- function(parameters = list(
       body = body,
       stream = parameters$stream,
       verbose = verbose,
-      api_type = "ollama"
+      stream_api_type = "ollama"
     ))
   }
 
@@ -361,7 +371,7 @@ llm_provider_openai <- function(parameters = list(
       body = body,
       stream = parameters$stream,
       verbose = verbose,
-      api_type = "openai"
+      stream_api_type = "openai"
     )
   }
 
@@ -382,6 +392,7 @@ llm_provider_openai <- function(parameters = list(
 #'  - api_key: The API key to use for authentication with the OpenRouter API (see
 #'  https://openrouter.ai/docs/api-keys).
 #'  - url: The URL to the OpenRouter API (default: "https://openrouter.ai/api/v1/chat/completions").
+#'  - stream: A logical indicating whether the API should stream responses (default: TRUE)
 #'  Additional parameters are appended to the request body; see the OpenRouter API
 #'  documentation for more information: https://openrouter.ai/docs/parameters
 #' @param verbose A logical indicating whether the interaction with the LLM provider
@@ -392,7 +403,8 @@ llm_provider_openai <- function(parameters = list(
 llm_provider_openrouter <- function(parameters = list(
   model = "qwen/qwen-2.5-7b-instruct",
   api_key = Sys.getenv("OPENROUTER_API_KEY"),
-  url = "https://openrouter.ai/api/v1/chat/completions"
+  url = "https://openrouter.ai/api/v1/chat/completions",
+  stream = TRUE
 ), verbose = getOption("tidyprompt.verbose", TRUE)) {
   # OpenRouter follows the same API structure as OpenAI
   llm_provider_openai(parameters, verbose)
@@ -433,6 +445,7 @@ llm_provider_mistral <- function(parameters = list(
 #'   - model: The name of the model to use (e.g., "llama-3.1-8b-instant")
 #'   - api_key: The API key to use for authentication with the Groq API
 #'   - url: The URL to the Groq API (default: "https://api.groq.com/openai/v1/chat/completions")
+#'   - stream: A logical indicating whether the API should stream responses (default: TRUE)
 #'  Additional parameters are appended to the request body; see the Groq API
 #'  documentation for more information: https://console.groq.com/docs/api-reference#chat-create
 #' @param verbose A logical indicating whether the interaction with the LLM provider
@@ -443,7 +456,8 @@ llm_provider_mistral <- function(parameters = list(
 llm_provider_groq <- function(parameters = list(
   model = "llama-3.1-8b-instant",
   api_key = Sys.getenv("GROQ_API_KEY"),
-  url = "https://api.groq.com/openai/v1/chat/completions"
+  url = "https://api.groq.com/openai/v1/chat/completions",
+  stream = TRUE
 ), verbose = getOption("tidyprompt.verbose", TRUE)) {
   # Groq follows the same API structure as OpenAI
   llm_provider_openai(parameters, verbose)
@@ -457,6 +471,7 @@ llm_provider_groq <- function(parameters = list(
 #'   - model: The name of the model to use (e.g., "grok-beta")
 #'   - api_key: The API key to use for authentication with the XAI API
 #'   - url: The URL to the XAI API (default: "https://api.xai.ai/v1/chat/completions")
+#'   - stream: A logical indicating whether the API should stream responses (default: TRUE)
 #'  Additional parameters are appended to the request body; see the XAI API
 #'  documentation for more information: https://docs.x.ai/api/endpoints#chat-completions
 #' @param verbose A logical indicating whether the interaction with the LLM provider
@@ -467,7 +482,8 @@ llm_provider_groq <- function(parameters = list(
 llm_provider_xai <- function(parameters = list(
   model = "grok-beta",
   api_key = Sys.getenv("XAI_API_KEY"),
-  url = "https://api.x.ai/v1/chat/completions"
+  url = "https://api.x.ai/v1/chat/completions",
+  stream = TRUE
 ), verbose = getOption("tidyprompt.verbose", TRUE)) {
   # XAI follows the same API structure as OpenAI
   llm_provider_openai(parameters, verbose)
