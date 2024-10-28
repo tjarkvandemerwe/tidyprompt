@@ -63,27 +63,34 @@ library(tidyprompt)
 chat.
 
 At the moment, `tidyprompt` includes pre-built functions to connect with
-Ollama and the OpenAI API.
+various LLM providers, such as Ollama, OpenAI, OpenRouter, Mistral,
+Groq, XAI (Grok), and Google Gemini.
 
-With the `create_llm_provider` function, you can easily write a hook for
-any other LLM provider. You could make API calls using the `httr`
-package or use another R package that already has a hook for the LLM
-provider you want to use.
+With the `llm_provider` function, you can easily write a hook for any
+other LLM provider. You could make API calls using the `httr` package or
+use another R package that already has a hook for the LLM provider you
+want to use. If your API of choice follows the structure of the OpenAI
+API, you can very easily call the `llm_provider_openai` function and
+change the relevant parameters (like the url and the API key).
 
 ``` r
 # Ollama running on local PC
-ollama <- create_ollama_llm_provider(
+ollama <- llm_provider_ollama(
   parameters = list(model = "llama3.1:8b", url = "http://localhost:11434/api/chat")
 )
 
 # OpenAI API
-openai <- create_openai_llm_provider(
+openai <- llm_provider_openai(
   parameters = list(model = "gpt-4o-mini", api_key = Sys.getenv("OPENAI_API_KEY"))
 )
 
-# Create your own LLM provider hook using create_llm_provider(); 
-#   see ?create_llm_provider for more information, and take a look at
-#   the source code of create_ollama_llm_provider() and create_openai_llm_provider()
+# ... functions also included for OpenRouter, Mistral, Groq, XAI (Grok), and Google Gemini
+
+# ... or easily create your own hook for any other LLM provider;
+#   see ?llm_provider for more information; also take a look at the source code of
+#   llm_provider_ollama() and llm_provider_openai(). For APIs that follow the structure
+#   of the OpenAI API for chat completion, you can use llm_provider_openai() and change
+#   the relevant parameters (like the url and the API key).
 ```
 
 ### Basic prompting
@@ -97,6 +104,9 @@ valid (including retries with feedback to the LLM if it is not).
 ``` r
   "Hi there!" |>
     send_prompt(ollama)
+#> --- Sending message to LLM provider: ---
+#> Hi there!
+#> --- Receiving response from LLM provider: ---
 #> [1] "It's nice to meet you. Is there something I can help you with or would you like to chat?"
 ```
 
@@ -107,6 +117,11 @@ text at the end of the base prompt.
   "Hi there!" |>
     add_text("What is a large language model? Explain in 10 words.") |>
     send_prompt(ollama)
+#> --- Sending message to LLM provider: ---
+#> Hi there!
+#> 
+#> What is a large language model? Explain in 10 words.
+#> --- Receiving response from LLM provider: ---
 #> [1] "Complex computer program trained on vast texts to generate human-like responses."
 ```
 
@@ -145,12 +160,11 @@ to the LLM, after which the LLM can retry answering the prompt.
   "What is 2 + 2?" |>
     answer_as_integer() |>
     send_prompt(ollama, verbose = TRUE)
-#> --- Sending message to LLM-provider: ---
+#> --- Sending message to LLM provider: ---
 #> What is 2 + 2?
 #> 
 #> You must answer with only an integer (use no other characters).
-#> --- Received response from LLM-provider: ---
-#> 4
+#> --- Receiving response from LLM provider: ---
 #> [1] 4
 ```
 
@@ -162,16 +176,14 @@ succeed after a retry.
     add_text("Please write out your reply in words, use no numbers.") |>
     answer_as_integer(add_instruction_to_prompt = FALSE) |>
     send_prompt(ollama, verbose = TRUE)
-#> --- Sending message to LLM-provider: ---
+#> --- Sending message to LLM provider: ---
 #> What is 2 + 2?
 #> 
 #> Please write out your reply in words, use no numbers.
-#> --- Received response from LLM-provider: ---
-#> Four.
-#> --- Sending message to LLM-provider: ---
+#> --- Receiving response from LLM provider: ---
+#> --- Sending message to LLM provider: ---
 #> You must answer with only an integer (use no other characters).
-#> --- Received response from LLM-provider: ---
-#> 4
+#> --- Receiving response from LLM provider: ---
 #> [1] 4
 ```
 
@@ -192,7 +204,7 @@ function then ensures only the final answer is returned.
     answer_by_chain_of_thought() |>
     answer_as_integer() |>
     send_prompt(ollama, verbose = TRUE)
-#> --- Sending message to LLM-provider: ---
+#> --- Sending message to LLM provider: ---
 #> You are given a user's prompt.
 #> To answer the user's prompt, you need to think step by step to arrive at a final answer.
 #> 
@@ -212,20 +224,7 @@ function then ensures only the final answer is returned.
 #> FINISH[<put here your final answer to the user's prompt>]
 #> 
 #> Make sure your final answer follows the logical conclusion of your thought process.
-#> --- Received response from LLM-provider: ---
-#> >> step 1: Identify the mathematical operation in the prompt,
-#> which is a simple addition problem.
-#> 
-#> >> step 2: Recall the basic arithmetic fact that 2 + 2 equals a specific
-#> numerical value.
-#> 
-#> >> step 3: Apply this knowledge to determine the result of the addition problem,
-#> using the known facts about numbers and their operations.
-#> 
-#> >> step 4: Conclude that based on this mathematical understanding, the
-#> solution to the prompt "What is 2 + 2?" is a fixed numerical quantity.
-#> 
-#> FINISH[4]
+#> --- Receiving response from LLM provider: ---
 #> [1] 4
 ```
 

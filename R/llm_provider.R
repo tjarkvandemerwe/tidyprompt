@@ -1,4 +1,4 @@
-#' Generic function to assist in creating llm_provider objects
+#' Function to create llm_provider objects
 #'
 #' This function can be used to create new llm_provider objects with different
 #' implementations of the complete_chat function.
@@ -6,7 +6,7 @@
 #' @param complete_chat_function Function that will be called by the llm_provider
 #' to complete a chat.
 #'
-#' This function should take a chat_history dataframe as input (see ?validate_chat_history),
+#' This function should take a chat_history dataframe as input (see ?chat_history),
 #' and return a list of 'role' and 'content' for the next message (e.g., list(role = "user", content = "Hello")).
 #'
 #' An llm_provider object will wrap the provided complete_chat_function with a validation of chat_history,
@@ -27,7 +27,7 @@
 #' @return A new llm_provider object
 #'
 #' @export
-create_llm_provider <- function(
+llm_provider <- function(
     complete_chat_function,
     parameters = list(),
     verbose = getOption("tidyprompt.verbose", TRUE)
@@ -75,7 +75,7 @@ create_llm_provider <- function(
 
   # Attach complete_chat with chat_history validation
   llm_provider$complete_chat <- create_function(function(chat_history) {
-    chat_history <- validate_chat_history(chat_history)
+    chat_history <- chat_history(chat_history)
     if (verbose) {
       message("--- Sending message to LLM provider: ---")
       cat(chat_history$content[nrow(chat_history)])
@@ -239,7 +239,7 @@ make_llm_provider_request <- function(
 #'
 #' @return A new llm_provider object for use of the Ollama API
 #' @export
-create_ollama_llm_provider <- function(parameters = list(
+llm_provider_ollama <- function(parameters = list(
   model = "llama3.1:8b",
   url = "http://localhost:11434/api/chat",
   stream = TRUE
@@ -272,7 +272,7 @@ create_ollama_llm_provider <- function(parameters = list(
     ))
   }
 
-  ollama <- create_llm_provider(
+  ollama <- llm_provider(
     complete_chat_function = complete_chat,
     parameters = parameters,
     verbose = verbose
@@ -332,7 +332,7 @@ create_ollama_llm_provider <- function(parameters = list(
 #' @return A new llm_provider object for use of the OpenAI API
 #'
 #' @export
-create_openai_llm_provider <- function(parameters = list(
+llm_provider_openai <- function(parameters = list(
   model = "gpt-4o-mini",
   api_key = Sys.getenv("OPENAI_API_KEY"),
   url = "https://api.openai.com/v1/chat/completions",
@@ -365,7 +365,7 @@ create_openai_llm_provider <- function(parameters = list(
     )
   }
 
-  create_llm_provider(
+  llm_provider(
     complete_chat_function = complete_chat,
     parameters = parameters,
     verbose = verbose
@@ -389,13 +389,13 @@ create_openai_llm_provider <- function(parameters = list(
 #'
 #' @return A new llm_provider object for use of the OpenRouter API
 #' @export
-create_openrouter_llm_provider <- function(parameters = list(
+llm_provider_openrouter <- function(parameters = list(
   model = "qwen/qwen-2.5-7b-instruct",
   api_key = Sys.getenv("OPENROUTER_API_KEY"),
   url = "https://openrouter.ai/api/v1/chat/completions"
 ), verbose = getOption("tidyprompt.verbose", TRUE)) {
   # OpenRouter follows the same API structure as OpenAI
-  create_openai_llm_provider(parameters, verbose)
+  llm_provider_openai(parameters, verbose)
 }
 
 
@@ -416,13 +416,13 @@ create_openrouter_llm_provider <- function(parameters = list(
 #' @return A new llm_provider object for use of the Mistral API
 #'
 #' @export
-create_mistral_llm_provider <- function(parameters = list(
+llm_provider_mistral <- function(parameters = list(
   model = "mistral-small-latest",
   api_key = Sys.getenv("MISTRAL_API_KEY"),
   url = "https://api.mistral.ai/v1/chat/completions"
 ), verbose = getOption("tidyprompt.verbose", TRUE)) {
   # Mistral follows the same API structure as OpenAI
-  create_openai_llm_provider(parameters, verbose)
+  llm_provider_openai(parameters, verbose)
 }
 
 
@@ -440,13 +440,13 @@ create_mistral_llm_provider <- function(parameters = list(
 #'
 #' @return A new llm_provider object for use of the Groq API
 #' @export
-create_groq_llm_provider <- function(parameters = list(
+llm_provider_groq <- function(parameters = list(
   model = "llama-3.1-8b-instant",
   api_key = Sys.getenv("GROQ_API_KEY"),
   url = "https://api.groq.com/openai/v1/chat/completions"
 ), verbose = getOption("tidyprompt.verbose", TRUE)) {
   # Groq follows the same API structure as OpenAI
-  create_openai_llm_provider(parameters, verbose)
+  llm_provider_openai(parameters, verbose)
 }
 
 
@@ -464,13 +464,13 @@ create_groq_llm_provider <- function(parameters = list(
 #'
 #' @return A new llm_provider object for use of the XAI API
 #' @export
-create_xai_llm_provider <- function(parameters = list(
+llm_provider_xai <- function(parameters = list(
   model = "grok-beta",
   api_key = Sys.getenv("XAI_API_KEY"),
   url = "https://api.x.ai/v1/chat/completions"
 ), verbose = getOption("tidyprompt.verbose", TRUE)) {
   # XAI follows the same API structure as OpenAI
-  create_openai_llm_provider(parameters, verbose)
+  llm_provider_openai(parameters, verbose)
 }
 
 
@@ -492,7 +492,7 @@ create_xai_llm_provider <- function(parameters = list(
 #'
 #' @return A new llm_provider object for use of the Google Gemini API
 #' @export
-create_google_gemini_llm_provider <- function(parameters = list(
+llm_provider_google_gemini <- function(parameters = list(
   model = "gemini-1.5-flash",
   api_key = Sys.getenv("GOOGLE_AI_STUDIO_API_KEY"),
   base_url = "https://generativelanguage.googleapis.com/v1beta/models/"
@@ -548,7 +548,7 @@ create_google_gemini_llm_provider <- function(parameters = list(
     }
   }
 
-  create_llm_provider(
+  llm_provider(
     complete_chat_function = complete_chat,
     parameters = parameters,
     verbose = verbose
@@ -570,7 +570,7 @@ create_google_gemini_llm_provider <- function(parameters = list(
 #'
 #' @return A new llm_provider object for use of the fake LLM provider
 #' @export
-create_fake_llm_provider <- function(verbose = getOption("tidyprompt.verbose", TRUE)) {
+llm_provider_fake <- function(verbose = getOption("tidyprompt.verbose", TRUE)) {
   complete_chat <- function(chat_history) {
     last_msg <- tail(chat_history$content, 1)
 
@@ -705,7 +705,7 @@ create_fake_llm_provider <- function(verbose = getOption("tidyprompt.verbose", T
     ))
   }
 
-  create_llm_provider(
+  llm_provider(
     complete_chat_function = complete_chat,
     verbose = verbose
   )

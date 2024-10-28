@@ -22,33 +22,41 @@ library(tidyprompt)
 
 `tidyprompt` can be used with any LLM provider capable of completing a chat. 
 
-At the moment, `tidyprompt` includes pre-built functions to connect with Ollama and the OpenAI API. 
+At the moment, `tidyprompt` includes pre-built functions to connect with various 
+LLM providers, such as Ollama, OpenAI, OpenRouter, Mistral, Groq, XAI (Grok), and Google Gemini.
 
-With the `create_llm_provider` function, you can easily write a hook for any other LLM provider. 
+With the `llm_provider` function, you can easily write a hook for any other LLM provider. 
 You could make API calls using the `httr` package or use another R package that already has 
-a hook for the LLM provider you want to use.
+a hook for the LLM provider you want to use. If your API of choice follows the structure 
+of the OpenAI API, you can very easily call the `llm_provider_openai` function and change
+the relevant parameters (like the url and the API key).
 
 ```{r llm_provider}
 # Ollama running on local PC
-ollama <- create_ollama_llm_provider(
+ollama <- llm_provider_ollama(
   parameters = list(model = "llama3.1:8b", url = "http://localhost:11434/api/chat")
 )
 
 # OpenAI API
-openai <- create_openai_llm_provider(
+openai <- llm_provider_openai(
   parameters = list(model = "gpt-4o-mini", api_key = Sys.getenv("OPENAI_API_KEY"))
 )
 
-# Create your own LLM provider hook using create_llm_provider(); 
-#   see ?create_llm_provider for more information, and take a look at
-#   the source code of create_ollama_llm_provider() and create_openai_llm_provider()
+# ... functions also included for OpenRouter, Mistral, Groq, XAI (Grok), and Google Gemini
+
+# ... or easily create your own hook for any other LLM provider;
+#   see ?llm_provider for more information; also take a look at the source code of
+#   llm_provider_ollama() and llm_provider_openai(). For APIs that follow the structure
+#   of the OpenAI API for chat completion, you can use llm_provider_openai() and change
+#   the relevant parameters (like the url and the API key).
+
 ```
 
 ```{r fake_llm_provider, include = FALSE}
 
 # Setting up a fake LLM provider for environments in which a real LLM
 #   provider is not available
-ollama <- create_fake_llm_provider()
+ollama <- llm_provider_fake()
 
 ```
 

@@ -1,5 +1,5 @@
 testthat::test_that("send message with fake llm provider", {
-  ollama <- create_fake_llm_provider()
+  ollama <- llm_provider_fake()
   result <- ollama$complete_chat("Hi!")
 
   # Check length of result
@@ -19,7 +19,7 @@ testthat::test_that("send message with fake llm provider", {
 
 testthat::test_that("send basic prompt", {
   result <- "Hi" |>
-    send_prompt(create_fake_llm_provider())
+    send_prompt(llm_provider_fake())
 
   # Check that the result is a single character string
   testthat::expect_true(is.character(result))
@@ -29,7 +29,7 @@ testthat::test_that("send basic prompt", {
 testthat::test_that("send prompt with text added", {
   result <- "Hi" |>
     add_text("How are you?") |>
-    send_prompt(create_fake_llm_provider())
+    send_prompt(llm_provider_fake())
 
   testthat::expect_true(is.character(result))
   testthat::expect_length(result, 1)
@@ -39,7 +39,7 @@ testthat::test_that("send prompt with validation & extraction added", {
   result <- "Hi" |>
     add_text("What is 2 + 2?") |>
     answer_as_integer() |>
-    send_prompt(create_fake_llm_provider())
+    send_prompt(llm_provider_fake())
 
   testthat::expect_true(is.integer(result))
   testthat::expect_length(result, 1)
@@ -49,7 +49,7 @@ testthat::test_that("send prompt with mode added", {
   result <- "What is 2 + 2?" |>
     answer_by_chain_of_thought() |>
     answer_as_integer() |>
-    send_prompt(create_fake_llm_provider())
+    send_prompt(llm_provider_fake())
 
   testthat::expect_true(is.integer(result))
   testthat::expect_length(result, 1)
@@ -93,7 +93,7 @@ testthat::test_that("send prompt with tool added", {
     add_text("I want to know the Celcius degrees.") |>
     answer_as_integer() |>
     add_tools(temperature_in_location) |>
-    send_prompt(create_fake_llm_provider())
+    send_prompt(llm_provider_fake())
 
   testthat::expect_true(is.integer(result))
   testthat::expect_length(result, 1)

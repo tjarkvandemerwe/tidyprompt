@@ -23,7 +23,7 @@
 #' @export
 send_prompt <- function(
     prompt,
-    llm_provider = create_ollama_llm_provider(),
+    llm_provider = llm_provider_ollama(),
     max_interactions = 10,
     clean_chat_history = TRUE,
     verbose = getOption("tidyprompt.verbose", TRUE),
