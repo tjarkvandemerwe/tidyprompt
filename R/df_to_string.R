@@ -4,12 +4,13 @@
 #' (or for display or logging).
 #'
 #' @param df A data frame to be converted to a string.
-#' @param how
+#' @param how In what way the dataframe should be converted to a string;
+#' either "wide" or "long". "wide" presents column names on the first row,
+#' followed by the row values on each new row. "long" presents the values
+#' of each row together with the column names, repeating for every row
+#' after two lines of whitespace.
 #' @return A single string representing the data frame.
-#' @examples
-#' df <- data.frame(Name = c("Alice", "Bob"), Age = c(25, 30))
-#' df_to_string(df, wide = FALSE)
-#' df_to_string(df, wide = TRUE)
+#' @export
 df_to_string <- function(df, how = c("wide", "long")) {
   how <- match.arg(how)
 
