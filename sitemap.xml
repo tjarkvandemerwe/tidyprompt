@@ -13,6 +13,7 @@
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/chat_history.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/construct_prompt_text.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/create_llm_feedback.html</loc></url>
+<url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/df_to_string.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/extract_doc_section.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/extract_tool_function_docs_for_llm.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/get_base_prompt.html</loc></url>
