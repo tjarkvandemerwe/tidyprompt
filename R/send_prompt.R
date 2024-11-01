@@ -43,13 +43,13 @@ send_prompt <- function(
 
   if (!is.logical(verbose))
     stop("verbose should be a logical.")
-  llm_provider$set_verbose(verbose)
+  llm_provider$verbose <- verbose
 
   if (!is.logical(stream))
     stop("stream should be a logical.")
-  parameters <- llm_provider$get_parameters()
+  parameters <- llm_provider$parameters
   if (!is.null(parameters$stream))
-    llm_provider$set_parameters(list(stream = stream))
+    llm_provider$parameters$stream <- stream
 
   return_mode <- match.arg(return_mode)
   if (return_mode == "full")

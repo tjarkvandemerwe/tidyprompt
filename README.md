@@ -299,7 +299,7 @@ information or take other actions.
     send_prompt(ollama, verbose = TRUE)
 ```
 
-    #> --- Sending message to LLM-provider: ---
+    #> --- Sending request to LLM provider (llama3.1:8b): ---
     #> Hi, what is the weather temperature in Enschede?
     #> 
     #> I want to know the Celcius degrees.
@@ -321,19 +321,19 @@ information or take other actions.
     #> example usage: FUNCTION[temperature_in_location]("Amsterdam", "Fahrenheit")
     #> 
     #> After you call a function, wait until you receive more information.
-    #> --- Received response from LLM-provider: ---
+    #> --- Receiving response from LLM provider: ---
     #> I'll use the provided function to get the current temperature in Enschede.
     #> 
     #> FUNCTION[temperature_in_location]("Enschede", "Celcius")
-    #> --- Sending message to LLM-provider: ---
+    #> --- Sending request to LLM provider (llama3.1:8b): ---
     #> function called: temperature_in_location
     #> arguments used: location = Enschede, unit = Celcius
     #> result: 22.7
-    #> --- Received response from LLM-provider: ---
+    #> --- Receiving response from LLM provider: ---
     #> So the current temperature in Enschede is 22.7 degrees Celsius.
-    #> --- Sending message to LLM-provider: ---
+    #> --- Sending request to LLM provider (llama3.1:8b): ---
     #> You must answer with only an integer (use no other characters).
-    #> --- Received response from LLM-provider: ---
+    #> --- Receiving response from LLM provider: ---
     #> 22
     #> [1] 22
 

@@ -1,145 +1,131 @@
-#' Function to create llm_provider objects
+#' @title llm_provider R6 Class
 #'
-#' This function can be used to create new llm_provider objects with different
-#' implementations of the complete_chat function.
-#'
-#' @param complete_chat_function Function that will be called by the llm_provider
-#' to complete a chat.
-#'
-#' This function should take a chat_history dataframe as input (see ?chat_history),
-#' and return a list of 'role' and 'content' for the next message (e.g., list(role = "user", content = "Hello")).
-#'
-#' An llm_provider object will wrap the provided complete_chat_function with a validation of chat_history,
-#' also turning a single string into a valid chat_history dataframe.
-#' The provided function thus does not need to do this but should assume that
-#' the input is a valid chat_history dataframe.
-#'
-#' Parameters passed in the parameters argument may be accessed by the complete_chat_function;
-#' this may be used to, for instance, store an API key, the name of the model to use, or other settings.
-#'
-#' @param parameters A named list of parameters that will be attached to the
-#'  llm_provider object. These parameters can be used to configure the llm_provider.
-#'  For instance, they can be used to store a model's name, an API key, or an endpoint.
-#'  E.g., list(model = "my-llm-model", api_key = "my-api-key").
-#' @param verbose A logical indicating whether the interaction with the LLM provider
-#' should be printed to the console. Default is TRUE.
-#' @param url The URL to the LLM provider API endpoint for chat completion
-#' @param api_key The API key to use for authentication with the LLM provider API
-#'
-#' @return A new llm_provider object
+#' @description This class provides a structure for creating `llm_provider` objects with
+#' different implementations of the `complete_chat` function. Using this
+#' class, you can create an `llm_provider` object that interacts with different
+#' LLM providers, such Ollama, OpenAI, or other custom providers.
 #'
 #' @export
-llm_provider <- function(
-    complete_chat_function,
+llm_provider <- R6::R6Class(
+  "llm_provider",
+  public = list(
+    #' @field parameters A named list of parameters to configure the `llm_provider`.
+    #' Parameters may be appended to the request body when interacting with the
+    #' LLM provider API.
     parameters = list(),
+    #' @field verbose A logical indicating whether interaction with the LLM provider
+    #' should be printed to the console
     verbose = getOption("tidyprompt.verbose", TRUE),
+    #' @field url The URL to the LLM provider API endpoint for chat completion
     url = NULL,
-    api_key = NULL
-) {
-  if (length(parameters) > 0 & is.null(names(parameters))) {
-    stop("parameters must be a named list")
-  }
+    #' @field api_key The API key to use for authentication with the LLM provider API
+    api_key = NULL,
 
-  # Create llm_provider structure
-  llm_provider <- structure(
-    list(),
-    class = "llm_provider"
+    #' @description
+    #' Create a new `llm_provider` object
+    #'
+    #' @param complete_chat_function Function that will be called by the `llm_provider`
+    #' to complete a chat. This function should take a `chat_history` data frame
+    #' as input and return a response object (a list with `role` and `content`,
+    #' detailing the chat completion)
+    #'
+    #' @param parameters A named list of parameters to configure the `llm_provider`.
+    #' These parameters may be appended to the request body when interacting with
+    #' the LLM provider. For example, the `model` parameter may often be required.
+    #' The 'stream' parameter may be used to indicate that the API should stream,
+    #' which will be handled down the line by the make_llm_provider_request function.
+    #' Parameters should not include the chat_history, as this is passed as a
+    #' separate argument to the `complete_chat_function`. Paramters should also
+    #' not include 'api_key' or 'url'; these are treated separately
+    #'
+    #' @param verbose A logical indicating whether interaction with the LLM provider
+    #' should be printed to the console
+    #'
+    #' @param url The URL to the LLM provider API endpoint for chat completion
+    #' (typically required, but may be left NULL in some cases, for instance when
+    #' creating a fake LLM provider)
+    #'
+    #' @param api_key The API key to use for authentication with the LLM provider API
+    #' (optional, not required for, for instance, Ollama)
+    #'
+    #' @return A new `llm_provider` R6 object.
+    initialize = function(
+      complete_chat_function,
+      parameters = list(),
+      verbose = TRUE,
+      url = NULL,
+      api_key = NULL
+    ) {
+      if (length(parameters) > 0 && is.null(names(parameters)))
+        stop("parameters must be a named list")
+
+      private$complete_chat_function <- complete_chat_function
+      self$parameters <- parameters
+      self$verbose <- verbose
+      self$url <- url
+      self$api_key <- api_key
+    },
+
+    #' @description Helper function to set the parameters of the llm_provider
+    #' object. This function appends new parameters to the existing parameters
+    #' list.
+    #'
+    #' @param new_parameters A named list of new parameters to append to the
+    #' existing parameters list
+    #'
+    #' @return The modified `llm_provider` object
+    set_parameters = function(new_parameters) {
+      if (length(new_parameters) > 0 && is.null(names(new_parameters))) {
+        stop("new_parameters must be a named list")
+      }
+      self$parameters <- utils::modifyList(self$parameters, new_parameters)
+      return(self)
+    },
+
+    #' @description complete_chat function; sends a chat_history to the LLM provider
+    #' using the configured `complete_chat_function`. This function is typically
+    #' called by the `send_prompt` function to interact with the LLM provider,
+    #' but it can also be called directly.
+    #'
+    #' @param chat_history A data frame with 'role' and 'content' columns
+    #'
+    #' @return The response from the LLM provider, in a named list
+    #' with 'role' and 'content'
+    complete_chat = function(chat_history) {
+      chat_history <- chat_history(chat_history)
+      if (self$verbose) {
+        message(crayon::bold(glue::glue(
+          "--- Sending request to LLM provider ({self$parameters$model %||% 'model not specified'}): ---",
+          .null = "default model"
+        )))
+        cat(chat_history$content[nrow(chat_history)])
+        cat("\n")
+      }
+
+      if (self$verbose)
+        message(crayon::bold(glue::glue("--- Receiving response from LLM provider: ---")))
+
+      environment(private$complete_chat_function) <- environment()
+      response <- private$complete_chat_function(chat_history)
+
+      if (
+        self$verbose
+        && (is.null(self$parameters$stream) || !self$parameters$stream)
+      ) {
+        message(response$content)
+      }
+
+
+      if (self$verbose)
+        return(invisible(response))
+
+      return(response)
+    }
+  ),
+  private = list(
+    complete_chat_function = NULL
   )
-
-  # Create a new environment for the llm_provider
-  llm_provider_env <- new.env()
-
-  # Store initial parameters in the environment
-  llm_provider_env$parameters <- parameters
-
-  # Helper function to create functions within llm_provider_env
-  create_function <- function(fn) {
-    environment(fn) <- llm_provider_env
-    return(fn)
-  }
-
-  # Access parameters
-  llm_provider$get_parameters <- create_function(function() {
-    return(llm_provider_env$parameters)
-  })
-
-  # Update parameters
-  llm_provider$set_parameters <- create_function(function(new_parameters) {
-    if (length(new_parameters) > 0 & is.null(names(new_parameters))) {
-      stop("new_parameters must be a named list")
-    }
-    # Update environment parameters directly
-    llm_provider_env$parameters <- utils::modifyList(llm_provider_env$parameters, new_parameters)
-  })
-
-  # Get environment
-  llm_provider$get_env <- create_function(function() {
-    return(llm_provider_env)
-  })
-
-  # Attach complete_chat with chat_history validation
-  llm_provider$complete_chat <- create_function(function(chat_history) {
-    chat_history <- chat_history(chat_history)
-    if (verbose) {
-      message(crayon::bold(glue::glue(
-        "--- Sending request to LLM provider ({parameters$model}): ---"
-      )))
-
-      cat(chat_history$content[nrow(chat_history)])
-      cat("\n")
-    }
-
-    environment(complete_chat_function) <- llm_provider_env
-
-    if (verbose)
-      message(crayon::bold(glue::glue(
-        "--- Receiving response from LLM provider: ---"
-      )))
-
-    response <- complete_chat_function(chat_history)
-
-    if (verbose & (is.null(parameters$stream) || !parameters$stream)) {
-      message(response$content)
-    }
-
-    if (verbose)
-      return(invisible(response))
-    return(response)
-  })
-
-  # Get verbose setting
-  llm_provider$get_verbose <- create_function(function() {
-    return(verbose)
-  })
-  # Set verbose setting
-  llm_provider$set_verbose <- create_function(function(new_verbose) {
-    if (!is.logical(new_verbose)) {
-      stop("new_verbose must be a logical")
-    }
-    verbose <<- new_verbose
-  })
-
-  # Get URL
-  llm_provider$get_url <- create_function(function() {
-    return(url)
-  })
-  # Set URL
-  llm_provider$set_url <- create_function(function(new_url) {
-    url <<- new_url
-  })
-
-  # Get api_key
-  llm_provider$get_api_key <- create_function(function() {
-    return(api_key)
-  })
-  # Set api_key
-  llm_provider$set_api_key <- create_function(function(new_api_key) {
-    api_key <<- new_api_key
-  })
-
-  # Return the llm_provider object
-  return(llm_provider)
-}
+)
 
 
 
@@ -254,7 +240,6 @@ make_llm_provider_request <- function(
 
 
 
-
 #' Create a new Ollama llm_provider instance
 #'
 #' @param parameters A named list of parameters. Currently the following parameters are required:
@@ -281,63 +266,33 @@ llm_provider_ollama <- function(
 ) {
   complete_chat <- function(chat_history) {
     body <- list(
-      model = parameters$model,
+      model = self$parameters$model,
       messages = lapply(seq_len(nrow(chat_history)), function(i) {
         list(role = chat_history$role[i], content = chat_history$content[i])
       }),
-      stream = parameters$stream
+      stream = self$parameters$stream
     )
 
     # Append all other parameters to the body
-    for (name in names(parameters))
-      body[[name]] <- parameters[[name]]
+    for (name in names(self$parameters))
+      body[[name]] <- self$parameters[[name]]
 
     return(make_llm_provider_request(
-      url = url,
+      url = self$url,
       headers = NULL,
       body = body,
-      stream = parameters$stream,
-      verbose = verbose,
+      stream = self$parameters$stream,
+      verbose = self$verbose,
       stream_api_type = "ollama"
     ))
   }
 
-  ollama <- llm_provider(
+  ollama <- llm_provider$new(
     complete_chat_function = complete_chat,
     parameters = parameters,
     verbose = verbose,
     url = url
   )
-
-  # Additional functions to get/set options for the Ollama API
-  set_options <- function(named_list_of_options) {
-    if (length(named_list_of_options) == 0)
-      stop("No options provided")
-
-    if (length(named_list_of_options) > 0 & is.null(names(named_list_of_options))) {
-      stop("named_list_of_options must be a named list")
-    }
-
-    # Merge new options with existing ones
-    options <- parameters$options
-    if (length(options) == 0)
-      options <- list()
-
-    updated_options <- utils::modifyList(options, named_list_of_options)
-    for (name in names(updated_options)) {
-      assign(name, updated_options[[name]], envir = environment())
-    }
-    parameters$options <<- updated_options
-  }
-  environment(set_options) <- ollama$get_env()
-  ollama$set_options <- set_options
-
-  # Function to get the options
-  get_options <- function() {
-    return(parameters$options)
-  }
-  environment(get_options) <- ollama$get_env()
-  ollama$get_options <- get_options
 
   return(ollama)
 }
@@ -377,7 +332,7 @@ llm_provider_openai <- function(
   complete_chat <- function(chat_history) {
     headers <- c(
       "Content-Type" = "application/json",
-      "Authorization" = paste("Bearer", api_key)
+      "Authorization" = paste("Bearer", self$api_key)
     )
 
     # Prepare the body by converting chat_history dataframe to list of lists
@@ -388,26 +343,26 @@ llm_provider_openai <- function(
     )
 
     # Append all other parameters to the body
-    for (name in names(parameters))
-      body[[name]] <- parameters[[name]]
+    for (name in names(self$parameters))
+      body[[name]] <- self$parameters[[name]]
 
     make_llm_provider_request(
-      url = url,
+      url = self$url,
       headers = headers,
       body = body,
-      stream = parameters$stream,
-      verbose = verbose,
+      stream = self$parameters$stream,
+      verbose = self$verbose,
       stream_api_type = "openai"
     )
   }
 
-  llm_provider(
+  return(llm_provider$new(
     complete_chat_function = complete_chat,
     parameters = parameters,
     verbose = verbose,
     url = url,
     api_key = api_key
-  )
+  ))
 }
 
 
@@ -427,13 +382,13 @@ llm_provider_openai <- function(
 #' @return A new llm_provider object for use of the OpenRouter API
 #' @export
 llm_provider_openrouter <- function(
-  parameters = list(
-    model = "qwen/qwen-2.5-7b-instruct",
-    stream = TRUE
-  ),
-  verbose = getOption("tidyprompt.verbose", TRUE),
-  url = "https://openrouter.ai/api/v1/chat/completions",
-  api_key = Sys.getenv("OPENROUTER_API_KEY")
+    parameters = list(
+      model = "qwen/qwen-2.5-7b-instruct",
+      stream = TRUE
+    ),
+    verbose = getOption("tidyprompt.verbose", TRUE),
+    url = "https://openrouter.ai/api/v1/chat/completions",
+    api_key = Sys.getenv("OPENROUTER_API_KEY")
 ) {
   llm_provider_openai(parameters, verbose, url, api_key)
 }
@@ -556,10 +511,10 @@ llm_provider_google_gemini <- function(
   complete_chat <- function(chat_history) {
     # Construct URL for the API request
     url <- paste0(
-      url,
-      parameters$model,
+      self$url,
+      self$parameters$model,
       ":generateContent",
-      "?key=", api_key
+      "?key=", self$api_key
     )
 
     headers <- c(
@@ -580,8 +535,8 @@ llm_provider_google_gemini <- function(
     )
 
     # Append all other parameters to the body
-    for (name in names(parameters))
-      body[[name]] <- parameters[[name]]
+    for (name in names(self$parameters))
+      body[[name]] <- self$parameters[[name]]
 
 
     # Send the POST request with the properly formatted body
@@ -600,7 +555,7 @@ llm_provider_google_gemini <- function(
     }
   }
 
-  llm_provider(
+  llm_provider$new(
     complete_chat_function = complete_chat,
     parameters = parameters,
     verbose = verbose,
@@ -759,8 +714,11 @@ llm_provider_fake <- function(verbose = getOption("tidyprompt.verbose", TRUE)) {
     ))
   }
 
-  llm_provider(
+  llm_provider$new(
     complete_chat_function = complete_chat,
-    verbose = verbose
+    verbose = verbose,
+    parameters = list(
+      model = 'llama3.1:8b'
+    )
   )
 }

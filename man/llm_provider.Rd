@@ -2,47 +2,148 @@
 % Please edit documentation in R/llm_provider.R
 \name{llm_provider}
 \alias{llm_provider}
-\title{Function to create llm_provider objects}
-\usage{
-llm_provider(
+\title{llm_provider R6 Class}
+\description{
+This class provides a structure for creating \code{llm_provider} objects with
+different implementations of the \code{complete_chat} function. Using this
+class, you can create an \code{llm_provider} object that interacts with different
+LLM providers, such Ollama, OpenAI, or other custom providers.
+}
+\section{Public fields}{
+\if{html}{\out{<div class="r6-fields">}}
+\describe{
+\item{\code{parameters}}{A named list of parameters to configure the \code{llm_provider}.
+Parameters may be appended to the request body when interacting with the
+LLM provider API.}
+
+\item{\code{verbose}}{A logical indicating whether interaction with the LLM provider
+should be printed to the console}
+
+\item{\code{url}}{The URL to the LLM provider API endpoint for chat completion}
+
+\item{\code{api_key}}{The API key to use for authentication with the LLM provider API}
+}
+\if{html}{\out{</div>}}
+}
+\section{Methods}{
+\subsection{Public methods}{
+\itemize{
+\item \href{#method-llm_provider-new}{\code{llm_provider$new()}}
+\item \href{#method-llm_provider-set_parameters}{\code{llm_provider$set_parameters()}}
+\item \href{#method-llm_provider-complete_chat}{\code{llm_provider$complete_chat()}}
+\item \href{#method-llm_provider-clone}{\code{llm_provider$clone()}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-llm_provider-new"></a>}}
+\if{latex}{\out{\hypertarget{method-llm_provider-new}{}}}
+\subsection{Method \code{new()}}{
+Create a new \code{llm_provider} object
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{llm_provider$new(
   complete_chat_function,
   parameters = list(),
-  verbose = getOption("tidyprompt.verbose", TRUE),
+  verbose = TRUE,
   url = NULL,
   api_key = NULL
-)
+)}\if{html}{\out{</div>}}
 }
-\arguments{
-\item{complete_chat_function}{Function that will be called by the llm_provider
-to complete a chat.
 
-This function should take a chat_history dataframe as input (see ?chat_history),
-and return a list of 'role' and 'content' for the next message (e.g., list(role = "user", content = "Hello")).
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{complete_chat_function}}{Function that will be called by the \code{llm_provider}
+to complete a chat. This function should take a \code{chat_history} data frame
+as input and return a response object (a list with \code{role} and \code{content},
+detailing the chat completion)}
 
-An llm_provider object will wrap the provided complete_chat_function with a validation of chat_history,
-also turning a single string into a valid chat_history dataframe.
-The provided function thus does not need to do this but should assume that
-the input is a valid chat_history dataframe.
+\item{\code{parameters}}{A named list of parameters to configure the \code{llm_provider}.
+These parameters may be appended to the request body when interacting with
+the LLM provider. For example, the \code{model} parameter may often be required.
+The 'stream' parameter may be used to indicate that the API should stream,
+which will be handled down the line by the make_llm_provider_request function.
+Parameters should not include the chat_history, as this is passed as a
+separate argument to the \code{complete_chat_function}. Paramters should also
+not include 'api_key' or 'url'; these are treated separately}
 
-Parameters passed in the parameters argument may be accessed by the complete_chat_function;
-this may be used to, for instance, store an API key, the name of the model to use, or other settings.}
+\item{\code{verbose}}{A logical indicating whether interaction with the LLM provider
+should be printed to the console}
 
-\item{parameters}{A named list of parameters that will be attached to the
-llm_provider object. These parameters can be used to configure the llm_provider.
-For instance, they can be used to store a model's name, an API key, or an endpoint.
-E.g., list(model = "my-llm-model", api_key = "my-api-key").}
+\item{\code{url}}{The URL to the LLM provider API endpoint for chat completion
+(typically required, but may be left NULL in some cases, for instance when
+creating a fake LLM provider)}
 
-\item{verbose}{A logical indicating whether the interaction with the LLM provider
-should be printed to the console. Default is TRUE.}
-
-\item{url}{The URL to the LLM provider API endpoint for chat completion}
-
-\item{api_key}{The API key to use for authentication with the LLM provider API}
+\item{\code{api_key}}{The API key to use for authentication with the LLM provider API
+(optional, not required for, for instance, Ollama)}
 }
-\value{
-A new llm_provider object
+\if{html}{\out{</div>}}
 }
-\description{
-This function can be used to create new llm_provider objects with different
-implementations of the complete_chat function.
+\subsection{Returns}{
+A new \code{llm_provider} R6 object.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-llm_provider-set_parameters"></a>}}
+\if{latex}{\out{\hypertarget{method-llm_provider-set_parameters}{}}}
+\subsection{Method \code{set_parameters()}}{
+Helper function to set the parameters of the llm_provider
+object. This function appends new parameters to the existing parameters
+list.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{llm_provider$set_parameters(new_parameters)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{new_parameters}}{A named list of new parameters to append to the
+existing parameters list}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The modified \code{llm_provider} object
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-llm_provider-complete_chat"></a>}}
+\if{latex}{\out{\hypertarget{method-llm_provider-complete_chat}{}}}
+\subsection{Method \code{complete_chat()}}{
+complete_chat function; sends a chat_history to the LLM provider
+using the configured \code{complete_chat_function}. This function is typically
+called by the \code{send_prompt} function to interact with the LLM provider,
+but it can also be called directly.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{llm_provider$complete_chat(chat_history)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{chat_history}}{A data frame with 'role' and 'content' columns}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The response from the LLM provider, in a named list
+with 'role' and 'content'
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-llm_provider-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-llm_provider-clone}{}}}
+\subsection{Method \code{clone()}}{
+The objects of this class are cloneable with this method.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{llm_provider$clone(deep = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{deep}}{Whether to make a deep clone.}
+}
+\if{html}{\out{</div>}}
+}
+}
 }
