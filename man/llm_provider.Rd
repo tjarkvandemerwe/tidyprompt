@@ -4,24 +4,25 @@
 \alias{llm_provider}
 \title{llm_provider R6 Class}
 \description{
-This class provides a structure for creating \code{llm_provider} objects with
-different implementations of the \code{complete_chat} function. Using this
-class, you can create an \code{llm_provider} object that interacts with different
-LLM providers, such Ollama, OpenAI, or other custom providers.
+This class provides a structure for creating \code{llm_provider}
+objects with different implementations of the \code{complete_chat} function. Using
+this class, you can create an \code{llm_provider} object that interacts with
+different LLM providers, such Ollama, OpenAI, or other custom providers.
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{parameters}}{A named list of parameters to configure the \code{llm_provider}.
-Parameters may be appended to the request body when interacting with the
-LLM provider API.}
+\item{\code{parameters}}{A named list of parameters to configure the
+\code{llm_provider}. Parameters may be appended to the request body when
+interacting with the LLM provider API.}
 
-\item{\code{verbose}}{A logical indicating whether interaction with the LLM provider
-should be printed to the console}
+\item{\code{verbose}}{A logical indicating whether interaction with the LLM
+provider should be printed to the console}
 
 \item{\code{url}}{The URL to the LLM provider API endpoint for chat completion}
 
-\item{\code{api_key}}{The API key to use for authentication with the LLM provider API}
+\item{\code{api_key}}{The API key to use for authentication with the LLM
+provider API}
 }
 \if{html}{\out{</div>}}
 }
@@ -52,10 +53,10 @@ Create a new \code{llm_provider} object
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{complete_chat_function}}{Function that will be called by the \code{llm_provider}
-to complete a chat. This function should take a \code{chat_history} data frame
-as input and return a response object (a list with \code{role} and \code{content},
-detailing the chat completion)}
+\item{\code{complete_chat_function}}{Function that will be called by the
+\code{llm_provider} to complete a chat. This function should take a
+\code{chat_history} data frame as input and return a response object (a list
+with \code{role} and \code{content}, detailing the chat completion)}
 
 \item{\code{parameters}}{A named list of parameters to configure the \code{llm_provider}.
 These parameters may be appended to the request body when interacting with
@@ -66,15 +67,15 @@ Parameters should not include the chat_history, as this is passed as a
 separate argument to the \code{complete_chat_function}. Paramters should also
 not include 'api_key' or 'url'; these are treated separately}
 
-\item{\code{verbose}}{A logical indicating whether interaction with the LLM provider
-should be printed to the console}
+\item{\code{verbose}}{A logical indicating whether interaction with the LLM
+provider should be printed to the console}
 
 \item{\code{url}}{The URL to the LLM provider API endpoint for chat completion
-(typically required, but may be left NULL in some cases, for instance when
-creating a fake LLM provider)}
+(typically required, but may be left NULL in some cases, for instance
+when creating a fake LLM provider)}
 
-\item{\code{api_key}}{The API key to use for authentication with the LLM provider API
-(optional, not required for, for instance, Ollama)}
+\item{\code{api_key}}{The API key to use for authentication with the LLM
+provider API (optional, not required for, for instance, Ollama)}
 }
 \if{html}{\out{</div>}}
 }
@@ -109,10 +110,10 @@ The modified \code{llm_provider} object
 \if{html}{\out{<a id="method-llm_provider-complete_chat"></a>}}
 \if{latex}{\out{\hypertarget{method-llm_provider-complete_chat}{}}}
 \subsection{Method \code{complete_chat()}}{
-complete_chat function; sends a chat_history to the LLM provider
-using the configured \code{complete_chat_function}. This function is typically
-called by the \code{send_prompt} function to interact with the LLM provider,
-but it can also be called directly.
+complete_chat function; sends a chat_history to the LLM
+provider using the configured \code{complete_chat_function}. This function is
+typically called by the \code{send_prompt} function to interact with the LLM
+provider, but it can also be called directly.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{llm_provider$complete_chat(chat_history)}\if{html}{\out{</div>}}
 }
@@ -127,9 +128,9 @@ but it can also be called directly.
 \subsection{Returns}{
 The response from the LLM provider, in a named list
 with 'role', 'content', and 'http'. The 'role' and 'content'
-fields (required) contain the extracted role and content from the response
-(e.g., 'assistant' and 'Hello, how can I help you?'). The 'http'
-field (optional) may contain any additional information, e.g.,
+fields (required) contain the extracted role and content from the
+response (e.g., 'assistant' and 'Hello, how can I help you?').
+The 'http' field (optional) may contain any additional information, e.g.,
 data from the HTTP response about the number of tokens used.
 }
 }

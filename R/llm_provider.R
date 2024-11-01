@@ -1,33 +1,34 @@
 #' @title llm_provider R6 Class
 #'
-#' @description This class provides a structure for creating `llm_provider` objects with
-#' different implementations of the `complete_chat` function. Using this
-#' class, you can create an `llm_provider` object that interacts with different
-#' LLM providers, such Ollama, OpenAI, or other custom providers.
+#' @description This class provides a structure for creating `llm_provider`
+#' objects with different implementations of the `complete_chat` function. Using
+#' this class, you can create an `llm_provider` object that interacts with
+#' different LLM providers, such Ollama, OpenAI, or other custom providers.
 #'
 #' @export
 llm_provider <- R6::R6Class(
   "llm_provider",
   public = list(
-    #' @field parameters A named list of parameters to configure the `llm_provider`.
-    #' Parameters may be appended to the request body when interacting with the
-    #' LLM provider API.
+    #' @field parameters A named list of parameters to configure the
+    #' `llm_provider`. Parameters may be appended to the request body when
+    #' interacting with the LLM provider API.
     parameters = list(),
-    #' @field verbose A logical indicating whether interaction with the LLM provider
-    #' should be printed to the console
+    #' @field verbose A logical indicating whether interaction with the LLM
+    #' provider should be printed to the console
     verbose = getOption("tidyprompt.verbose", TRUE),
     #' @field url The URL to the LLM provider API endpoint for chat completion
     url = NULL,
-    #' @field api_key The API key to use for authentication with the LLM provider API
+    #' @field api_key The API key to use for authentication with the LLM
+    #' provider API
     api_key = NULL,
 
     #' @description
     #' Create a new `llm_provider` object
     #'
-    #' @param complete_chat_function Function that will be called by the `llm_provider`
-    #' to complete a chat. This function should take a `chat_history` data frame
-    #' as input and return a response object (a list with `role` and `content`,
-    #' detailing the chat completion)
+    #' @param complete_chat_function Function that will be called by the
+    #' `llm_provider` to complete a chat. This function should take a
+    #' `chat_history` data frame as input and return a response object (a list
+    #' with `role` and `content`, detailing the chat completion)
     #'
     #' @param parameters A named list of parameters to configure the `llm_provider`.
     #' These parameters may be appended to the request body when interacting with
@@ -38,15 +39,15 @@ llm_provider <- R6::R6Class(
     #' separate argument to the `complete_chat_function`. Paramters should also
     #' not include 'api_key' or 'url'; these are treated separately
     #'
-    #' @param verbose A logical indicating whether interaction with the LLM provider
-    #' should be printed to the console
+    #' @param verbose A logical indicating whether interaction with the LLM
+    #' provider should be printed to the console
     #'
     #' @param url The URL to the LLM provider API endpoint for chat completion
-    #' (typically required, but may be left NULL in some cases, for instance when
-    #' creating a fake LLM provider)
+    #' (typically required, but may be left NULL in some cases, for instance
+    #' when creating a fake LLM provider)
     #'
-    #' @param api_key The API key to use for authentication with the LLM provider API
-    #' (optional, not required for, for instance, Ollama)
+    #' @param api_key The API key to use for authentication with the LLM
+    #' provider API (optional, not required for, for instance, Ollama)
     #'
     #' @return A new `llm_provider` R6 object.
     initialize = function(
@@ -82,48 +83,69 @@ llm_provider <- R6::R6Class(
       return(self)
     },
 
-    #' @description complete_chat function; sends a chat_history to the LLM provider
-    #' using the configured `complete_chat_function`. This function is typically
-    #' called by the `send_prompt` function to interact with the LLM provider,
-    #' but it can also be called directly.
+    #' @description complete_chat function; sends a chat_history to the LLM
+    #' provider using the configured `complete_chat_function`. This function is
+    #' typically called by the `send_prompt` function to interact with the LLM
+    #' provider, but it can also be called directly.
     #'
     #' @param chat_history A data frame with 'role' and 'content' columns
     #'
     #' @return The response from the LLM provider, in a named list
     #' with 'role', 'content', and 'http'. The 'role' and 'content'
-    #' fields (required) contain the extracted role and content from the response
-    #' (e.g., 'assistant' and 'Hello, how can I help you?'). The 'http'
-    #' field (optional) may contain any additional information, e.g.,
+    #' fields (required) contain the extracted role and content from the
+    #' response (e.g., 'assistant' and 'Hello, how can I help you?').
+    #' The 'http' field (optional) may contain any additional information, e.g.,
     #' data from the HTTP response about the number of tokens used.
     complete_chat = function(chat_history) {
       chat_history <- chat_history(chat_history)
       if (self$verbose) {
         message(crayon::bold(glue::glue(
-          "--- Sending request to LLM provider ({self$parameters$model %||% 'model not specified'}): ---",
-          .null = "default model"
+          "--- Sending request to LLM provider",
+          " ({
+              if (!is.null(self$parameters$model)) {
+                self$parameters$model
+              } else {
+                'no model specified'
+              }
+          }):",
+          " ---"
         )))
         cat(chat_history$content[nrow(chat_history)])
         cat("\n")
       }
 
       if (self$verbose)
-        message(crayon::bold(glue::glue("--- Receiving response from LLM provider: ---")))
+        message(crayon::bold(glue::glue(
+          "--- Receiving response from LLM provider: ---"
+        )))
 
       environment(private$complete_chat_function) <- environment()
       response <- private$complete_chat_function(chat_history)
 
       # Check that response is valid
-      if (!is.list(response) || !all(c("role", "content") %in% names(response))) {
-        stop("The response from the LLM provider must be a list with 'role' and 'content' fields.")
+      if (
+        !is.list(response)
+        || !all(c("role", "content") %in% names(response))
+      ) {
+        stop(paste0(
+          "The response from the LLM provider must be a list with 'role' and",
+          " 'content' fields."
+        ))
       }
       # Check that 'role' and 'content' are character
       if (!all(sapply(response[c("role", "content")], is.character))) {
-        stop("The 'role' and 'content' fields in the response must be of type character.")
+        stop(paste0(
+          "The 'role' and 'content' fields in the response must be of type",
+          " character."
+        ))
       }
       # Check that there are no other fields in the response
       #   (only allowed: 'role', 'content', and 'response')
       if (length(setdiff(names(response), c("role", "content", "http"))) > 0) {
-        stop("The response from the LLM provider must contain only 'role', 'content', and 'http' fields.")
+        stop(paste0(
+          "The response from the LLM provider must contain only 'role',",
+          " 'content', and 'http' fields."
+        ))
       }
 
       if (
