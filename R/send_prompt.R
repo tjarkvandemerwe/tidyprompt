@@ -88,7 +88,7 @@ send_prompt <- function(
     ))
 
     if (clean_chat_history) {
-      cleaned_chat_history <- clean_chat_history(chat_history)
+      cleaned_chat_history <- clean_chat_history_fn(chat_history)
       completion <- llm_provider$complete_chat(cleaned_chat_history)
     } else {
       completion <- llm_provider$complete_chat(chat_history)
@@ -105,7 +105,7 @@ send_prompt <- function(
   }
 
   # Create internal function which cleans the chat_history
-  clean_chat_history <- function(chat_history) {
+  clean_chat_history_fn <- function(chat_history) {
     # Keep only first and last message from user;
     # keep only last message from assistant;
     # keep all messages from system;
@@ -227,7 +227,7 @@ send_prompt <- function(
     }
 
     return_list$chat_history <- chat_history
-    return_list$chat_history_clean <- clean_chat_history(chat_history)
+    return_list$chat_history_clean <- clean_chat_history_fn(chat_history)
 
     return_list$start_time <- start_time
     return_list$end_time <- Sys.time()
