@@ -73,7 +73,7 @@ validate_tidyprompt <- function(tidyprompt) {
   if (!inherits(tidyprompt, "tidyprompt"))
     stop("Tidyprompt is not of class 'tidyprompt'")
 
-  if (!"base_prompt" %in% names(prompt))
+  if (!"base_prompt" %in% names(tidyprompt))
     stop("The tidyprompt object must have a base prompt")
 
   if (
