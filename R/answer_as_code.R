@@ -219,10 +219,23 @@ answer_as_code <- function(
       )))
     }
 
+    # Check if the code produced any relevant output
     if (output$stdout == "" & return_mode == "console") {
       return(create_llm_feedback(glue::glue(
         "The R code did not produce any console output.",
         " Please provide R code that produces console output."
+      )))
+    }
+    if (is.null(output$result) & return_mode == "object") {
+      return(create_llm_feedback(glue::glue(
+        "The R code did not produce an object.",
+        " Please provide R code that produces an object."
+      )))
+    }
+    if (is.null(output$stdout) & is.null(output$result)) {
+      return(create_llm_feedback(glue::glue(
+        "The R code did not produce any output.",
+        " Please provide R code that produces output."
       )))
     }
 
