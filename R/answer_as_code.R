@@ -50,7 +50,6 @@
 #'
 #'  plot <- paste0(
 #'    "Using ggplot2, create a scatter plot of miles per gallon (mpg) versus",
-#'    "Using ggplot2, create a scatter plot of miles per gallon (mpg) versus",
 #'    " horsepower (hp) for the cars in the mtcars dataset.",
 #'    " Use different colors to represent the number of cylinders (cyl)."
 #'  ) |>
