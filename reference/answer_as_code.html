@@ -144,6 +144,20 @@ the extraction of this prompt wrap will end</p></dd>
 <span class="r-in"><span>  <span class="fu">answer_as_code</span><span class="op">(</span>pkgs_to_use <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"dplyr"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="answer_by_chain_of_thought.html">answer_by_chain_of_thought</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span> <span class="va">plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>   <span class="st">"Using ggplot2, create a scatter plot of miles per gallon (mpg) versus"</span>,</span></span>
+<span class="r-in"><span>   <span class="st">"Using ggplot2, create a scatter plot of miles per gallon (mpg) versus"</span>,</span></span>
+<span class="r-in"><span>   <span class="st">" horsepower (hp) for the cars in the mtcars dataset."</span>,</span></span>
+<span class="r-in"><span>   <span class="st">" Use different colors to represent the number of cylinders (cyl)."</span></span></span>
+<span class="r-in"><span> <span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>   <span class="fu">answer_as_code</span><span class="op">(</span></span></span>
+<span class="r-in"><span>     pkgs_to_use <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ggplot2"</span><span class="op">)</span>, evaluate_code <span class="op">=</span> <span class="cn">FALSE</span>, send_back_output <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span>   <span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>   <span class="fu"><a href="answer_by_chain_of_thought.html">answer_by_chain_of_thought</a></span><span class="op">(</span>extract_from_finish_brackets <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>   <span class="fu"><a href="send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>   <span class="fu"><a href="https://rdrr.io/r/base/eval.html" class="external-link">eval</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span> <span class="va">plot</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
