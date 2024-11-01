@@ -25,7 +25,8 @@ BugReports: https://github.com/tjarkvandemerwe/tidyprompt/issues
 Suggests: 
     knitr,
     rmarkdown,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    callr
 VignetteBuilder: knitr
 Imports: 
     crayon,
