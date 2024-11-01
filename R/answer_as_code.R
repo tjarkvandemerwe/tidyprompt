@@ -34,15 +34,18 @@
 #' their R code. Once the LLM does not provide new R code (i.e., the prompt is being answered)
 #' this prompt wrap will end (it will continue for as long as the LLM provides R code).
 #' @param return_mode Character string indicating the return mode. One of
-#' 'full', 'code', 'console', 'object', or 'llm_answer'. If 'full', the function
-#' will return a list with the original LLM answer, the extracted R code, and
-#' (if evaluated) the output of the R code. If 'code', the function will return
-#' the extracted R code. If 'console', the function will return the console output
-#' of the evaluated R code. If 'object', the function will return the object
-#' produced by the evaluated R code. If 'llm_answer', the function will return
-#' only the original LLM answer. When choosing 'console' or 'object', an
-#' additional instruction will be added to the prompt text to inform the LLM
-#' about the expected output of the R code.
+#' 'full', 'code', 'console', 'object', 'formatted_output', or 'llm_answer'.
+#' If 'full', the function will return a list with the original LLM answer,
+#' the extracted R code, and (if evaluated) the output of the R code.
+#' If 'code', the function will return the extracted R code. If 'console', the
+#' function will return the console output of the evaluated R code.
+#' If 'object', the function will return the object produced by the evaluated R code.
+#' If 'formatted_output', the function will return a formatted string with the
+#' extracted R code, its console output, and a print of the last object (identical
+#' to how it would be presented to the LLM if 'output_as_tool' is TRUE).
+#' If 'llm_answer', 'llm_answer', the function will return only the original LLM answer.
+#' When choosing 'console' or 'object', an additional instruction will be added to
+#' the prompt text to inform the LLM about the expected output of the R code.
 #'
 #' @return A tidyprompt object with the new prompt wrap added to it
 #' @export
@@ -55,7 +58,7 @@ answer_as_code <- function(
     list_packages = TRUE,
     list_objects = TRUE,
     output_as_tool = FALSE,
-    return_mode = c("full", "code", "console", "object", "llm_answer")
+    return_mode = c("full", "code", "console", "object", "formatted_output", "llm_answer")
 ) {
   prompt <- tidyprompt(prompt)
 
@@ -69,6 +72,8 @@ answer_as_code <- function(
     output_as_tool <- FALSE
   if (output_as_tool)
     return_mode <- "llm_answer"
+  if (!evaluate_code & return_mode %in% c("console", "object", "formatted_output"))
+    stop("The return mode must be 'full', 'code', or 'llm_answer' if 'evaluate_code' is FALSE.")
 
   return_mode <- match.arg(return_mode)
 
@@ -222,28 +227,29 @@ answer_as_code <- function(
     }
 
     return_list$output <- output
-
-    if (output_as_tool) {
-      return(create_llm_feedback(glue::glue(
-        "--- R code: ---\n",
-        "{extracted_code |> paste(collapse = \"\\n\")}\n\n",
-        "--- Console output: ---\n",
-        "{
+    return_list$formatted_output <- glue::glue(
+      "--- R code: ---\n",
+      "{extracted_code |> paste(collapse = \"\\n\")}\n\n",
+      "--- Console output: ---\n",
+      "{
           if (is.null(output$stdout) || output$stdout == \"\") {
             \"No console output produced.\"
           } else {
             output$stdout
           }
         }\n\n",
-        "--- Last object: ---\n",
-        "{
+      "--- Last object: ---\n",
+      "{
           if (is.null(output$result)) {
             \"No object produced.\"
           } else {
             output$result |> print()
           }
         }"
-      ), tool_result = TRUE))
+    )
+
+    if (output_as_tool) {
+      return(create_llm_feedback(return_list$formatted_output, tool_result = TRUE))
     }
 
     if (return_mode == "full")
@@ -254,6 +260,8 @@ answer_as_code <- function(
       return(return_list$output$stdout)
     if (return_mode == "object")
       return(return_list$output$result)
+    if (return_mode == "formatted_output")
+      return(return_list$formatted_output)
     if (return_mode == "llm_answer")
       return(x)
 

@@ -13,7 +13,7 @@ answer_as_code(
   list_packages = TRUE,
   list_objects = TRUE,
   output_as_tool = FALSE,
-  return_mode = c("full", "code", "console", "object", "llm_answer")
+  return_mode = c("full", "code", "console", "object", "formatted_output", "llm_answer")
 )
 }
 \arguments{
@@ -50,15 +50,18 @@ their R code. Once the LLM does not provide new R code (i.e., the prompt is bein
 this prompt wrap will end (it will continue for as long as the LLM provides R code).}
 
 \item{return_mode}{Character string indicating the return mode. One of
-'full', 'code', 'console', 'object', or 'llm_answer'. If 'full', the function
-will return a list with the original LLM answer, the extracted R code, and
-(if evaluated) the output of the R code. If 'code', the function will return
-the extracted R code. If 'console', the function will return the console output
-of the evaluated R code. If 'object', the function will return the object
-produced by the evaluated R code. If 'llm_answer', the function will return
-only the original LLM answer. When choosing 'console' or 'object', an
-additional instruction will be added to the prompt text to inform the LLM
-about the expected output of the R code.}
+'full', 'code', 'console', 'object', 'formatted_output', or 'llm_answer'.
+If 'full', the function will return a list with the original LLM answer,
+the extracted R code, and (if evaluated) the output of the R code.
+If 'code', the function will return the extracted R code. If 'console', the
+function will return the console output of the evaluated R code.
+If 'object', the function will return the object produced by the evaluated R code.
+If 'formatted_output', the function will return a formatted string with the
+extracted R code, its console output, and a print of the last object (identical
+to how it would be presented to the LLM if 'output_as_tool' is TRUE).
+If 'llm_answer', 'llm_answer', the function will return only the original LLM answer.
+When choosing 'console' or 'object', an additional instruction will be added to
+the prompt text to inform the LLM about the expected output of the R code.}
 }
 \value{
 A tidyprompt object with the new prompt wrap added to it
