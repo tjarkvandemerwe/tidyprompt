@@ -17,8 +17,10 @@
 #' the function will only return the response (or NULL if unsuccessful).
 #' If 'full', the function will return a list with the following elements:
 #' 'success', 'response' (if successful), 'failed_response' (if unsuccessful),
-#' 'chat_history', 'start_time', 'end_time', and 'duration_seconds'.
-#'
+#' 'chat_history', 'start_time', 'end_time', and 'duration_seconds'. When using
+#' 'full' and you want to access a specific element during (base R) piping,
+#' you can use the 'extract_from_return_list' function to assist in this.
+#
 #' @return ...
 #' @export
 send_prompt <- function(
