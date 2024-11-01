@@ -27,6 +27,9 @@
 #' @param list_objects Logical indicating whether the LLM should be informed
 #' about the objects that already exist in the R session (if TRUE, a list of the objects
 #' plus their types will be shown in the initial prompt)
+#' @param skim_dataframes Logical indicating whether the LLM should be informed
+#' about the structure of dataframes that already exist in the R session (if TRUE,
+#' a skim summary of each dataframe will be shown in the initial prompt)
 #' @param output_as_tool Logical indicating whether the console output of the
 #' evaluated R code should be sent back to the LLM, meaning the LLM will use
 #' R code as a tool to formulate an answer to the prompt. If TRUE, the LLM
@@ -57,6 +60,7 @@ answer_as_code <- function(
     evaluation_session = NULL,
     list_packages = TRUE,
     list_objects = TRUE,
+    skim_dataframes = TRUE,
     output_as_tool = FALSE,
     return_mode = c("full", "code", "console", "object", "formatted_output", "llm_answer")
 ) {
@@ -119,9 +123,14 @@ answer_as_code <- function(
       )
     }
 
+    new_text <- glue::glue(
+      "{new_text}\n",
+      "You may not install or load any additional packages."
+    )
+
     if (list_objects & !is.null(evaluation_session)) {
       objects <- evaluation_session$run(function() {
-        objects <- ls()
+        objects <- ls(envir = parent.env(environment()))
         object_types <- sapply(objects, function(obj) class(get(obj)))
         data.frame(Object_name = objects, Type = object_types)
       })
@@ -133,6 +142,22 @@ answer_as_code <- function(
           "{objects |> df_to_string()}.\n\n",
           "Do not define these objects in your R code."
         )
+
+        if (skim_dataframes) {
+          dataframes <- objects$Object_name[objects$Type == "data.frame"]
+          for (df_name in dataframes) {
+            df <- evaluation_session$run(function(df_name) {
+              df <- get(df_name)
+              df
+            }, args = list(df_name = df_name))
+
+            new_text <- glue::glue(
+              "{new_text}\n\n",
+              "Summary of the dataframe '{df_name}':\n",
+              "{df |> skim_with_labels_and_levels() |> df_to_string()}\n\n"
+            )
+          }
+        }
 
         if (output_as_tool) {
           new_text <- glue::glue(
@@ -161,9 +186,11 @@ answer_as_code <- function(
       new_text <- glue::glue(
         "{new_text}\n",
         "The console output of your R code will be sent back to you.",
-        " With the console output, decide if you can answer the prompt or if",
-        " you need to modify your R code. Provide R code until you can",
-        " answer the prompt."
+        " Use print() on all objects or values that you need to see.",
+        " You can not view plots, all output must be text-based.",
+        " After you get console output from me, decide if you can answer the prompt or if",
+        " you need to modify your R code. When you can formulate your final answer,",
+        " do not provide any R code in it."
       )
     }
 
@@ -248,7 +275,10 @@ answer_as_code <- function(
           if (is.null(output$stdout) || output$stdout == \"\") {
             \"No console output produced.\"
           } else {
-            output$stdout
+            output$stdout |>
+            paste(collapse = \"\\n\") |>
+            stringr::str_trunc(1000) |>
+            print()
           }
         }\n\n",
       "--- Last object: ---\n",
@@ -256,7 +286,10 @@ answer_as_code <- function(
           if (is.null(output$result)) {
             \"No object produced.\"
           } else {
-            output$result |> print()
+            output$result |>
+            paste(collapse = \"\\n\") |>
+            stringr::str_trunc(100) |>
+            print()
           }
         }"
     )

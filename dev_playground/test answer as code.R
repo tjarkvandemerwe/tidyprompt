@@ -49,3 +49,51 @@ plot <- paste0(
   ) |>
   send_prompt(anthropic)
 plot
+
+
+###
+
+rs <- callr::r_session$new()
+rs$run_with_output(function() {
+  # Add labels to each column
+  attr(cars$speed, "label") <- "Humidity in Overijssel (%)"
+  attr(cars$dist, "label") <- "Number of bananas sold in Enschede"
+
+  # rename
+  names(cars) <- c("Humidity", "Bananas")
+
+  dataset <<- cars;
+
+  head(dataset)
+})
+
+answer <- "Please do an analysis on the dataset. Think of 1 interesting
+research question and answer it." |>
+  answer_as_code(
+    pkgs = c("ggplot2", "dplyr"),
+    evaluation_session = rs,
+    output_as_tool = TRUE
+  ) |>
+  answer_by_chain_of_thought(extract_from_finish_brackets = FALSE) |>
+  send_prompt()
+
+
+answer <- "What do you think of this dataset?" |>
+  answer_as_code(
+    pkgs = c("ggplot2", "dplyr"),
+    evaluation_session = rs,
+    output_as_tool = TRUE
+  ) |>
+  answer_by_chain_of_thought(extract_from_finish_brackets = TRUE) |>
+  send_prompt(anthropic)
+
+
+plot <- "Please do an analysis on the dataset. Think of 1 interesting
+research question and answer it with a nice plot. Make your plot a little crazy!" |>
+  answer_as_code(
+    pkgs = c("ggplot2", "dplyr"),
+    evaluation_session = rs,
+    return_mode = "object"
+  ) |>
+  answer_by_chain_of_thought(extract_from_finish_brackets = FALSE) |>
+  send_prompt(anthropic)

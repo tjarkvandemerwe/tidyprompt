@@ -12,6 +12,7 @@ answer_as_code(
   evaluation_session = NULL,
   list_packages = TRUE,
   list_objects = TRUE,
+  skim_dataframes = TRUE,
   output_as_tool = FALSE,
   return_mode = c("full", "code", "console", "object", "formatted_output", "llm_answer")
 )
@@ -41,6 +42,10 @@ loaded packages will be shown in the initial prompt)}
 \item{list_objects}{Logical indicating whether the LLM should be informed
 about the objects that already exist in the R session (if TRUE, a list of the objects
 plus their types will be shown in the initial prompt)}
+
+\item{skim_dataframes}{Logical indicating whether the LLM should be informed
+about the structure of dataframes that already exist in the R session (if TRUE,
+a skim summary of each dataframe will be shown in the initial prompt)}
 
 \item{output_as_tool}{Logical indicating whether the console output of the
 evaluated R code should be sent back to the LLM, meaning the LLM will use
