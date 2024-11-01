@@ -8,7 +8,7 @@
 #' @return A prompt object with the system prompt set
 #' @export
 set_system_prompt <- function(prompt, system_prompt) {
-  prompt <- prompt(prompt)
+  prompt <- tidyprompt(prompt)
 
   if (!is.character(system_prompt) |
       length(system_prompt) != 1

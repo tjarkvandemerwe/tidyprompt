@@ -129,7 +129,7 @@ extract_tool_function_docs_for_llm <- function(func) {
 #' @return ...
 #' @export
 add_tools <- function(prompt, tool_functions = list()) {
-  prompt <- prompt(prompt)
+  prompt <- tidyprompt(prompt)
 
   # Check if tool_functions is single function, if so, convert to list
   if (length(tool_functions) == 1 && is.function(tool_functions))

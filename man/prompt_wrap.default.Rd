@@ -12,9 +12,9 @@
 \item{...}{Additional arguments}
 }
 \value{
-A prompt object with the new prompt wrap appended to it.
+A tidyprompt object with the new prompt wrap appended to it.
 }
 \description{
-Attempts to create a prompt object from whatever is passed as 'prompt';
+Attempts to create a tidyprompt object from whatever is passed as 'prompt';
 then calls the internal function to append the prompt wrap.
 }

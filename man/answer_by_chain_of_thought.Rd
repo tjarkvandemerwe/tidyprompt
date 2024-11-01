@@ -7,13 +7,13 @@
 answer_by_chain_of_thought(prompt, extract_from_finish_brackets = TRUE)
 }
 \arguments{
-\item{prompt}{A prompt object or a single string}
+\item{prompt}{A tidyprompt object or a single string}
 
 \item{extract_from_finish_brackets}{A logical indicating whether the final answer
 should be extracted from the text inside the "FINISH\link{...}" brackets.}
 }
 \value{
-A prompt with the chain-of-thought mode added.
+A tidyprompt with the chain-of-thought prompt_wrap added.
 }
 \description{
 Set chain of thought mode for a prompt

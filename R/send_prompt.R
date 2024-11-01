@@ -32,7 +32,7 @@ send_prompt <- function(
 ) {
   ## 1 Validate arguments
 
-  prompt <- prompt(prompt)
+  prompt <- tidyprompt(prompt)
 
   if (!inherits(llm_provider, "llm_provider"))
     stop("llm_provider must be an object of class 'llm_provider'")
