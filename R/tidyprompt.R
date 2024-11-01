@@ -93,7 +93,8 @@ validate_tidyprompt <- function(tidyprompt) {
       ))
   }
 
-  return(invisible(TRUE))
+  # Validators return visible:
+  return(tidyprompt)
 }
 
 
