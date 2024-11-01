@@ -43,7 +43,7 @@
 #' @importFrom crayon blue green silver
 #' @exportS3Method print tidyprompt
 print.tidyprompt <- function(x, ...) {
-  cat(crayon::blue("<prompt>\n"))
+  cat(crayon::blue("<tidyprompt>\n"))
 
   line_prefix <- crayon::green("> ")
 
