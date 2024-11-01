@@ -42,17 +42,17 @@ prompt_wrap.tidyprompt <- function(prompt, ...) {
 
 #' Default method for prompt_wrap
 #'
-#' Attempts to create a prompt object from whatever is passed as 'prompt';
+#' Attempts to create a tidyprompt object from whatever is passed as 'prompt';
 #' then calls the internal function to append the prompt wrap.
 #'
 #' @param prompt Input for the prompt object
 #' @param ... Additional arguments
 #'
-#' @return A prompt object with the new prompt wrap appended to it.
+#' @return A tidyprompt object with the new prompt wrap appended to it.
 #' @export
 #' @exportS3Method prompt_wrap default
 prompt_wrap.default <- function(prompt, ...) {
-  prompt <- prompt(prompt)
+  prompt <- tidyprompt(prompt)
   prompt_wrap_internal(prompt, ...)
 }
 
