@@ -1,21 +1,21 @@
-#' Print Method for Prompt Objects
+#' Print Method for tidyprompt Objects
 #'
-#' This function is a custom print method for displaying a `prompt` object.
-#' A `prompt` typically contains a base prompt and may have additional prompt
+#' This function is a custom print method for displaying a `tidyprompt` object.
+#' A `tidyprompt` typically contains a base prompt and may have additional prompt
 #' wrappers that modify it. This function applies the modifications specified
 #' in the wrapper functions and displays the resulting prompt in a structured
 #' and visually clear manner.
 #'
-#' @param x A `prompt` object. The object should contain:
+#' @param x A `tidyprompt` object. The object should contain:
 #'   \describe{
 #'     \item{`base_prompt`}{A character string containing the base prompt text.}
 #'     \item{`prompt_wraps`}{A list containing wrapper functions that modify
 #'     the base prompt.}
 #'   }
-#' @param ... Additional arguments passed to `print.prompt`
+#' @param ... Additional arguments passed to `print.tidyprompt`
 #' (not used; needs to be present in line with guidelines for generic functions).
 #'
-#' @details The `print.prompt` function displays the base prompt and, if applicable,
+#' @details The `print.tidyprompt` function displays the base prompt and, if applicable,
 #'   the modified prompt after applying the wrapper functions. The output is formatted
 #'   with line breaks preserved and with colored text to distinguish metadata from
 #'   the prompt content. This is done using the `crayon` package to enhance
@@ -26,8 +26,8 @@
 #'
 #' @examples
 #' \dontrun{
-#'   # Creating a simple prompt object
-#'   prompt_obj <- prompt("What is the capital of France?")
+#'   # Creating a simple tidyprompt object
+#'   prompt_obj <- tidyprompt("What is the capital of France?")
 #'
 #'   # Print the prompt object
 #'   print(prompt_obj)
@@ -41,9 +41,9 @@
 #' }
 #'
 #' @importFrom crayon blue green silver
-#' @exportS3Method print prompt
-print.prompt <- function(x, ...) {
-  cat(crayon::blue("<prompt>\n"))
+#' @exportS3Method print tidyprompt
+print.tidyprompt <- function(x, ...) {
+  cat(crayon::blue("<tidyprompt>\n"))
 
   line_prefix <- crayon::green("> ")
 
@@ -67,7 +67,7 @@ print.prompt <- function(x, ...) {
     full_text <- x |> construct_prompt_text()
     formatted_text <- format_with_prefix(full_text, line_prefix)
     cat(formatted_text, "\n")
-    cat(crayon::silver("\nUse <prompt>$prompt_wraps to show the wrapper functions.\n"))
+    cat(crayon::silver("Use <prompt>$prompt_wraps to show the wrapper functions.\n"))
   }
 
   cat(crayon::silver("Use <prompt>$base_prompt to show the base prompt.\n"))

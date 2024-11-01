@@ -2,13 +2,12 @@
 % Please edit documentation in R/add_text.R
 \name{add_text}
 \alias{add_text}
-\title{Add text to a prompt}
+\title{Add text to a tidyprompt}
 \usage{
 add_text(prompt, text, position = c("after", "before"), sep = "\\n\\n")
 }
 \arguments{
-\item{prompt}{A single string, a prompt_wrap object, or a list
-of prompt_wrap objects.}
+\item{prompt}{A single string or a tidyprompt object.}
 
 \item{text}{Text to be added to the prompt.}
 
@@ -17,10 +16,10 @@ of prompt_wrap objects.}
 \item{sep}{Separator to be used between the original prompt text and the added text.}
 }
 \value{
-A prompt list with an added prompt wrapper object which
+A tidyprompt with an added prompt wrapper object which
 will append the text to the end of the prompt text.
 }
 \description{
-Add text to a prompt by appending a prompt wrapper to the prompt list.
+Add text to a prompt by adding a prompt wrapper to the tidyprompt.
 The text will be added to the end of the prompt text.
 }

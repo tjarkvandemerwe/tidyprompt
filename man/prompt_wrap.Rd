@@ -13,7 +13,7 @@ prompt_wrap(
 )
 }
 \arguments{
-\item{prompt}{A prompt object or a single string}
+\item{prompt}{A tidyprompt object or a single string}
 
 \item{modify_fn}{A function that takes the previous prompt text and returns the new prompt text}
 
@@ -32,7 +32,7 @@ Types are used to determine the order in which prompt wraps are applied.
 Typically, tools are applied first, then modes, then unspecified wraps.}
 }
 \value{
-A prompt object with the new prompt wrap appended to it.
+A tidyprompt object with the new prompt wrap added to it.
 }
 \description{
 Wrap a prompt with additional functionality

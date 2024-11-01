@@ -1,6 +1,6 @@
 #' Make LLM answer as an integer (between min and max)
 #'
-#' @param prompt A single string, a prompt_wrap object, or a list
+#' @param prompt A single string, a tidyprompt object, or a list
 #' of prompt_wrap objects.
 #' @param min (optional) Minimum value for the integer
 #' @param max (optional) Maximum value for the integer
@@ -9,7 +9,7 @@
 #' are working as expected (without instruction the answer should fail the
 #' validation function, initiating a retry).
 #'
-#' @return A prompt list with an added prompt wrapper object which
+#' @return A tidyprompt with an added prompt wrapper object which
 #' will ensure that the LLM response is an integer.
 #' @export
 answer_as_integer <- function(

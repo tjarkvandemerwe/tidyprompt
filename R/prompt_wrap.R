@@ -1,6 +1,6 @@
 #' Wrap a prompt with additional functionality
 #'
-#' @param prompt A prompt object or a single string
+#' @param prompt A tidyprompt object or a single string
 #' @param modify_fn A function that takes the previous prompt text and returns the new prompt text
 #' @param extraction_fn A function that takes the LLM response and attempts to extract a value from it.
 #' Upon succesful extraction, the function should return the extracted value.
@@ -14,7 +14,7 @@
 #' Types are used to determine the order in which prompt wraps are applied.
 #' Typically, tools are applied first, then modes, then unspecified wraps.
 #'
-#' @return A prompt object with the new prompt wrap appended to it.
+#' @return A tidyprompt object with the new prompt wrap added to it.
 #' @export
 prompt_wrap <- function(
     prompt,
@@ -33,26 +33,26 @@ prompt_wrap <- function(
 #' @param prompt A prompt object
 #' @param ... Additional arguments
 #'
-#' @return A prompt object with the new prompt wrap appended to it.
+#' @return A tidyprompt object with the new prompt wrap appended to it.
 #' @export
-#' @exportS3Method prompt_wrap prompt
-prompt_wrap.prompt <- function(prompt, ...) {
+#' @exportS3Method prompt_wrap tidyprompt
+prompt_wrap.tidyprompt <- function(prompt, ...) {
   prompt_wrap_internal(prompt, ...)
 }
 
 #' Default method for prompt_wrap
 #'
-#' Attempts to create a prompt object from whatever is passed as 'prompt';
+#' Attempts to create a tidyprompt object from whatever is passed as 'prompt';
 #' then calls the internal function to append the prompt wrap.
 #'
 #' @param prompt Input for the prompt object
 #' @param ... Additional arguments
 #'
-#' @return A prompt object with the new prompt wrap appended to it.
+#' @return A tidyprompt object with the new prompt wrap appended to it.
 #' @export
 #' @exportS3Method prompt_wrap default
 prompt_wrap.default <- function(prompt, ...) {
-  prompt <- prompt(prompt)
+  prompt <- tidyprompt(prompt)
   prompt_wrap_internal(prompt, ...)
 }
 
