@@ -1,15 +1,14 @@
-#' Add text to a prompt
+#' Add text to a tidyprompt
 #'
-#' Add text to a prompt by appending a prompt wrapper to the prompt list.
+#' Add text to a prompt by adding a prompt wrapper to the tidyprompt.
 #' The text will be added to the end of the prompt text.
 #'
-#' @param prompt A single string, a prompt_wrap object, or a list
-#' of prompt_wrap objects.
+#' @param prompt A single string or a tidyprompt object.
 #' @param text Text to be added to the prompt.
 #' @param sep Separator to be used between the original prompt text and the added text.
 #' @param position Where to add the text; either "after" or "before".
 #
-#' @return A prompt list with an added prompt wrapper object which
+#' @return A tidyprompt with an added prompt wrapper object which
 #' will append the text to the end of the prompt text.
 #' @export
 add_text <- function(

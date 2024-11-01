@@ -2,7 +2,6 @@
 % Please edit documentation in R/tidyprompt-package.R
 \docType{package}
 \name{tidyprompt-package}
-\alias{tidyprompt}
 \alias{tidyprompt-package}
 \title{tidyprompt: Prompt and empower your LLM, the tidy way}
 \description{

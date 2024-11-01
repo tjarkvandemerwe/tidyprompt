@@ -12,7 +12,7 @@ answer_as_integer(
 )
 }
 \arguments{
-\item{prompt}{A single string, a prompt_wrap object, or a list
+\item{prompt}{A single string, a tidyprompt object, or a list
 of prompt_wrap objects.}
 
 \item{min}{(optional) Minimum value for the integer}
@@ -25,7 +25,7 @@ are working as expected (without instruction the answer should fail the
 validation function, initiating a retry).}
 }
 \value{
-A prompt list with an added prompt wrapper object which
+A tidyprompt with an added prompt wrapper object which
 will ensure that the LLM response is an integer.
 }
 \description{
