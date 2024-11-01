@@ -276,7 +276,7 @@
 <span>    <span class="fu"><a href="reference/answer_as_integer.html">answer_as_integer</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="reference/add_tools.html">add_tools</a></span><span class="op">(</span><span class="va">temperature_in_location</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="va">ollama</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb11"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co">#&gt; --- Sending message to LLM-provider: ---</span></span>
+<div class="sourceCode" id="cb11"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co">#&gt; --- Sending request to LLM provider (llama3.1:8b): ---</span></span>
 <span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="co">#&gt; Hi, what is the weather temperature in Enschede?</span></span>
 <span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="co">#&gt; I want to know the Celcius degrees.</span></span>
@@ -298,19 +298,19 @@
 <span id="cb11-20"><a href="#cb11-20" tabindex="-1"></a><span class="co">#&gt; example usage: FUNCTION[temperature_in_location]("Amsterdam", "Fahrenheit")</span></span>
 <span id="cb11-21"><a href="#cb11-21" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb11-22"><a href="#cb11-22" tabindex="-1"></a><span class="co">#&gt; After you call a function, wait until you receive more information.</span></span>
-<span id="cb11-23"><a href="#cb11-23" tabindex="-1"></a><span class="co">#&gt; --- Received response from LLM-provider: ---</span></span>
+<span id="cb11-23"><a href="#cb11-23" tabindex="-1"></a><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
 <span id="cb11-24"><a href="#cb11-24" tabindex="-1"></a><span class="co">#&gt; I'll use the provided function to get the current temperature in Enschede.</span></span>
 <span id="cb11-25"><a href="#cb11-25" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb11-26"><a href="#cb11-26" tabindex="-1"></a><span class="co">#&gt; FUNCTION[temperature_in_location]("Enschede", "Celcius")</span></span>
-<span id="cb11-27"><a href="#cb11-27" tabindex="-1"></a><span class="co">#&gt; --- Sending message to LLM-provider: ---</span></span>
+<span id="cb11-27"><a href="#cb11-27" tabindex="-1"></a><span class="co">#&gt; --- Sending request to LLM provider (llama3.1:8b): ---</span></span>
 <span id="cb11-28"><a href="#cb11-28" tabindex="-1"></a><span class="co">#&gt; function called: temperature_in_location</span></span>
 <span id="cb11-29"><a href="#cb11-29" tabindex="-1"></a><span class="co">#&gt; arguments used: location = Enschede, unit = Celcius</span></span>
 <span id="cb11-30"><a href="#cb11-30" tabindex="-1"></a><span class="co">#&gt; result: 22.7</span></span>
-<span id="cb11-31"><a href="#cb11-31" tabindex="-1"></a><span class="co">#&gt; --- Received response from LLM-provider: ---</span></span>
+<span id="cb11-31"><a href="#cb11-31" tabindex="-1"></a><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
 <span id="cb11-32"><a href="#cb11-32" tabindex="-1"></a><span class="co">#&gt; So the current temperature in Enschede is 22.7 degrees Celsius.</span></span>
-<span id="cb11-33"><a href="#cb11-33" tabindex="-1"></a><span class="co">#&gt; --- Sending message to LLM-provider: ---</span></span>
+<span id="cb11-33"><a href="#cb11-33" tabindex="-1"></a><span class="co">#&gt; --- Sending request to LLM provider (llama3.1:8b): ---</span></span>
 <span id="cb11-34"><a href="#cb11-34" tabindex="-1"></a><span class="co">#&gt; You must answer with only an integer (use no other characters).</span></span>
-<span id="cb11-35"><a href="#cb11-35" tabindex="-1"></a><span class="co">#&gt; --- Received response from LLM-provider: ---</span></span>
+<span id="cb11-35"><a href="#cb11-35" tabindex="-1"></a><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
 <span id="cb11-36"><a href="#cb11-36" tabindex="-1"></a><span class="co">#&gt; 22</span></span>
 <span id="cb11-37"><a href="#cb11-37" tabindex="-1"></a><span class="co">#&gt; [1] 22</span></span></code></pre></div>
 </div>
