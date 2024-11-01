@@ -18,14 +18,17 @@ paste0(
   send_prompt()
 
 plot <- paste0(
-  "Using ggplot2, create a scatter plot of miles per gallon (mpg) versus",
+  "Create a scatter plot of miles per gallon (mpg) versus",
   " horsepower (hp) for the cars in the mtcars dataset.",
-  " Use different colors to represent the number of cylinders (cyl)."
+  " Use different colors to represent the number of cylinders (cyl).",
+  " Be very creative and make the plot look nice but also a little crazy!",
+  " Add some humourous annotations which a 5-year old would laugh about."
 ) |>
   answer_as_code(
-    pkgs_to_use = c("ggplot2"), evaluate_code = FALSE, send_back_output = FALSE
+    pkgs_to_use = c("ggplot2"), evaluate_code = FALSE
   ) |>
   answer_by_chain_of_thought(extract_from_finish_brackets = FALSE) |>
-  send_prompt() |>
+  send_prompt(llm_provider_openai()) |>
   eval()
 plot
+

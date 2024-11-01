@@ -73,26 +73,24 @@ answer_as_code <- function(
 ) {
   prompt <- tidyprompt(prompt)
 
-  if (evaluate_code & !requireNamespace("callr", quietly = TRUE)) {
+  # Validate settings
+  if (evaluate_code & !requireNamespace("callr", quietly = TRUE))
     stop("The 'callr' package is required to evaluate R code.")
-  }
+  if (!evaluate_code)
+    evaluation_session <- NULL
+  if (!evaluate_code & send_back_output)
+    send_back_output <- FALSE
 
-  if (!evaluate_code & !is.null(evaluation_session)) {
-    stop("evaluation_session must be NULL if evaluate_code is FALSE")
-  }
-  if (is.null(evaluation_session) & evaluate_code) {
-    evaluation_session <- callr::r_session$new()
-  }
-  if (evaluate_code & !inherits(evaluation_session, "r_session")) {
-    stop(paste0(
-      "evaluation_session must be an r_session object if evaluate_code is TRUE"
-    ))
-  }
-  if (!evaluate_code & send_back_output) {
-    stop("send_back_output must be FALSE if evaluate_code is FALSE")
-  }
-
+  # Validate evaluation_session & load packages
   if (evaluate_code) {
+    if (is.null(evaluation_session)) {
+      evaluation_session <- callr::r_session$new() # Make new r_session
+    } else if (!inherits(evaluation_session, "r_session")) {
+      stop(paste0(
+        "evaluation_session must be an r_session object"
+      ))
+    }
+
     loaded_pkgs <- evaluation_session$run(function(pkgs_to_use) {
       for (pkg_name in pkgs_to_use) {
         library(pkg_name, character.only = TRUE)
@@ -105,6 +103,8 @@ answer_as_code <- function(
     loaded_pkgs <- pkgs_to_use
   }
 
+  # Define modify_fn which will add information about the setting
+  #   in which R code can be generated
   modify_fn <- function(original_prompt_text) {
     new_text <- glue::glue(
       "{original_prompt_text}\n\n",
@@ -164,6 +164,8 @@ answer_as_code <- function(
     return(new_text)
   }
 
+  # Define extraction_fn which will extract R code from the response
+  #   and handle it according to the settings of this function
   extraction_fn <- function(x) {
     extracted_code <- extract_r_code_from_string(x)
 
@@ -221,6 +223,7 @@ answer_as_code <- function(
     return(output$stdout)
   }
 
+  # If we are sending back output, we can consider this wrapper a tool
   type <- "unspecified"
   if (send_back_output) {
     type <- "tool"
