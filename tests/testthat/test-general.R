@@ -41,7 +41,11 @@ testthat::test_that("send prompt with validation & extraction added", {
     answer_as_integer() |>
     send_prompt(llm_provider_fake())
 
-  testthat::expect_true(is.integer(result))
+  is_whole_number <- function(x) {
+    is.numeric(x) && x == floor(x)
+  }
+
+  testthat::expect_true(is_whole_number(result))
   testthat::expect_length(result, 1)
 })
 
@@ -51,7 +55,11 @@ testthat::test_that("send prompt with mode added", {
     answer_as_integer() |>
     send_prompt(llm_provider_fake())
 
-  testthat::expect_true(is.integer(result))
+  is_whole_number <- function(x) {
+    is.numeric(x) && x == floor(x)
+  }
+
+  testthat::expect_true(is_whole_number(result))
   testthat::expect_length(result, 1)
 })
 
@@ -95,6 +103,10 @@ testthat::test_that("send prompt with tool added", {
     add_tools(temperature_in_location) |>
     send_prompt(llm_provider_fake())
 
-  testthat::expect_true(is.integer(result))
+  is_whole_number <- function(x) {
+    is.numeric(x) && x == floor(x)
+  }
+
+  testthat::expect_true(is_whole_number(result))
   testthat::expect_length(result, 1)
 })

@@ -32,10 +32,11 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' "Hi, what is 5 * 23?" |>
-#'   answer_as_code() |>
-#'   answer_as_integer() |>
-#'   send_prompt()
+#' "Hi, what is 24314*24433?" |>
+#'  answer_as_code() |>
+#'  answer_as_integer() |>
+#'  answer_by_chain_of_thought() |>
+#'  send_prompt()
 #' }
 answer_as_code <- function(
     prompt,
@@ -49,7 +50,7 @@ answer_as_code <- function(
 ) {
   prompt <- tidyprompt(prompt)
 
-  if (evaluate_code & requireNamespace("callr", quietly = TRUE)) {
+  if (evaluate_code & !requireNamespace("callr", quietly = TRUE)) {
     stop("The 'callr' package is required to evaluate R code.")
   }
 

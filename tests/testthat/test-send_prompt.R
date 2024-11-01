@@ -6,6 +6,10 @@ test_that("extraction and validation works", {
     answer_as_integer() |>
     send_prompt(fake_llm, verbose = TRUE)
 
-  expect_true(is.integer(response))
+  is_whole_number <- function(x) {
+    is.numeric(x) && x == floor(x)
+  }
+
+  expect_true(is_whole_number(response))
   expect_equal(response, 4)
 })

@@ -39,7 +39,7 @@ answer_as_integer <- function(
   }
 
   extraction_fn <- function(x) {
-    extracted <- suppressWarnings(as.integer(x))
+    extracted <- suppressWarnings(as.numeric(x))
     if (is.na(extracted)) {
       return(create_llm_feedback(instruction))
     }
@@ -47,6 +47,10 @@ answer_as_integer <- function(
   }
 
   validation_fn <- function(x) {
+    if (x != floor(x)) { # Not a whole number
+      return(create_llm_feedback(instruction))
+    }
+
     if (!is.null(min) && x < min) {
       return(create_llm_feedback(glue::glue(
         "The number should be greater than or equal to {min}."
