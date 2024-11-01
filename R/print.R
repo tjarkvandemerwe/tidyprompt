@@ -67,7 +67,7 @@ print.tidyprompt <- function(x, ...) {
     full_text <- x |> construct_prompt_text()
     formatted_text <- format_with_prefix(full_text, line_prefix)
     cat(formatted_text, "\n")
-    cat(crayon::silver("\nUse <prompt>$prompt_wraps to show the wrapper functions.\n"))
+    cat(crayon::silver("Use <prompt>$prompt_wraps to show the wrapper functions.\n"))
   }
 
   cat(crayon::silver("Use <prompt>$base_prompt to show the base prompt.\n"))
