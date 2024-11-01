@@ -147,6 +147,8 @@ answer_as_code <- function(
         " answer the prompt."
       )
     }
+
+    return(new_text)
   }
 
   extraction_fn <- function(x) {
