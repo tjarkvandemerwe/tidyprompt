@@ -1,10 +1,10 @@
 test_that("create prompt", {
-  prompt <- "Hi" |> prompt()
-  expect_s3_class(prompt, "prompt")
+  prompt <- "Hi" |> tidyprompt()
+  expect_s3_class(prompt, "tidyprompt")
 })
 
 test_that("construct simple prompt text", {
-  prompt <- "Hi" |> prompt()
+  prompt <- "Hi" |> tidyprompt()
   expect_equal(construct_prompt_text(prompt), "Hi")
 })
 
