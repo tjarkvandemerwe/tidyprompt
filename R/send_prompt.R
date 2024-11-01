@@ -88,26 +88,7 @@ send_prompt <- function(
     ))
 
     if (clean_chat_history) {
-      # Keep only first and last message from user;
-      # keep only last message from assistant;
-      # keep all messages from system;
-      # keep all tool_result messages
-      user_rows <- which(chat_history$role == "user")
-      assistant_rows <- which(chat_history$role == "assistant")
-      system_rows <- which(chat_history$role == "system")
-      tool_result_rows <- which(chat_history$tool_result)
-
-      keep_rows <- c(
-        system_rows,
-        user_rows[c(1, length(user_rows))],
-        tail(assistant_rows, 1),
-        tool_result_rows
-      )
-
-      # Subset the dataframe with these rows
-      cleaned_chat_history <- chat_history[sort(unique(keep_rows)), ]
-      # (sort(unique()) is used to ensure that the rows are in order)
-
+      cleaned_chat_history <- clean_chat_history(chat_history)
       completion <- llm_provider$complete_chat(cleaned_chat_history)
     } else {
       completion <- llm_provider$complete_chat(chat_history)
@@ -121,6 +102,31 @@ send_prompt <- function(
       http_list[[length(http_list) + 1]] <<- completion$http
 
     return(invisible(completion$content))
+  }
+
+  # Create internal function which cleans the chat_history
+  clean_chat_history <- function(chat_history) {
+    # Keep only first and last message from user;
+    # keep only last message from assistant;
+    # keep all messages from system;
+    # keep all tool_result messages
+    user_rows <- which(chat_history$role == "user")
+    assistant_rows <- which(chat_history$role == "assistant")
+    system_rows <- which(chat_history$role == "system")
+    tool_result_rows <- which(chat_history$tool_result)
+
+    keep_rows <- c(
+      system_rows,
+      user_rows[c(1, length(user_rows))],
+      tail(assistant_rows, 1),
+      tool_result_rows
+    )
+
+    # Subset the dataframe with these rows
+    cleaned_chat_history <- chat_history[sort(unique(keep_rows)), ]
+    # (sort(unique()) is used to ensure that the rows are in order)
+
+    return(cleaned_chat_history)
   }
 
 
@@ -221,6 +227,7 @@ send_prompt <- function(
     }
 
     return_list$chat_history <- chat_history
+    return_list$chat_history_clean <- clean_chat_history(chat_history)
 
     return_list$start_time <- start_time
     return_list$end_time <- Sys.time()
