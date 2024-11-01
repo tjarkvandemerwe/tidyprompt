@@ -143,7 +143,8 @@ answer_as_code <- function(
         "{new_text}\n",
         "The console output of your R code will be sent back to you.",
         " With the console output, decide if you can answer the prompt or if",
-        " you need to modify your R code."
+        " you need to modify your R code. If you can answer the prompt,",
+        " do not provide R code."
       )
     }
   }
