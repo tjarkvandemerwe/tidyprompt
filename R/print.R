@@ -62,8 +62,15 @@ print.tidyprompt <- function(x, ...) {
     cat(formatted_text, "\n")
   }
 
-  if (n_wraps > 0) {
+  if (n_wraps == 1) {
+    cat(crayon::silver(paste("The base prompt is modified by a wrapper function, resulting in:\n")))
+  }
+
+  if (n_wraps > 1) {
     cat(crayon::silver(paste("The base prompt is modified by", n_wraps, "wrapper functions, resulting in:\n")))
+  }
+
+  if (n_wraps > 0) {
     full_text <- x |> construct_prompt_text()
     formatted_text <- format_with_prefix(full_text, line_prefix)
     cat(formatted_text, "\n")
