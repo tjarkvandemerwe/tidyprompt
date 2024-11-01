@@ -35,7 +35,7 @@ prompt_wrap <- function(
 #'
 #' @return A tidyprompt object with the new prompt wrap appended to it.
 #' @export
-#' @exportS3Method prompt_wrap prompt
+#' @exportS3Method prompt_wrap tidyprompt
 prompt_wrap.tidyprompt <- function(prompt, ...) {
   prompt_wrap_internal(prompt, ...)
 }
