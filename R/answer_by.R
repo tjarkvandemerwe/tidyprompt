@@ -1,10 +1,10 @@
 #' Set chain of thought mode for a prompt
 #'
-#' @param prompt A prompt object or a single string
+#' @param prompt A tidyprompt object or a single string
 #' @param extract_from_finish_brackets A logical indicating whether the final answer
 #' should be extracted from the text inside the "FINISH[...]" brackets.
 #'
-#' @return A prompt with the chain-of-thought mode added.
+#' @return A tidyprompt with the chain-of-thought prompt_wrap added.
 #' @export
 answer_by_chain_of_thought <- function(
     prompt,
