@@ -47,6 +47,20 @@
 #'   answer_as_code(pkgs_to_use = c("dplyr")) |>
 #'   answer_by_chain_of_thought() |>
 #'   send_prompt()
+#'
+#'  plot <- paste0(
+#'    "Using ggplot2, create a scatter plot of miles per gallon (mpg) versus",
+#'    "Using ggplot2, create a scatter plot of miles per gallon (mpg) versus",
+#'    " horsepower (hp) for the cars in the mtcars dataset.",
+#'    " Use different colors to represent the number of cylinders (cyl)."
+#'  ) |>
+#'    answer_as_code(
+#'      pkgs_to_use = c("ggplot2"), evaluate_code = FALSE, send_back_output = FALSE
+#'    ) |>
+#'    answer_by_chain_of_thought(extract_from_finish_brackets = FALSE) |>
+#'    send_prompt() |>
+#'    eval()
+#'  plot
 #' }
 answer_as_code <- function(
     prompt,
