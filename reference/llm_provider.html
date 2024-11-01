@@ -183,7 +183,11 @@ but it can also be called directly.</p><div class="section">
 <div class="section">
 <h4 id="returns-2">Returns<a class="anchor" aria-label="anchor" href="#returns-2"></a></h4>
 <p>The response from the LLM provider, in a named list
-with 'role' and 'content'</p>
+with 'role', 'content', and 'http'. The 'role' and 'content'
+fields (required) contain the extracted role and content from the response
+(e.g., 'assistant' and 'Hello, how can I help you?'). The 'http'
+field (optional) may contain any additional information, e.g.,
+data from the HTTP response about the number of tokens used.</p>
 </div>
 
 </div><p></p><hr><a id="method-llm_provider-clone"></a><div class="section">
