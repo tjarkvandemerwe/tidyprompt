@@ -50,11 +50,6 @@ remotes::install_github("tjarkvandemerwe/tidyprompt")
 
 ``` r
 library(tidyprompt)
-#> 
-#> Attaching package: 'tidyprompt'
-#> The following object is masked from 'package:utils':
-#> 
-#>     prompt
 ```
 
 ### Setup an LLM provider
@@ -133,12 +128,11 @@ LLM provider.
 ``` r
   "Hi there!" |>
     add_text("What is a large language model? Explain in 10 words.")
-#> <prompt>
-#> The base prompt is modified by 1 wrapper functions, resulting in:
+#> <tidyprompt>
+#> The base prompt is modified by a wrapper function, resulting in:
 #> > Hi there!
 #> > 
 #> > What is a large language model? Explain in 10 words. 
-#> 
 #> Use <prompt>$prompt_wraps to show the wrapper functions.
 #> Use <prompt>$base_prompt to show the base prompt.
 ```
