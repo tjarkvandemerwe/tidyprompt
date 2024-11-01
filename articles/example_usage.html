@@ -65,12 +65,7 @@
     
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/tjarkvandemerwe/tidyprompt" class="external-link">tidyprompt</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'tidyprompt'</span></span>
-<span><span class="co">#&gt; The following object is masked from 'package:utils':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     prompt</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/tjarkvandemerwe/tidyprompt" class="external-link">tidyprompt</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="setup-an-llm-provider">Setup an LLM provider<a class="anchor" aria-label="anchor" href="#setup-an-llm-provider"></a>
 </h3>
@@ -138,13 +133,12 @@ an LLM provider.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  <span class="st">"Hi there!"</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/add_text.html">add_text</a></span><span class="op">(</span><span class="st">"What is a large language model? Explain in 10 words."</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #0000BB;">&lt;prompt&gt;</span></span></span>
-<span><span class="co"><span style="color: #0000BB;">#&gt; </span><span style="color: #555555;">The base prompt is modified by 1 wrapper functions, resulting in:</span></span></span>
+<span><span class="co">#&gt; <span style="color: #0000BB;">&lt;tidyprompt&gt;</span></span></span>
+<span><span class="co"><span style="color: #0000BB;">#&gt; </span><span style="color: #555555;">The base prompt is modified by a wrapper function, resulting in:</span></span></span>
 <span><span class="co"><span style="color: #555555;">#&gt; </span><span style="color: #00BB00;">&gt; </span>Hi there!</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">&gt; </span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">&gt; </span>What is a large language model? Explain in 10 words. </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co"><span style="color: #555555;">#&gt; Use &lt;prompt&gt;$prompt_wraps to show the wrapper functions.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #555555;">Use &lt;prompt&gt;$prompt_wraps to show the wrapper functions.</span></span></span>
 <span><span class="co"><span style="color: #555555;">#&gt; Use &lt;prompt&gt;$base_prompt to show the base prompt.</span></span></span>
 <span><span class="co"><span style="color: #555555;">#&gt; </span></span></span></code></pre></div>
 </div>

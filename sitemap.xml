@@ -21,7 +21,7 @@
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/get_prompt_wraps.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/get_prompt_wraps_ordered.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/index.html</loc></url>
-<url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/is_prompt.html</loc></url>
+<url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/is_tidyprompt.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/llm_provider.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/llm_provider_fake.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/llm_provider_google_gemini.html</loc></url>
@@ -32,18 +32,18 @@
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/llm_provider_openrouter.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/llm_provider_xai.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/make_llm_provider_request.html</loc></url>
-<url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/print.prompt.html</loc></url>
-<url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/prompt.character.html</loc></url>
-<url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/prompt.default.html</loc></url>
-<url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/prompt.html</loc></url>
-<url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/prompt.prompt.html</loc></url>
+<url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/print.tidyprompt.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/prompt_wrap.default.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/prompt_wrap.html</loc></url>
-<url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/prompt_wrap.prompt.html</loc></url>
+<url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/prompt_wrap.tidyprompt.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/prompt_wrap_internal.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/send_prompt.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/set_system_prompt.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/tidyprompt-package.html</loc></url>
-<url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/validate_prompt.html</loc></url>
+<url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/tidyprompt.character.html</loc></url>
+<url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/tidyprompt.default.html</loc></url>
+<url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/tidyprompt.html</loc></url>
+<url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/tidyprompt.tidyprompt.html</loc></url>
+<url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/validate_tidyprompt.html</loc></url>
 </urlset>
 
