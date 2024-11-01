@@ -90,7 +90,11 @@ llm_provider <- R6::R6Class(
     #' @param chat_history A data frame with 'role' and 'content' columns
     #'
     #' @return The response from the LLM provider, in a named list
-    #' with 'role' and 'content'
+    #' with 'role', 'content', and 'http'. The 'role' and 'content'
+    #' fields (required) contain the extracted role and content from the response
+    #' (e.g., 'assistant' and 'Hello, how can I help you?'). The 'http'
+    #' field (optional) may contain any additional information, e.g.,
+    #' data from the HTTP response about the number of tokens used.
     complete_chat = function(chat_history) {
       chat_history <- chat_history(chat_history)
       if (self$verbose) {
@@ -107,6 +111,20 @@ llm_provider <- R6::R6Class(
 
       environment(private$complete_chat_function) <- environment()
       response <- private$complete_chat_function(chat_history)
+
+      # Check that response is valid
+      if (!is.list(response) || !all(c("role", "content") %in% names(response))) {
+        stop("The response from the LLM provider must be a list with 'role' and 'content' fields.")
+      }
+      # Check that 'role' and 'content' are character
+      if (!all(sapply(response[c("role", "content")], is.character))) {
+        stop("The 'role' and 'content' fields in the response must be of type character.")
+      }
+      # Check that there are no other fields in the response
+      #   (only allowed: 'role', 'content', and 'response')
+      if (length(setdiff(names(response), c("role", "content", "http"))) > 0) {
+        stop("The response from the LLM provider must contain only 'role', 'content', and 'http' fields.")
+      }
 
       if (
         self$verbose
@@ -234,7 +252,8 @@ make_llm_provider_request <- function(
 
   return(list(
     role = role,
-    content = message
+    content = message,
+    http = response
   ))
 }
 

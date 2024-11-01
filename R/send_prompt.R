@@ -54,6 +54,8 @@ send_prompt <- function(
   return_mode <- match.arg(return_mode)
   if (return_mode == "full")
     start_time <- Sys.time()
+  if (return_mode == "full")
+    http_list <- list()
 
 
   ## 2 Retrieve prompt evaluation settings
@@ -104,6 +106,8 @@ send_prompt <- function(
       completion <- llm_provider$complete_chat(chat_history)
     }
     chat_history <<- rbind(chat_history, create_chat_df(completion$role, completion$content))
+    if (return_mode == "full")
+      http_list[[length(http_list) + 1]] <<- completion$http
 
     return(invisible(completion$content))
   }
@@ -206,6 +210,8 @@ send_prompt <- function(
       as.numeric(difftime(
         return_list$end_time, return_list$start_time, units = "secs"
       ))
+
+    return_list$http_list <- http_list
 
     return(return_list)
   }

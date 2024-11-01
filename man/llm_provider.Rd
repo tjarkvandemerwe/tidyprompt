@@ -126,7 +126,11 @@ but it can also be called directly.
 }
 \subsection{Returns}{
 The response from the LLM provider, in a named list
-with 'role' and 'content'
+with 'role', 'content', and 'http'. The 'role' and 'content'
+fields (required) contain the extracted role and content from the response
+(e.g., 'assistant' and 'Hello, how can I help you?'). The 'http'
+field (optional) may contain any additional information, e.g.,
+data from the HTTP response about the number of tokens used.
 }
 }
 \if{html}{\out{<hr>}}
