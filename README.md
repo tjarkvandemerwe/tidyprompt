@@ -133,8 +133,9 @@ LLM provider.
 #> > Hi there!
 #> > 
 #> > What is a large language model? Explain in 10 words. 
-#> Use <prompt>$prompt_wraps to show the wrapper functions.
-#> Use <prompt>$base_prompt to show the base prompt.
+#> Use '<tidyprompt>$prompt_wraps' to show the wrapper functions.
+#> Use '<tidyprompt>$base_prompt' to show the base prompt text.
+#> Use '<tidyprompt> |> construct_prompt_text()' to show the full prompt text.
 ```
 
 ### Retrieving output in a specific format
