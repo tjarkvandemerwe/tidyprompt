@@ -71,7 +71,8 @@ use this function with caution.</p>
 <span>  evaluation_session <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  list_packages <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  list_objects <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  send_back_output <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  output_as_tool <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  return_mode <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"full"</span>, <span class="st">"code"</span>, <span class="st">"console"</span>, <span class="st">"object"</span>, <span class="st">"llm_answer"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -90,35 +91,54 @@ informing the LLM that they must code in R to answer the prompt.</p></dd>
 
 <dt id="arg-pkgs-to-use">pkgs_to_use<a class="anchor" aria-label="anchor" href="#arg-pkgs-to-use"></a></dt>
 <dd><p>A character vector of package names that may be used
-in the R code that the LLM will generate</p></dd>
+in the R code that the LLM will generate. If evaluating the R code, these
+will be pre-loaded in the R session.</p></dd>
 
 
 <dt id="arg-evaluate-code">evaluate_code<a class="anchor" aria-label="anchor" href="#arg-evaluate-code"></a></dt>
 <dd><p>Logical indicating whether the R code should be
-evaluated. If TRUE, the R code will be evaluated in an R session.</p></dd>
+evaluated. If TRUE, the R code will be evaluated in a new R session (
+using the 'callr' package).</p></dd>
 
 
 <dt id="arg-evaluation-session">evaluation_session<a class="anchor" aria-label="anchor" href="#arg-evaluation-session"></a></dt>
-<dd><p>An r_session object (from the callr package) to
-evaluate the R code. If NULL, a new r_session object will be created.</p></dd>
+<dd><p>A pre-existing r_session object (from the 'callr' package)
+to evaluate the R code (e.g., with certain objects loaded). If NULL, a
+new r_session object will be created.</p></dd>
 
 
 <dt id="arg-list-packages">list_packages<a class="anchor" aria-label="anchor" href="#arg-list-packages"></a></dt>
 <dd><p>Logical indicating whether the LLM should be informed
-about the packages that may be used in the R code</p></dd>
+about the packages that may be used in the R code (if TRUE, a list of the
+loaded packages will be shown in the initial prompt)</p></dd>
 
 
 <dt id="arg-list-objects">list_objects<a class="anchor" aria-label="anchor" href="#arg-list-objects"></a></dt>
 <dd><p>Logical indicating whether the LLM should be informed
-about the objects that already exist in the R session, including their types</p></dd>
+about the objects that already exist in the R session (if TRUE, a list of the objects
+plus their types will be shown in the initial prompt)</p></dd>
 
 
-<dt id="arg-send-back-output">send_back_output<a class="anchor" aria-label="anchor" href="#arg-send-back-output"></a></dt>
+<dt id="arg-output-as-tool">output_as_tool<a class="anchor" aria-label="anchor" href="#arg-output-as-tool"></a></dt>
 <dd><p>Logical indicating whether the console output of the
-evaluated R code should be sent back to the LLM. If so, the LLM can decide
-if they can answer the prompt or if they need to modify their R code. Once
-the LLM does not provide new R code (i.e., the prompt is being answered)
-the extraction of this prompt wrap will end</p></dd>
+evaluated R code should be sent back to the LLM, meaning the LLM will use
+R code as a tool to formulate an answer to the prompt. If TRUE, the LLM
+can decide if they can answer the prompt with the output, or if they need to modify
+their R code. Once the LLM does not provide new R code (i.e., the prompt is being answered)
+this prompt wrap will end (it will continue for as long as the LLM provides R code).</p></dd>
+
+
+<dt id="arg-return-mode">return_mode<a class="anchor" aria-label="anchor" href="#arg-return-mode"></a></dt>
+<dd><p>Character string indicating the return mode. One of
+'full', 'code', 'console', 'object', or 'llm_answer'. If 'full', the function
+will return a list with the original LLM answer, the extracted R code, and
+(if evaluated) the output of the R code. If 'code', the function will return
+the extracted R code. If 'console', the function will return the console output
+of the evaluated R code. If 'object', the function will return the object
+produced by the evaluated R code. If 'llm_answer', the function will return
+only the original LLM answer. When choosing 'console' or 'object', an
+additional instruction will be added to the prompt text to inform the LLM
+about the expected output of the R code.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -126,40 +146,6 @@ the extraction of this prompt wrap will end</p></dd>
     <p>A tidyprompt object with the new prompt wrap added to it</p>
     </div>
 
-    <div class="section level2">
-    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="st">"Hi, what is 24314*24433?"</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span> <span class="fu">answer_as_code</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span> <span class="fu"><a href="answer_as_integer.html">answer_as_integer</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span> <span class="fu"><a href="answer_by_chain_of_thought.html">answer_by_chain_of_thought</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span> <span class="fu"><a href="send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span> <span class="st">"Using the built-in airquality dataset in R,"</span>,</span></span>
-<span class="r-in"><span> <span class="st">" calculate the average Ozone level for days in May with temperatures"</span>,</span></span>
-<span class="r-in"><span> <span class="st">" above 80°F."</span></span></span>
-<span class="r-in"><span> <span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="answer_as_integer.html">answer_as_integer</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu">answer_as_code</span><span class="op">(</span>pkgs_to_use <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"dplyr"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="answer_by_chain_of_thought.html">answer_by_chain_of_thought</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span> <span class="va">plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>   <span class="st">"Using ggplot2, create a scatter plot of miles per gallon (mpg) versus"</span>,</span></span>
-<span class="r-in"><span>   <span class="st">" horsepower (hp) for the cars in the mtcars dataset."</span>,</span></span>
-<span class="r-in"><span>   <span class="st">" Use different colors to represent the number of cylinders (cyl)."</span></span></span>
-<span class="r-in"><span> <span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>   <span class="fu">answer_as_code</span><span class="op">(</span></span></span>
-<span class="r-in"><span>     pkgs_to_use <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ggplot2"</span><span class="op">)</span>, evaluate_code <span class="op">=</span> <span class="cn">FALSE</span>, send_back_output <span class="op">=</span> <span class="cn">FALSE</span></span></span>
-<span class="r-in"><span>   <span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>   <span class="fu"><a href="answer_by_chain_of_thought.html">answer_by_chain_of_thought</a></span><span class="op">(</span>extract_from_finish_brackets <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>   <span class="fu"><a href="send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>   <span class="fu"><a href="https://rdrr.io/r/base/eval.html" class="external-link">eval</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span> <span class="va">plot</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
-</code></pre></div>
-    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 
