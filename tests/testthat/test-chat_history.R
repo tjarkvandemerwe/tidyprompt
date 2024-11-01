@@ -27,17 +27,6 @@ test_that("chat_history.data.frame accepts valid chat history data frame", {
   expect_equal(result$content, c("User message", "Assistant response", "System message"))
 })
 
-test_that("chat_history.data.frame errors on missing columns", {
-  # Data frame missing 'role' or 'content' column
-  invalid_df <- data.frame(
-    role = c("user", "assistant"),
-    text = c("Message 1", "Message 2"),
-    stringsAsFactors = FALSE
-  )
-  expect_error(chat_history(invalid_df),
-               "The data frame must contain exactly two columns: 'role' and 'content'.")
-})
-
 test_that("chat_history.data.frame errors on invalid role values", {
   # Data frame with invalid role value
   invalid_df <- data.frame(

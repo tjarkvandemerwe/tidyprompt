@@ -67,8 +67,10 @@ send_prompt <- function(
 
   ## 3 Chat_history & send_chat
 
-  create_chat_df <- function(role = character(), content = character()) {
-    data.frame(role = role, content = content)
+  create_chat_df <- function(
+    role = character(), content = character(), tool_result = logical()
+  ) {
+    data.frame(role = role, content = content, tool_result = tool_result)
   }
 
   # Create internal chat_history for this prompt
@@ -76,25 +78,30 @@ send_prompt <- function(
 
   # Add system prompt
   if (!is.null(prompt$system_prompt))
-    chat_history <- create_chat_df("system", prompt$system_prompt)
+    chat_history <- create_chat_df("system", prompt$system_prompt, FALSE)
 
   # Create internal function to send_chat to the given LLM-provider
-  send_chat <- function(message, role = "user") {
+  send_chat <- function(message, role = "user", tool_result = FALSE) {
     message <- as.character(message)
-    chat_history <<- rbind(chat_history, create_chat_df(role, message))
+    chat_history <<- rbind(chat_history, create_chat_df(
+      role, message, tool_result
+    ))
 
     if (clean_chat_history) {
       # Keep only first and last message from user;
       # keep only last message from assistant;
-      # keep all messages from system
+      # keep all messages from system;
+      # keep all tool_result messages
       user_rows <- which(chat_history$role == "user")
       assistant_rows <- which(chat_history$role == "assistant")
       system_rows <- which(chat_history$role == "system")
+      tool_result_rows <- which(chat_history$tool_result)
 
       keep_rows <- c(
         system_rows,
         user_rows[c(1, length(user_rows))],
-        tail(assistant_rows, 1)
+        tail(assistant_rows, 1),
+        tool_result_rows
       )
 
       # Subset the dataframe with these rows
@@ -105,7 +112,11 @@ send_prompt <- function(
     } else {
       completion <- llm_provider$complete_chat(chat_history)
     }
-    chat_history <<- rbind(chat_history, create_chat_df(completion$role, completion$content))
+
+    chat_history <<- rbind(chat_history, create_chat_df(
+      completion$role, completion$content, FALSE
+    ))
+
     if (return_mode == "full")
       http_list[[length(http_list) + 1]] <<- completion$http
 
@@ -138,21 +149,28 @@ send_prompt <- function(
       if (!is.null(prompt_wrap$extraction_fn)) {
         extraction_function <- prompt_wrap$extraction_fn
 
-        # If extraction function has attribute 'tool_functions':
-        tool_called <- FALSE
-
-        if (!is.null(attr(extraction_function, "tool_functions"))) {
-          tool_functions <- attr(extraction_function, "tool_functions")
-          extraction_result <- extraction_function(response, tool_functions)
-          tool_called <- TRUE
-        } else {
-          extraction_result <- extraction_function(response)
+        # Set the environment of the extraction function, if an
+        #   environment was given as attribute. At the moment, this is used
+        #   for passing 'tool_functions' from add_tools() to execution here
+        if (!is.null(attr(extraction_function, "environment"))) {
+          environment <- attr(extraction_function, "environment")
+          environment(extraction_function) <- environment
         }
+        extraction_result <- extraction_function(response)
 
-        # If it inherits llm_feedback, send the feedback to the LLM & get new response
-        if (inherits(extraction_result, "llm_feedback")) {
-          if (tool_called) role <- "system"
-          response <- send_chat(extraction_result, role)
+        # If it inherits llm_feedback,
+        #   send the feedback to the LLM & get new response
+        if (
+          inherits(extraction_result, "llm_feedback")
+          || inherits(extraction_result, "llm_feedback_tool_result")
+        ) {
+          if (inherits(extraction_result, "llm_feedback_tool_result")) {
+            # This ensures tool results are not filtered out when cleaning
+            #   the context window in send_prompt()
+            response <- send_chat(extraction_result, role, tool_result = TRUE)
+          } else {
+            response <- send_chat(extraction_result, role, tool_result = FALSE)
+          }
           any_prompt_wrap_not_done <- TRUE; break
         }
 

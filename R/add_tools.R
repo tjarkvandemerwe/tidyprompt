@@ -192,7 +192,7 @@ add_tools <- function(prompt, tool_functions = list()) {
     return(new_prompt)
   }
 
-  extraction_fn <- function(llm_response, tool_functions) {
+  extraction_fn <- function(llm_response) {
     # Check if the response contains a function call
     function_call <- stringr::str_match(llm_response, "FUNCTION\\[(.*?)\\]\\((.*?)\\)")
 
@@ -236,10 +236,15 @@ add_tools <- function(prompt, tool_functions = list()) {
     )
 
     # Return the result (or the error feedback)
-    return(create_llm_feedback(result_string))
+    return(create_llm_feedback(result_string, tool_result = TRUE))
   }
-  # Add tool_functions as an attribute to the extraction
-  attr(extraction_fn, "tool_functions") <- tool_functions
+  # Add environment with tool functions as an attribute to the extraction function
+  environment_with_tool_functions <- new.env()
+  environment_with_tool_functions$tool_functions <- tool_functions
+  attr(extraction_fn, "environment") <- environment_with_tool_functions
+
+  # # Add tool_functions as an attribute to the extraction
+  # attr(extraction_fn, "tool_functions") <- tool_functions
 
   prompt_wrap(prompt, modify_fn, extraction_fn, type = "tool")
 }

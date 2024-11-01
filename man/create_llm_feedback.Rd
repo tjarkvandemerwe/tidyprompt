@@ -4,11 +4,16 @@
 \alias{create_llm_feedback}
 \title{Create an llm feedback object}
 \usage{
-create_llm_feedback(text)
+create_llm_feedback(text, tool_result = FALSE)
 }
 \arguments{
 \item{text}{A character string containing the feedback text. This will
 be sent back to the LLM after not passing an extractor or validator function.}
+
+\item{tool_result}{A logical indicating whether the feedback is a tool result.
+If TRUE, it will be handled differently by send_prompt(), by presenting the
+text as a 'system' message. This ensures it will not be
+filtered out when cleaning the context window in send_prompt().}
 }
 \value{
 An object of class "llm_feedback" containing the feedback text.
