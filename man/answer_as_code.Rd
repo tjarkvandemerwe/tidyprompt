@@ -12,7 +12,8 @@ answer_as_code(
   evaluation_session = NULL,
   list_packages = TRUE,
   list_objects = TRUE,
-  send_back_output = TRUE
+  output_as_tool = TRUE,
+  return_mode = c("full", "code", "console", "object", "llm_answer")
 )
 }
 \arguments{
@@ -36,11 +37,13 @@ about the packages that may be used in the R code}
 \item{list_objects}{Logical indicating whether the LLM should be informed
 about the objects that already exist in the R session, including their types}
 
-\item{send_back_output}{Logical indicating whether the console output of the
-evaluated R code should be sent back to the LLM. If so, the LLM can decide
-if they can answer the prompt or if they need to modify their R code. Once
-the LLM does not provide new R code (i.e., the prompt is being answered)
-the extraction of this prompt wrap will end}
+\item{output_as_tool}{Logical indicating whether the console output of the
+evaluated R code should be sent back to the LLM, meaning the LLM will use
+R code as a tool to formulate an answer to the prompt.If so, the LLM
+can decide if they can answer the prompt or if they need to modify their R code.
+Once the LLM does not provide new R code (i.e., the prompt is being answered)
+this prompt wrap will end (but it will continue as long as the LLM
+provides R code).}
 }
 \value{
 A tidyprompt object with the new prompt wrap added to it
@@ -79,7 +82,7 @@ use this function with caution.
    " Use different colors to represent the number of cylinders (cyl)."
  ) |>
    answer_as_code(
-     pkgs_to_use = c("ggplot2"), evaluate_code = FALSE, send_back_output = FALSE
+     pkgs_to_use = c("ggplot2"), evaluate_code = FALSE, output_as_tool = FALSE
    ) |>
    answer_by_chain_of_thought(extract_from_finish_brackets = FALSE) |>
    send_prompt() |>

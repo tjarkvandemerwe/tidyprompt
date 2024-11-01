@@ -22,11 +22,13 @@
 #' about the packages that may be used in the R code
 #' @param list_objects Logical indicating whether the LLM should be informed
 #' about the objects that already exist in the R session, including their types
-#' @param send_back_output Logical indicating whether the console output of the
-#' evaluated R code should be sent back to the LLM. If so, the LLM can decide
-#' if they can answer the prompt or if they need to modify their R code. Once
-#' the LLM does not provide new R code (i.e., the prompt is being answered)
-#' the extraction of this prompt wrap will end
+#' @param output_as_tool Logical indicating whether the console output of the
+#' evaluated R code should be sent back to the LLM, meaning the LLM will use
+#' R code as a tool to formulate an answer to the prompt.If so, the LLM
+#' can decide if they can answer the prompt or if they need to modify their R code.
+#' Once the LLM does not provide new R code (i.e., the prompt is being answered)
+#' this prompt wrap will end (but it will continue as long as the LLM
+#' provides R code).
 #'
 #' @return A tidyprompt object with the new prompt wrap added to it
 #' @export
@@ -54,7 +56,7 @@
 #'    " Use different colors to represent the number of cylinders (cyl)."
 #'  ) |>
 #'    answer_as_code(
-#'      pkgs_to_use = c("ggplot2"), evaluate_code = FALSE, send_back_output = FALSE
+#'      pkgs_to_use = c("ggplot2"), evaluate_code = FALSE, output_as_tool = FALSE
 #'    ) |>
 #'    answer_by_chain_of_thought(extract_from_finish_brackets = FALSE) |>
 #'    send_prompt() |>
@@ -69,19 +71,27 @@ answer_as_code <- function(
     evaluation_session = NULL,
     list_packages = TRUE,
     list_objects = TRUE,
-    send_back_output = TRUE
+    output_as_tool = FALSE,
+    return_mode = c("full", "code", "console", "object", "llm_answer")
 ) {
   prompt <- tidyprompt(prompt)
 
-  # Validate settings
+  ## Validate settings
+
   if (evaluate_code & !requireNamespace("callr", quietly = TRUE))
     stop("The 'callr' package is required to evaluate R code.")
   if (!evaluate_code)
     evaluation_session <- NULL
-  if (!evaluate_code & send_back_output)
-    send_back_output <- FALSE
+  if (!evaluate_code & output_as_tool)
+    output_as_tool <- FALSE
+  if (output_as_tool)
+    return_mode <- "llm_answer"
 
-  # Validate evaluation_session & load packages
+  return_mode <- match.arg(return_mode)
+
+
+  ## Validate evaluation_session & load packages
+
   if (evaluate_code) {
     if (is.null(evaluation_session)) {
       evaluation_session <- callr::r_session$new() # Make new r_session
@@ -103,8 +113,10 @@ answer_as_code <- function(
     loaded_pkgs <- pkgs_to_use
   }
 
-  # Define modify_fn which will add information about the setting
-  #   in which R code can be generated
+
+  ## Define modify_fn which will add information about the setting
+  ##   in which R code can be generated
+
   modify_fn <- function(original_prompt_text) {
     new_text <- glue::glue(
       "{original_prompt_text}\n\n",
@@ -134,24 +146,30 @@ answer_as_code <- function(
           "Do not define these objects in your R code."
         )
 
-        if (send_back_output) {
+        if (output_as_tool) {
           new_text <- glue::glue(
             "{new_text}\n",
-            "If needed, you may first write R code to better understand ",
-            " these objects."
+            "If you need more information about these objects,",
+            " you can call R functions to describe them."
           )
         }
       }
     }
 
-    if (evaluate_code) {
+    if (evaluate_code & return_mode == "console") {
       new_text <- glue::glue(
         "{new_text}\n",
         "The R code should produce console output that answers the prompt."
       )
     }
+    if (evaluate_code & return_mode == "object") {
+      new_text <- glue::glue(
+        "{new_text}\n",
+        "The R code should produce an object that answers the prompt."
+      )
+    }
 
-    if (send_back_output) {
+    if (output_as_tool) {
       new_text <- glue::glue(
         "{new_text}\n",
         "The console output of your R code will be sent back to you.",
@@ -164,13 +182,18 @@ answer_as_code <- function(
     return(new_text)
   }
 
-  # Define extraction_fn which will extract R code from the response
-  #   and handle it according to the settings of this function
+
+  ## Define extraction_fn which will extract R code from the response
+  ##   and handle it according to the settings of this function
+
   extraction_fn <- function(x) {
+    return_list <- list()
+    return_list$llm_answer <- x
+
     extracted_code <- extract_r_code_from_string(x)
 
     if (length(extracted_code) == 0) {
-      if (send_back_output) {
+      if (output_as_tool) {
         return(x)
       }
 
@@ -189,12 +212,14 @@ answer_as_code <- function(
         "Please provide syntactically correct R code."
       )))
     }
+    return_list$code <- parsed_code
 
     if (!evaluate_code) {
       return(parsed_code)
     }
 
-    output <- evaluation_session$run_with_output(function(r_code) {
+    clone_session <- evaluation_session$clone() # Reset the session everytime
+    output <- clone_session$run_with_output(function(r_code) {
       eval(parse(text = r_code))
     }, args = list(parsed_code))
 
@@ -206,28 +231,62 @@ answer_as_code <- function(
       )))
     }
 
-    if (output$stdout == "") {
+    if (output$stdout == "" & return_mode == "console") {
       return(create_llm_feedback(glue::glue(
         "The R code did not produce any console output.",
         " Please provide R code that produces console output."
       )))
     }
 
-    if (send_back_output) {
+    return_list$output <- output
+
+    if (output_as_tool) {
       return(create_llm_feedback(glue::glue(
-        "R code executed. Console output:\n",
-        "    {output$stdout}"
-      )))
+        "--- R code: ---\n",
+        "{extracted_code |> paste(collapse = \"\\n\")}\n\n",
+        "--- Console output: ---\n",
+        "{
+          if (is.null(output$stdout) || output$stdout == \"\") {
+            \"No console output produced.\"
+          } else {
+            output$stdout
+          }
+        }\n\n",
+        "--- Last object: ---\n",
+        "{
+          if (is.null(output$result)) {
+            \"No object produced.\"
+          } else {
+            output$result |> print()
+          }
+        }"
+      ), tool_result = TRUE))
     }
+
+    if (return_mode == "full")
+      return(return_list)
+    if (return_mode == "code")
+      return(return_list$code)
+    if (return_mode == "console")
+      return(return_list$output$stdout)
+    if (return_mode == "object")
+      return(return_list$output$result)
+    if (return_mode == "llm_answer")
+      return(x)
 
     return(output$stdout)
   }
 
-  # If we are sending back output, we can consider this wrapper a tool
+
+  ## If we are sending back output, we can consider this wrapper a tool
+
   type <- "unspecified"
-  if (send_back_output) {
+  if (output_as_tool) {
     type <- "tool"
   }
+
+
+  ## Finally, wrap the prompt with the new prompt wrap
 
   prompt_wrap(prompt, modify_fn, extraction_fn, type = type)
 }
