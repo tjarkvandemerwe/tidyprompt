@@ -13,56 +13,39 @@
 #' @param add_text Character string which will be added to the prompt text,
 #' informing the LLM that they must code in R to answer the prompt.
 #' @param pkgs_to_use A character vector of package names that may be used
-#' in the R code that the LLM will generate
+#' in the R code that the LLM will generate. If evaluating the R code, these
+#' will be pre-loaded in the R session.
 #' @param evaluate_code Logical indicating whether the R code should be
-#' evaluated. If TRUE, the R code will be evaluated in an R session.
-#' @param evaluation_session An r_session object (from the callr package) to
-#' evaluate the R code. If NULL, a new r_session object will be created.
+#' evaluated. If TRUE, the R code will be evaluated in a new R session (
+#' using the 'callr' package).
+#' @param evaluation_session A pre-existing r_session object (from the 'callr' package)
+#' to evaluate the R code (e.g., with certain objects loaded). If NULL, a
+#' new r_session object will be created.
 #' @param list_packages Logical indicating whether the LLM should be informed
-#' about the packages that may be used in the R code
+#' about the packages that may be used in the R code (if TRUE, a list of the
+#' loaded packages will be shown in the initial prompt)
 #' @param list_objects Logical indicating whether the LLM should be informed
-#' about the objects that already exist in the R session, including their types
+#' about the objects that already exist in the R session (if TRUE, a list of the objects
+#' plus their types will be shown in the initial prompt)
 #' @param output_as_tool Logical indicating whether the console output of the
 #' evaluated R code should be sent back to the LLM, meaning the LLM will use
-#' R code as a tool to formulate an answer to the prompt.If so, the LLM
-#' can decide if they can answer the prompt or if they need to modify their R code.
-#' Once the LLM does not provide new R code (i.e., the prompt is being answered)
-#' this prompt wrap will end (but it will continue as long as the LLM
-#' provides R code).
+#' R code as a tool to formulate an answer to the prompt. If TRUE, the LLM
+#' can decide if they can answer the prompt with the output, or if they need to modify
+#' their R code. Once the LLM does not provide new R code (i.e., the prompt is being answered)
+#' this prompt wrap will end (it will continue for as long as the LLM provides R code).
+#' @param return_mode Character string indicating the return mode. One of
+#' 'full', 'code', 'console', 'object', or 'llm_answer'. If 'full', the function
+#' will return a list with the original LLM answer, the extracted R code, and
+#' (if evaluated) the output of the R code. If 'code', the function will return
+#' the extracted R code. If 'console', the function will return the console output
+#' of the evaluated R code. If 'object', the function will return the object
+#' produced by the evaluated R code. If 'llm_answer', the function will return
+#' only the original LLM answer. When choosing 'console' or 'object', an
+#' additional instruction will be added to the prompt text to inform the LLM
+#' about the expected output of the R code.
 #'
 #' @return A tidyprompt object with the new prompt wrap added to it
 #' @export
-#' @examples
-#' \dontrun{
-#' "Hi, what is 24314*24433?" |>
-#'  answer_as_code() |>
-#'  answer_as_integer() |>
-#'  answer_by_chain_of_thought() |>
-#'  send_prompt()
-#'
-#'  paste0(
-#'  "Using the built-in airquality dataset in R,",
-#'  " calculate the average Ozone level for days in May with temperatures",
-#'  " above 80°F."
-#'  ) |>
-#'   answer_as_integer() |>
-#'   answer_as_code(pkgs_to_use = c("dplyr")) |>
-#'   answer_by_chain_of_thought() |>
-#'   send_prompt()
-#'
-#'  plot <- paste0(
-#'    "Using ggplot2, create a scatter plot of miles per gallon (mpg) versus",
-#'    " horsepower (hp) for the cars in the mtcars dataset.",
-#'    " Use different colors to represent the number of cylinders (cyl)."
-#'  ) |>
-#'    answer_as_code(
-#'      pkgs_to_use = c("ggplot2"), evaluate_code = FALSE, output_as_tool = FALSE
-#'    ) |>
-#'    answer_by_chain_of_thought(extract_from_finish_brackets = FALSE) |>
-#'    send_prompt() |>
-#'    eval()
-#'  plot
-#' }
 answer_as_code <- function(
     prompt,
     add_text = "You must code in the programming language 'R' to answer this prompt.",
