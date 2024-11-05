@@ -1,7 +1,6 @@
 #' Make LLM answer as an integer (between min and max)
 #'
-#' @param prompt A single string, a tidyprompt object, or a list
-#' of prompt_wrap objects.
+#' @param prompt A character string or a tidyprompt object
 #' @param min (optional) Minimum value for the integer
 #' @param max (optional) Maximum value for the integer
 #' @param add_instruction_to_prompt (optional) Add instruction for replying

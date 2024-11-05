@@ -12,8 +12,7 @@ answer_as_integer(
 )
 }
 \arguments{
-\item{prompt}{A single string, a tidyprompt object, or a list
-of prompt_wrap objects.}
+\item{prompt}{A character string or a tidyprompt object}
 
 \item{min}{(optional) Minimum value for the integer}
 
