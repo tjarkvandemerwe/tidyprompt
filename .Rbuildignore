@@ -14,3 +14,5 @@ vignettes/example_usage_cache/*
 ^codecov\.yml$
 vignettes/cache/*
 vignettes/figure/*
+cache/*
+figure/*
