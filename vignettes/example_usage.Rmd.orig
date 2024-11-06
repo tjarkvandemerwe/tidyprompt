@@ -195,6 +195,9 @@ for validity, and optionally be evaluated in a dedicated R session (using the
 where the output of R code is returned to the LLM, so that it can be used to formulate
 a final answer.
 
+```{r include=FALSE}
+options(tidyprompt.verbose = FALSE)
+```
 ```{r answer_as_code1, warning=FALSE, cache=TRUE}
 # From prompt to ggplot
 paste0(
@@ -211,8 +214,9 @@ paste0(
   ) |>
   send_prompt(openai)
 ```
-
-
+```{r include=FALSE}
+options(tidyprompt.verbose = TRUE)
+```
 
 ### Creating your own prompt wraps
 

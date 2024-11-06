@@ -316,6 +316,7 @@ where the output of R code is returned to the LLM, so that it can be used to for
 a final answer.
 
 
+
 ```r
 # From prompt to ggplot
 paste0(
@@ -331,63 +332,12 @@ paste0(
     return_mode = "object"
   ) |>
   send_prompt(openai)
-#> --- Sending request to LLM provider (gpt-4o-mini): ---
-#> Create a scatter plot of miles per gallon (mpg) versus horsepower (hp) for the cars in the mtcars dataset. Use different colors to represent the number of cylinders (cyl). Make the plot nice and readable, but also be creative, a little crazy, and have humour!
-#> 
-#> You must code in the programming language 'R' to answer this prompt.
-#> You can use functions from these packages: ggplot2.
-#> You may not install or load any additional packages.
-#> The R code should produce an object that answers the prompt.
-#> --- Receiving response from LLM provider: ---
-```
-
-````
-#> Certainly! Below is an R code snippet that creates a scatter plot of miles per gallon (mpg) versus horsepower (hp) for the `mtcars` dataset, using different colors to represent the number of cylinders (cyl). The plot is designed to be both readable and a bit playful.
-#> 
-#> ```r
-#> # Load necessary library
-#> library(ggplot2)
-#> 
-#> # Create a scatter plot of mpg vs hp with color by number of cylinders
-#> plot_mpg_hp <- ggplot(mtcars, aes(x = hp, y = mpg, color = factor(cyl))) + 
-#>   geom_point(size = 4, alpha = 0.7) + 
-#>   labs(title = "MPG vs Horsepower: The Cylinder Chronicles!",
-#>        x = "Horsepower (hp) 🚗💨",
-#>        y = "Miles Per Gallon (mpg) ⛽️",
-#>        color = "Number of Cylinders (Cyl) 🥁") +
-#>   theme_minimal(base_size = 15) +
-#>   theme(plot.title = element_text(face = "bold", hjust = 0.5, color = "darkblue", size = 18),
-#>         legend.position = "top",
-#>         panel.grid.major = element_line(color = "lightgrey", size = 0.5),
-#>         panel.grid.minor = element_blank(),
-#>         axis.title = element_text(face = "italic", color = "darkred")) +
-#>   scale_color_manual(values = c("4" = "green", "6" = "orange", "8" = "red")) +
-#>   geom_text(aes(label = rownames(mtcars)), vjust = -1, hjust = 0.5, color = "black", size = 3.5, check_overlap = TRUE) +
-#>   annotate("text", x = max(mtcars$hp) - 10, y = max(mtcars$mpg) - 2, label = "Fuel efficiency\nis a serious business!\nCylinders just like\nparty hats 🎉", 
-#>            color = "purple", size = 5, fontface = "italic", hjust = 1)
-#> 
-#> # Display the plot
-#> print(plot_mpg_hp)
-#> ```
-#> 
-#> ### Code Explanation:
-#> - We start by loading the `ggplot2` library.
-#> - We map `hp` (horsepower) to the x-axis and `mpg` (miles per gallon) to the y-axis, while coloring points based on the number of `cyl` (cylinders).
-#> - We add a playful title and customize axis labels with emojis for a humorous touch.
-#> - The `theme_minimal()` function is used for a clean look, combined with custom styling for titles and grid lines.
-#> - `scale_color_manual()` specifies different colors for points representing different numbers of cylinders.
-#> - We utilize `geom_text()` to label points with the car names, and we also use `annotate()` to add a humorous message to the plot.
-#> - Finally, we print the plot. 
-#> 
-#> This will create a vibrant, humorous, and informative scatter plot!
-````
-
-```
+#> [1] "`geom_smooth()` using formula = 'y ~ x'\r\n"
 #> [1] "list(mpg = c(21, 21, 22.8, 21.4, 18.7, 18.1, 14.3, 24.4, 22.8, 19.2, 17.8, 16.4, 17.3, 15.2, 10.4..."
+#> `geom_smooth()` using formula = 'y ~ x'
 ```
 
 ![plot of chunk answer_as_code1](figure/answer_as_code1-1.png)
-
 
 
 ### Creating your own prompt wraps
