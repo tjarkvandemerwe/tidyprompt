@@ -200,7 +200,7 @@ openai$verbose <- FALSE; options(tidyprompt.verbose = FALSE)
 ```
 ```{r answer_as_code1, warning=FALSE, cache=TRUE}
 # From prompt to ggplot
-paste0(
+plot <- paste0(
   "Create a scatter plot of miles per gallon (mpg) versus",
   " horsepower (hp) for the cars in the mtcars dataset.",
   " Use different colors to represent the number of cylinders (cyl).",
@@ -213,6 +213,7 @@ paste0(
     return_mode = "object"
   ) |>
   send_prompt(openai)
+plot
 ```
 ```{r include=FALSE}
 openai$verbose <- TRUE; options(tidyprompt.verbose = TRUE)
