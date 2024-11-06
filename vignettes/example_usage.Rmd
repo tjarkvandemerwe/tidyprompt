@@ -332,10 +332,66 @@ paste0(
     return_mode = "object"
   ) |>
   send_prompt(openai)
+#> --- Sending request to LLM provider (gpt-4o-mini): ---
+#> Create a scatter plot of miles per gallon (mpg) versus horsepower (hp) for the cars in the mtcars dataset. Use different colors to represent the number of cylinders (cyl). Make the plot nice and readable, but also be creative, a little crazy, and have humour!
+#> 
+#> You must code in the programming language 'R' to answer this prompt.
+#> You can use functions from these packages: ggplot2.
+#> You may not install or load any additional packages.
+#> The R code should produce an object that answers the prompt.
+#> --- Receiving response from LLM provider: ---
+```
+
+````
+#> Here's an R code snippet that creates a creative and humorous scatter plot of miles per gallon (mpg) versus horsepower (hp) for the cars in the `mtcars` dataset, using different colors to represent the number of cylinders. The plot will include some playful text annotations to add a bit of fun!
+#> 
+#> ```R
+#> # Load ggplot2
+#> library(ggplot2)
+#> 
+#> # Create the scatter plot
+#> scatter_plot <- ggplot(mtcars, aes(x = hp, y = mpg, color = factor(cyl))) +
+#>   geom_point(size = 3, alpha = 0.7) +  # Points for the scatter
+#>   labs(
+#>     title = "MPG vs Horsepower: The Battle of the Cylinders!",
+#>     subtitle = "Because why drive slow when you can go vroom?",
+#>     x = "Horsepower (hp)",
+#>     y = "Miles per Gallon (mpg)",
+#>     color = "Number of Cylinders"
+#>   ) + 
+#>   theme_minimal() +  # Clean theme
+#>   theme(
+#>     plot.title = element_text(hjust = 0.5, face = "bold", size = 20),
+#>     plot.subtitle = element_text(hjust = 0.5, size = 14),
+#>     legend.position = "top",
+#>     legend.title = element_text(face = "italic"),
+#>     axis.title.x = element_text(face = "bold"),
+#>     axis.title.y = element_text(face = "bold")
+#>   ) +
+#>   annotate("text", x = 250, y = 35, label = "Power & Efficiency: A Love Story", size = 5, color = "darkblue", fontface = "italic") +
+#>   annotate("text", x = 200, y = 10, label = "Hold my beer, I'm about to race!", size = 4, color = "red", angle = 15, fontface = "bold") + 
+#>   scale_color_manual(values = c("4" = "skyblue", "6" = "orange", "8" = "red")) +  # Custom colors for cylinders
+#>   geom_smooth(method = "lm", se = FALSE, color = "black", linetype = "dashed")  # Add a linear trend line
+#> 
+#> # Print the plot object (in R this would show the plot in the output)
+#> print(scatter_plot)
+#> ```
+#> 
+#> This code generates a scatter plot that:
+#> - Distinguishes cars by their number of cylinders using different colors.
+#> - Includes a playful title and subtitle.
+#> - Adds humorous annotations to enhance the fun.
+#> - Uses a minimal theme for readability, but with a little twist in colors and text.
+#> 
+#> You can run this code in your R environment to create and display the plot. Enjoy the visualization!
+````
+
+```
 #> [1] "`geom_smooth()` using formula = 'y ~ x'\r\n"
 #> [1] "list(mpg = c(21, 21, 22.8, 21.4, 18.7, 18.1, 14.3, 24.4, 22.8, 19.2, 17.8, 16.4, 17.3, 15.2, 10.4..."
 #> `geom_smooth()` using formula = 'y ~ x'
 ```
+
 ![](figure/answer_as_code1-1.png)
 
 
