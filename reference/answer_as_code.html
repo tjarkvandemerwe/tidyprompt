@@ -71,6 +71,7 @@ use this function with caution.</p>
 <span>  evaluation_session <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  list_packages <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  list_objects <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  skim_dataframes <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  output_as_tool <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  return_mode <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"full"</span>, <span class="st">"code"</span>, <span class="st">"console"</span>, <span class="st">"object"</span>, <span class="st">"formatted_output"</span>, <span class="st">"llm_answer"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -117,6 +118,12 @@ loaded packages will be shown in the initial prompt)</p></dd>
 <dd><p>Logical indicating whether the LLM should be informed
 about the objects that already exist in the R session (if TRUE, a list of the objects
 plus their types will be shown in the initial prompt)</p></dd>
+
+
+<dt id="arg-skim-dataframes">skim_dataframes<a class="anchor" aria-label="anchor" href="#arg-skim-dataframes"></a></dt>
+<dd><p>Logical indicating whether the LLM should be informed
+about the structure of dataframes that already exist in the R session (if TRUE,
+a skim summary of each dataframe will be shown in the initial prompt)</p></dd>
 
 
 <dt id="arg-output-as-tool">output_as_tool<a class="anchor" aria-label="anchor" href="#arg-output-as-tool"></a></dt>
