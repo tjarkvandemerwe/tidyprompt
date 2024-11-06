@@ -119,8 +119,8 @@
 <span><span class="co">#&gt; --- Sending request to LLM provider (llama3.1:8b): ---</span></span>
 <span><span class="co">#&gt; Hi there!</span></span>
 <span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
-<span><span class="co">#&gt; It's nice to meet you. Is there something I can help you with, or would you like to chat?</span></span>
-<span><span class="co">#&gt; [1] "It's nice to meet you. Is there something I can help you with, or would you like to chat?"</span></span></code></pre></div>
+<span><span class="co">#&gt; How's your day going so far? Is there something I can help you with or would you like to chat?</span></span>
+<span><span class="co">#&gt; [1] "How's your day going so far? Is there something I can help you with or would you like to chat?"</span></span></code></pre></div>
 <p><code>add_text</code> is a simple example of a prompt wrap. It simply adds some text at the end of the base prompt.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  <span class="st">"Hi there!"</span> <span class="op">|&gt;</span></span>
@@ -131,8 +131,8 @@
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; What is a large language model? Explain in 10 words.</span></span>
 <span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
-<span><span class="co">#&gt; Advanced artificial intelligence system trained on vast amounts of text data.</span></span>
-<span><span class="co">#&gt; [1] "Advanced artificial intelligence system trained on vast amounts of text data."</span></span></code></pre></div>
+<span><span class="co">#&gt; A massive software system that understands and generates human-like text.</span></span>
+<span><span class="co">#&gt; [1] "A massive software system that understands and generates human-like text."</span></span></code></pre></div>
 <p>You can also construct the final prompt text, without sending it to an LLM provider.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  <span class="st">"Hi there!"</span> <span class="op">|&gt;</span></span>
@@ -212,11 +212,19 @@
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Make sure your final answer follows the logical conclusion of your thought process.</span></span>
 <span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
-<span><span class="co">#&gt; &gt;&gt; step 1: Recognize that the prompt is a simple arithmetic question asking for the sum of two numbers.</span></span>
-<span><span class="co">#&gt; &gt;&gt; step 2: Identify the specific numbers mentioned in the prompt, which are "2" and also another "2".</span></span>
-<span><span class="co">#&gt; &gt;&gt; step 3: Recall the basic operation of addition, which involves combining the quantities or values of two groups to find their total amount.</span></span>
-<span><span class="co">#&gt; &gt;&gt; step 4: Apply the knowledge that when adding two equal numbers together (in this case, both being 2), the result is always double the value of one of those numbers.</span></span>
-<span><span class="co">#&gt; &gt;&gt; step 5: Determine that doubling 2 gives a sum of 4.</span></span>
+<span><span class="co">#&gt; Here are the steps I would take to answer the user's prompt:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; &gt;&gt; step 1: Identify the mathematical operation being asked, which is addition.</span></span>
+<span><span class="co">#&gt; The user is asking for the sum of two numbers.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; &gt;&gt; step 2: Determine the two numbers involved in the addition problem, which are "2" and another instance of "2".</span></span>
+<span><span class="co">#&gt; We need to add these two numbers together.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; &gt;&gt; step 3: Recall the basic arithmetic fact that the sum of two identical numbers (in this case, both being 2) is equal to twice that number.</span></span>
+<span><span class="co">#&gt; The sum of two instances of a single number is simply double that number.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; &gt;&gt; step 4: Apply this arithmetic fact to calculate the final answer.</span></span>
+<span><span class="co">#&gt; Twice 2 equals... </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; FINISH[4]</span></span>
 <span><span class="co">#&gt; [1] 4</span></span></code></pre></div>
@@ -242,11 +250,11 @@
 <span>    <span class="co">#'</span></span>
 <span>    <span class="co">#' llm_tool::example</span></span>
 <span>    <span class="co">#' temperature_in_location("Amsterdam", "Fahrenheit")</span></span>
-<span>    </span>
+<span></span>
 <span>    <span class="co"># As shown above, one can use docstring-like text to document the function.</span></span>
 <span>    <span class="co">#   This will provide the LLM information on what the function does,</span></span>
 <span>    <span class="co">#   and how it should be used.</span></span>
-<span>    </span>
+<span></span>
 <span>    <span class="va">location</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/match.arg.html" class="external-link">match.arg</a></span><span class="op">(</span><span class="va">location</span><span class="op">)</span></span>
 <span>    <span class="va">unit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/match.arg.html" class="external-link">match.arg</a></span><span class="op">(</span><span class="va">unit</span><span class="op">)</span></span>
 <span></span>
@@ -269,7 +277,44 @@
 <span>    <span class="fu"><a href="reference/add_text.html">add_text</a></span><span class="op">(</span><span class="st">"I want to know the Celcius degrees."</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="reference/answer_as_integer.html">answer_as_integer</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="reference/add_tools.html">add_tools</a></span><span class="op">(</span><span class="va">temperature_in_location</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="va">ollama</span><span class="op">)</span></span></code></pre></div>
+<span>    <span class="fu"><a href="reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="va">ollama</span><span class="op">)</span></span>
+<span><span class="co">#&gt; --- Sending request to LLM provider (llama3.1:8b): ---</span></span>
+<span><span class="co">#&gt; Hi, what is the weather temperature in Enschede?</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; I want to know the Celcius degrees.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; You must answer with only an integer (use no other characters).</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; If you need more information, you can call functions to help you.</span></span>
+<span><span class="co">#&gt; To call a function, type:</span></span>
+<span><span class="co">#&gt;   FUNCTION[&lt;function name here&gt;](&lt;argument 1&gt;, &lt;argument 2&gt;, etc...)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; The following functions are available:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; function name: temperature_in_location</span></span>
+<span><span class="co">#&gt; description: Get the temperature in a location</span></span>
+<span><span class="co">#&gt; arguments:</span></span>
+<span><span class="co">#&gt;     - location: Location, must be one of: "Amsterdam", "Utrecht", "Enschede"</span></span>
+<span><span class="co">#&gt;     - unit: Unit, must be one of: "Celcius", "Fahrenheit"</span></span>
+<span><span class="co">#&gt; return value: The temperature in the specified location and unit</span></span>
+<span><span class="co">#&gt; example usage: FUNCTION[temperature_in_location]("Amsterdam", "Fahrenheit")</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; After you call a function, wait until you receive more information.</span></span>
+<span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
+<span><span class="co">#&gt; To provide you with the current weather temperature in Enschede, I will call the `temperature_in_location` function.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; FUNCTION[temperature_in_location]("Enschede", "Celcius")</span></span>
+<span><span class="co">#&gt; --- Sending request to LLM provider (llama3.1:8b): ---</span></span>
+<span><span class="co">#&gt; function called: temperature_in_location</span></span>
+<span><span class="co">#&gt; arguments used: location = Enschede, unit = Celcius</span></span>
+<span><span class="co">#&gt; result: 22.7</span></span>
+<span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
+<span><span class="co">#&gt; The current temperature in Enschede is 22.7 degrees Celsius.</span></span>
+<span><span class="co">#&gt; --- Sending request to LLM provider (llama3.1:8b): ---</span></span>
+<span><span class="co">#&gt; You must answer with only an integer (use no other characters).</span></span>
+<span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
+<span><span class="co">#&gt; 22</span></span>
+<span><span class="co">#&gt; [1] 22</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="creating-your-own-prompt-wraps">Creating your own prompt wraps<a class="anchor" aria-label="anchor" href="#creating-your-own-prompt-wraps"></a>
