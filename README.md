@@ -365,12 +365,7 @@ paste0(
 #> [1] "list(mpg = c(21, 21, 22.8, 21.4, 18.7, 18.1, 14.3, 24.4, 22.8, 19.2, 17.8, 16.4, 17.3, 15.2, 10.4..."
 ```
 
-<figure>
-<img src="figure/answer_as_code1-1.png"
-alt="plot of chunk answer_as_code1" />
-<figcaption aria-hidden="true">plot of chunk
-answer_as_code1</figcaption>
-</figure>
+![](figure/answer_as_code1-1.png)
 
 ### Creating your own prompt wraps
 
