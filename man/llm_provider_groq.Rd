@@ -5,7 +5,8 @@
 \title{Create a new Groq llm_provider instance}
 \usage{
 llm_provider_groq(
-  parameters = list(model = "llama-3.1-8b-instant", stream = TRUE),
+  parameters = list(model = "llama-3.1-8b-instant", stream =
+    getOption("tidyprompt.stream", TRUE)),
   verbose = getOption("tidyprompt.verbose", TRUE),
   url = "https://api.groq.com/openai/v1/chat/completions",
   api_key = Sys.getenv("GROQ_API_KEY")

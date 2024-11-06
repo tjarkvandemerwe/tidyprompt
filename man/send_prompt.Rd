@@ -10,7 +10,7 @@ send_prompt(
   max_interactions = 10,
   clean_chat_history = TRUE,
   verbose = getOption("tidyprompt.verbose", TRUE),
-  stream = TRUE,
+  stream = getOption("tidyprompt.stream", TRUE),
   return_mode = c("only_response", "full")
 )
 }

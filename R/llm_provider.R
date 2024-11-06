@@ -268,8 +268,14 @@ make_llm_provider_request <- function(
   # If not streaming, parse the response content
   if (is.null(stream) || isFALSE(stream)) {
     content <- httr::content(response, as = "parsed")
-    role <- content$choices[[1]]$message$role
-    message <- content$choices[[1]]$message$content
+
+    if (stream_api_type == "ollama") {
+      role <- content$message$role
+      message <- content$message$content
+    } else { # OpenAI type API:
+      role <- content$choices[[1]]$message$role
+      message <- content$choices[[1]]$message$content
+    }
   }
 
   return(list(
@@ -300,7 +306,7 @@ make_llm_provider_request <- function(
 llm_provider_ollama <- function(
     parameters = list(
       model = "llama3.1:8b",
-      stream = TRUE
+      stream = getOption("tidyprompt.stream", TRUE)
     ),
     verbose = getOption("tidyprompt.verbose", TRUE),
     url = "http://localhost:11434/api/chat"
@@ -310,8 +316,7 @@ llm_provider_ollama <- function(
       model = self$parameters$model,
       messages = lapply(seq_len(nrow(chat_history)), function(i) {
         list(role = chat_history$role[i], content = chat_history$content[i])
-      }),
-      stream = self$parameters$stream
+      })
     )
 
     # Append all other parameters to the body
@@ -327,6 +332,9 @@ llm_provider_ollama <- function(
       stream_api_type = "ollama"
     ))
   }
+
+  if (is.null(parameters$stream))
+    parameters$stream <- FALSE
 
   ollama <- llm_provider$new(
     complete_chat_function = complete_chat,
@@ -364,7 +372,7 @@ llm_provider_ollama <- function(
 llm_provider_openai <- function(
     parameters = list(
       model = "gpt-4o-mini",
-      stream = TRUE
+      stream = getOption("tidyprompt.stream", TRUE)
     ),
     verbose = getOption("tidyprompt.verbose", TRUE),
     url = "https://api.openai.com/v1/chat/completions",
@@ -425,7 +433,7 @@ llm_provider_openai <- function(
 llm_provider_openrouter <- function(
     parameters = list(
       model = "qwen/qwen-2.5-7b-instruct",
-      stream = TRUE
+      stream = getOption("tidyprompt.stream", TRUE)
     ),
     verbose = getOption("tidyprompt.verbose", TRUE),
     url = "https://openrouter.ai/api/v1/chat/completions",
@@ -456,7 +464,7 @@ llm_provider_openrouter <- function(
 llm_provider_mistral <- function(
     parameters = list(
       model = "ministral-3b-latest",
-      stream = TRUE
+      stream = getOption("tidyprompt.stream", TRUE)
     ),
     verbose = getOption("tidyprompt.verbose", TRUE),
     url = "https://api.mistral.ai/v1/chat/completions",
@@ -484,7 +492,7 @@ llm_provider_mistral <- function(
 llm_provider_groq <- function(
     parameters = list(
       model = "llama-3.1-8b-instant",
-      stream = TRUE
+      stream = getOption("tidyprompt.stream", TRUE)
     ),
     verbose = getOption("tidyprompt.verbose", TRUE),
     url = "https://api.groq.com/openai/v1/chat/completions",
@@ -512,7 +520,7 @@ llm_provider_groq <- function(
 llm_provider_xai <- function(
     parameters = list(
       model = "grok-beta",
-      stream = TRUE
+      stream = getOption("tidyprompt.stream", TRUE)
     ),
     verbose = getOption("tidyprompt.verbose", TRUE),
     url = "https://api.x.ai/v1/chat/completions",

@@ -5,7 +5,7 @@
 \title{Create a new XAI (Grok) llm_provider instance}
 \usage{
 llm_provider_xai(
-  parameters = list(model = "grok-beta", stream = TRUE),
+  parameters = list(model = "grok-beta", stream = getOption("tidyprompt.stream", TRUE)),
   verbose = getOption("tidyprompt.verbose", TRUE),
   url = "https://api.x.ai/v1/chat/completions",
   api_key = Sys.getenv("XAI_API_KEY")

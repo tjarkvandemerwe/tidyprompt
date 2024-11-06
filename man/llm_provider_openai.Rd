@@ -5,7 +5,7 @@
 \title{Create a new OpenAI llm_provider instance}
 \usage{
 llm_provider_openai(
-  parameters = list(model = "gpt-4o-mini", stream = TRUE),
+  parameters = list(model = "gpt-4o-mini", stream = getOption("tidyprompt.stream", TRUE)),
   verbose = getOption("tidyprompt.verbose", TRUE),
   url = "https://api.openai.com/v1/chat/completions",
   api_key = Sys.getenv("OPENAI_API_KEY")

@@ -5,7 +5,8 @@
 \title{Create a new OpenRouter llm_provider instance}
 \usage{
 llm_provider_openrouter(
-  parameters = list(model = "qwen/qwen-2.5-7b-instruct", stream = TRUE),
+  parameters = list(model = "qwen/qwen-2.5-7b-instruct", stream =
+    getOption("tidyprompt.stream", TRUE)),
   verbose = getOption("tidyprompt.verbose", TRUE),
   url = "https://openrouter.ai/api/v1/chat/completions",
   api_key = Sys.getenv("OPENROUTER_API_KEY")

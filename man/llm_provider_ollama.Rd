@@ -5,7 +5,7 @@
 \title{Create a new Ollama llm_provider instance}
 \usage{
 llm_provider_ollama(
-  parameters = list(model = "llama3.1:8b", stream = TRUE),
+  parameters = list(model = "llama3.1:8b", stream = getOption("tidyprompt.stream", TRUE)),
   verbose = getOption("tidyprompt.verbose", TRUE),
   url = "http://localhost:11434/api/chat"
 )

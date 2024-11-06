@@ -5,7 +5,8 @@
 \title{Create a new Mistral llm_provider instance}
 \usage{
 llm_provider_mistral(
-  parameters = list(model = "ministral-3b-latest", stream = TRUE),
+  parameters = list(model = "ministral-3b-latest", stream =
+    getOption("tidyprompt.stream", TRUE)),
   verbose = getOption("tidyprompt.verbose", TRUE),
   url = "https://api.mistral.ai/v1/chat/completions",
   api_key = Sys.getenv("MISTRAL_API_KEY")
