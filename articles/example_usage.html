@@ -118,8 +118,8 @@ and valid (including retries with feedback to the LLM if it is not).</p>
 <span><span class="co">#&gt; --- Sending request to LLM provider (llama3.1:8b): ---</span></span>
 <span><span class="co">#&gt; Hi there!</span></span>
 <span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
-<span><span class="co">#&gt; How's your day going so far? Is there something I can help you with or would you like to chat?</span></span>
-<span><span class="co">#&gt; [1] "How's your day going so far? Is there something I can help you with or would you like to chat?"</span></span></code></pre></div>
+<span><span class="co">#&gt; It's nice to meet you. Is there something I can help you with or would you like to chat?</span></span>
+<span><span class="co">#&gt; [1] "It's nice to meet you. Is there something I can help you with or would you like to chat?"</span></span></code></pre></div>
 <p><code>add_text</code> is a simple example of a prompt wrap. It simply
 adds some text at the end of the base prompt.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
@@ -131,8 +131,8 @@ adds some text at the end of the base prompt.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; What is a large language model? Explain in 10 words.</span></span>
 <span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
-<span><span class="co">#&gt; A massive software system that understands and generates human-like text.</span></span>
-<span><span class="co">#&gt; [1] "A massive software system that understands and generates human-like text."</span></span></code></pre></div>
+<span><span class="co">#&gt; Advanced computer program that understands and generates human-like written text.</span></span>
+<span><span class="co">#&gt; [1] "Advanced computer program that understands and generates human-like written text."</span></span></code></pre></div>
 <p>You can also construct the final prompt text, without sending it to
 an LLM provider.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
@@ -228,29 +228,30 @@ extraction function then ensures only the final answer is returned.</final></p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Make sure your final answer follows the logical conclusion of your thought process.</span></span>
 <span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
-<span><span class="co">#&gt; Here are the steps I would take to answer the user's prompt:</span></span>
+<span><span class="co">#&gt; &gt;&gt; step 1: Identify the mathematical operation requested in the prompt, which is addition.</span></span>
+<span><span class="co">#&gt; The prompt asks for the sum of 2 and 2.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; &gt;&gt; step 1: Identify the mathematical operation being asked, which is addition.</span></span>
-<span><span class="co">#&gt; The user is asking for the sum of two numbers.</span></span>
+<span><span class="co">#&gt; &gt;&gt; step 2: Recall the basic arithmetic fact that 2 + 2 equals a specific number.</span></span>
+<span><span class="co">#&gt; This is a fundamental math concept that can be recalled from memory or learned through experience.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; &gt;&gt; step 2: Determine the two numbers involved in the addition problem, which are "2" and another instance of "2".</span></span>
-<span><span class="co">#&gt; We need to add these two numbers together.</span></span>
+<span><span class="co">#&gt; &gt;&gt; step 3: Apply this knowledge to determine that the sum of 2 and 2 is indeed 4.</span></span>
+<span><span class="co">#&gt; The numerical value of 4 is derived directly from knowing that 2 added to itself results in a total count of four items, quantities, or values.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; &gt;&gt; step 3: Recall the basic arithmetic fact that the sum of two identical numbers (in this case, both being 2) is equal to twice that number.</span></span>
-<span><span class="co">#&gt; The sum of two instances of a single number is simply double that number.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; &gt;&gt; step 4: Apply this arithmetic fact to calculate the final answer.</span></span>
-<span><span class="co">#&gt; Twice 2 equals... </span></span>
-<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; FINISH4</span></span>
+<span><span class="co">#&gt; --- Sending request to LLM provider (llama3.1:8b): ---</span></span>
+<span><span class="co">#&gt; Error, could not parse your final answer.</span></span>
+<span><span class="co">#&gt; Please type: 'FINISH[&lt;put here your final answer to the original prompt&gt;]'</span></span>
+<span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
 <span><span class="co">#&gt; FINISH[4]</span></span>
 <span><span class="co">#&gt; [1] 4</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="giving-tools-to-the-llm-autonomous-function-calling">Giving tools to the LLM (autonomous function-calling)<a class="anchor" aria-label="anchor" href="#giving-tools-to-the-llm-autonomous-function-calling"></a>
 </h3>
-<p>With <code>tidyprompt</code>, you can define R functions and give the
-LLM the ability to call them. This enables the LLM to retrieve
-additional information or take other actions.</p>
+<p>With <code>tidyprompt</code> and the <code>add_tools</code> prompt
+wrap, you can define your own R functions and give the LLM the ability
+to call them. This enables the LLM to retrieve additional information or
+take other actions.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  <span class="co"># Define a function that returns fake data about the temperature in a location</span></span>
 <span>  <span class="va">temperature_in_location</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span></span>
@@ -319,7 +320,7 @@ additional information or take other actions.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; After you call a function, wait until you receive more information.</span></span>
 <span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
-<span><span class="co">#&gt; To provide you with the current weather temperature in Enschede, I will call the `temperature_in_location` function.</span></span>
+<span><span class="co">#&gt; I'll call the `temperature_in_location` function with the necessary arguments.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; FUNCTION[temperature_in_location]("Enschede", "Celcius")</span></span>
 <span><span class="co">#&gt; --- Sending request to LLM provider (llama3.1:8b): ---</span></span>
@@ -327,12 +328,40 @@ additional information or take other actions.</p>
 <span><span class="co">#&gt; arguments used: location = Enschede, unit = Celcius</span></span>
 <span><span class="co">#&gt; result: 22.7</span></span>
 <span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
-<span><span class="co">#&gt; The current temperature in Enschede is 22.7 degrees Celsius.</span></span>
+<span><span class="co">#&gt; The current temperature in Enschede is 22.7°C.</span></span>
 <span><span class="co">#&gt; --- Sending request to LLM provider (llama3.1:8b): ---</span></span>
 <span><span class="co">#&gt; You must answer with only an integer (use no other characters).</span></span>
 <span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
 <span><span class="co">#&gt; 22</span></span>
 <span><span class="co">#&gt; [1] 22</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="code-generation-and-evaluation">Code generation and evaluation<a class="anchor" aria-label="anchor" href="#code-generation-and-evaluation"></a>
+</h3>
+<p><code>answer_as_code</code> is a more advanced prompt wrap, which has
+various options to enable LLM code generation. R code can be extracted,
+parsed for validity, and optionally be evaluated in a dedicated R
+session (using the <code>callr</code> package). The prompt wrap can also
+be set to ‘tool mode’ (with <code>output_as_tool = TRUE</code>), where
+the output of R code is returned to the LLM, so that it can be used to
+formulate a final answer.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># From prompt to ggplot</span></span>
+<span><span class="va">plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span>
+<span>  <span class="st">"Create a scatter plot of miles per gallon (mpg) versus"</span>,</span>
+<span>  <span class="st">" horsepower (hp) for the cars in the mtcars dataset."</span>,</span>
+<span>  <span class="st">" Use different colors to represent the number of cylinders (cyl)."</span>,</span>
+<span>  <span class="st">" Make the plot nice and readable,"</span>,</span>
+<span>  <span class="st">" but also be creative, a little crazy, and have humour!"</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/answer_as_code.html">answer_as_code</a></span><span class="op">(</span></span>
+<span>    pkgs_to_use <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ggplot2"</span><span class="op">)</span>,</span>
+<span>    evaluate_code <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    return_mode <span class="op">=</span> <span class="st">"object"</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="va">openai</span><span class="op">)</span></span>
+<span><span class="va">plot</span></span></code></pre></div>
+<p><img src="figure/answer_as_code1-1.png"></p>
 </div>
 <div class="section level3">
 <h3 id="creating-your-own-prompt-wraps">Creating your own prompt wraps<a class="anchor" aria-label="anchor" href="#creating-your-own-prompt-wraps"></a>
@@ -343,7 +372,7 @@ and a series of prompt wraps.</p>
 prompt wrap to it.</p>
 <p>Take a look at the source code for function
 <code>add_text</code>:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">add_text</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span></span>
 <span>    <span class="va">prompt</span>,</span>
 <span>    <span class="va">text</span>, <span class="va">position</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"after"</span>, <span class="st">"before"</span><span class="op">)</span>, <span class="va">sep</span> <span class="op">=</span> <span class="st">"\n\n"</span></span>
@@ -363,7 +392,7 @@ prompt wrap to it.</p>
 <p>More complex prompt wraps may also add extraction and validation
 functions. Take a look at the source code for function
 <code>answer_as_integer</code>:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">answer_as_integer</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span></span>
 <span>    <span class="va">prompt</span>,</span>
 <span>    <span class="va">min</span> <span class="op">=</span> <span class="cn">NULL</span>,</span>
