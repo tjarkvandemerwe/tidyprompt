@@ -349,7 +349,7 @@ returned to the LLM, so that it can be used to formulate a final answer.
 
 ``` r
 # From prompt to ggplot
-paste0(
+plot <- paste0(
   "Create a scatter plot of miles per gallon (mpg) versus",
   " horsepower (hp) for the cars in the mtcars dataset.",
   " Use different colors to represent the number of cylinders (cyl).",
@@ -362,7 +362,7 @@ paste0(
     return_mode = "object"
   ) |>
   send_prompt(openai)
-#> [1] "list(mpg = c(21, 21, 22.8, 21.4, 18.7, 18.1, 14.3, 24.4, 22.8, 19.2, 17.8, 16.4, 17.3, 15.2, 10.4..."
+plot
 ```
 
 ![](figure/answer_as_code1-1.png)
