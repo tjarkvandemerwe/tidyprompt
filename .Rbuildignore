@@ -12,3 +12,5 @@ vignettes/example_usage_cache/*
 ^doc$
 ^Meta$
 ^codecov\.yml$
+vignettes/cache/*
+vignettes/figure/*

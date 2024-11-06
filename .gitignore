@@ -8,3 +8,5 @@ inst/doc
 README_cache/*
 /doc/
 /Meta/
+cache/*
+vignettes/cache/*

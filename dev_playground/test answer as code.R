@@ -35,12 +35,12 @@ plot
 
 anthropic <- llm_provider_openrouter()$
   set_parameters(list(model = "anthropic/claude-3.5-sonnet"))
-plot <- paste0(
+
+paste0(
   "Create a scatter plot of miles per gallon (mpg) versus",
   " horsepower (hp) for the cars in the mtcars dataset.",
   " Use different colors to represent the number of cylinders (cyl).",
-  " Be very creative and make the plot look nice but also a little crazy!",
-  " Add some humourous annotations which somehow relate to Enschede (NL)"
+  " Be very creative and make the plot look nice but also a little crazy!"
 ) |>
   answer_as_code(
     pkgs_to_use = c("ggplot2"),
@@ -48,7 +48,6 @@ plot <- paste0(
     return_mode = "object"
   ) |>
   send_prompt(anthropic)
-plot
 
 
 ###
