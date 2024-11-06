@@ -107,8 +107,8 @@ valid (including retries with feedback to the LLM if it is not).
 #> --- Sending request to LLM provider (llama3.1:8b): ---
 #> Hi there!
 #> --- Receiving response from LLM provider: ---
-#> It's nice to meet you. Is there something I can help you with, or would you like to chat?
-#> [1] "It's nice to meet you. Is there something I can help you with, or would you like to chat?"
+#> How's your day going so far? Is there something I can help you with or would you like to chat?
+#> [1] "How's your day going so far? Is there something I can help you with or would you like to chat?"
 ```
 
 `add_text` is a simple example of a prompt wrap. It simply adds some
@@ -123,8 +123,8 @@ text at the end of the base prompt.
 #> 
 #> What is a large language model? Explain in 10 words.
 #> --- Receiving response from LLM provider: ---
-#> Advanced artificial intelligence system trained on vast amounts of text data.
-#> [1] "Advanced artificial intelligence system trained on vast amounts of text data."
+#> A massive software system that understands and generates human-like text.
+#> [1] "A massive software system that understands and generates human-like text."
 ```
 
 You can also construct the final prompt text, without sending it to an
@@ -230,11 +230,19 @@ function then ensures only the final answer is returned.
 #> 
 #> Make sure your final answer follows the logical conclusion of your thought process.
 #> --- Receiving response from LLM provider: ---
-#> >> step 1: Recognize that the prompt is a simple arithmetic question asking for the sum of two numbers.
-#> >> step 2: Identify the specific numbers mentioned in the prompt, which are "2" and also another "2".
-#> >> step 3: Recall the basic operation of addition, which involves combining the quantities or values of two groups to find their total amount.
-#> >> step 4: Apply the knowledge that when adding two equal numbers together (in this case, both being 2), the result is always double the value of one of those numbers.
-#> >> step 5: Determine that doubling 2 gives a sum of 4.
+#> Here are the steps I would take to answer the user's prompt:
+#> 
+#> >> step 1: Identify the mathematical operation being asked, which is addition.
+#> The user is asking for the sum of two numbers.
+#> 
+#> >> step 2: Determine the two numbers involved in the addition problem, which are "2" and another instance of "2".
+#> We need to add these two numbers together.
+#> 
+#> >> step 3: Recall the basic arithmetic fact that the sum of two identical numbers (in this case, both being 2) is equal to twice that number.
+#> The sum of two instances of a single number is simply double that number.
+#> 
+#> >> step 4: Apply this arithmetic fact to calculate the final answer.
+#> Twice 2 equals... 
 #> 
 #> FINISH[4]
 #> [1] 4
@@ -263,11 +271,11 @@ information or take other actions.
     #'
     #' llm_tool::example
     #' temperature_in_location("Amsterdam", "Fahrenheit")
-    
+
     # As shown above, one can use docstring-like text to document the function.
     #   This will provide the LLM information on what the function does,
     #   and how it should be used.
-    
+
     location <- match.arg(location)
     unit <- match.arg(unit)
 
@@ -291,6 +299,43 @@ information or take other actions.
     answer_as_integer() |>
     add_tools(temperature_in_location) |>
     send_prompt(ollama)
+#> --- Sending request to LLM provider (llama3.1:8b): ---
+#> Hi, what is the weather temperature in Enschede?
+#> 
+#> I want to know the Celcius degrees.
+#> 
+#> You must answer with only an integer (use no other characters).
+#> 
+#> If you need more information, you can call functions to help you.
+#> To call a function, type:
+#>   FUNCTION[<function name here>](<argument 1>, <argument 2>, etc...)
+#> 
+#> The following functions are available:
+#> 
+#> function name: temperature_in_location
+#> description: Get the temperature in a location
+#> arguments:
+#>     - location: Location, must be one of: "Amsterdam", "Utrecht", "Enschede"
+#>     - unit: Unit, must be one of: "Celcius", "Fahrenheit"
+#> return value: The temperature in the specified location and unit
+#> example usage: FUNCTION[temperature_in_location]("Amsterdam", "Fahrenheit")
+#> 
+#> After you call a function, wait until you receive more information.
+#> --- Receiving response from LLM provider: ---
+#> To provide you with the current weather temperature in Enschede, I will call the `temperature_in_location` function.
+#> 
+#> FUNCTION[temperature_in_location]("Enschede", "Celcius")
+#> --- Sending request to LLM provider (llama3.1:8b): ---
+#> function called: temperature_in_location
+#> arguments used: location = Enschede, unit = Celcius
+#> result: 22.7
+#> --- Receiving response from LLM provider: ---
+#> The current temperature in Enschede is 22.7 degrees Celsius.
+#> --- Sending request to LLM provider (llama3.1:8b): ---
+#> You must answer with only an integer (use no other characters).
+#> --- Receiving response from LLM provider: ---
+#> 22
+#> [1] 22
 ```
 
 ### Creating your own prompt wraps
