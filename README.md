@@ -107,8 +107,8 @@ valid (including retries with feedback to the LLM if it is not).
 #> --- Sending request to LLM provider (llama3.1:8b): ---
 #> Hi there!
 #> --- Receiving response from LLM provider: ---
-#> It's nice to meet you. Is there something I can help you with, or would you like to chat?
-#> [1] "It's nice to meet you. Is there something I can help you with, or would you like to chat?"
+#> It's nice to meet you. Is there something I can help you with or would you like to chat?
+#> [1] "It's nice to meet you. Is there something I can help you with or would you like to chat?"
 ```
 
 `add_text` is a simple example of a prompt wrap. It simply adds some
@@ -123,8 +123,8 @@ text at the end of the base prompt.
 #> 
 #> What is a large language model? Explain in 10 words.
 #> --- Receiving response from LLM provider: ---
-#> Complex software program that generates human-like text through machine learning algorithms.
-#> [1] "Complex software program that generates human-like text through machine learning algorithms."
+#> Advanced computer program that understands and generates human-like written text.
+#> [1] "Advanced computer program that understands and generates human-like written text."
 ```
 
 You can also construct the final prompt text, without sending it to an
@@ -184,7 +184,7 @@ succeed after a retry.
 #> 
 #> Please write out your reply in words, use no numbers.
 #> --- Receiving response from LLM provider: ---
-#> Four.
+#> Two plus two equals four.
 #> --- Sending request to LLM provider (llama3.1:8b): ---
 #> You must answer with only an integer (use no other characters).
 #> --- Receiving response from LLM provider: ---
@@ -230,33 +230,20 @@ function then ensures only the final answer is returned.
 #> 
 #> Make sure your final answer follows the logical conclusion of your thought process.
 #> --- Receiving response from LLM provider: ---
-#> Here are the steps I would take:
+#> >> step 1: Identify the mathematical operation requested in the prompt, which is addition.
+#> The prompt asks for the sum of 2 and 2.
 #> 
-#> >> step 1: Identify that the problem is a basic arithmetic question involving addition.
-#> The problem statement "What is 2 + 2?" indicates that I need to add two numbers together.
+#> >> step 2: Recall the basic arithmetic fact that 2 + 2 equals a specific number.
+#> This is a fundamental math concept that can be recalled from memory or learned through experience.
 #> 
-#> >> step 2: Recall the concept of basic addition facts from memory or prior knowledge.
-#> I know that adding two identical numbers (in this case, 2) together should result in a specific answer that I can recall.
-#> 
-#> >> step 3: Apply the addition fact to arrive at the solution.
-#> I remember that the sum of 1+1 is 2, and since we're doubling one of the numbers from that equation, the answer will also double. Therefore, 2 + 2 should equal 4.
+#> >> step 3: Apply this knowledge to determine that the sum of 2 and 2 is indeed 4.
+#> The numerical value of 4 is derived directly from knowing that 2 added to itself results in a total count of four items, quantities, or values.
 #> 
 #> FINISH4
 #> --- Sending request to LLM provider (llama3.1:8b): ---
 #> Error, could not parse your final answer.
 #> Please type: 'FINISH[<put here your final answer to the original prompt>]'
 #> --- Receiving response from LLM provider: ---
-#> Here is the corrected response:
-#> 
-#> >> step 1: Identify that the problem is a basic arithmetic question involving addition.
-#> The problem statement "What is 2 + 2?" indicates that I need to add two numbers together.
-#> 
-#> >> step 2: Recall the concept of basic addition facts from memory or prior knowledge.
-#> I know that adding two identical numbers (in this case, 2) together should result in a specific answer that I can recall.
-#> 
-#> >> step 3: Apply the addition fact to arrive at the solution.
-#> I remember that the sum of 1+1 is 2, and since we're doubling one of the numbers from that equation, the answer will also double. Therefore, 2 + 2 should equal 4.
-#> 
 #> FINISH[4]
 #> [1] 4
 ```
@@ -335,7 +322,7 @@ the LLM to retrieve additional information or take other actions.
 #> 
 #> After you call a function, wait until you receive more information.
 #> --- Receiving response from LLM provider: ---
-#> To get the current temperature in Enschede in Celsius degrees, I will call the `temperature_in_location` function.
+#> I'll call the `temperature_in_location` function with the necessary arguments.
 #> 
 #> FUNCTION[temperature_in_location]("Enschede", "Celcius")
 #> --- Sending request to LLM provider (llama3.1:8b): ---
@@ -343,7 +330,7 @@ the LLM to retrieve additional information or take other actions.
 #> arguments used: location = Enschede, unit = Celcius
 #> result: 22.7
 #> --- Receiving response from LLM provider: ---
-#> The current temperature in Enschede is 22.7 degrees Celsius.
+#> The current temperature in Enschede is 22.7°C.
 #> --- Sending request to LLM provider (llama3.1:8b): ---
 #> You must answer with only an integer (use no other characters).
 #> --- Receiving response from LLM provider: ---
@@ -375,56 +362,8 @@ paste0(
     return_mode = "object"
   ) |>
   send_prompt(openai)
-#> --- Sending request to LLM provider (gpt-4o-mini): ---
-#> Create a scatter plot of miles per gallon (mpg) versus horsepower (hp) for the cars in the mtcars dataset. Use different colors to represent the number of cylinders (cyl). Make the plot nice and readable, but also be creative, a little crazy, and have humour!
-#> 
-#> You must code in the programming language 'R' to answer this prompt.
-#> You can use functions from these packages: ggplot2.
-#> You may not install or load any additional packages.
-#> The R code should produce an object that answers the prompt.
-#> --- Receiving response from LLM provider: ---
+#> [1] "list(mpg = c(21, 21, 22.8, 21.4, 18.7, 18.1, 14.3, 24.4, 22.8, 19.2, 17.8, 16.4, 17.3, 15.2, 10.4..."
 ```
-
-    #> Certainly! Below is an R code snippet that creates a scatter plot of miles per gallon (mpg) versus horsepower (hp) for the `mtcars` dataset, using different colors to represent the number of cylinders (cyl). The plot is designed to be both readable and a bit playful.
-    #> 
-    #> ```r
-    #> # Load necessary library
-    #> library(ggplot2)
-    #> 
-    #> # Create a scatter plot of mpg vs hp with color by number of cylinders
-    #> plot_mpg_hp <- ggplot(mtcars, aes(x = hp, y = mpg, color = factor(cyl))) + 
-    #>   geom_point(size = 4, alpha = 0.7) + 
-    #>   labs(title = "MPG vs Horsepower: The Cylinder Chronicles!",
-    #>        x = "Horsepower (hp) 🚗💨",
-    #>        y = "Miles Per Gallon (mpg) ⛽️",
-    #>        color = "Number of Cylinders (Cyl) 🥁") +
-    #>   theme_minimal(base_size = 15) +
-    #>   theme(plot.title = element_text(face = "bold", hjust = 0.5, color = "darkblue", size = 18),
-    #>         legend.position = "top",
-    #>         panel.grid.major = element_line(color = "lightgrey", size = 0.5),
-    #>         panel.grid.minor = element_blank(),
-    #>         axis.title = element_text(face = "italic", color = "darkred")) +
-    #>   scale_color_manual(values = c("4" = "green", "6" = "orange", "8" = "red")) +
-    #>   geom_text(aes(label = rownames(mtcars)), vjust = -1, hjust = 0.5, color = "black", size = 3.5, check_overlap = TRUE) +
-    #>   annotate("text", x = max(mtcars$hp) - 10, y = max(mtcars$mpg) - 2, label = "Fuel efficiency\nis a serious business!\nCylinders just like\nparty hats 🎉", 
-    #>            color = "purple", size = 5, fontface = "italic", hjust = 1)
-    #> 
-    #> # Display the plot
-    #> print(plot_mpg_hp)
-    #> ```
-    #> 
-    #> ### Code Explanation:
-    #> - We start by loading the `ggplot2` library.
-    #> - We map `hp` (horsepower) to the x-axis and `mpg` (miles per gallon) to the y-axis, while coloring points based on the number of `cyl` (cylinders).
-    #> - We add a playful title and customize axis labels with emojis for a humorous touch.
-    #> - The `theme_minimal()` function is used for a clean look, combined with custom styling for titles and grid lines.
-    #> - `scale_color_manual()` specifies different colors for points representing different numbers of cylinders.
-    #> - We utilize `geom_text()` to label points with the car names, and we also use `annotate()` to add a humorous message to the plot.
-    #> - Finally, we print the plot. 
-    #> 
-    #> This will create a vibrant, humorous, and informative scatter plot!
-
-    #> [1] "list(mpg = c(21, 21, 22.8, 21.4, 18.7, 18.1, 14.3, 24.4, 22.8, 19.2, 17.8, 16.4, 17.3, 15.2, 10.4..."
 
 <figure>
 <img src="figure/answer_as_code1-1.png"
