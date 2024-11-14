@@ -43,9 +43,9 @@
 #' @importFrom crayon blue green silver
 #' @exportS3Method print tidyprompt
 print.tidyprompt <- function(x, ...) {
-  cat(crayon::blue("<tidyprompt>\n"))
+  cat(cli::col_blue("<tidyprompt>\n"))
 
-  line_prefix <- crayon::green("> ")
+  line_prefix <- cli::col_green("> ")
 
   format_with_prefix <- function(text, line_prefix) {
     # Split the text by line breaks to preserve them
@@ -57,28 +57,28 @@ print.tidyprompt <- function(x, ...) {
 
   n_wraps <- length(x$prompt_wraps)
   if (n_wraps == 0) {
-    cat(crayon::silver("base prompt:\n"))  # Use gray for metadata
+    cat(cli::col_silver("base prompt:\n"))  # Use gray for metadata
     formatted_text <- format_with_prefix(x$base_prompt, line_prefix)
     cat(formatted_text, "\n")
   }
 
   if (n_wraps == 1) {
-    cat(crayon::silver(paste("The base prompt is modified by a wrapper function, resulting in:\n")))
+    cat(cli::col_silver(paste("The base prompt is modified by a wrapper function, resulting in:\n")))
   }
 
   if (n_wraps > 1) {
-    cat(crayon::silver(paste("The base prompt is modified by", n_wraps, "wrapper functions, resulting in:\n")))
+    cat(cli::col_silver(paste("The base prompt is modified by", n_wraps, "wrapper functions, resulting in:\n")))
   }
 
   if (n_wraps > 0) {
     full_text <- x |> construct_prompt_text()
     formatted_text <- format_with_prefix(full_text, line_prefix)
     cat(formatted_text, "\n")
-    cat(crayon::silver("Use '<tidyprompt>$prompt_wraps' to show the wrapper functions.\n"))
+    cat(cli::col_silver("Use '<tidyprompt>$prompt_wraps' to show the wrapper functions.\n"))
   }
 
-  cat(crayon::silver("Use '<tidyprompt>$base_prompt' to show the base prompt text.\n"))
-  cat(crayon::silver("Use '<tidyprompt> |> construct_prompt_text()' to show the full prompt text.\n"))
+  cat(cli::col_silver("Use '<tidyprompt>$base_prompt' to show the base prompt text.\n"))
+  cat(cli::col_silver("Use '<tidyprompt> |> construct_prompt_text()' to get the full prompt text.\n"))
 
   return(invisible(x))
 }
