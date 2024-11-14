@@ -1,4 +1,11 @@
-#' Set ReAct mode for a prompt
+#' @title Set ReAct mode for a prompt
+#'
+#' @description This function enables ReAct mode for the evaluation of a prompt.
+#' In ReAct mode,the large language model (LLM) is asked to think step by step,
+#' each time detailing a thought, action, and observation, to eventually arrive at
+#' a final answer. It is hypothesized that this may increase LLM performance
+#' at solving complex tasks. ReAct mode is inspired by the paper of
+#' Yao et al. (2022, see https://arxiv.org/abs/2210.03629).
 #'
 #' @details Please note that ReAct mode may be most useful if in combination
 #' with tools that the LLM can use. See, for example, 'add_tools()' for
