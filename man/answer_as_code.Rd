@@ -28,8 +28,8 @@ in the R code that the LLM will generate. If evaluating the R code, these
 will be pre-loaded in the R session.}
 
 \item{evaluate_code}{Logical indicating whether the R code should be
-evaluated. If TRUE, the R code will be evaluated in a new R session (
-using the 'callr' package).}
+evaluated. If TRUE, the R code will be evaluated in a new R session
+(using the 'callr' package).}
 
 \item{evaluation_session}{A pre-existing r_session object (from the 'callr' package)
 to evaluate the R code (e.g., with certain objects loaded). If NULL, a
@@ -64,7 +64,7 @@ If 'object', the function will return the object produced by the evaluated R cod
 If 'formatted_output', the function will return a formatted string with the
 extracted R code, its console output, and a print of the last object (identical
 to how it would be presented to the LLM if 'output_as_tool' is TRUE).
-If 'llm_answer', 'llm_answer', the function will return only the original LLM answer.
+If 'llm_answer', the function will return only the original LLM answer.
 When choosing 'console' or 'object', an additional instruction will be added to
 the prompt text to inform the LLM about the expected output of the R code.}
 }
