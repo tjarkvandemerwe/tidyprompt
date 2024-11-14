@@ -14,7 +14,7 @@
 #'
 #' @export
 #'
-#' @family prompt_text_helpers
+#' @family text_helpers
 df_to_string <- function(df, how = c("wide", "long")) {
   how <- match.arg(how)
 

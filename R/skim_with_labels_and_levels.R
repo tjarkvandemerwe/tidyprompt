@@ -10,7 +10,7 @@
 #'
 #' @export
 #'
-#' @family prompt_text_helpers
+#' @family text_helpers
 skim_with_labels_and_levels <- function(data) {
   # Extract labels and levels from data
   labels <- sapply(data, function(x) ifelse(is.null(attr(x, "label")), NA, attr(x, "label")))

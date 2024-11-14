@@ -15,3 +15,14 @@ A list with two lists: extractions and validations
 \description{
 Get extractions and validations from a tidyprompt
 }
+\seealso{
+Other tidyprompt_helpers: 
+\code{\link{construct_prompt_text}()},
+\code{\link{get_base_prompt}()},
+\code{\link{get_prompt_wraps}()},
+\code{\link{get_prompt_wraps_ordered}()},
+\code{\link{is_tidyprompt}()},
+\code{\link{print.tidyprompt}()},
+\code{\link{validate_tidyprompt}()}
+}
+\concept{tidyprompt_helpers}

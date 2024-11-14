@@ -52,3 +52,14 @@ readability, similar to the printing of tibbles in the tidyverse.
 }
 
 }
+\seealso{
+Other tidyprompt_helpers: 
+\code{\link{construct_prompt_text}()},
+\code{\link{get_base_prompt}()},
+\code{\link{get_extractions_and_validations}()},
+\code{\link{get_prompt_wraps}()},
+\code{\link{get_prompt_wraps_ordered}()},
+\code{\link{is_tidyprompt}()},
+\code{\link{validate_tidyprompt}()}
+}
+\concept{tidyprompt_helpers}

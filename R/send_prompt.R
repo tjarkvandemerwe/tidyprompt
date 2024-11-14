@@ -1,28 +1,56 @@
-#' Send a prompt to a LLM provider
+#' Send a prompt or tidyprompt to a LLM provider
 #'
-#' @param prompt A prompt object or a single string
-#' @param llm_provider 'llm_provider' object (default is 'ollama')
-#' @param max_interactions Maximum number of interactions before stopping
+#' This function is responsible for sending strings or [tidyprompt()] objects,
+#' including their prompt wraps, to a LLM provider (see [llm_provider()]) for evaluation.
+#' The function will interact with the LLM provider until a successful response
+#' is received or the maximum number of interactions is reached. The function will
+#' apply extraction and validation functions to the LLM response, as specified
+#' in the prompt wraps (see [prompt_wrap()]). If the maximum number of interactions
+#'
+#' @param prompt A string or a [tidyprompt()] object
+#' @param llm_provider [llm_provider()] object (default is [llm_provider_ollama()])
+#' @param max_interactions Maximum number of interactions allowed with the
+#' LLM provider. Default is 10. If the maximum number of interactions is reached
+#' without a successful response, 'NULL' is returned as the response (see return
+#' value)
 #' @param clean_chat_history If the chat history should be cleaned after each
-#' interaction. Default is TRUE. Cleaning the chat history means that only the
+#' interaction. Cleaning the chat history means that only the
 #' first and last message from the user, the last message from the assistant,
 #' and all messages from the system are used when requesting a new answer from
-#' the LLM; keeping the context window clean may increase the LLM's performance.
+#' the LLM; keeping the context window clean may increase the LLM's performance
 #' @param verbose If the interaction with the LLM provider should be printed
-#' to the console. Default is TRUE.
+#' to the console
 #' @param stream If the interaction with the LLM provider should be streamed.
-#' Default is TRUE. This setting only be used if the LLM provider already has a
-#' 'stream' parameter (which indicates there is support for streaming).
-#' @param return_mode One of 'full' or 'only_response'. If 'only_response',
-#' the function will only return the response (or NULL if unsuccessful).
-#' If 'full', the function will return a list with the following elements:
-#' 'success', 'response' (if successful), 'failed_response' (if unsuccessful),
-#' 'chat_history', 'start_time', 'end_time', and 'duration_seconds'. When using
-#' 'full' and you want to access a specific element during (base R) piping,
-#' you can use the 'extract_from_return_list' function to assist in this.
-#
-#' @return ...
+#' This setting only be used if the LLM provider already has a
+#' 'stream' parameter (which indicates there is support for streaming)
+#' @param return_mode One of 'full' or 'only_response'. See return value
+#'
+#' @return If return mode 'only_response',the function will only return the LLM response
+#' after extraction and validation functions have been applied (NULL is returned
+#' when unsucessful after the maximum number of interactions). If return mode 'full',
+#' the function, the function will return a list with the following elements:
+#' 'success' (logical indicating if all extractions and validations were successful
+#' within the maximum number of interactions), 'response' (the LLM response
+#' after extraction and validation functions have been applied; NULL if
+#' unsuccesful); 'failed_response' (if unsuccessful, the LLM response
+#' after the maximum number of interactions; NULL if successful), 'chat_history'
+#' (a dataframe with the full chat history which led to the final response),
+#' 'chat_history_clean' (a dataframe with the cleaned chat history which led to
+#' the final response; here, only the first and last message from the user, the
+#' last message from the assistant, and all messages from the system are kept),
+#' 'start_time' (the time when the function was called), 'end_time' (the time
+#' when the function ended), 'duration_seconds' (the duration of the function in
+#' seconds), and 'http_list' (a list with all HTTP requests and full responses made
+#' for chat completions). When using 'full' and you want to access a specific
+#' element during (base R) piping, you can use the '[extract_from_return_list()]'
+#' function to assist in this
+#'
 #' @export
+#'
+#' @seealso [tidyprompt()], [prompt_wrap()], [llm_provider()], [llm_provider_ollama()],
+#' [llm_provider_openai()], [llm_provider_openrouter()]
+#'
+#' @family prompt_evaluation
 send_prompt <- function(
     prompt,
     llm_provider = llm_provider_ollama(),

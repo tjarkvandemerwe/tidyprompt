@@ -65,7 +65,7 @@ answer_as_list <- function(
     items <- stringr::str_extract_all(response, "--\\s*([^\\-\\n]+)")[[1]]
 
     if (length(items) == 0) {
-      return(create_llm_feedback(glue::glue(
+      return(llm_feedback(glue::glue(
         "Could not parse any listed items from your response.",
         "{list_instruction}"
       )))
@@ -78,7 +78,7 @@ answer_as_list <- function(
     items <- stringr::str_trim(stringr::str_remove_all(items, "--\\s*"))
 
     if (!is.null(n_unique_items) && length(items) != n_unique_items) {
-      return(create_llm_feedback(glue::glue(
+      return(llm_feedback(glue::glue(
         "The number of unique items in your list should be {n_unique_items}.",
         "{list_instruction}"
       )))

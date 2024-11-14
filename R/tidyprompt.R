@@ -69,6 +69,7 @@ tidyprompt.tidyprompt <- function(input) {
 #'
 #' @return TRUE if the tidyprompt is valid, otherwise an error is thrown
 #' @export
+#' @family tidyprompt_helpers
 validate_tidyprompt <- function(tidyprompt) {
   if (!inherits(tidyprompt, "tidyprompt"))
     stop("tidyprompt is not of class 'tidyprompt'")
@@ -105,6 +106,7 @@ validate_tidyprompt <- function(tidyprompt) {
 #'
 #' @return TRUE if the object is a valid tidyprompt, otherwise FALSE
 #' @export
+#' @family tidyprompt_helpers
 is_tidyprompt <- function(tidyprompt) {
   tryCatch({
     validate_tidyprompt(tidyprompt)
@@ -121,6 +123,7 @@ is_tidyprompt <- function(tidyprompt) {
 #'
 #' @return The base prompt from the tidyprompt
 #' @export
+#' @family tidyprompt_helpers
 get_base_prompt <- function(tidyprompt) {
   tidyprompt <- validate_tidyprompt(tidyprompt)
 
@@ -137,6 +140,7 @@ get_base_prompt <- function(tidyprompt) {
 #'
 #' @return A list of prompt wraps from the tidyprompt
 #' @export
+#' @family tidyprompt_helpers
 get_prompt_wraps <- function(tidyprompt) {
   tidyprompt <- validate_tidyprompt(tidyprompt)
   return(tidyprompt$prompt_wraps)
@@ -156,6 +160,7 @@ get_prompt_wraps <- function(tidyprompt) {
 #'
 #' @return A list of prompt wraps from the tidyprompt, reordered in order of operations
 #' @export
+#' @family tidyprompt_helpers
 get_prompt_wraps_ordered <- function(tidyprompt) {
   tidyprompt <- validate_tidyprompt(tidyprompt)
 
@@ -186,6 +191,8 @@ get_prompt_wraps_ordered <- function(tidyprompt) {
 #'
 #' @return The prompt text constructed from the tidyprompt object
 #' @export
+#'
+#' @family tidyprompt_helpers
 construct_prompt_text <- function(tidyprompt) {
   tidyprompt <- validate_tidyprompt(tidyprompt)
 
@@ -209,6 +216,7 @@ construct_prompt_text <- function(tidyprompt) {
 #'
 #' @return A list with two lists: extractions and validations
 #' @export
+#' @family tidyprompt_helpers
 get_extractions_and_validations <- function(tidyprompt) {
   tidyprompt <- validate_tidyprompt(tidyprompt)
 

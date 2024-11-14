@@ -23,4 +23,8 @@ will append the text to the end of the prompt text.
 Add text to a prompt by adding a prompt wrapper to the tidyprompt.
 The text will be added to the end of the prompt text.
 }
+\seealso{
+Other other_prompt_wraps: 
+\code{\link{set_system_prompt}()}
+}
 \concept{other_prompt_wraps}

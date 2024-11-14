@@ -38,3 +38,16 @@ A list with the role and content of the response from the LLM provider
 Helper function to handle making requests to LLM providers, to be used
 within a complete_chat() function for a LLM provider.
 }
+\seealso{
+Other llm_provider: 
+\code{\link{llm_provider}},
+\code{\link{llm_provider_fake}()},
+\code{\link{llm_provider_google_gemini}()},
+\code{\link{llm_provider_groq}()},
+\code{\link{llm_provider_mistral}()},
+\code{\link{llm_provider_ollama}()},
+\code{\link{llm_provider_openai}()},
+\code{\link{llm_provider_openrouter}()},
+\code{\link{llm_provider_xai}()}
+}
+\concept{llm_provider}

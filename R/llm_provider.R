@@ -6,6 +6,8 @@
 #' different LLM providers, such Ollama, OpenAI, or other custom providers.
 #'
 #' @export
+#'
+#' @family llm_provider
 llm_provider <- R6::R6Class(
   "llm_provider",
   public = list(
@@ -187,7 +189,10 @@ llm_provider <- R6::R6Class(
 #' (you are then encouraged to submit a pull request to the GitHub repo of 'tidyprompt').
 #'
 #' @return A list with the role and content of the response from the LLM provider
+#'
 #' @export
+#'
+#' @family llm_provider
 make_llm_provider_request <- function(
     url, headers = NULL, body, stream = NULL, verbose = getOption("tidyprompt.verbose", TRUE),
     stream_api_type = c("openai", "ollama")
@@ -302,7 +307,10 @@ make_llm_provider_request <- function(
 #' @param url The URL to the Ollama API
 #'
 #' @return A new llm_provider object for use of the Ollama API
+#'
 #' @export
+#'
+#' @family llm_provider
 llm_provider_ollama <- function(
     parameters = list(
       model = "llama3.1:8b",
@@ -369,6 +377,8 @@ llm_provider_ollama <- function(
 #' @return A new llm_provider object for use of the OpenAI API
 #'
 #' @export
+#'
+#' @family llm_provider
 llm_provider_openai <- function(
     parameters = list(
       model = "gpt-4o-mini",
@@ -429,7 +439,10 @@ llm_provider_openai <- function(
 #' @param api_key The API key to use for authentication with the OpenRouter API
 #'
 #' @return A new llm_provider object for use of the OpenRouter API
+#'
 #' @export
+#'
+#' @family llm_provider
 llm_provider_openrouter <- function(
     parameters = list(
       model = "qwen/qwen-2.5-7b-instruct",
@@ -461,6 +474,8 @@ llm_provider_openrouter <- function(
 #' @return A new llm_provider object for use of the Mistral API
 #'
 #' @export
+#'
+#' @family llm_provider
 llm_provider_mistral <- function(
     parameters = list(
       model = "ministral-3b-latest",
@@ -488,7 +503,10 @@ llm_provider_mistral <- function(
 #' @param url The URL to the Groq API
 #'
 #' @return A new llm_provider object for use of the Groq API
+#'
 #' @export
+#'
+#' @family llm_provider
 llm_provider_groq <- function(
     parameters = list(
       model = "llama-3.1-8b-instant",
@@ -516,7 +534,10 @@ llm_provider_groq <- function(
 #' @param api_key The API key to use for authentication with the XAI API
 #'
 #' @return A new llm_provider object for use of the XAI API
+#'
 #' @export
+#'
+#' @family llm_provider
 llm_provider_xai <- function(
     parameters = list(
       model = "grok-beta",
@@ -548,7 +569,10 @@ llm_provider_xai <- function(
 #' (see: https://aistudio.google.com/app/apikey)
 #'
 #' @return A new llm_provider object for use of the Google Gemini API
+#'
 #' @export
+#'
+#' @family llm_provider
 llm_provider_google_gemini <- function(
     parameters = list(
       model = "gemini-1.5-flash"
@@ -627,7 +651,10 @@ llm_provider_google_gemini <- function(
 #' should be printed to the console. Default is TRUE.
 #'
 #' @return A new llm_provider object for use of the fake LLM provider
+#'
 #' @export
+#'
+#' @family llm_provider
 llm_provider_fake <- function(verbose = getOption("tidyprompt.verbose", TRUE)) {
   complete_chat <- function(chat_history) {
     last_msg <- tail(chat_history$content, 1)

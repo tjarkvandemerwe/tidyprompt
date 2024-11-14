@@ -15,7 +15,10 @@
 #' Typically, tools are applied first, then modes, then unspecified wraps.
 #'
 #' @return A tidyprompt object with the new prompt wrap added to it.
+#'
 #' @export
+#'
+#' @family prompt_wrap_creation
 prompt_wrap <- function(
     prompt,
     modify_fn = NULL,

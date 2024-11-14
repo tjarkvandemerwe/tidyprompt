@@ -15,3 +15,14 @@ A list of prompt wraps from the tidyprompt
 \description{
 Get prompt wraps from tidyprompt
 }
+\seealso{
+Other tidyprompt_helpers: 
+\code{\link{construct_prompt_text}()},
+\code{\link{get_base_prompt}()},
+\code{\link{get_extractions_and_validations}()},
+\code{\link{get_prompt_wraps_ordered}()},
+\code{\link{is_tidyprompt}()},
+\code{\link{print.tidyprompt}()},
+\code{\link{validate_tidyprompt}()}
+}
+\concept{tidyprompt_helpers}

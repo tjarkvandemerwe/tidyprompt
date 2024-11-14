@@ -67,7 +67,7 @@ answer_by_chain_of_thought <- function(
       tolower(extracted_response) == "answer" ||
       tolower(extracted_response) == "final answer"
     ) {
-      return(create_llm_feedback(glue::glue(
+      return(llm_feedback(glue::glue(
         "Error, could not parse your final answer.
           Please type: 'FINISH[<put here your final answer to the original prompt>]'"
       )))

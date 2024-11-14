@@ -1,12 +1,17 @@
 #' Set system prompt
 #'
-#' Set the system prompt for a prompt
+#' Set the system prompt for a prompt. The system prompt will be added
+#' as a message with role 'system' at the start of the chat history when
+#' this prompt is evaluated by [send_prompt()].
 #'
-#' @param prompt A prompt object
+#' @param prompt A single character string or a tidyprompt object
 #' @param system_prompt A single character string representing the system prompt
 #'
-#' @return A prompt object with the system prompt set
+#' @return A object with the system prompt set
+#'
 #' @export
+#'
+#' @family other_prompt_wraps
 set_system_prompt <- function(prompt, system_prompt) {
   prompt <- tidyprompt(prompt)
 

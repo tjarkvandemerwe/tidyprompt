@@ -18,7 +18,10 @@ answer_as_named_list(
 
 \item{item_instructions}{An optional named list of additional instructions for each item.}
 
-\item{item_validations}{An optional named list of validation functions for each item.}
+\item{item_validations}{An optional named list of validation functions for each item.
+Like validation functions for a \code{\link[=prompt_wrap]{prompt_wrap()}}, these functions should return
+\code{\link[=llm_feedback]{llm_feedback()}} if the validation fails. If the validation
+is successful, the function should return TRUE.}
 }
 \value{
 A tidyprompt with an added prompt wrapper object that ensures
@@ -28,7 +31,7 @@ the LLM response is a named list with the specified item names, optional instruc
 Extract named list from LLM response with optional item instructions and validations
 }
 \seealso{
-\code{\link[=answer_as_list]{answer_as_list()}}
+\code{\link[=answer_as_list]{answer_as_list()}} \code{\link[=llm_feedback]{llm_feedback()}}
 
 Other answer_as: 
 \code{\link{answer_as_boolean}()},

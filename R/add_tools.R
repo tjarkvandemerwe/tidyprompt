@@ -4,16 +4,17 @@
 #' Users can specify a list of functions that the LLM can call, and the
 #' prompt will be modified to include information, as well as an
 #' accompanying extraction function to call the functions (handled by
-#' 'send_prompt()'). Functions should contain docstring-like documentation
+#' [send_prompt()]). Functions should contain docstring-like documentation
 #' within them, as this will be parsed to provide the LLM with information
-#' about the function's purpose and its arguments. See 'extract_tool_function_docs_for_llm()'
-#' for more details; also see the 'example_usage' vignette which demonstrates
-#' an example for this function.
+#' about the function's purpose and its arguments. See
+#' \code{vignette("example_usage", package = "tidyprompt")} which demonstrates
+#' an example for this function under section
+#' "Giving tools to the LLM (autonomous function-calling)".
 #'
 #' @param prompt A character string or a tidyprompt object
 #' @param tool_functions A list of R functions that the LLM can call.
 #' These functions should contain docstring-like documentation within them.
-#' See 'extract_tool_function_docs_for_llm()' for more details.
+#' See [extract_tool_function_docs_for_llm()] for more details.
 #'
 #' @return A tidyprompt object with an added prompt wrapper object which
 #' will allow the LLM to call R functions
@@ -21,7 +22,7 @@
 #' @export
 #'
 #' @family llm_tools
-#' @seealso [answer_as_code()]
+#' @seealso [answer_as_code()] [extract_tool_function_docs_for_llm()]
 add_tools <- function(prompt, tool_functions = list()) {
   prompt <- tidyprompt(prompt)
 
@@ -107,7 +108,7 @@ add_tools <- function(prompt, tool_functions = list()) {
 
     # If the function is not found, return an error message
     if (is.null(tool_function)) {
-      return(create_llm_feedback(glue::glue("Error: Function '{function_name}' not found.")))
+      return(llm_feedback(glue::glue("Error: Function '{function_name}' not found.")))
     }
 
     # Call the tool function with the arguments and capture errors
@@ -130,7 +131,7 @@ add_tools <- function(prompt, tool_functions = list()) {
     )
 
     # Return the result (or the error feedback)
-    return(create_llm_feedback(result_string, tool_result = TRUE))
+    return(llm_feedback(result_string, tool_result = TRUE))
   }
   # Add environment with tool functions as an attribute to the extraction function
   environment_with_tool_functions <- new.env()

@@ -217,7 +217,7 @@ answer_as_code <- function(
         return(x)
       }
 
-      return(create_llm_feedback(paste0(
+      return(llm_feedback(paste0(
         "No R code detected. You must provide R code",
         " between ```r and ```."
       )))
@@ -226,7 +226,7 @@ answer_as_code <- function(
     # Check if the R code is valid
     parsed_code <- tryCatch(parse(text = extracted_code), error = function(e) e)
     if (inherits(parsed_code, "error")) {
-      return(create_llm_feedback(glue::glue(
+      return(llm_feedback(glue::glue(
         "Invalid R code detected:\n",
         "    {parsed_code$message}\n",
         "Please provide syntactically correct R code."
@@ -245,7 +245,7 @@ answer_as_code <- function(
 
     # Check if errors occured during execution
     if (!is.null(output$error)) {
-      return(create_llm_feedback(glue::glue(
+      return(llm_feedback(glue::glue(
         "An error occurred while executing the R code:\n",
         "    {output$error}"
       )))
@@ -253,19 +253,19 @@ answer_as_code <- function(
 
     # Check if the code produced any relevant output
     if (output$stdout == "" & return_mode == "console") {
-      return(create_llm_feedback(glue::glue(
+      return(llm_feedback(glue::glue(
         "The R code did not produce any console output.",
         " Please provide R code that produces console output."
       )))
     }
     if (is.null(output$result) & return_mode == "object") {
-      return(create_llm_feedback(glue::glue(
+      return(llm_feedback(glue::glue(
         "The R code did not produce an object.",
         " Please provide R code that produces an object."
       )))
     }
     if (is.null(output$stdout) & is.null(output$result)) {
-      return(create_llm_feedback(glue::glue(
+      return(llm_feedback(glue::glue(
         "The R code did not produce any output.",
         " Please provide R code that produces output."
       )))
@@ -300,7 +300,7 @@ answer_as_code <- function(
     )
 
     if (output_as_tool) {
-      return(create_llm_feedback(return_list$formatted_output, tool_result = TRUE))
+      return(llm_feedback(return_list$formatted_output, tool_result = TRUE))
     }
 
     if (return_mode == "full")

@@ -37,3 +37,8 @@ A tidyprompt object with the new prompt wrap added to it.
 \description{
 Wrap a prompt with additional functionality
 }
+\seealso{
+Other prompt_wrap_creation: 
+\code{\link{llm_feedback}()}
+}
+\concept{prompt_wrap_creation}

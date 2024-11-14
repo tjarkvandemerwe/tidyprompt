@@ -25,7 +25,7 @@ answer_as_regex <- function(
     if (grepl(regex, x)) {
       return(x)
     }
-    return(create_llm_feedback(instruction))
+    return(llm_feedback(instruction))
   }
 
   prompt_wrap(prompt, modify_fn, extraction_fn)

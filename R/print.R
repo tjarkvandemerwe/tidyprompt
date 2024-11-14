@@ -41,6 +41,8 @@
 #' }
 #'
 #' @exportS3Method print tidyprompt
+#'
+#' @family tidyprompt_helpers
 print.tidyprompt <- function(x, ...) {
   cat(cli::col_blue("<tidyprompt>\n"))
 

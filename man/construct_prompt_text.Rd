@@ -15,3 +15,14 @@ The prompt text constructed from the tidyprompt object
 \description{
 Construct prompt text from a tidyprompt object
 }
+\seealso{
+Other tidyprompt_helpers: 
+\code{\link{get_base_prompt}()},
+\code{\link{get_extractions_and_validations}()},
+\code{\link{get_prompt_wraps}()},
+\code{\link{get_prompt_wraps_ordered}()},
+\code{\link{is_tidyprompt}()},
+\code{\link{print.tidyprompt}()},
+\code{\link{validate_tidyprompt}()}
+}
+\concept{tidyprompt_helpers}

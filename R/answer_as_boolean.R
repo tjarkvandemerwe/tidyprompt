@@ -32,7 +32,7 @@ answer_as_boolean <- function(
     if (normalized %in% c("true", "false")) {
       return(as.logical(normalized))
     }
-    return(create_llm_feedback(instruction))
+    return(llm_feedback(instruction))
   }
 
   prompt_wrap(prompt, modify_fn, extraction_fn)

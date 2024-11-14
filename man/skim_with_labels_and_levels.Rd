@@ -18,7 +18,7 @@ labels, and levels for categorical variables. It is a wrapper around the skim()
 function from the 'skimr' package.
 }
 \seealso{
-Other prompt_text_helpers: 
+Other text_helpers: 
 \code{\link{df_to_string}()}
 }
-\concept{prompt_text_helpers}
+\concept{text_helpers}

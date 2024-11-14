@@ -34,3 +34,16 @@ A new llm_provider object for use of the Mistral API
 \description{
 This function creates a new llm_provider that interacts with the Mistral API.
 }
+\seealso{
+Other llm_provider: 
+\code{\link{llm_provider}},
+\code{\link{llm_provider_fake}()},
+\code{\link{llm_provider_google_gemini}()},
+\code{\link{llm_provider_groq}()},
+\code{\link{llm_provider_ollama}()},
+\code{\link{llm_provider_openai}()},
+\code{\link{llm_provider_openrouter}()},
+\code{\link{llm_provider_xai}()},
+\code{\link{make_llm_provider_request}()}
+}
+\concept{llm_provider}

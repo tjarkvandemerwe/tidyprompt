@@ -4,6 +4,9 @@
 #' @param item_names A character vector specifying the expected item names.
 #' @param item_instructions An optional named list of additional instructions for each item.
 #' @param item_validations An optional named list of validation functions for each item.
+#' Like validation functions for a [prompt_wrap()], these functions should return
+#' [llm_feedback()] if the validation fails. If the validation
+#' is successful, the function should return TRUE.
 #'
 #' @return A tidyprompt with an added prompt wrapper object that ensures
 #' the LLM response is a named list with the specified item names, optional instructions, and validations.
@@ -11,7 +14,8 @@
 #' @export
 #'
 #' @family answer_as
-#' @seealso [answer_as_list()]
+#'
+#' @seealso [answer_as_list()] [llm_feedback()]
 answer_as_named_list <- function(
     prompt,
     item_names,
@@ -75,7 +79,7 @@ answer_as_named_list <- function(
     named_items <- stringr::str_match_all(response, "--\\s*([^:]+):\\s*(.+)")[[1]]
 
     if (nrow(named_items) == 0) {
-      return(create_llm_feedback(glue::glue(
+      return(llm_feedback(glue::glue(
         "Could not parse any named items from your response.",
         "{list_instruction}"
       )))
@@ -91,7 +95,7 @@ answer_as_named_list <- function(
     # Validate all expected names are present
     missing_names <- setdiff(item_names, names(named_list))
     if (length(missing_names) > 0) {
-      return(create_llm_feedback(glue::glue(
+      return(llm_feedback(glue::glue(
         "The response is missing the following expected names: {paste(missing_names, collapse = ', ')}.\n",
         "{list_instruction}"
       )))
@@ -126,7 +130,7 @@ answer_as_named_list <- function(
           function(name) paste0("-- ", name, ": ", failed_validations[[name]]),
           USE.NAMES = FALSE
         )
-        return(create_llm_feedback(glue::glue(
+        return(llm_feedback(glue::glue(
           "Validation failed for the following items:\n",
           paste(failed_messages, collapse = "\n"),
           "\n{list_instruction}"

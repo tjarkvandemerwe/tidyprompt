@@ -9,6 +9,19 @@ objects with different implementations of the \code{complete_chat} function. Usi
 this class, you can create an \code{llm_provider} object that interacts with
 different LLM providers, such Ollama, OpenAI, or other custom providers.
 }
+\seealso{
+Other llm_provider: 
+\code{\link{llm_provider_fake}()},
+\code{\link{llm_provider_google_gemini}()},
+\code{\link{llm_provider_groq}()},
+\code{\link{llm_provider_mistral}()},
+\code{\link{llm_provider_ollama}()},
+\code{\link{llm_provider_openai}()},
+\code{\link{llm_provider_openrouter}()},
+\code{\link{llm_provider_xai}()},
+\code{\link{make_llm_provider_request}()}
+}
+\concept{llm_provider}
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
