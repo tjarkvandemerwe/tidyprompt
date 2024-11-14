@@ -16,5 +16,14 @@ should be extracted from the text inside the "FINISH\link{...}" brackets.}
 A tidyprompt with the chain-of-thought prompt_wrap added.
 }
 \description{
-Set chain of thought mode for a prompt
+This function enables chain of thought mode for evaluation of a prompt.
+In chain of thought mode, the large language model (LLM) is asked to think
+step by step to arrive at a final answer. It is hypothesized that this may
+increase LLM performance at solving complex tasks. Chain of thought mode
+is inspired by the method described in Wei et al. (2022).
+}
+\references{
+Wei, J., Wang, X., Schuurmans, D., Bosma, M., Ichter, B., Xia, F., Chi, E., Le, Q., & Zhou, D. (2022).
+Chain-of-Thought Prompting Elicits Reasoning in Large Language Models.
+\url{doi:10.48550/arXiv.2201.11903}
 }

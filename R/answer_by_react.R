@@ -17,12 +17,12 @@
 #' should be extracted from the text inside the "FINISH[...]" brackets.
 #'
 #' @return A tidyprompt with the ReAct-mode prompt_wrap added.
+#'
+#' @export
 #' @references
 #' Yao, S., Wu, Y., Cheung, W., Wang, Z., Narasimhan, K., & Kong, L. (2022).
 #' ReAct: Synergizing Reasoning and Acting in Language Models.
 #' <doi:10.48550/arXiv.2210.03629>
-#'
-#' @export
 answer_by_react <- function(
     prompt,
     extract_from_finish_brackets = TRUE
