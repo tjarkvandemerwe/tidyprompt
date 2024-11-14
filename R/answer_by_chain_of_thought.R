@@ -13,10 +13,13 @@
 #' @return A tidyprompt with the chain-of-thought prompt_wrap added.
 #'
 #' @export
+#'
 #' @references
 #' Wei, J., Wang, X., Schuurmans, D., Bosma, M., Ichter, B., Xia, F., Chi, E., Le, Q., & Zhou, D. (2022).
 #' Chain-of-Thought Prompting Elicits Reasoning in Large Language Models.
 #' <doi:10.48550/arXiv.2201.11903>
+#'
+#' @family answer_by
 answer_by_chain_of_thought <- function(
     prompt,
     extract_from_finish_brackets = TRUE

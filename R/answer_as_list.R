@@ -8,6 +8,9 @@
 #' will ensure that the LLM response is a list of items.
 #'
 #' @export
+#'
+#' @family answer_as
+#' @seealso [answer_as_named_list()]
 answer_as_list <- function(
     prompt,
     item_name = "item",

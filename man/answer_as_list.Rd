@@ -20,3 +20,14 @@ will ensure that the LLM response is a list of items.
 \description{
 Make LLM answer as a list of items
 }
+\seealso{
+\code{\link[=answer_as_named_list]{answer_as_named_list()}}
+
+Other answer_as: 
+\code{\link{answer_as_boolean}()},
+\code{\link{answer_as_code}()},
+\code{\link{answer_as_integer}()},
+\code{\link{answer_as_named_list}()},
+\code{\link{answer_as_regex}()}
+}
+\concept{answer_as}

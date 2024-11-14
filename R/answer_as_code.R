@@ -52,7 +52,11 @@
 #' the prompt text to inform the LLM about the expected output of the R code.
 #'
 #' @return A tidyprompt object with the new prompt wrap added to it
+#'
 #' @export
+#'
+#' @family answer_as
+#' @seealso [add_tools()]
 answer_as_code <- function(
     prompt,
     add_text = "You must code in the programming language 'R' to answer this prompt.",

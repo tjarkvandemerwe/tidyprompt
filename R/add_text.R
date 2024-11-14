@@ -10,7 +10,10 @@
 #
 #' @return A tidyprompt with an added prompt wrapper object which
 #' will append the text to the end of the prompt text.
+#'
 #' @export
+#'
+#' @family other_prompt_wraps
 add_text <- function(
     prompt,
     text, position = c("after", "before"), sep = "\n\n"

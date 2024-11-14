@@ -8,7 +8,10 @@
 #'
 #' @return A tidyprompt with an added prompt wrapper object which
 #' will ensure that the LLM response is a boolean.
+#'
 #' @export
+#'
+#' @family answer_as
 answer_as_boolean <- function(
     prompt,
     add_instruction_to_prompt = TRUE

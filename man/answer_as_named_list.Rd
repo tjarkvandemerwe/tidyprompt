@@ -27,3 +27,14 @@ the LLM response is a named list with the specified item names, optional instruc
 \description{
 Extract named list from LLM response with optional item instructions and validations
 }
+\seealso{
+\code{\link[=answer_as_list]{answer_as_list()}}
+
+Other answer_as: 
+\code{\link{answer_as_boolean}()},
+\code{\link{answer_as_code}()},
+\code{\link{answer_as_integer}()},
+\code{\link{answer_as_list}()},
+\code{\link{answer_as_regex}()}
+}
+\concept{answer_as}

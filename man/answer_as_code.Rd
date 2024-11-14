@@ -83,3 +83,14 @@ For the evaluation of the R code, the 'callr' package is required.
 Please note: automatic evaluation of generated R code may be dangerous to your
 system; you must use this function with caution.
 }
+\seealso{
+\code{\link[=add_tools]{add_tools()}}
+
+Other answer_as: 
+\code{\link{answer_as_boolean}()},
+\code{\link{answer_as_integer}()},
+\code{\link{answer_as_list}()},
+\code{\link{answer_as_named_list}()},
+\code{\link{answer_as_regex}()}
+}
+\concept{answer_as}

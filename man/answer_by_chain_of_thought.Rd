@@ -27,3 +27,8 @@ Wei, J., Wang, X., Schuurmans, D., Bosma, M., Ichter, B., Xia, F., Chi, E., Le, 
 Chain-of-Thought Prompting Elicits Reasoning in Large Language Models.
 \url{doi:10.48550/arXiv.2201.11903}
 }
+\seealso{
+Other answer_by: 
+\code{\link{answer_by_react}()}
+}
+\concept{answer_by}

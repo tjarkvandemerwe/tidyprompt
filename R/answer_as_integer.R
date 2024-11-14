@@ -10,7 +10,10 @@
 #'
 #' @return A tidyprompt with an added prompt wrapper object which
 #' will ensure that the LLM response is an integer.
+#'
 #' @export
+#'
+#' @family answer_as
 answer_as_integer <- function(
     prompt,
     min = NULL,

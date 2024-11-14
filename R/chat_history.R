@@ -11,6 +11,8 @@
 #' @return A valid chat history dataframe (of class 'chat_history').
 #'
 #' @export
+#'
+#' @family chat_history
 chat_history <- function(chat_history) {
   UseMethod("chat_history")
 }

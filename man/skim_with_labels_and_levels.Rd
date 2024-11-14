@@ -17,3 +17,8 @@ This function takes a dataframe and returns a skim summary with variable names,
 labels, and levels for categorical variables. It is a wrapper around the skim()
 function from the 'skimr' package.
 }
+\seealso{
+Other prompt_text_helpers: 
+\code{\link{df_to_string}()}
+}
+\concept{prompt_text_helpers}

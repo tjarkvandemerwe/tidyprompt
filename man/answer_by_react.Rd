@@ -34,3 +34,8 @@ Yao, S., Wu, Y., Cheung, W., Wang, Z., Narasimhan, K., & Kong, L. (2022).
 ReAct: Synergizing Reasoning and Acting in Language Models.
 \url{doi:10.48550/arXiv.2210.03629}
 }
+\seealso{
+Other answer_by: 
+\code{\link{answer_by_chain_of_thought}()}
+}
+\concept{answer_by}

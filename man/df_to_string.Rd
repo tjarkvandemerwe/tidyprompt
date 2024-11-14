@@ -22,3 +22,8 @@ A single string representing the data frame.
 Converts a data frame to a string format, for feeding to a LLM
 (or for display or logging).
 }
+\seealso{
+Other prompt_text_helpers: 
+\code{\link{skim_with_labels_and_levels}()}
+}
+\concept{prompt_text_helpers}

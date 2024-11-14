@@ -30,3 +30,12 @@ will ensure that the LLM response is an integer.
 \description{
 Make LLM answer as an integer (between min and max)
 }
+\seealso{
+Other answer_as: 
+\code{\link{answer_as_boolean}()},
+\code{\link{answer_as_code}()},
+\code{\link{answer_as_list}()},
+\code{\link{answer_as_named_list}()},
+\code{\link{answer_as_regex}()}
+}
+\concept{answer_as}

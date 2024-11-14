@@ -9,8 +9,12 @@
 #' followed by the row values on each new row. "long" presents the values
 #' of each row together with the column names, repeating for every row
 #' after two lines of whitespace.
+#'
 #' @return A single string representing the data frame.
+#'
 #' @export
+#'
+#' @family prompt_text_helpers
 df_to_string <- function(df, how = c("wide", "long")) {
   how <- match.arg(how)
 

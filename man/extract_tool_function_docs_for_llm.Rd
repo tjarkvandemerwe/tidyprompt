@@ -7,13 +7,9 @@
 extract_tool_function_docs_for_llm(func)
 }
 \arguments{
-\item{func}{A function object which has internal, roxygen-like documentation,
+\item{func}{A function object which has internal, docstring-like, roxygen-like documentation,
 with the 'llm_tool::' tags: 'name', 'description', 'param', 'return', and 'example'
-(e.g., llm_tool::name my_function_name).
-
-Note that for 'example' it must be a one-line example of how the function is used in R,
-this will be converted to how LLM should call the function in text (slightly different
-syntax).}
+(e.g., llm_tool::name my_function_name).}
 }
 \value{
 A list with the following elements:
@@ -26,5 +22,15 @@ A list with the following elements:
 }
 }
 \description{
-Extract docstring-documentation from a function
+This function parses docstring-like documentation from a function object.
+This is used to extract information about the function's name, description,
+parameters, return value, and example usage. 'add_tools()' uses this function
+to provide an LLM with information about the functions it can call. For an
+example of how such documentation within a function, see the 'example_usage'
+vignette.
+}
+\details{
+Note that for 'example' it must be a one-line example of how the function is used in R,
+this will be converted to how LLM should call the function in text (slightly different
+syntax).
 }

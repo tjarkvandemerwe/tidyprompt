@@ -9,6 +9,9 @@
 #' the LLM response is a named list with the specified item names, optional instructions, and validations.
 #'
 #' @export
+#'
+#' @family answer_as
+#' @seealso [answer_as_list()]
 answer_as_named_list <- function(
     prompt,
     item_names,

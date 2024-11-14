@@ -9,6 +9,7 @@
 #' @param name_of_element A character string with the name of the element to extract from the list
 #'
 #' @return The extracted element from the list
+#'
 #' @export
 extract_from_return_list <- function(list, name_of_element = "response") {
   if (!is.list(list))

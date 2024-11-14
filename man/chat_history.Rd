@@ -19,3 +19,4 @@ the expected format with 'role' and 'content' columns. It has separate methods
 for data.frame and character inputs and includes a helper function to add a
 system prompt to the chat history.
 }
+\concept{chat_history}

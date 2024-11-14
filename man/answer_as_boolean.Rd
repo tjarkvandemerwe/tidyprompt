@@ -21,3 +21,12 @@ will ensure that the LLM response is a boolean.
 \description{
 Make LLM answer as a boolean (TRUE or FALSE)
 }
+\seealso{
+Other answer_as: 
+\code{\link{answer_as_code}()},
+\code{\link{answer_as_integer}()},
+\code{\link{answer_as_list}()},
+\code{\link{answer_as_named_list}()},
+\code{\link{answer_as_regex}()}
+}
+\concept{answer_as}

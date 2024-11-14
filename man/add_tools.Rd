@@ -2,18 +2,33 @@
 % Please edit documentation in R/add_tools.R
 \name{add_tools}
 \alias{add_tools}
-\title{Add function-calling to prompt}
+\title{Enable R function calling for prompt evaluation by a LLM}
 \usage{
 add_tools(prompt, tool_functions = list())
 }
 \arguments{
-\item{prompt}{...}
+\item{prompt}{A character string or a tidyprompt object}
 
-\item{tool_functions}{...}
+\item{tool_functions}{A list of R functions that the LLM can call.
+These functions should contain docstring-like documentation within them.
+See 'extract_tool_function_docs_for_llm()' for more details.}
 }
 \value{
-...
+A tidyprompt object with an added prompt wrapper object which
+will allow the LLM to call R functions
 }
 \description{
-Add function-calling to prompt
+This function adds the ability for the a LLM to call R functions.
+Users can specify a list of functions that the LLM can call, and the
+prompt will be modified to include information, as well as an
+accompanying extraction function to call the functions (handled by
+'send_prompt()'). Functions should contain docstring-like documentation
+within them, as this will be parsed to provide the LLM with information
+about the function's purpose and its arguments. See 'extract_tool_function_docs_for_llm()'
+for more details; also see the 'example_usage' vignette which demonstrates
+an example for this function.
 }
+\seealso{
+\code{\link[=answer_as_code]{answer_as_code()}}
+}
+\concept{llm_tools}
