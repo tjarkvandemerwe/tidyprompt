@@ -98,8 +98,8 @@ will be pre-loaded in the R session.</p></dd>
 
 <dt id="arg-evaluate-code">evaluate_code<a class="anchor" aria-label="anchor" href="#arg-evaluate-code"></a></dt>
 <dd><p>Logical indicating whether the R code should be
-evaluated. If TRUE, the R code will be evaluated in a new R session (
-using the 'callr' package).</p></dd>
+evaluated. If TRUE, the R code will be evaluated in a new R session
+(using the 'callr' package).</p></dd>
 
 
 <dt id="arg-evaluation-session">evaluation_session<a class="anchor" aria-label="anchor" href="#arg-evaluation-session"></a></dt>
@@ -146,7 +146,7 @@ If 'object', the function will return the object produced by the evaluated R cod
 If 'formatted_output', the function will return a formatted string with the
 extracted R code, its console output, and a print of the last object (identical
 to how it would be presented to the LLM if 'output_as_tool' is TRUE).
-If 'llm_answer', 'llm_answer', the function will return only the original LLM answer.
+If 'llm_answer', the function will return only the original LLM answer.
 When choosing 'console' or 'object', an additional instruction will be added to
 the prompt text to inform the LLM about the expected output of the R code.</p></dd>
 
