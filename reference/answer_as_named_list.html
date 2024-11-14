@@ -55,28 +55,29 @@
 
 
 <dl><dt id="arg-prompt">prompt<a class="anchor" aria-label="anchor" href="#arg-prompt"></a></dt>
-<dd><p>A character string or a tidyprompt object.</p></dd>
+<dd><p>A single string or a <code><a href="tidyprompt.html">tidyprompt()</a></code> object</p></dd>
 
 
 <dt id="arg-item-names">item_names<a class="anchor" aria-label="anchor" href="#arg-item-names"></a></dt>
-<dd><p>A character vector specifying the expected item names.</p></dd>
+<dd><p>A character vector specifying the expected item names</p></dd>
 
 
 <dt id="arg-item-instructions">item_instructions<a class="anchor" aria-label="anchor" href="#arg-item-instructions"></a></dt>
-<dd><p>An optional named list of additional instructions for each item.</p></dd>
+<dd><p>An optional named list of additional instructions for each item</p></dd>
 
 
 <dt id="arg-item-validations">item_validations<a class="anchor" aria-label="anchor" href="#arg-item-validations"></a></dt>
 <dd><p>An optional named list of validation functions for each item.
 Like validation functions for a <code><a href="prompt_wrap.html">prompt_wrap()</a></code>, these functions should return
 <code><a href="llm_feedback.html">llm_feedback()</a></code> if the validation fails. If the validation
-is successful, the function should return TRUE.</p></dd>
+is successful, the function should return TRUE</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A tidyprompt with an added prompt wrapper object that ensures
-the LLM response is a named list with the specified item names, optional instructions, and validations.</p>
+    <p>A <code><a href="tidyprompt.html">tidyprompt()</a></code> with an added <code><a href="prompt_wrap.html">prompt_wrap()</a></code> that ensures
+the LLM response is a named list with the specified item names, optional
+instructions, and validations.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

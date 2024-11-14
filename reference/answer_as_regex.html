@@ -50,16 +50,17 @@
 
 
 <dl><dt id="arg-prompt">prompt<a class="anchor" aria-label="anchor" href="#arg-prompt"></a></dt>
-<dd><p>A character string or a tidyprompt object</p></dd>
+<dd><p>A single string or a <code><a href="tidyprompt.html">tidyprompt()</a></code> object</p></dd>
 
 
 <dt id="arg-regex">regex<a class="anchor" aria-label="anchor" href="#arg-regex"></a></dt>
-<dd><p>A character string specifying the regular expression the response must match.</p></dd>
+<dd><p>A character string specifying the regular expression the response must match</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A tidyprompt ensuring the LLM response matches the specified regex.</p>
+    <p>A <code><a href="tidyprompt.html">tidyprompt()</a></code> with an added <code><a href="prompt_wrap.html">prompt_wrap()</a></code> which will ensure
+that the LLM response matches the specified regex</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
