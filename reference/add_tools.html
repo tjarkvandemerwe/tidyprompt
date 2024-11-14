@@ -3,19 +3,21 @@
 Users can specify a list of functions that the LLM can call, and the
 prompt will be modified to include information, as well as an
 accompanying extraction function to call the functions (handled by
-'send_prompt()'). Functions should contain docstring-like documentation
+send_prompt()). Functions should contain docstring-like documentation
 within them, as this will be parsed to provide the LLM with information
-about the function's purpose and its arguments. See 'extract_tool_function_docs_for_llm()'
-for more details; also see the 'example_usage' vignette which demonstrates
-an example for this function."><meta property="og:description" content="This function adds the ability for the a LLM to call R functions.
+about the function's purpose and its arguments. See
+vignette(&quot;example_usage&quot;, package = &quot;tidyprompt&quot;) which demonstrates
+an example for this function under section
+&quot;Giving tools to the LLM (autonomous function-calling)&quot;."><meta property="og:description" content="This function adds the ability for the a LLM to call R functions.
 Users can specify a list of functions that the LLM can call, and the
 prompt will be modified to include information, as well as an
 accompanying extraction function to call the functions (handled by
-'send_prompt()'). Functions should contain docstring-like documentation
+send_prompt()). Functions should contain docstring-like documentation
 within them, as this will be parsed to provide the LLM with information
-about the function's purpose and its arguments. See 'extract_tool_function_docs_for_llm()'
-for more details; also see the 'example_usage' vignette which demonstrates
-an example for this function."></head><body>
+about the function's purpose and its arguments. See
+vignette(&quot;example_usage&quot;, package = &quot;tidyprompt&quot;) which demonstrates
+an example for this function under section
+&quot;Giving tools to the LLM (autonomous function-calling)&quot;."></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -57,11 +59,12 @@ an example for this function."></head><body>
 Users can specify a list of functions that the LLM can call, and the
 prompt will be modified to include information, as well as an
 accompanying extraction function to call the functions (handled by
-'send_prompt()'). Functions should contain docstring-like documentation
+<code><a href="send_prompt.html">send_prompt()</a></code>). Functions should contain docstring-like documentation
 within them, as this will be parsed to provide the LLM with information
-about the function's purpose and its arguments. See 'extract_tool_function_docs_for_llm()'
-for more details; also see the 'example_usage' vignette which demonstrates
-an example for this function.</p>
+about the function's purpose and its arguments. See
+<code><a href="../articles/example_usage.html">vignette("example_usage", package = "tidyprompt")</a></code> which demonstrates
+an example for this function under section
+"Giving tools to the LLM (autonomous function-calling)".</p>
     </div>
 
     <div class="section level2">
@@ -80,7 +83,7 @@ an example for this function.</p>
 <dt id="arg-tool-functions">tool_functions<a class="anchor" aria-label="anchor" href="#arg-tool-functions"></a></dt>
 <dd><p>A list of R functions that the LLM can call.
 These functions should contain docstring-like documentation within them.
-See 'extract_tool_function_docs_for_llm()' for more details.</p></dd>
+See <code><a href="extract_tool_function_docs_for_llm.html">extract_tool_function_docs_for_llm()</a></code> for more details.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -90,7 +93,7 @@ will allow the LLM to call R functions</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="answer_as_code.html">answer_as_code()</a></code></p></div>
+    <div class="dont-index"><p><code><a href="answer_as_code.html">answer_as_code()</a></code> <code><a href="extract_tool_function_docs_for_llm.html">extract_tool_function_docs_for_llm()</a></code></p></div>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

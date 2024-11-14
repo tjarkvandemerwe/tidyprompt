@@ -18,7 +18,6 @@
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/answer_by_react.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/chat_history.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/construct_prompt_text.html</loc></url>
-<url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/create_llm_feedback.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/df_to_string.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/extract_doc_section.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/extract_from_return_list.html</loc></url>
@@ -30,6 +29,7 @@
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/get_prompt_wraps_ordered.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/index.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/is_tidyprompt.html</loc></url>
+<url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/llm_feedback.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/llm_provider.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/llm_provider_fake.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/llm_provider_google_gemini.html</loc></url>
