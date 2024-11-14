@@ -1,4 +1,4 @@
-#' Send a prompt or tidyprompt to a LLM provider
+#' Send a prompt or [tidyprompt()] to a LLM provider
 #'
 #' This function is responsible for sending strings or [tidyprompt()] objects,
 #' including their prompt wraps, to a LLM provider (see [llm_provider()]) for evaluation.

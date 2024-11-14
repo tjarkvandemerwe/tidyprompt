@@ -1,28 +1,28 @@
-#' Print Method for tidyprompt Objects
+#' Print method for [tidyprompt()] objects
 #'
-#' This function is a custom print method for displaying a `tidyprompt` object.
-#' A `tidyprompt` typically contains a base prompt and may have additional prompt
+#' This function is a custom print method for displaying a [tidyprompt()] object.
+#' A [tidyprompt()] typically contains a base prompt and may have additional prompt
 #' wrappers that modify it. This function applies the modifications specified
 #' in the wrapper functions and displays the resulting prompt in a structured
 #' and visually clear manner.
 #'
-#' @param x A `tidyprompt` object. The object should contain:
+#' @param x A [tidyprompt()] object. The object should contain:
 #'   \describe{
 #'     \item{`base_prompt`}{A character string containing the base prompt text.}
 #'     \item{`prompt_wraps`}{A list containing wrapper functions that modify
 #'     the base prompt.}
 #'   }
 #' @param ... Additional arguments passed to `print.tidyprompt`
-#' (not used; needs to be present in line with guidelines for generic functions).
+#' (not used; needs to be present in line with guidelines for generic functions)
 #'
 #' @details The `print.tidyprompt` function displays the base prompt and, if applicable,
 #'   the modified prompt after applying the wrapper functions. The output is formatted
 #'   with line breaks preserved and with colored text to distinguish metadata from
 #'   the prompt content. This is done using the `cli` package to enhance
-#'   readability, similar to the printing of tibbles in the tidyverse.
+#'   readability, similar to the printing of tibbles in the tidyverse
 #'
 #' @return This function is used for its side effect of printing the prompt
-#'   to the console. It returns `p` invisibly.
+#'   to the console. It returns `p` invisibly
 #'
 #' @examples
 #' \dontrun{

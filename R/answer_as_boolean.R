@@ -1,13 +1,13 @@
 #' Make LLM answer as a boolean (TRUE or FALSE)
 #'
-#' @param prompt A character string or a tidyprompt object
+#' @param prompt A single string or a [tidyprompt()] object
 #' @param add_instruction_to_prompt (optional) Add instruction for replying
 #' as a boolean to the prompt text. Set to FALSE for debugging if extractions/validations
 #' are working as expected (without instruction the answer should fail the
-#' validation function, initiating a retry).
+#' validation function, initiating a retry)
 #'
-#' @return A tidyprompt with an added prompt wrapper object which
-#' will ensure that the LLM response is a boolean.
+#' @return A [tidyprompt()] with an added [prompt_wrap()] which
+#' will ensure that the LLM response is a boolean
 #'
 #' @export
 #'

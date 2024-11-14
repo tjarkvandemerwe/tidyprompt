@@ -2,7 +2,7 @@
 % Please edit documentation in R/llm_provider.R
 \name{llm_provider_ollama}
 \alias{llm_provider_ollama}
-\title{Create a new Ollama llm_provider instance}
+\title{Create a new Ollama \code{\link[=llm_provider]{llm_provider()}} instance}
 \usage{
 llm_provider_ollama(
   parameters = list(model = "llama3.1:8b", stream = getOption("tidyprompt.stream", TRUE)),
@@ -28,10 +28,10 @@ should be printed to the console}
 \item{url}{The URL to the Ollama API}
 }
 \value{
-A new llm_provider object for use of the Ollama API
+A new \code{\link[=llm_provider]{llm_provider()}} object for use of the Ollama API
 }
 \description{
-Create a new Ollama llm_provider instance
+Create a new Ollama \code{\link[=llm_provider]{llm_provider()}} instance
 }
 \seealso{
 Other llm_provider: 

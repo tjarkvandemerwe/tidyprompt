@@ -2,12 +2,12 @@
 % Please edit documentation in R/print.R
 \name{print.tidyprompt}
 \alias{print.tidyprompt}
-\title{Print Method for tidyprompt Objects}
+\title{Print method for \code{\link[=tidyprompt]{tidyprompt()}} objects}
 \usage{
 \method{print}{tidyprompt}(x, ...)
 }
 \arguments{
-\item{x}{A \code{tidyprompt} object. The object should contain:
+\item{x}{A \code{\link[=tidyprompt]{tidyprompt()}} object. The object should contain:
 \describe{
 \item{\code{base_prompt}}{A character string containing the base prompt text.}
 \item{\code{prompt_wraps}}{A list containing wrapper functions that modify
@@ -15,15 +15,15 @@ the base prompt.}
 }}
 
 \item{...}{Additional arguments passed to \code{print.tidyprompt}
-(not used; needs to be present in line with guidelines for generic functions).}
+(not used; needs to be present in line with guidelines for generic functions)}
 }
 \value{
 This function is used for its side effect of printing the prompt
-to the console. It returns \code{p} invisibly.
+to the console. It returns \code{p} invisibly
 }
 \description{
-This function is a custom print method for displaying a \code{tidyprompt} object.
-A \code{tidyprompt} typically contains a base prompt and may have additional prompt
+This function is a custom print method for displaying a \code{\link[=tidyprompt]{tidyprompt()}} object.
+A \code{\link[=tidyprompt]{tidyprompt()}} typically contains a base prompt and may have additional prompt
 wrappers that modify it. This function applies the modifications specified
 in the wrapper functions and displays the resulting prompt in a structured
 and visually clear manner.
@@ -33,7 +33,7 @@ The \code{print.tidyprompt} function displays the base prompt and, if applicable
 the modified prompt after applying the wrapper functions. The output is formatted
 with line breaks preserved and with colored text to distinguish metadata from
 the prompt content. This is done using the \code{cli} package to enhance
-readability, similar to the printing of tibbles in the tidyverse.
+readability, similar to the printing of tibbles in the tidyverse
 }
 \examples{
 \dontrun{

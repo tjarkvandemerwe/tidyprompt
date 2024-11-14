@@ -7,21 +7,21 @@
 add_text(prompt, text, position = c("after", "before"), sep = "\\n\\n")
 }
 \arguments{
-\item{prompt}{A single string or a tidyprompt object.}
+\item{prompt}{A single string or a \code{\link[=tidyprompt]{tidyprompt()}} object}
 
-\item{text}{Text to be added to the prompt.}
+\item{text}{Text to be added to the current prompt text}
 
 \item{position}{Where to add the text; either "after" or "before".}
 
-\item{sep}{Separator to be used between the original prompt text and the added text.}
+\item{sep}{Separator to be used between the current prompt text and the text to be added}
 }
 \value{
-A tidyprompt with an added prompt wrapper object which
-will append the text to the end of the prompt text.
+A \code{\link[=tidyprompt]{tidyprompt()}} with an added \code{\link[=prompt_wrap]{prompt_wrap()}} which
+will append the text to the end of the current prompt text
 }
 \description{
-Add text to a prompt by adding a prompt wrapper to the tidyprompt.
-The text will be added to the end of the prompt text.
+Add text to a prompt by adding a \code{\link[=prompt_wrap]{prompt_wrap()}} which will append the text to
+the before or after the current prompt text.
 }
 \seealso{
 Other other_prompt_wraps: 

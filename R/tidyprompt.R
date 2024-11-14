@@ -1,10 +1,21 @@
-#' Methods to create and manipulate prompt objects
+#' Methods to create, construct, and empower prompt objects
+#'
+#' A tidyprompt is an object which contains an initial prompt text
+#' and a list of [prompt_wrap()]. The prompt wraps contain functions
+#' which modify the prompt text in some way, and, once the LLM response
+#' to the prompt is given, apply extraction and validation to the response.
+#' Using a [tidyprompt()] and [prompt_wrap()] objects allows for easy
+#' chaining of modifications and empowerements to a prompt, ensuring
+#' that the LLM output will meet the desired criteria. The [tidyprompt()]
+#' object offers many possibilities, such as structured and validated output,
+#' LLM function calling, and LLM code generation and evaluation.
 #'
 #' @param input Input to prompt. If a character string is passed,
 #' a new prompt object will be created with that character string as the base prompt.
 #'
 #' @return A prompt object (or an error if an unsuitable input is provided)
 #' @export
+#' @seealso [prompt_wrap()] [send_prompt()]
 tidyprompt <- function(input) {
   UseMethod("tidyprompt")
 }

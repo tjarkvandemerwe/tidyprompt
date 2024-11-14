@@ -7,12 +7,13 @@
 answer_as_regex(prompt, regex)
 }
 \arguments{
-\item{prompt}{A character string or a tidyprompt object}
+\item{prompt}{A single string or a \code{\link[=tidyprompt]{tidyprompt()}} object}
 
-\item{regex}{A character string specifying the regular expression the response must match.}
+\item{regex}{A character string specifying the regular expression the response must match}
 }
 \value{
-A tidyprompt ensuring the LLM response matches the specified regex.
+A \code{\link[=tidyprompt]{tidyprompt()}} with an added \code{\link[=prompt_wrap]{prompt_wrap()}} which will ensure
+that the LLM response matches the specified regex
 }
 \description{
 Make LLM answer match a specific regex

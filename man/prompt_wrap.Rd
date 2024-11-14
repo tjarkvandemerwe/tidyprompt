@@ -2,7 +2,7 @@
 % Please edit documentation in R/prompt_wrap.R
 \name{prompt_wrap}
 \alias{prompt_wrap}
-\title{Wrap a prompt with additional functionality}
+\title{Wrap a prompt or tidyprompt with additional functionality}
 \usage{
 prompt_wrap(
   prompt,
@@ -13,31 +13,42 @@ prompt_wrap(
 )
 }
 \arguments{
-\item{prompt}{A tidyprompt object or a single string}
+\item{prompt}{A single string or a \code{\link[=tidyprompt]{tidyprompt()}} object}
 
-\item{modify_fn}{A function that takes the previous prompt text and returns the new prompt text}
+\item{modify_fn}{A function that takes the previous prompt text (as
+first argument) and returns the new prompt text}
 
-\item{extraction_fn}{A function that takes the LLM response and attempts to extract a value from it.
-Upon succesful extraction, the function should return the extracted value.
-If the extraction fails, the function should return a feedback message which will be sent
-back to the LLM (the feedback message should be of class 'llm_feedback').}
+\item{extraction_fn}{A function that takes the LLM response (as first argument)
+and attempts to extract a value from it.Upon succesful extraction, the function
+should return the extracted value. If the extraction fails, the function should
+return a \code{\link[=llm_feedback]{llm_feedback()}} message which will be sent back to the LLM}
 
-\item{validation_fn}{A function that takes the (extracted) LLM response and attempts to validate it.
-Upon succesful validation, the function should return TRUE.
-If the validation fails, the function should return a feedback message which will be sent
-back to the LLM (the feedback message should be of class 'llm_feedback').#'}
+\item{validation_fn}{A function that takes the (extracted) LLM response
+(as first argument) and attempts to validate it. Upon succesful validation,
+the function should return TRUE. If the validation fails, the function should
+return a \code{\link[=llm_feedback]{llm_feedback()}} message which will be sent back to the LLM}
 
 \item{type}{The type of prompt wrap; one of 'unspecified', 'mode', or 'tool'.
 Types are used to determine the order in which prompt wraps are applied.
-Typically, tools are applied first, then modes, then unspecified wraps.}
+Tools are applied first, then modes, then unspecified wraps. Example
+of a tool is \code{\link[=add_tools]{add_tools()}}; example of a mode is \code{\link[=answer_by_react]{answer_by_react()}}.
+Most other prompt wraps will be 'unspecified', like \code{\link[=answer_as_regex]{answer_as_regex()}} or
+\code{\link[=add_text]{add_text()}}}
 }
 \value{
-A tidyprompt object with the new prompt wrap added to it.
+A \code{\link[=tidyprompt]{tidyprompt()}} object with the \code{\link[=prompt_wrap]{prompt_wrap()}} appended to it
 }
 \description{
-Wrap a prompt with additional functionality
+This function takes a single string or a \code{\link[=tidyprompt]{tidyprompt()}} object and
+adds a new prompt wrap to it. A prompt wrap is a set of functions
+that modify the prompt text, extract a value from the LLM response,
+and validate the extracted value. The functions are used to ensure
+that the prompt and LLM response is in the correct format and meets the
+specified criteria.
 }
 \seealso{
+\code{\link[=tidyprompt]{tidyprompt()}} \code{\link[=send_prompt]{send_prompt()}}
+
 Other prompt_wrap_creation: 
 \code{\link{llm_feedback}()}
 }

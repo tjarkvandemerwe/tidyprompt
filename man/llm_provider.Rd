@@ -2,11 +2,11 @@
 % Please edit documentation in R/llm_provider.R
 \name{llm_provider}
 \alias{llm_provider}
-\title{llm_provider R6 Class}
+\title{\code{\link[=llm_provider]{llm_provider()}} R6 Class}
 \description{
-This class provides a structure for creating \code{llm_provider}
+This class provides a structure for creating \code{\link[=llm_provider]{llm_provider()}}
 objects with different implementations of the \code{complete_chat} function. Using
-this class, you can create an \code{llm_provider} object that interacts with
+this class, you can create an \code{\link[=llm_provider]{llm_provider()}} object that interacts with
 different LLM providers, such Ollama, OpenAI, or other custom providers.
 }
 \seealso{
@@ -26,8 +26,8 @@ Other llm_provider:
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
 \item{\code{parameters}}{A named list of parameters to configure the
-\code{llm_provider}. Parameters may be appended to the request body when
-interacting with the LLM provider API.}
+\code{\link[=llm_provider]{llm_provider()}}. Parameters may be appended to the request body when
+interacting with the LLM provider API}
 
 \item{\code{verbose}}{A logical indicating whether interaction with the LLM
 provider should be printed to the console}
@@ -52,7 +52,7 @@ provider API}
 \if{html}{\out{<a id="method-llm_provider-new"></a>}}
 \if{latex}{\out{\hypertarget{method-llm_provider-new}{}}}
 \subsection{Method \code{new()}}{
-Create a new \code{llm_provider} object
+Create a new \code{\link[=llm_provider]{llm_provider()}} object
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{llm_provider$new(
   complete_chat_function,
@@ -67,11 +67,11 @@ Create a new \code{llm_provider} object
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{complete_chat_function}}{Function that will be called by the
-\code{llm_provider} to complete a chat. This function should take a
+\code{\link[=llm_provider]{llm_provider()}} to complete a chat. This function should take a
 \code{chat_history} data frame as input and return a response object (a list
 with \code{role} and \code{content}, detailing the chat completion)}
 
-\item{\code{parameters}}{A named list of parameters to configure the \code{llm_provider}.
+\item{\code{parameters}}{A named list of parameters to configure the \code{\link[=llm_provider]{llm_provider()}}.
 These parameters may be appended to the request body when interacting with
 the LLM provider. For example, the \code{model} parameter may often be required.
 The 'stream' parameter may be used to indicate that the API should stream,
@@ -93,14 +93,14 @@ provider API (optional, not required for, for instance, Ollama)}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A new \code{llm_provider} R6 object.
+A new \code{\link[=llm_provider]{llm_provider()}} R6 object.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-llm_provider-set_parameters"></a>}}
 \if{latex}{\out{\hypertarget{method-llm_provider-set_parameters}{}}}
 \subsection{Method \code{set_parameters()}}{
-Helper function to set the parameters of the llm_provider
+Helper function to set the parameters of the \code{\link[=llm_provider]{llm_provider()}}
 object. This function appends new parameters to the existing parameters
 list.
 \subsection{Usage}{
@@ -116,7 +116,7 @@ existing parameters list}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-The modified \code{llm_provider} object
+The modified \code{\link[=llm_provider]{llm_provider()}} object
 }
 }
 \if{html}{\out{<hr>}}

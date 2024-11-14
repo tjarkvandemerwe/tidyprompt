@@ -12,20 +12,21 @@ answer_as_named_list(
 )
 }
 \arguments{
-\item{prompt}{A character string or a tidyprompt object.}
+\item{prompt}{A single string or a \code{\link[=tidyprompt]{tidyprompt()}} object}
 
-\item{item_names}{A character vector specifying the expected item names.}
+\item{item_names}{A character vector specifying the expected item names}
 
-\item{item_instructions}{An optional named list of additional instructions for each item.}
+\item{item_instructions}{An optional named list of additional instructions for each item}
 
 \item{item_validations}{An optional named list of validation functions for each item.
 Like validation functions for a \code{\link[=prompt_wrap]{prompt_wrap()}}, these functions should return
 \code{\link[=llm_feedback]{llm_feedback()}} if the validation fails. If the validation
-is successful, the function should return TRUE.}
+is successful, the function should return TRUE}
 }
 \value{
-A tidyprompt with an added prompt wrapper object that ensures
-the LLM response is a named list with the specified item names, optional instructions, and validations.
+A \code{\link[=tidyprompt]{tidyprompt()}} with an added \code{\link[=prompt_wrap]{prompt_wrap()}} that ensures
+the LLM response is a named list with the specified item names, optional
+instructions, and validations.
 }
 \description{
 Extract named list from LLM response with optional item instructions and validations

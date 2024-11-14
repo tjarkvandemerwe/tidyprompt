@@ -1,14 +1,14 @@
-#' Create or validate chat history object
+#' Create or validate `chat_history` object
 #'
-#' This function creates and validates a chat history object, ensuring it matches
+#' This function creates and validates a `chat_history` object, ensuring that it matches
 #' the expected format with 'role' and 'content' columns. It has separate methods
-#' for data.frame and character inputs and includes a helper function to add a
+#' for `data.frame` and `character` inputs and includes a helper function to add a
 #' system prompt to the chat history.
 #'
 #' @param chat_history A single string, a dataframe with 'role' and 'content' columns,
 #' or NULL.
 #'
-#' @return A valid chat history dataframe (of class 'chat_history').
+#' @return A valid chat history dataframe (of class `chat_history``).
 #'
 #' @export
 #'

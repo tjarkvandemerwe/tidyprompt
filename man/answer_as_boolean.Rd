@@ -7,16 +7,16 @@
 answer_as_boolean(prompt, add_instruction_to_prompt = TRUE)
 }
 \arguments{
-\item{prompt}{A character string or a tidyprompt object}
+\item{prompt}{A single string or a \code{\link[=tidyprompt]{tidyprompt()}} object}
 
 \item{add_instruction_to_prompt}{(optional) Add instruction for replying
 as a boolean to the prompt text. Set to FALSE for debugging if extractions/validations
 are working as expected (without instruction the answer should fail the
-validation function, initiating a retry).}
+validation function, initiating a retry)}
 }
 \value{
-A tidyprompt with an added prompt wrapper object which
-will ensure that the LLM response is a boolean.
+A \code{\link[=tidyprompt]{tidyprompt()}} with an added \code{\link[=prompt_wrap]{prompt_wrap()}} which
+will ensure that the LLM response is a boolean
 }
 \description{
 Make LLM answer as a boolean (TRUE or FALSE)

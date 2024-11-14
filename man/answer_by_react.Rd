@@ -7,17 +7,18 @@
 answer_by_react(prompt, extract_from_finish_brackets = TRUE)
 }
 \arguments{
-\item{prompt}{A tidyprompt object or a single string}
+\item{prompt}{A single string or a \code{\link[=tidyprompt]{tidyprompt()}} object}
 
 \item{extract_from_finish_brackets}{A logical indicating whether the final answer
 should be extracted from the text inside the "FINISH\link{...}" brackets.}
 }
 \value{
-A tidyprompt with the ReAct-mode prompt_wrap added.
+A \code{\link[=tidyprompt]{tidyprompt()}} with an added \code{\link[=prompt_wrap]{prompt_wrap()}} which will ensure
+that the LLM follows the ReAct mode in answering the prompt
 }
 \description{
-This function enables ReAct mode for the evaluation of a prompt.
-In ReAct mode, the large language model (LLM) is asked to think step by step,
+This function enables ReAct mode for the evaluation of a prompt
+or a \code{\link[=tidyprompt]{tidyprompt()}}. In ReAct mode, the large language model (LLM) is asked to think step by step,
 each time detailing a thought, action, and observation, to eventually arrive at
 a final answer. It is hypothesized that this may increase LLM performance
 at solving complex tasks. ReAct mode is inspired by the method described in

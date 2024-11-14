@@ -1,16 +1,16 @@
 #' Convert a dataframe to a string representation
 #'
-#' Converts a data frame to a string format, for feeding to a LLM
+#' Converts a data frame to a string format, intended for sending it to a LLM
 #' (or for display or logging).
 #'
-#' @param df A data frame to be converted to a string.
-#' @param how In what way the dataframe should be converted to a string;
+#' @param df A `data.frame` object to be converted to a string
+#' @param how In what way the df should be converted to a string;
 #' either "wide" or "long". "wide" presents column names on the first row,
 #' followed by the row values on each new row. "long" presents the values
 #' of each row together with the column names, repeating for every row
-#' after two lines of whitespace.
+#' after two lines of whitespace
 #'
-#' @return A single string representing the data frame.
+#' @return A single string representing the df
 #'
 #' @export
 #'

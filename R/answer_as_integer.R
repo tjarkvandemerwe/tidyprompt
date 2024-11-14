@@ -1,14 +1,14 @@
 #' Make LLM answer as an integer (between min and max)
 #'
-#' @param prompt A character string or a tidyprompt object
+#' @param prompt A single string or a [tidyprompt()] object
 #' @param min (optional) Minimum value for the integer
 #' @param max (optional) Maximum value for the integer
 #' @param add_instruction_to_prompt (optional) Add instruction for replying
 #' as an integer to the prompt text. Set to FALSE for debugging if extractions/validations
 #' are working as expected (without instruction the answer should fail the
-#' validation function, initiating a retry).
+#' validation function, initiating a retry)
 #'
-#' @return A tidyprompt with an added prompt wrapper object which
+#' @return A [tidyprompt()] with an added [prompt_wrap()] which
 #' will ensure that the LLM response is an integer.
 #'
 #' @export

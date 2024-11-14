@@ -1,9 +1,10 @@
 #' Make LLM answer match a specific regex
 #'
-#' @param prompt A character string or a tidyprompt object
-#' @param regex A character string specifying the regular expression the response must match.
+#' @param prompt A single string or a [tidyprompt()] object
+#' @param regex A character string specifying the regular expression the response must match
 #'
-#' @return A tidyprompt ensuring the LLM response matches the specified regex.
+#' @return A [tidyprompt()] with an added [prompt_wrap()] which will ensure
+#' that the LLM response matches the specified regex
 #'
 #' @export
 #'

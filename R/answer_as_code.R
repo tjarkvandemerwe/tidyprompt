@@ -1,6 +1,6 @@
 #' Instruct LLM to answer a prompt with R code
 #'
-#' This function adds a prompt wrap to a tidyprompt object that instructs the
+#' This function adds a prompt wrap to a [tidyprompt()] that instructs the
 #' LLM to answer the prompt with R code. There are various options to customize
 #' the behavior of this prompt wrap, concerning the evaluation of the R code,
 #' the packages that may be used, the objects that already exist in the R
@@ -10,18 +10,18 @@
 #' Please note: automatic evaluation of generated R code may be dangerous to your
 #' system; you must use this function with caution.
 #'
-#' @param prompt A character string or a tidyprompt object
-#' @param add_text Character string which will be added to the prompt text,
-#' informing the LLM that they must code in R to answer the prompt.
+#' @param prompt A single string or a [tidyprompt()] object
+#' @param add_text Character string which will be added to the current prompt text,
+#' informing the LLM that they must code in R to answer the prompt
 #' @param pkgs_to_use A character vector of package names that may be used
 #' in the R code that the LLM will generate. If evaluating the R code, these
-#' will be pre-loaded in the R session.
+#' will be pre-loaded in the R session
 #' @param evaluate_code Logical indicating whether the R code should be
 #' evaluated. If TRUE, the R code will be evaluated in a new R session
-#' (using the 'callr' package).
-#' @param evaluation_session A pre-existing r_session object (from the 'callr' package)
+#' (using the 'callr' package)
+#' @param evaluation_session A pre-existing `r_session` object (from the 'callr' package)
 #' to evaluate the R code (e.g., with certain objects loaded). If NULL, a
-#' new r_session object will be created.
+#' new `r_session` object will be created
 #' @param list_packages Logical indicating whether the LLM should be informed
 #' about the packages that may be used in the R code (if TRUE, a list of the
 #' loaded packages will be shown in the initial prompt)
@@ -30,13 +30,16 @@
 #' plus their types will be shown in the initial prompt)
 #' @param skim_dataframes Logical indicating whether the LLM should be informed
 #' about the structure of dataframes that already exist in the R session (if TRUE,
-#' a skim summary of each dataframe will be shown in the initial prompt)
+#' a skim summary of each dataframe will be shown in the initial prompt). This
+#' uses the function [skim_with_labels_and_levels()]
 #' @param output_as_tool Logical indicating whether the console output of the
 #' evaluated R code should be sent back to the LLM, meaning the LLM will use
 #' R code as a tool to formulate an answer to the prompt. If TRUE, the LLM
 #' can decide if they can answer the prompt with the output, or if they need to modify
 #' their R code. Once the LLM does not provide new R code (i.e., the prompt is being answered)
 #' this prompt wrap will end (it will continue for as long as the LLM provides R code).
+#' When this option is enabled, the resulting [prompt_wrap()] will be of type 'tool'
+#' (meaning it will be applied first in the order of prompt wraps)
 #' @param return_mode Character string indicating the return mode. One of
 #' 'full', 'code', 'console', 'object', 'formatted_output', or 'llm_answer'.
 #' If 'full', the function will return a list with the original LLM answer,
@@ -51,7 +54,8 @@
 #' When choosing 'console' or 'object', an additional instruction will be added to
 #' the prompt text to inform the LLM about the expected output of the R code.
 #'
-#' @return A tidyprompt object with the new prompt wrap added to it
+#' @return A [tidyprompt()] object with the [prompt_wrap()] added to it, which
+#' will handle R code generation and possibly evaluation
 #'
 #' @export
 #'

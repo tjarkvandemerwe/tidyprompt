@@ -1,11 +1,11 @@
 #' Make LLM answer as a list of items
 #'
-#' @param prompt A character string or a tidyprompt object
+#' @param prompt A single string or a [tidyprompt()] object
 #' @param item_name (optional) Name of the items in the list
 #' @param n_unique_items (optional) Number of unique items required in the list
 #'
-#' @return A tidyprompt with an added prompt wrapper object which
-#' will ensure that the LLM response is a list of items.
+#' @return A [tidyprompt()] with an added [prompt_wrap()] which
+#' will ensure that the LLM response is a list of items
 #'
 #' @export
 #'

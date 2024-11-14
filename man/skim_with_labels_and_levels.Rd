@@ -7,15 +7,15 @@
 skim_with_labels_and_levels(data)
 }
 \arguments{
-\item{data}{A dataframe to be skimmed}
+\item{data}{A \code{data.frame} to be skimmed}
 }
 \value{
-A dataframe with variable names, labels, levels, and skim summary
+A \code{data.frame} with variable names, labels, levels, and a skim summary
 }
 \description{
-This function takes a dataframe and returns a skim summary with variable names,
-labels, and levels for categorical variables. It is a wrapper around the skim()
-function from the 'skimr' package.
+This function takes a \code{data.frame} and returns a skim summary with variable names,
+labels, and levels for categorical variables. It is a wrapper around the \code{\link[skimr:skim]{skimr::skim()}}
+function.
 }
 \seealso{
 Other text_helpers: 

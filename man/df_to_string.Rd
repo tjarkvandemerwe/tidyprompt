@@ -7,19 +7,19 @@
 df_to_string(df, how = c("wide", "long"))
 }
 \arguments{
-\item{df}{A data frame to be converted to a string.}
+\item{df}{A \code{data.frame} object to be converted to a string}
 
-\item{how}{In what way the dataframe should be converted to a string;
+\item{how}{In what way the df should be converted to a string;
 either "wide" or "long". "wide" presents column names on the first row,
 followed by the row values on each new row. "long" presents the values
 of each row together with the column names, repeating for every row
-after two lines of whitespace.}
+after two lines of whitespace}
 }
 \value{
-A single string representing the data frame.
+A single string representing the df
 }
 \description{
-Converts a data frame to a string format, for feeding to a LLM
+Converts a data frame to a string format, intended for sending it to a LLM
 (or for display or logging).
 }
 \seealso{

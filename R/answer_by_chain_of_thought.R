@@ -1,16 +1,18 @@
 #' @title Set chain of thought mode for a prompt
 #'
-#' @description This function enables chain of thought mode for evaluation of a prompt.
+#' @description This function enables chain of thought mode for evaluation of a prompt
+#' or a [tidyprompt()]. In chain of thought mode, the large language model (LLM)
 #' In chain of thought mode, the large language model (LLM) is asked to think
 #' step by step to arrive at a final answer. It is hypothesized that this may
 #' increase LLM performance at solving complex tasks. Chain of thought mode
 #' is inspired by the method described in Wei et al. (2022).
 #'
-#' @param prompt A tidyprompt object or a single string
+#' @param prompt A single string or a [tidyprompt()] object
 #' @param extract_from_finish_brackets A logical indicating whether the final answer
 #' should be extracted from the text inside the "FINISH[...]" brackets.
 #'
-#' @return A tidyprompt with the chain-of-thought prompt_wrap added.
+#' @return A [tidyprompt()] with an added [prompt_wrap()] which will ensure
+#' that the LLM follows the chain of thought mode in answering the prompt
 #'
 #' @export
 #'

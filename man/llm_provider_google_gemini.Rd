@@ -2,7 +2,7 @@
 % Please edit documentation in R/llm_provider.R
 \name{llm_provider_google_gemini}
 \alias{llm_provider_google_gemini}
-\title{Create a new Google Gemini llm_provider instance}
+\title{Create a new Google Gemini \code{\link[=llm_provider]{llm_provider()}} instance}
 \usage{
 llm_provider_google_gemini(
   parameters = list(model = "gemini-1.5-flash"),
@@ -29,10 +29,10 @@ should be printed to the console}
 (see: https://aistudio.google.com/app/apikey)}
 }
 \value{
-A new llm_provider object for use of the Google Gemini API
+A new \code{\link[=llm_provider]{llm_provider()}} object for use of the Google Gemini API
 }
 \description{
-Creates an llm_provider object that interacts with the Google Gemini API.
+Creates an \code{\link[=llm_provider]{llm_provider()}} object that interacts with the Google Gemini API.
 Streaming is not yet supported in this implementation.
 }
 \seealso{

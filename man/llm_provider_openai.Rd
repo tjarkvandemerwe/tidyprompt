@@ -2,7 +2,7 @@
 % Please edit documentation in R/llm_provider.R
 \name{llm_provider_openai}
 \alias{llm_provider_openai}
-\title{Create a new OpenAI llm_provider instance}
+\title{Create a new OpenAI \code{\link[=llm_provider]{llm_provider()}} instance}
 \usage{
 llm_provider_openai(
   parameters = list(model = "gpt-4o-mini", stream = getOption("tidyprompt.stream", TRUE)),
@@ -32,10 +32,10 @@ should be printed to the console. Default is TRUE.}
 \item{api_key}{The API key to use for authentication with the OpenAI API}
 }
 \value{
-A new llm_provider object for use of the OpenAI API
+A new \code{\link[=llm_provider]{llm_provider()}} object for use of the OpenAI API
 }
 \description{
-This function creates a new llm_provider that interacts with the Open AI API
+This function creates a new \code{\link[=llm_provider]{llm_provider()}} that interacts with the Open AI API
 }
 \seealso{
 Other llm_provider: 

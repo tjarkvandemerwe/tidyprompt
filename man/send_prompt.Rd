@@ -2,7 +2,7 @@
 % Please edit documentation in R/send_prompt.R
 \name{send_prompt}
 \alias{send_prompt}
-\title{Send a prompt or tidyprompt to a LLM provider}
+\title{Send a prompt or \code{\link[=tidyprompt]{tidyprompt()}} to a LLM provider}
 \usage{
 send_prompt(
   prompt,

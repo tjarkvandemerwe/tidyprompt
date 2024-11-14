@@ -1,11 +1,11 @@
 #' Function to extract a specific element from a list
 #'
 #' This function is intended as a helper function for piping with output from
-#' send_prompt() when using return_mode = "full". It allows to
-#' extract a specific element from the list returned by send_prompt(), which
+#' [send_prompt()] when using `return_mode = "full"`. It allows to
+#' extract a specific element from the list returned by [send_prompt()], which
 #' can be useful for further piping.
 #'
-#' @param list A list, typically the output from send_prompt() with return_mode = "full"
+#' @param list A list, typically the output from [send_prompt()] with `return_mode = "full"`
 #' @param name_of_element A character string with the name of the element to extract from the list
 #'
 #' @return The extracted element from the list

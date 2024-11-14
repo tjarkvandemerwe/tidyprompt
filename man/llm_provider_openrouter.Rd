@@ -2,7 +2,7 @@
 % Please edit documentation in R/llm_provider.R
 \name{llm_provider_openrouter}
 \alias{llm_provider_openrouter}
-\title{Create a new OpenRouter llm_provider instance}
+\title{Create a new OpenRouter \code{\link[=llm_provider]{llm_provider()}} instance}
 \usage{
 llm_provider_openrouter(
   parameters = list(model = "qwen/qwen-2.5-7b-instruct", stream =
@@ -29,10 +29,10 @@ should be printed to the console.}
 \item{api_key}{The API key to use for authentication with the OpenRouter API}
 }
 \value{
-A new llm_provider object for use of the OpenRouter API
+A new \code{\link[=llm_provider]{llm_provider()}} object for use of the OpenRouter API
 }
 \description{
-Create a new OpenRouter llm_provider instance
+Create a new OpenRouter \code{\link[=llm_provider]{llm_provider()}} instance
 }
 \seealso{
 Other llm_provider: 

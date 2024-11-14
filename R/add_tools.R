@@ -11,12 +11,12 @@
 #' an example for this function under section
 #' "Giving tools to the LLM (autonomous function-calling)".
 #'
-#' @param prompt A character string or a tidyprompt object
+#' @param prompt A single string or a [tidyprompt()] object
 #' @param tool_functions A list of R functions that the LLM can call.
 #' These functions should contain docstring-like documentation within them.
 #' See [extract_tool_function_docs_for_llm()] for more details.
 #'
-#' @return A tidyprompt object with an added prompt wrapper object which
+#' @return A [tidyprompt()] with an added [prompt_wrap()] which
 #' will allow the LLM to call R functions
 #'
 #' @export

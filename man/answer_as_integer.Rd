@@ -12,7 +12,7 @@ answer_as_integer(
 )
 }
 \arguments{
-\item{prompt}{A character string or a tidyprompt object}
+\item{prompt}{A single string or a \code{\link[=tidyprompt]{tidyprompt()}} object}
 
 \item{min}{(optional) Minimum value for the integer}
 
@@ -21,10 +21,10 @@ answer_as_integer(
 \item{add_instruction_to_prompt}{(optional) Add instruction for replying
 as an integer to the prompt text. Set to FALSE for debugging if extractions/validations
 are working as expected (without instruction the answer should fail the
-validation function, initiating a retry).}
+validation function, initiating a retry)}
 }
 \value{
-A tidyprompt with an added prompt wrapper object which
+A \code{\link[=tidyprompt]{tidyprompt()}} with an added \code{\link[=prompt_wrap]{prompt_wrap()}} which
 will ensure that the LLM response is an integer.
 }
 \description{

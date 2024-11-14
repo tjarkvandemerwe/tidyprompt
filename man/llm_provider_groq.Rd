@@ -2,7 +2,7 @@
 % Please edit documentation in R/llm_provider.R
 \name{llm_provider_groq}
 \alias{llm_provider_groq}
-\title{Create a new Groq llm_provider instance}
+\title{Create a new Groq \code{\link[=llm_provider]{llm_provider()}} instance}
 \usage{
 llm_provider_groq(
   parameters = list(model = "llama-3.1-8b-instant", stream =
@@ -29,10 +29,10 @@ should be printed to the console}
 \item{api_key}{The API key to use for authentication with the Groq API}
 }
 \value{
-A new llm_provider object for use of the Groq API
+A new \code{\link[=llm_provider]{llm_provider()}} object for use of the Groq API
 }
 \description{
-Create a new Groq llm_provider instance
+Create a new Groq \code{\link[=llm_provider]{llm_provider()}} instance
 }
 \seealso{
 Other llm_provider: 

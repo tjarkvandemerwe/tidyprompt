@@ -1,7 +1,7 @@
 #' @title Set ReAct mode for a prompt
 #'
-#' @description This function enables ReAct mode for the evaluation of a prompt.
-#' In ReAct mode, the large language model (LLM) is asked to think step by step,
+#' @description This function enables ReAct mode for the evaluation of a prompt
+#' or a [tidyprompt()]. In ReAct mode, the large language model (LLM) is asked to think step by step,
 #' each time detailing a thought, action, and observation, to eventually arrive at
 #' a final answer. It is hypothesized that this may increase LLM performance
 #' at solving complex tasks. ReAct mode is inspired by the method described in
@@ -12,11 +12,12 @@
 #' enabling R function calling, or, for example, 'answer_as_code()' with
 #' 'output_as_tool = TRUE' for enabling R code evaluation as a tool.
 #'
-#' @param prompt A tidyprompt object or a single string
+#' @param prompt A single string or a [tidyprompt()] object
 #' @param extract_from_finish_brackets A logical indicating whether the final answer
 #' should be extracted from the text inside the "FINISH[...]" brackets.
 #'
-#' @return A tidyprompt with the ReAct-mode prompt_wrap added.
+#' @return A [tidyprompt()] with an added [prompt_wrap()] which will ensure
+#' that the LLM follows the ReAct mode in answering the prompt
 #'
 #' @export
 #'

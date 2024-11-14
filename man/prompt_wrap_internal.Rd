@@ -2,7 +2,7 @@
 % Please edit documentation in R/prompt_wrap.R
 \name{prompt_wrap_internal}
 \alias{prompt_wrap_internal}
-\title{Internal function to append a prompt wrap to a prompt object}
+\title{Internal function to append a \code{\link[=prompt_wrap]{prompt_wrap()}} to a \code{\link[=tidyprompt]{tidyprompt()}} object}
 \usage{
 prompt_wrap_internal(
   prompt,
@@ -13,19 +13,19 @@ prompt_wrap_internal(
 )
 }
 \arguments{
-\item{prompt}{See prompt_wrap}
+\item{prompt}{See \code{\link[=prompt_wrap]{prompt_wrap()}}}
 
-\item{modify_fn}{See prompt_wrap}
+\item{modify_fn}{See \code{\link[=prompt_wrap]{prompt_wrap()}}}
 
-\item{extraction_fn}{See prompt_wrap}
+\item{extraction_fn}{See \code{\link[=prompt_wrap]{prompt_wrap()}}}
 
-\item{validation_fn}{See prompt_wrap}
+\item{validation_fn}{See \code{\link[=prompt_wrap]{prompt_wrap()}}}
 
-\item{type}{See prompt_wrap}
+\item{type}{See \code{\link[=prompt_wrap]{prompt_wrap()}}}
 }
 \value{
-A prompt object with the new prompt wrap appended to it.
+A \code{\link[=tidyprompt]{tidyprompt()}} object with the \code{\link[=prompt_wrap]{prompt_wrap()}} appended to it
 }
 \description{
-Internal function to append a prompt wrap to a prompt object
+Internal function to append a \code{\link[=prompt_wrap]{prompt_wrap()}} to a \code{\link[=tidyprompt]{tidyprompt()}} object
 }

@@ -2,19 +2,19 @@
 % Please edit documentation in R/prompt_wrap.R
 \name{prompt_wrap.default}
 \alias{prompt_wrap.default}
-\title{Default method for prompt_wrap}
+\title{Default method for \code{\link[=prompt_wrap]{prompt_wrap()}}}
 \usage{
 \method{prompt_wrap}{default}(prompt, ...)
 }
 \arguments{
-\item{prompt}{Input for the prompt object}
+\item{prompt}{A single string or a \code{\link[=tidyprompt]{tidyprompt()}} object}
 
 \item{...}{Additional arguments}
 }
 \value{
-A tidyprompt object with the new prompt wrap appended to it.
+A \code{\link[=tidyprompt]{tidyprompt()}} object with the \code{\link[=prompt_wrap]{prompt_wrap()}} appended to it
 }
 \description{
-Attempts to create a tidyprompt object from whatever is passed as 'prompt';
-then calls the internal function to append the prompt wrap.
+Attempts to create a \code{\link[=tidyprompt]{tidyprompt()}} object from whatever is passed as 'prompt';
+then calls the internal function to append the \code{\link[=prompt_wrap]{prompt_wrap()}}.
 }

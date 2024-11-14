@@ -1,24 +1,37 @@
-#' Wrap a prompt with additional functionality
+#' Wrap a prompt or tidyprompt with additional functionality
 #'
-#' @param prompt A tidyprompt object or a single string
-#' @param modify_fn A function that takes the previous prompt text and returns the new prompt text
-#' @param extraction_fn A function that takes the LLM response and attempts to extract a value from it.
-#' Upon succesful extraction, the function should return the extracted value.
-#' If the extraction fails, the function should return a feedback message which will be sent
-#' back to the LLM (the feedback message should be of class 'llm_feedback').
-#' @param validation_fn A function that takes the (extracted) LLM response and attempts to validate it.
-#' Upon succesful validation, the function should return TRUE.
-#' If the validation fails, the function should return a feedback message which will be sent
-#' back to the LLM (the feedback message should be of class 'llm_feedback').#'
+#' This function takes a single string or a [tidyprompt()] object and
+#' adds a new prompt wrap to it. A prompt wrap is a set of functions
+#' that modify the prompt text, extract a value from the LLM response,
+#' and validate the extracted value. The functions are used to ensure
+#' that the prompt and LLM response is in the correct format and meets the
+#' specified criteria.
+#'
+#' @param prompt A single string or a [tidyprompt()] object
+#' @param modify_fn A function that takes the previous prompt text (as
+#' first argument) and returns the new prompt text
+#' @param extraction_fn A function that takes the LLM response (as first argument)
+#' and attempts to extract a value from it.Upon succesful extraction, the function
+#' should return the extracted value. If the extraction fails, the function should
+#' return a [llm_feedback()] message which will be sent back to the LLM
+#' @param validation_fn A function that takes the (extracted) LLM response
+#' (as first argument) and attempts to validate it. Upon succesful validation,
+#' the function should return TRUE. If the validation fails, the function should
+#' return a [llm_feedback()] message which will be sent back to the LLM
 #' @param type The type of prompt wrap; one of 'unspecified', 'mode', or 'tool'.
 #' Types are used to determine the order in which prompt wraps are applied.
-#' Typically, tools are applied first, then modes, then unspecified wraps.
+#' Tools are applied first, then modes, then unspecified wraps. Example
+#' of a tool is [add_tools()]; example of a mode is [answer_by_react()].
+#' Most other prompt wraps will be 'unspecified', like [answer_as_regex()] or
+#' [add_text()]
 #'
-#' @return A tidyprompt object with the new prompt wrap added to it.
+#' @return A [tidyprompt()] object with the [prompt_wrap()] appended to it
 #'
 #' @export
 #'
 #' @family prompt_wrap_creation
+#'
+#' @seealso [tidyprompt()] [send_prompt()]
 prompt_wrap <- function(
     prompt,
     modify_fn = NULL,
@@ -29,29 +42,33 @@ prompt_wrap <- function(
   UseMethod("prompt_wrap")
 }
 
-#' prompt_wrap method for when a prompt object is supplied
+
+
+#' [prompt_wrap()] method for when a [tidyprompt()] object is supplied
 #'
 #' Calls the internal function to append the prompt wrap.
 #'
-#' @param prompt A prompt object
+#' @param prompt A single string or a [tidyprompt()] object
 #' @param ... Additional arguments
 #'
-#' @return A tidyprompt object with the new prompt wrap appended to it.
+#' @return A [tidyprompt()] object with the [prompt_wrap()] appended to it
 #' @export
 #' @exportS3Method prompt_wrap tidyprompt
 prompt_wrap.tidyprompt <- function(prompt, ...) {
   prompt_wrap_internal(prompt, ...)
 }
 
-#' Default method for prompt_wrap
+
+
+#' Default method for [prompt_wrap()]
 #'
-#' Attempts to create a tidyprompt object from whatever is passed as 'prompt';
-#' then calls the internal function to append the prompt wrap.
+#' Attempts to create a [tidyprompt()] object from whatever is passed as 'prompt';
+#' then calls the internal function to append the [prompt_wrap()].
 #'
-#' @param prompt Input for the prompt object
+#' @param prompt A single string or a [tidyprompt()] object
 #' @param ... Additional arguments
 #'
-#' @return A tidyprompt object with the new prompt wrap appended to it.
+#' @return A [tidyprompt()] object with the [prompt_wrap()] appended to it
 #' @export
 #' @exportS3Method prompt_wrap default
 prompt_wrap.default <- function(prompt, ...) {
@@ -59,15 +76,17 @@ prompt_wrap.default <- function(prompt, ...) {
   prompt_wrap_internal(prompt, ...)
 }
 
-#' Internal function to append a prompt wrap to a prompt object
+
+
+#' Internal function to append a [prompt_wrap()] to a [tidyprompt()] object
 #'
-#' @param prompt See prompt_wrap
-#' @param modify_fn See prompt_wrap
-#' @param extraction_fn See prompt_wrap
-#' @param validation_fn See prompt_wrap
-#' @param type See prompt_wrap
+#' @param prompt See [prompt_wrap()]
+#' @param modify_fn See [prompt_wrap()]
+#' @param extraction_fn See [prompt_wrap()]
+#' @param validation_fn See [prompt_wrap()]
+#' @param type See [prompt_wrap()]
 #'
-#' @return A prompt object with the new prompt wrap appended to it.
+#' @return A [tidyprompt()] object with the [prompt_wrap()] appended to it
 prompt_wrap_internal <- function(
     prompt,
     modify_fn = NULL,

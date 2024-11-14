@@ -1,8 +1,8 @@
-#' @title llm_provider R6 Class
+#' @title [llm_provider()] R6 Class
 #'
-#' @description This class provides a structure for creating `llm_provider`
+#' @description This class provides a structure for creating [llm_provider()]
 #' objects with different implementations of the `complete_chat` function. Using
-#' this class, you can create an `llm_provider` object that interacts with
+#' this class, you can create an [llm_provider()] object that interacts with
 #' different LLM providers, such Ollama, OpenAI, or other custom providers.
 #'
 #' @export
@@ -12,8 +12,8 @@ llm_provider <- R6::R6Class(
   "llm_provider",
   public = list(
     #' @field parameters A named list of parameters to configure the
-    #' `llm_provider`. Parameters may be appended to the request body when
-    #' interacting with the LLM provider API.
+    #' [llm_provider()]. Parameters may be appended to the request body when
+    #' interacting with the LLM provider API
     parameters = list(),
     #' @field verbose A logical indicating whether interaction with the LLM
     #' provider should be printed to the console
@@ -25,14 +25,14 @@ llm_provider <- R6::R6Class(
     api_key = NULL,
 
     #' @description
-    #' Create a new `llm_provider` object
+    #' Create a new [llm_provider()] object
     #'
     #' @param complete_chat_function Function that will be called by the
-    #' `llm_provider` to complete a chat. This function should take a
+    #' [llm_provider()] to complete a chat. This function should take a
     #' `chat_history` data frame as input and return a response object (a list
     #' with `role` and `content`, detailing the chat completion)
     #'
-    #' @param parameters A named list of parameters to configure the `llm_provider`.
+    #' @param parameters A named list of parameters to configure the [llm_provider()].
     #' These parameters may be appended to the request body when interacting with
     #' the LLM provider. For example, the `model` parameter may often be required.
     #' The 'stream' parameter may be used to indicate that the API should stream,
@@ -51,7 +51,7 @@ llm_provider <- R6::R6Class(
     #' @param api_key The API key to use for authentication with the LLM
     #' provider API (optional, not required for, for instance, Ollama)
     #'
-    #' @return A new `llm_provider` R6 object.
+    #' @return A new [llm_provider()] R6 object.
     initialize = function(
       complete_chat_function,
       parameters = list(),
@@ -69,14 +69,14 @@ llm_provider <- R6::R6Class(
       self$api_key <- api_key
     },
 
-    #' @description Helper function to set the parameters of the llm_provider
+    #' @description Helper function to set the parameters of the [llm_provider()]
     #' object. This function appends new parameters to the existing parameters
     #' list.
     #'
     #' @param new_parameters A named list of new parameters to append to the
     #' existing parameters list
     #'
-    #' @return The modified `llm_provider` object
+    #' @return The modified [llm_provider()] object
     set_parameters = function(new_parameters) {
       if (length(new_parameters) > 0 && is.null(names(new_parameters))) {
         stop("new_parameters must be a named list")
@@ -292,7 +292,7 @@ make_llm_provider_request <- function(
 
 
 
-#' Create a new Ollama llm_provider instance
+#' Create a new Ollama [llm_provider()] instance
 #'
 #' @param parameters A named list of parameters. Currently the following parameters are required:
 #'    - model: The name of the model to use
@@ -306,7 +306,7 @@ make_llm_provider_request <- function(
 #' should be printed to the console
 #' @param url The URL to the Ollama API
 #'
-#' @return A new llm_provider object for use of the Ollama API
+#' @return A new [llm_provider()] object for use of the Ollama API
 #'
 #' @export
 #'
@@ -356,9 +356,9 @@ llm_provider_ollama <- function(
 
 
 
-#' Create a new OpenAI llm_provider instance
+#' Create a new OpenAI [llm_provider()] instance
 #'
-#' This function creates a new llm_provider that interacts with the Open AI API
+#' This function creates a new [llm_provider()] that interacts with the Open AI API
 #'
 #' @param parameters A named list of parameters. Currently the following parameters are required:
 #'    - model: The name of the model to use
@@ -374,7 +374,7 @@ llm_provider_ollama <- function(
 #' @param url The URL to the OpenAI API
 #' @param api_key The API key to use for authentication with the OpenAI API
 #'
-#' @return A new llm_provider object for use of the OpenAI API
+#' @return A new [llm_provider()] object for use of the OpenAI API
 #'
 #' @export
 #'
@@ -426,7 +426,7 @@ llm_provider_openai <- function(
 
 
 
-#' Create a new OpenRouter llm_provider instance
+#' Create a new OpenRouter [llm_provider()] instance
 #'
 #' @param parameters A named list of parameters. Currently the following parameters are required:
 #'    - model: The name of the model to use
@@ -438,7 +438,7 @@ llm_provider_openai <- function(
 #' @param url The URL to the OpenRouter API
 #' @param api_key The API key to use for authentication with the OpenRouter API
 #'
-#' @return A new llm_provider object for use of the OpenRouter API
+#' @return A new [llm_provider()] object for use of the OpenRouter API
 #'
 #' @export
 #'
@@ -457,9 +457,9 @@ llm_provider_openrouter <- function(
 
 
 
-#' Create a new Mistral llm_provider instance
+#' Create a new Mistral [llm_provider()] instance
 #'
-#' This function creates a new llm_provider that interacts with the Mistral API.
+#' This function creates a new [llm_provider()] that interacts with the Mistral API.
 #'
 #' @param parameters A named list of parameters. Currently the following parameters are required:
 #'    - model: The name of the model to use
@@ -471,7 +471,7 @@ llm_provider_openrouter <- function(
 #' @param url The URL to the Mistral API
 #' @param api_key The API key to use for authentication with the Mistral API
 #'
-#' @return A new llm_provider object for use of the Mistral API
+#' @return A new [llm_provider()] object for use of the Mistral API
 #'
 #' @export
 #'
@@ -490,7 +490,7 @@ llm_provider_mistral <- function(
 
 
 
-#' Create a new Groq llm_provider instance
+#' Create a new Groq [llm_provider()] instance
 #'
 #' @param parameters A named list of parameters. Currently the following parameters are required:
 #'   - model: The name of the model to use
@@ -502,7 +502,7 @@ llm_provider_mistral <- function(
 #' @param api_key The API key to use for authentication with the Groq API
 #' @param url The URL to the Groq API
 #'
-#' @return A new llm_provider object for use of the Groq API
+#' @return A new [llm_provider()] object for use of the Groq API
 #'
 #' @export
 #'
@@ -521,7 +521,7 @@ llm_provider_groq <- function(
 
 
 
-#' Create a new XAI (Grok) llm_provider instance
+#' Create a new XAI (Grok) [llm_provider()] instance
 #'
 #' @param parameters A named list of parameters. Currently the following parameters are required:
 #'   - model: The name of the model to use
@@ -533,7 +533,7 @@ llm_provider_groq <- function(
 #' @param url The URL to the XAI API
 #' @param api_key The API key to use for authentication with the XAI API
 #'
-#' @return A new llm_provider object for use of the XAI API
+#' @return A new [llm_provider()] object for use of the XAI API
 #'
 #' @export
 #'
@@ -552,9 +552,9 @@ llm_provider_xai <- function(
 
 
 
-#' Create a new Google Gemini llm_provider instance
+#' Create a new Google Gemini [llm_provider()] instance
 #'
-#' Creates an llm_provider object that interacts with the Google Gemini API.
+#' Creates an [llm_provider()] object that interacts with the Google Gemini API.
 #' Streaming is not yet supported in this implementation.
 #'
 #' @param parameters A named list of parameters. Currently the following parameters are required:
@@ -568,7 +568,7 @@ llm_provider_xai <- function(
 #' @param api_key The API key to use for authentication with the Google Gemini API
 #' (see: https://aistudio.google.com/app/apikey)
 #'
-#' @return A new llm_provider object for use of the Google Gemini API
+#' @return A new [llm_provider()] object for use of the Google Gemini API
 #'
 #' @export
 #'
@@ -639,18 +639,18 @@ llm_provider_google_gemini <- function(
 
 
 
-#' Create a fake LLM provider (for development and testing purposes)
+#' Create a fake [llm_provider()] (for development and testing purposes)
 #'
-#' This function creates a fake LLM provider that can be used for development
+#' This function creates a fake [llm_provider()] that can be used for development
 #' and testing purposes. It is hardcoded to send back specific responses to
 #' specific prompts that are used in vignettes, tests, and examples.
 #' This is useful for running tests and builds in environments in which an
-#' actual LLM provider is not available.
+#' actual [llm_provider()] is not available.
 #'
-#' @param verbose A logical indicating whether the interaction with the LLM provider
+#' @param verbose A logical indicating whether the interaction with the [llm_provider()]
 #' should be printed to the console. Default is TRUE.
 #'
-#' @return A new llm_provider object for use of the fake LLM provider
+#' @return A new [llm_provider()] object for use of the fake LLM provider
 #'
 #' @export
 #'

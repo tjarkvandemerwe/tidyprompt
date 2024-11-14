@@ -7,16 +7,18 @@
 answer_by_chain_of_thought(prompt, extract_from_finish_brackets = TRUE)
 }
 \arguments{
-\item{prompt}{A tidyprompt object or a single string}
+\item{prompt}{A single string or a \code{\link[=tidyprompt]{tidyprompt()}} object}
 
 \item{extract_from_finish_brackets}{A logical indicating whether the final answer
 should be extracted from the text inside the "FINISH\link{...}" brackets.}
 }
 \value{
-A tidyprompt with the chain-of-thought prompt_wrap added.
+A \code{\link[=tidyprompt]{tidyprompt()}} with an added \code{\link[=prompt_wrap]{prompt_wrap()}} which will ensure
+that the LLM follows the chain of thought mode in answering the prompt
 }
 \description{
-This function enables chain of thought mode for evaluation of a prompt.
+This function enables chain of thought mode for evaluation of a prompt
+or a \code{\link[=tidyprompt]{tidyprompt()}}. In chain of thought mode, the large language model (LLM)
 In chain of thought mode, the large language model (LLM) is asked to think
 step by step to arrive at a final answer. It is hypothesized that this may
 increase LLM performance at solving complex tasks. Chain of thought mode

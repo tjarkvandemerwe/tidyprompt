@@ -2,27 +2,28 @@
 % Please edit documentation in R/llm_feedback.R
 \name{llm_feedback}
 \alias{llm_feedback}
-\title{Create an llm feedback object}
+\title{Create an \code{llm_feedback} object}
 \usage{
 llm_feedback(text, tool_result = FALSE)
 }
 \arguments{
 \item{text}{A character string containing the feedback text. This will
-be sent back to the LLM after not passing an extractor or validator function.}
+be sent back to the LLM after not passing an extractor or validator function}
 
 \item{tool_result}{A logical indicating whether the feedback is a tool result.
 If TRUE, it will be handled differently by \code{\link[=send_prompt]{send_prompt()}}, by presenting the
 text as a 'system' message. This ensures it will not be
-filtered out when cleaning the context window in \code{\link[=send_prompt]{send_prompt()}}.}
+filtered out when cleaning the context window in \code{\link[=send_prompt]{send_prompt()}}}
 }
 \value{
-An object of class "llm_feedback" containing the feedback text.
+An object of class "llm_feedback" containing the feedback text
 }
 \description{
-This object is used to send feedback to the LLM when a LLM reply
-does not succesfully pass an extractor or validator function.
-The extractor or validator function should then return this object
-with the feedback text that should be sent to the LLM.
+This object is used to send feedback to a LLM when a LLM reply
+does not succesfully pass an extraction or validation function
+(as handled by \code{\link[=send_prompt]{send_prompt()}} and passed with \code{\link[=tidyprompt]{tidyprompt()}} and \code{\link[=prompt_wrap]{prompt_wrap()}}).
+The feedback text is sent back to the LLM. The extraction or validation function
+should then return this object with the feedback text that should be sent to the LLM.
 }
 \seealso{
 Other prompt_wrap_creation: 

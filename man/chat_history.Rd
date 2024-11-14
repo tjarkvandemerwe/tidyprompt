@@ -2,7 +2,7 @@
 % Please edit documentation in R/chat_history.R
 \name{chat_history}
 \alias{chat_history}
-\title{Create or validate chat history object}
+\title{Create or validate \code{chat_history} object}
 \usage{
 chat_history(chat_history)
 }
@@ -11,12 +11,12 @@ chat_history(chat_history)
 or NULL.}
 }
 \value{
-A valid chat history dataframe (of class 'chat_history').
+A valid chat history dataframe (of class `chat_history``).
 }
 \description{
-This function creates and validates a chat history object, ensuring it matches
+This function creates and validates a \code{chat_history} object, ensuring that it matches
 the expected format with 'role' and 'content' columns. It has separate methods
-for data.frame and character inputs and includes a helper function to add a
+for \code{data.frame} and \code{character} inputs and includes a helper function to add a
 system prompt to the chat history.
 }
 \concept{chat_history}

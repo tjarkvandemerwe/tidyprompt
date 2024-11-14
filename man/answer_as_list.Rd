@@ -7,15 +7,15 @@
 answer_as_list(prompt, item_name = "item", n_unique_items = NULL)
 }
 \arguments{
-\item{prompt}{A character string or a tidyprompt object}
+\item{prompt}{A single string or a \code{\link[=tidyprompt]{tidyprompt()}} object}
 
 \item{item_name}{(optional) Name of the items in the list}
 
 \item{n_unique_items}{(optional) Number of unique items required in the list}
 }
 \value{
-A tidyprompt with an added prompt wrapper object which
-will ensure that the LLM response is a list of items.
+A \code{\link[=tidyprompt]{tidyprompt()}} with an added \code{\link[=prompt_wrap]{prompt_wrap()}} which
+will ensure that the LLM response is a list of items
 }
 \description{
 Make LLM answer as a list of items

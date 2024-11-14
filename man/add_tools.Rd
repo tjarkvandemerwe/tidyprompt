@@ -7,14 +7,14 @@
 add_tools(prompt, tool_functions = list())
 }
 \arguments{
-\item{prompt}{A character string or a tidyprompt object}
+\item{prompt}{A single string or a \code{\link[=tidyprompt]{tidyprompt()}} object}
 
 \item{tool_functions}{A list of R functions that the LLM can call.
 These functions should contain docstring-like documentation within them.
 See \code{\link[=extract_tool_function_docs_for_llm]{extract_tool_function_docs_for_llm()}} for more details.}
 }
 \value{
-A tidyprompt object with an added prompt wrapper object which
+A \code{\link[=tidyprompt]{tidyprompt()}} with an added \code{\link[=prompt_wrap]{prompt_wrap()}} which
 will allow the LLM to call R functions
 }
 \description{

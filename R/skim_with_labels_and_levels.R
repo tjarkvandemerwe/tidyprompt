@@ -1,12 +1,12 @@
 #' Skim a dataframe and include labels and levels
 #'
-#' This function takes a dataframe and returns a skim summary with variable names,
-#' labels, and levels for categorical variables. It is a wrapper around the skim()
-#' function from the 'skimr' package.
+#' This function takes a `data.frame` and returns a skim summary with variable names,
+#' labels, and levels for categorical variables. It is a wrapper around the [skimr::skim()]
+#' function.
 #'
-#' @param data A dataframe to be skimmed
+#' @param data A `data.frame` to be skimmed
 #'
-#' @return A dataframe with variable names, labels, levels, and skim summary
+#' @return A `data.frame` with variable names, labels, levels, and a skim summary
 #'
 #' @export
 #'

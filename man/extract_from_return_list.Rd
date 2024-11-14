@@ -7,7 +7,7 @@
 extract_from_return_list(list, name_of_element = "response")
 }
 \arguments{
-\item{list}{A list, typically the output from send_prompt() with return_mode = "full"}
+\item{list}{A list, typically the output from \code{\link[=send_prompt]{send_prompt()}} with \code{return_mode = "full"}}
 
 \item{name_of_element}{A character string with the name of the element to extract from the list}
 }
@@ -16,7 +16,7 @@ The extracted element from the list
 }
 \description{
 This function is intended as a helper function for piping with output from
-send_prompt() when using return_mode = "full". It allows to
-extract a specific element from the list returned by send_prompt(), which
+\code{\link[=send_prompt]{send_prompt()}} when using \code{return_mode = "full"}. It allows to
+extract a specific element from the list returned by \code{\link[=send_prompt]{send_prompt()}}, which
 can be useful for further piping.
 }

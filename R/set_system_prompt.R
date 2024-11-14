@@ -4,10 +4,13 @@
 #' as a message with role 'system' at the start of the chat history when
 #' this prompt is evaluated by [send_prompt()].
 #'
-#' @param prompt A single character string or a tidyprompt object
+#' @details The system prompt will be stored in the [tidyprompt()] object
+#' as '$system_prompt'.
+#'
+#' @param prompt A single string or a [tidyprompt()] object
 #' @param system_prompt A single character string representing the system prompt
 #'
-#' @return A object with the system prompt set
+#' @return A [tidyprompt()] with the system prompt set
 #'
 #' @export
 #'
