@@ -1,11 +1,11 @@
 #' @title Set ReAct mode for a prompt
 #'
 #' @description This function enables ReAct mode for the evaluation of a prompt.
-#' In ReAct mode,the large language model (LLM) is asked to think step by step,
+#' In ReAct mode, the large language model (LLM) is asked to think step by step,
 #' each time detailing a thought, action, and observation, to eventually arrive at
 #' a final answer. It is hypothesized that this may increase LLM performance
-#' at solving complex tasks. ReAct mode is inspired by the paper of
-#' Yao et al. (2022, see https://arxiv.org/abs/2210.03629).
+#' at solving complex tasks. ReAct mode is inspired by the method described in
+#' Yao et al. (2022).
 #'
 #' @details Please note that ReAct mode may be most useful if in combination
 #' with tools that the LLM can use. See, for example, 'add_tools()' for
@@ -17,6 +17,11 @@
 #' should be extracted from the text inside the "FINISH[...]" brackets.
 #'
 #' @return A tidyprompt with the ReAct-mode prompt_wrap added.
+#' @references
+#' Yao, S., Wu, Y., Cheung, W., Wang, Z., Narasimhan, K., & Kong, L. (2022).
+#' ReAct: Synergizing Reasoning and Acting in Language Models.
+#' <doi:10.48550/arXiv.2210.03629>
+#'
 #' @export
 answer_by_react <- function(
     prompt,
