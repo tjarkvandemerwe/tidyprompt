@@ -18,7 +18,7 @@
 #' @details The `print.tidyprompt` function displays the base prompt and, if applicable,
 #'   the modified prompt after applying the wrapper functions. The output is formatted
 #'   with line breaks preserved and with colored text to distinguish metadata from
-#'   the prompt content. This is done using the `crayon` package to enhance
+#'   the prompt content. This is done using the `cli` package to enhance
 #'   readability, similar to the printing of tibbles in the tidyverse.
 #'
 #' @return This function is used for its side effect of printing the prompt
@@ -40,7 +40,6 @@
 #'   print(prompt_obj)
 #' }
 #'
-#' @importFrom crayon blue green silver
 #' @exportS3Method print tidyprompt
 print.tidyprompt <- function(x, ...) {
   cat(cli::col_blue("<tidyprompt>\n"))

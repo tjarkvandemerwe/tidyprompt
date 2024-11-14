@@ -32,7 +32,7 @@ and visually clear manner.
 The \code{print.tidyprompt} function displays the base prompt and, if applicable,
 the modified prompt after applying the wrapper functions. The output is formatted
 with line breaks preserved and with colored text to distinguish metadata from
-the prompt content. This is done using the \code{crayon} package to enhance
+the prompt content. This is done using the \code{cli} package to enhance
 readability, similar to the printing of tibbles in the tidyverse.
 }
 \examples{
