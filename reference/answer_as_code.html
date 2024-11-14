@@ -3,17 +3,11 @@
 LLM to answer the prompt with R code. There are various options to customize
 the behavior of this prompt wrap, concerning the evaluation of the R code,
 the packages that may be used, the objects that already exist in the R
-session, and if the console output that should be sent back to the LLM. For
-the evaluation of the R code, the 'callr' package is required. Please note:
-automatic evaluation of generated R code may be dangerous to your system;
-use this function with caution."><meta property="og:description" content="This function adds a prompt wrap to a tidyprompt object that instructs the
+session, and if the console output that should be sent back to the LLM."><meta property="og:description" content="This function adds a prompt wrap to a tidyprompt object that instructs the
 LLM to answer the prompt with R code. There are various options to customize
 the behavior of this prompt wrap, concerning the evaluation of the R code,
 the packages that may be used, the objects that already exist in the R
-session, and if the console output that should be sent back to the LLM. For
-the evaluation of the R code, the 'callr' package is required. Please note:
-automatic evaluation of generated R code may be dangerous to your system;
-use this function with caution."></head><body>
+session, and if the console output that should be sent back to the LLM."></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -55,10 +49,7 @@ use this function with caution."></head><body>
 LLM to answer the prompt with R code. There are various options to customize
 the behavior of this prompt wrap, concerning the evaluation of the R code,
 the packages that may be used, the objects that already exist in the R
-session, and if the console output that should be sent back to the LLM. For
-the evaluation of the R code, the 'callr' package is required. Please note:
-automatic evaluation of generated R code may be dangerous to your system;
-use this function with caution.</p>
+session, and if the console output that should be sent back to the LLM.</p>
     </div>
 
     <div class="section level2">
@@ -154,6 +145,12 @@ the prompt text to inform the LLM about the expected output of the R code.</p></
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A tidyprompt object with the new prompt wrap added to it</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>For the evaluation of the R code, the 'callr' package is required.
+Please note: automatic evaluation of generated R code may be dangerous to your
+system; you must use this function with caution.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
