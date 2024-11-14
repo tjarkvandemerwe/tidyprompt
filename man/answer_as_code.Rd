@@ -76,8 +76,10 @@ This function adds a prompt wrap to a tidyprompt object that instructs the
 LLM to answer the prompt with R code. There are various options to customize
 the behavior of this prompt wrap, concerning the evaluation of the R code,
 the packages that may be used, the objects that already exist in the R
-session, and if the console output that should be sent back to the LLM. For
-the evaluation of the R code, the 'callr' package is required. Please note:
-automatic evaluation of generated R code may be dangerous to your system;
-use this function with caution.
+session, and if the console output that should be sent back to the LLM.
+}
+\details{
+For the evaluation of the R code, the 'callr' package is required.
+Please note: automatic evaluation of generated R code may be dangerous to your
+system; you must use this function with caution.
 }
