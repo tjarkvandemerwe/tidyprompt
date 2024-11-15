@@ -29,7 +29,7 @@
 #'
 #' @export
 #'
-#' @family prompt_wrap_creation
+#' @family prompt_wrap
 #'
 #' @seealso [tidyprompt()] [send_prompt()]
 prompt_wrap <- function(
