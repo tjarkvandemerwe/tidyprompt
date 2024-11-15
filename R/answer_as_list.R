@@ -2,6 +2,9 @@
 #'
 #' @param prompt A single string or a [tidyprompt()] object
 #' @param item_name (optional) Name of the items in the list
+#' @param item_explanation (optional) Additional explanation of what an item
+#' should be. Item explanation should be a single string. It will be
+#' appended after the list instruction
 #' @param n_unique_items (optional) Number of unique items required in the list
 #'
 #' @return A [tidyprompt()] with an added [prompt_wrap()] which
@@ -14,6 +17,7 @@
 answer_as_list <- function(
     prompt,
     item_name = "item",
+    item_explanation = NULL,
     n_unique_items = NULL
 ) {
   prompt <- tidyprompt(prompt)
@@ -22,6 +26,7 @@ answer_as_list <- function(
     "Respond with a list, like so:\n",
     "-- <<{item_name} 1>>\n"
   )
+
   if (!is.null(n_unique_items)) {
     if (!is.numeric(n_unique_items) || n_unique_items < 1) {
       stop("n_unique_items must be a positive integer")
@@ -29,19 +34,45 @@ answer_as_list <- function(
     if (n_unique_items != floor(n_unique_items)) {
       stop("n_unique_items must be a whole number")
     }
+  }
 
-    if (n_unique_items > 1) { list_instruction <- glue::glue(
-        "{list_instruction}\n",
-        "-- <<{item_name} 2>>\n",
-    )}
-    if (n_unique_items > 2) { list_instruction <- glue::glue(
-        "{list_instruction}\n",
-        "etc.",
-    )}
+  if (is.null(n_unique_items) || n_unique_items > 1) {
+    list_instruction <- glue::glue(
+      "{list_instruction}\n",
+      "-- <<{item_name} 2>>\n"
+    )
+  }
+
+  if (is.null(n_unique_items) || n_unique_items > 2) {
+    list_instruction <- glue::glue(
+      "{list_instruction}\n",
+      "etc."
+    )
+  }
+
+  if (!is.null(n_unique_items)) {
+    item_or_items <- "items"
+    if (n_unique_items == 1) {
+      item_or_items <- "item"
+    }
 
     list_instruction <- glue::glue(
       "{list_instruction}\n",
-      "The list should contain {n_unique_items} unique items."
+      "The list should contain {n_unique_items} unique {item_or_items}."
+    )
+  }
+
+  if (!is.null(item_explanation)) {
+    if (!is.character(item_explanation)) {
+      stop("item_explanation must be a string")
+    }
+    if (length(item_explanation) > 1) {
+      stop("item_explanation must be a single string")
+    }
+
+    list_instruction <- glue::glue(
+      "{list_instruction}\n\n",
+      "{item_explanation}"
     )
   }
 

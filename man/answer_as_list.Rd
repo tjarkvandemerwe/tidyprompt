@@ -4,12 +4,21 @@
 \alias{answer_as_list}
 \title{Make LLM answer as a list of items}
 \usage{
-answer_as_list(prompt, item_name = "item", n_unique_items = NULL)
+answer_as_list(
+  prompt,
+  item_name = "item",
+  item_explanation = NULL,
+  n_unique_items = NULL
+)
 }
 \arguments{
 \item{prompt}{A single string or a \code{\link[=tidyprompt]{tidyprompt()}} object}
 
 \item{item_name}{(optional) Name of the items in the list}
+
+\item{item_explanation}{(optional) Additional explanation of what an item
+should be. Item explanation should be a single string. It will be
+appended after the list instruction}
 
 \item{n_unique_items}{(optional) Number of unique items required in the list}
 }
