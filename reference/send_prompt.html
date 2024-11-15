@@ -62,8 +62,8 @@ in the prompt wraps (see <code><a href="prompt_wrap.html">prompt_wrap()</a></cod
 <span>  llm_provider <span class="op">=</span> <span class="fu"><a href="llm_provider_ollama.html">llm_provider_ollama</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  max_interactions <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  clean_chat_history <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"tidyprompt.verbose"</span>, <span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span>  stream <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"tidyprompt.stream"</span>, <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  stream <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  return_mode <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"only_response"</span>, <span class="st">"full"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -97,13 +97,14 @@ the LLM; keeping the context window clean may increase the LLM's performance</p>
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
 <dd><p>If the interaction with the LLM provider should be printed
-to the console</p></dd>
+to the console. This will overrule the 'verbose' setting in the LLM provider</p></dd>
 
 
 <dt id="arg-stream">stream<a class="anchor" aria-label="anchor" href="#arg-stream"></a></dt>
 <dd><p>If the interaction with the LLM provider should be streamed.
-This setting only be used if the LLM provider already has a
-'stream' parameter (which indicates there is support for streaming)</p></dd>
+This setting will only be used if the LLM provider already has a
+'stream' parameter (which indicates there is support for streaming). This
+setting will overrule the 'stream' setting in the LLM provider</p></dd>
 
 
 <dt id="arg-return-mode">return_mode<a class="anchor" aria-label="anchor" href="#arg-return-mode"></a></dt>
