@@ -20,7 +20,7 @@ answer_as_list <- function(
 
   list_instruction <- glue::glue(
     "Respond with a list, like so:\n",
-    "-- <<{item_name} 1>>\n",
+    "-- <<{item_name} 1>>\n"
   )
   if (!is.null(n_unique_items)) {
     if (!is.numeric(n_unique_items) || n_unique_items < 1) {
