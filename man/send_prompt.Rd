@@ -9,8 +9,8 @@ send_prompt(
   llm_provider = llm_provider_ollama(),
   max_interactions = 10,
   clean_chat_history = TRUE,
-  verbose = getOption("tidyprompt.verbose", TRUE),
-  stream = getOption("tidyprompt.stream", TRUE),
+  verbose = NULL,
+  stream = NULL,
   return_mode = c("only_response", "full")
 )
 }
@@ -31,11 +31,12 @@ and all messages from the system are used when requesting a new answer from
 the LLM; keeping the context window clean may increase the LLM's performance}
 
 \item{verbose}{If the interaction with the LLM provider should be printed
-to the console}
+to the console. This will overrule the 'verbose' setting in the LLM provider}
 
 \item{stream}{If the interaction with the LLM provider should be streamed.
-This setting only be used if the LLM provider already has a
-'stream' parameter (which indicates there is support for streaming)}
+This setting will only be used if the LLM provider already has a
+'stream' parameter (which indicates there is support for streaming). This
+setting will overrule the 'stream' setting in the LLM provider}
 
 \item{return_mode}{One of 'full' or 'only_response'. See return value}
 }

@@ -25,8 +25,4 @@ does not succesfully pass an extraction or validation function
 The feedback text is sent back to the LLM. The extraction or validation function
 should then return this object with the feedback text that should be sent to the LLM.
 }
-\seealso{
-Other prompt_wrap_creation: 
-\code{\link{prompt_wrap}()}
-}
 \concept{prompt_wrap_creation}

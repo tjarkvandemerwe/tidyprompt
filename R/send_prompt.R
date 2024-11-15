@@ -19,10 +19,11 @@
 #' and all messages from the system are used when requesting a new answer from
 #' the LLM; keeping the context window clean may increase the LLM's performance
 #' @param verbose If the interaction with the LLM provider should be printed
-#' to the console
+#' to the console. This will overrule the 'verbose' setting in the LLM provider
 #' @param stream If the interaction with the LLM provider should be streamed.
-#' This setting only be used if the LLM provider already has a
-#' 'stream' parameter (which indicates there is support for streaming)
+#' This setting will only be used if the LLM provider already has a
+#' 'stream' parameter (which indicates there is support for streaming). This
+#' setting will overrule the 'stream' setting in the LLM provider
 #' @param return_mode One of 'full' or 'only_response'. See return value
 #'
 #' @return If return mode 'only_response',the function will only return the LLM response
@@ -56,8 +57,8 @@ send_prompt <- function(
     llm_provider = llm_provider_ollama(),
     max_interactions = 10,
     clean_chat_history = TRUE,
-    verbose = getOption("tidyprompt.verbose", TRUE),
-    stream = getOption("tidyprompt.stream", TRUE),
+    verbose = NULL,
+    stream = NULL,
     return_mode = c("only_response", "full")
 ) {
   ## 1 Validate arguments
@@ -66,20 +67,24 @@ send_prompt <- function(
 
   if (!inherits(llm_provider, "llm_provider"))
     stop("llm_provider must be an object of class 'llm_provider'")
+  llm_provider <- llm_provider$clone()
 
   is_whole_number <- function(x) { x == floor(x) }
   if (!is_whole_number(max_interactions))
     stop("max_interactions should be a whole number.")
 
-  if (!is.logical(verbose))
-    stop("verbose should be a logical.")
-  llm_provider$verbose <- verbose
+  if (!is.null(verbose)) {
+    if (!is.logical(verbose))
+      stop("verbose should be a logical.")
+    llm_provider$verbose <- verbose
+  }
 
-  if (!is.logical(stream))
-    stop("stream should be a logical.")
-  parameters <- llm_provider$parameters
-  if (!is.null(parameters$stream))
-    llm_provider$parameters$stream <- stream
+  if (!is.null(stream)) {
+    if (!is.logical(stream))
+      stop("stream should be a logical.")
+    if (!is.null(llm_provider$parameters$stream)) # This means the provider supports streaming
+      llm_provider$parameters$stream <- stream
+  }
 
   return_mode <- match.arg(return_mode)
   if (return_mode == "full")

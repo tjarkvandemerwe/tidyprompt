@@ -48,8 +48,5 @@ specified criteria.
 }
 \seealso{
 \code{\link[=tidyprompt]{tidyprompt()}} \code{\link[=send_prompt]{send_prompt()}}
-
-Other prompt_wrap_creation: 
-\code{\link{llm_feedback}()}
 }
-\concept{prompt_wrap_creation}
+\concept{prompt_wrap}
