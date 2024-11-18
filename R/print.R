@@ -61,18 +61,18 @@ print.tidyprompt <- function(x, ...) {
   }
 
   if (n_wraps == 1) {
-    cat(cli::col_silver(paste("The base prompt is modified by a wrapper function, resulting in:\n")))
+    cat(cli::col_silver(paste("The base prompt is modified by a prompt wrap, resulting in:\n")))
   }
 
   if (n_wraps > 1) {
-    cat(cli::col_silver(paste("The base prompt is modified by", n_wraps, "wrapper functions, resulting in:\n")))
+    cat(cli::col_silver(paste("The base prompt is modified by", n_wraps, "prompt wraps, resulting in:\n")))
   }
 
   if (n_wraps > 0) {
     full_text <- x |> construct_prompt_text()
     formatted_text <- format_with_prefix(full_text, line_prefix)
     cat(formatted_text, "\n")
-    cat(cli::col_silver("Use '<tidyprompt>$prompt_wraps' to show the wrapper functions.\n"))
+    cat(cli::col_silver("Use '<tidyprompt>$prompt_wraps' to show the prompt wraps.\n"))
   }
 
   cat(cli::col_silver("Use '<tidyprompt>$base_prompt' to show the base prompt text.\n"))
