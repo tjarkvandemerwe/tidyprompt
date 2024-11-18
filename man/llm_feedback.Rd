@@ -25,6 +25,29 @@ does not succesfully pass an extraction or validation function
 The feedback text is sent back to the LLM. The extraction or validation function
 should then return this object with the feedback text that should be sent to the LLM.
 }
+\examples{
+# Example usage within a validation function similar to the one in 'answer_as_integer()':
+validation_fn <- function(x, min = 0, max = 100) {
+  if (x != floor(x)) { # Not a whole number
+    return(llm_feedback(
+      "You must answer with only an integer (use no other characters)."
+    ))
+  }
+  if (!is.null(min) && x < min) {
+    return(llm_feedback(glue::glue(
+      "The number should be greater than or equal to {min}."
+    )))
+  }
+  if (!is.null(max) && x > max) {
+    return(llm_feedback(glue::glue(
+      "The number should be less than or equal to {max}."
+    )))
+  }
+  return(TRUE)
+}
+
+# This validation_fn would be part of a prompt_wrap()
+}
 \seealso{
 Other prompt_wrap_creation: 
 \code{\link{llm_break}()}

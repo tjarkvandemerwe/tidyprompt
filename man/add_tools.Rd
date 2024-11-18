@@ -64,6 +64,8 @@ temperature_in_location <- function(
   }
 }
 
+extract_tool_function_docs_for_llm(temperature_in_location) # Used internally by add_tools()
+
 prompt <- "Hi, what is the weather in Enschede? Give me Celcius degrees" |>
   add_tools(tool_functions = list(temperature_in_location))
 

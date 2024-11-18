@@ -24,6 +24,7 @@
 #' @return An object of class "llm_break"
 #'
 #' @export
+#' @example inst/examples/llm_break.R
 #'
 #' @family prompt_wrap_creation
 llm_break <- function(

@@ -11,7 +11,6 @@ different LLM providers, such Ollama, OpenAI, or other custom providers.
 }
 \seealso{
 Other llm_provider: 
-\code{\link{llm_provider_fake}()},
 \code{\link{llm_provider_google_gemini}()},
 \code{\link{llm_provider_groq}()},
 \code{\link{llm_provider_mistral}()},
@@ -93,7 +92,7 @@ provider API (optional, not required for, for instance, Ollama)}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A new \code{\link[=llm_provider]{llm_provider()}} R6 object.
+A new \code{\link[=llm_provider]{llm_provider()}} R6 object
 }
 }
 \if{html}{\out{<hr>}}

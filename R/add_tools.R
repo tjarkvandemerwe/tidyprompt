@@ -171,6 +171,7 @@ add_tools <- function(prompt, tool_functions = list()) {
 #'  - return_value: A description of the return value
 #'  - example: An example of how the LLM should call the function
 #' @export
+#' @example inst/examples/add_tools.R
 extract_tool_function_docs_for_llm <- function(func) {
   # Convert the function to a character string
   func_text <- utils::capture.output(print(func))

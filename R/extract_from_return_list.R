@@ -11,6 +11,7 @@
 #' @return The extracted element from the list
 #'
 #' @export
+#' @example inst/examples/extract_from_return_list.R
 extract_from_return_list <- function(list, name_of_element = "response") {
   if (!is.list(list))
     stop("Input must be a list")

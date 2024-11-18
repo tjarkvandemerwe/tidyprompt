@@ -25,11 +25,17 @@ answer_as_integer <- function(
   instruction <- "You must answer with only an integer (use no other characters)."
 
   if (!is.null(min) && !is.null(max)) {
-    instruction <- paste(instruction, glue::glue("Enter an integer between {min} and {max}."))
+    instruction <- paste(instruction, glue::glue(
+      "Enter an integer between {min} and {max}."
+    ))
   } else if (!is.null(min)) {
-    instruction <- paste(instruction, glue::glue("Enter an integer greater than or equal to {min}."))
+    instruction <- paste(instruction, glue::glue(
+      "Enter an integer greater than or equal to {min}."
+    ))
   } else if (!is.null(max)) {
-    instruction <- paste(instruction, glue::glue("Enter an integer less than or equal to {max}."))
+    instruction <- paste(instruction, glue::glue(
+      "Enter an integer less than or equal to {max}."
+    ))
   }
 
 

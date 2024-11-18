@@ -15,6 +15,7 @@
 #'
 #' @return A prompt object (or an error if an unsuitable input is provided)
 #' @export
+#' @example inst/examples/tidyprompt.R
 #' @seealso [prompt_wrap()] [send_prompt()]
 tidyprompt <- function(input) {
   UseMethod("tidyprompt")

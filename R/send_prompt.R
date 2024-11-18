@@ -44,6 +44,7 @@
 #' you can use the '[extract_from_return_list()]' function to assist in this
 #'
 #' @export
+#' @example inst/examples/send_prompt.R
 #'
 #' @seealso [tidyprompt()], [prompt_wrap()], [llm_provider()], [llm_provider_ollama()],
 #' [llm_provider_openai()], [llm_provider_openrouter()]

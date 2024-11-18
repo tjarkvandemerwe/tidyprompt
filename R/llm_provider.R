@@ -51,7 +51,7 @@ llm_provider <- R6::R6Class(
     #' @param api_key The API key to use for authentication with the LLM
     #' provider API (optional, not required for, for instance, Ollama)
     #'
-    #' @return A new [llm_provider()] R6 object.
+    #' @return A new [llm_provider()] R6 object
     initialize = function(
       complete_chat_function,
       parameters = list(),
@@ -191,6 +191,7 @@ llm_provider <- R6::R6Class(
 #' @return A list with the role and content of the response from the LLM provider
 #'
 #' @export
+#' @example inst/examples/llm_provider.R
 #'
 #' @family llm_provider
 make_llm_provider_request <- function(
@@ -310,6 +311,7 @@ make_llm_provider_request <- function(
 #' @return A new [llm_provider()] object for use of the Ollama API
 #'
 #' @export
+#' @example inst/examples/llm_providers.R
 #'
 #' @family llm_provider
 llm_provider_ollama <- function(
@@ -379,6 +381,7 @@ llm_provider_ollama <- function(
 #' @return A new [llm_provider()] object for use of the OpenAI API
 #'
 #' @export
+#' @example inst/examples/llm_providers.R
 #'
 #' @family llm_provider
 llm_provider_openai <- function(
@@ -443,6 +446,7 @@ llm_provider_openai <- function(
 #' @return A new [llm_provider()] object for use of the OpenRouter API
 #'
 #' @export
+#' @example inst/examples/llm_providers.R
 #'
 #' @family llm_provider
 llm_provider_openrouter <- function(
@@ -476,6 +480,7 @@ llm_provider_openrouter <- function(
 #' @return A new [llm_provider()] object for use of the Mistral API
 #'
 #' @export
+#' @example inst/examples/llm_providers.R
 #'
 #' @family llm_provider
 llm_provider_mistral <- function(
@@ -507,6 +512,7 @@ llm_provider_mistral <- function(
 #' @return A new [llm_provider()] object for use of the Groq API
 #'
 #' @export
+#' @example inst/examples/llm_providers.R
 #'
 #' @family llm_provider
 llm_provider_groq <- function(
@@ -538,6 +544,7 @@ llm_provider_groq <- function(
 #' @return A new [llm_provider()] object for use of the XAI API
 #'
 #' @export
+#' @example inst/examples/llm_providers.R
 #'
 #' @family llm_provider
 llm_provider_xai <- function(
@@ -573,6 +580,7 @@ llm_provider_xai <- function(
 #' @return A new [llm_provider()] object for use of the Google Gemini API
 #'
 #' @export
+#' @example inst/examples/llm_providers.R
 #'
 #' @family llm_provider
 llm_provider_google_gemini <- function(
@@ -653,10 +661,6 @@ llm_provider_google_gemini <- function(
 #' should be printed to the console. Default is TRUE.
 #'
 #' @return A new [llm_provider()] object for use of the fake LLM provider
-#'
-#' @export
-#'
-#' @family llm_provider
 llm_provider_fake <- function(verbose = getOption("tidyprompt.verbose", TRUE)) {
   complete_chat <- function(chat_history) {
     last_msg <- tail(chat_history$content, 1)

@@ -25,21 +25,18 @@
 #'   to the console. It returns `p` invisibly
 #'
 #' @examples
-#' \dontrun{
-#'   # Creating a simple tidyprompt object
-#'   prompt_obj <- tidyprompt("What is the capital of France?")
+#' # Creating a simple tidyprompt object
+#' prompt <- tidyprompt("What is the capital of France?")
 #'
-#'   # Print the prompt object
-#'   print(prompt_obj)
+#' # Print the prompt object
+#' print(prompt)
 #'
-#'   # Adding some wrapper functions
-#'   prompt_obj <- prompt_obj |>
-#'     prompt_wrap(modify_fn = \(x) paste0("Answer concisely: ", x))
+#' # Adding some wrapper functions
+#' prompt <- prompt |>
+#'   prompt_wrap(modify_fn = \(x) paste0("Answer concisely: ", x))
 #'
-#'   # Print the modified prompt object
-#'   print(prompt_obj)
-#' }
-#'
+#' # Print the modified prompt object
+#' print(prompt)
 #' @exportS3Method print tidyprompt
 #'
 #' @family tidyprompt_helpers

@@ -20,3 +20,15 @@ This function is intended as a helper function for piping with output from
 extract a specific element from the list returned by \code{\link[=send_prompt]{send_prompt()}}, which
 can be useful for further piping.
 }
+\examples{
+\dontrun{
+  "Hi!" |>
+    send_prompt(llm_provider_ollama(), return_mode = "full") |>
+    extract_from_return_list("response")
+  # --- Sending request to LLM provider (llama3.1:8b): ---
+  #   Hi!
+  # --- Receiving response from LLM provider: ---
+  #   It's nice to meet you. Is there something I can help you with or would you like to chat?
+  # [1] "It's nice to meet you. Is there something I can help you with or would you like to chat?"
+}
+}

@@ -28,6 +28,7 @@
 #' @return A [tidyprompt()] object with the [prompt_wrap()] appended to it
 #'
 #' @export
+#' @example R/answer_as_integer.R
 #'
 #' @family prompt_wrap
 #'

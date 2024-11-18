@@ -20,16 +20,3 @@ specific prompts that are used in vignettes, tests, and examples.
 This is useful for running tests and builds in environments in which an
 actual \code{\link[=llm_provider]{llm_provider()}} is not available.
 }
-\seealso{
-Other llm_provider: 
-\code{\link{llm_provider}},
-\code{\link{llm_provider_google_gemini}()},
-\code{\link{llm_provider_groq}()},
-\code{\link{llm_provider_mistral}()},
-\code{\link{llm_provider_ollama}()},
-\code{\link{llm_provider_openai}()},
-\code{\link{llm_provider_openrouter}()},
-\code{\link{llm_provider_xai}()},
-\code{\link{make_llm_provider_request}()}
-}
-\concept{llm_provider}

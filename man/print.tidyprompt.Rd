@@ -36,21 +36,18 @@ the prompt content. This is done using the \code{cli} package to enhance
 readability, similar to the printing of tibbles in the tidyverse
 }
 \examples{
-\dontrun{
-  # Creating a simple tidyprompt object
-  prompt_obj <- tidyprompt("What is the capital of France?")
+# Creating a simple tidyprompt object
+prompt <- tidyprompt("What is the capital of France?")
 
-  # Print the prompt object
-  print(prompt_obj)
+# Print the prompt object
+print(prompt)
 
-  # Adding some wrapper functions
-  prompt_obj <- prompt_obj |>
-    prompt_wrap(modify_fn = \(x) paste0("Answer concisely: ", x))
+# Adding some wrapper functions
+prompt <- prompt |>
+  prompt_wrap(modify_fn = \(x) paste0("Answer concisely: ", x))
 
-  # Print the modified prompt object
-  print(prompt_obj)
-}
-
+# Print the modified prompt object
+print(prompt)
 }
 \seealso{
 Other tidyprompt_helpers: 

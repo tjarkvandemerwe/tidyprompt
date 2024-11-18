@@ -9,6 +9,7 @@
 #' @return A `data.frame` with variable names, labels, levels, and a skim summary
 #'
 #' @export
+#' @example inst/examples/skim_with_labels_and_levels.R
 #'
 #' @family text_helpers
 skim_with_labels_and_levels <- function(data) {

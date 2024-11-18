@@ -19,4 +19,16 @@ the expected format with 'role' and 'content' columns. It has separate methods
 for \code{data.frame} and \code{character} inputs and includes a helper function to add a
 system prompt to the chat history.
 }
+\examples{
+chat <- "Hi there!" |>
+  chat_history()
+chat
+
+chat_from_df <- data.frame(
+  role = c("user", "assistant"),
+  content = c("Hi there!", "Hello! How can I help you today?")
+) |>
+  chat_history()
+chat_from_df
+}
 \concept{chat_history}
