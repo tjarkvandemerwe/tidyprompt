@@ -4,12 +4,21 @@
 \alias{answer_as_regex}
 \title{Make LLM answer match a specific regex}
 \usage{
-answer_as_regex(prompt, regex)
+answer_as_regex(prompt, regex, mode = c("full_match", "extract_matches"))
 }
 \arguments{
 \item{prompt}{A single string or a \code{\link[=tidyprompt]{tidyprompt()}} object}
 
 \item{regex}{A character string specifying the regular expression the response must match}
+
+\item{mode}{A character string specifying the mode of the regex match. Options are
+"exact_match" (default) and "extract_all_matches".
+Under "full_match", the full LLM response must match the regex. If
+it does not, the LLM will be sent feedback to retry. The full LLM response
+will be returned if the regex is matched.
+Under "extract_matches", all matches of the regex in the LLM response will be returned
+(if present). If the regex is not matched at all, the LLM will be sent feedback to retry.
+If there is at least one match, the matches will be returned as a character vector}
 }
 \value{
 A \code{\link[=tidyprompt]{tidyprompt()}} with an added \code{\link[=prompt_wrap]{prompt_wrap()}} which will ensure
@@ -26,35 +35,35 @@ Make LLM answer match a specific regex
   # --- Sending request to LLM provider (llama3.1:8b): ---
   #   What would be a suitable e-mail address for cupcake company?
   #
-  #   You must answer with a response that matches this format:
-  #   ^[a-zA-Z0-9._\%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$.
+  #   You must answer with a response that matches this regex format:
+  #     ^[a-zA-Z0-9._\%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$
+  #     (use no other characters)
   # --- Receiving response from LLM provider: ---
-  #   A fun challenge!
-  #
-  #   Here are a few ideas:
-  #
-  #   * sweetdeals@cupcakeco.com
-  #   * frostyfriends@gmail.com
-  #   * sugarhighs@yumcakes.net
-  #   * cupcakerush@yahoo.com
-  #   * sprinkles@cupcakeparlor.org
-  #
-  #   But, I must say, your request is quite specific...
-  #   Are you looking for an email address that matches the regex pattern exactly?
-  #
-  #   If so, here's a attempt:
-  #
-  #   `cupcakes4u@example.com`
-  #
-  #   This one meets the requirements: `^[a-zA-Z0-9._\%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
-  #
-  #   Let me know if I'm correct!
+  #   sweet.treats.cupcakes@gmail.com
+  # [1] "sweet.treats.cupcakes@gmail.com"
+
+  "What would be a suitable e-mail address for cupcake company?" |>
+    add_text("Give three ideas.") |>
+    answer_as_regex(
+      "[a-zA-Z0-9._\%+-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,}",
+      mode = "extract_matches"
+    ) |>
+    send_prompt(llm_provider_ollama())
   # --- Sending request to LLM provider (llama3.1:8b): ---
-  #   You must answer with a response that matches this format:
-  #   ^[a-zA-Z0-9._\%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$.
+  #   What would be a suitable e-mail address for cupcake company?
+  #
+  #   Give three ideas.
+  #
+  #   You must answer with a response that matches this regex format:
+  #     [a-zA-Z0-9._\%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}
   # --- Receiving response from LLM provider: ---
-  #   sweetdeals@cupcakeco.com
-  # [1] "sweetdeals@cupcakeco.com"
+  #   Here are three potential email addresses for a cupcake company:
+  #
+  #   1. sweettreats.cupcakes@yummail.com
+  #   2. cupcakes.and.love@flourpower.net
+  #   3. thecupcakery@gmail.com
+  # [1] "sweettreats.cupcakes@yummail.com" "cupcakes.and.love@flourpower.net"
+  # "thecupcakery@gmail.com"
 }
 }
 \seealso{
