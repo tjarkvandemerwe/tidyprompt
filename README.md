@@ -430,19 +430,19 @@ answer_as_integer <- function(
   extraction_fn <- function(x) {
     extracted <- suppressWarnings(as.integer(x))
     if (is.na(extracted)) {
-      return(create_llm_feedback(instruction))
+      return(llm_feedback(instruction))
     }
     return(extracted)
   }
 
   validation_fn <- function(x) {
     if (!is.null(min) && x < min) {
-      return(create_llm_feedback(glue::glue(
+      return(llm_feedback(glue::glue(
         "The number should be greater than or equal to {min}."
       )))
     }
     if (!is.null(max) && x > max) {
-      return(create_llm_feedback(glue::glue(
+      return(llm_feedback(glue::glue(
         "The number should be less than or equal to {max}."
       )))
     }
