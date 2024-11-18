@@ -204,38 +204,17 @@ make_llm_provider_request <- function(
     role <- NULL
     message <- ""
 
-    parse_json_from_stream <- function(x) {
-      char <- x |>
-        rawToChar() |>
-        strsplit(split = "\ndata: ") |>
-        unlist()
-
-      parsed_data <- lapply(char, function(chunk) {
-        json_text <- sub("^data:\\s*", "", chunk)
-        # Use tryCatch to handle potential errors
-        tryCatch(
-          jsonlite::fromJSON(json_text),
-          error = function(e) NULL  # Return NULL if there's an error
-        )
-      })
-
-      parsed_data
-    }
-
     write_stream_function <- function(x) {
       if (stream_api_type == "ollama") {
-        content <- parse_json_from_stream(x)[[1]]
+        content <- x |> rawToChar() |> jsonlite::fromJSON()
 
-        if (verbose & !is.null(content$message$content))
+        if (verbose)
           cat(content$message$content)
 
-        if (is.null(role) & !is.null(content$message$role))
+        if (is.null(role))
           role <<- content$message$role
 
-        if (!is.null(content$message$content)) {
-          if (verbose)
-            cat(content$message$content)
-        }
+        message <<- paste0(message, content$message$content)
       }
 
       if (stream_api_type == "openai") {
