@@ -4,10 +4,21 @@
 \alias{answer_as_boolean}
 \title{Make LLM answer as a boolean (TRUE or FALSE)}
 \usage{
-answer_as_boolean(prompt, add_instruction_to_prompt = TRUE)
+answer_as_boolean(
+  prompt,
+  true_definition = NULL,
+  false_definition = NULL,
+  add_instruction_to_prompt = TRUE
+)
 }
 \arguments{
 \item{prompt}{A single string or a \code{\link[=tidyprompt]{tidyprompt()}} object}
+
+\item{true_definition}{(optional) Definition of what would constitute TRUE.
+This will be included in the instruction to the LLM. Should be a single string}
+
+\item{false_definition}{(optional) Definition of what would constitute FALSE.
+This will be included in the instruction to the LLM. Should be a single string}
 
 \item{add_instruction_to_prompt}{(optional) Add instruction for replying
 as a boolean to the prompt text. Set to FALSE for debugging if extractions/validations

@@ -41,25 +41,22 @@ setting will overrule the 'stream' setting in the LLM provider}
 \item{return_mode}{One of 'full' or 'only_response'. See return value}
 }
 \value{
-If return mode 'only_response',the function will only return the LLM response
+If return mode 'only_response', the function will return only the LLM response
 after extraction and validation functions have been applied (NULL is returned
-when unsucessful after the maximum number of interactions). If return mode 'full',
-the function, the function will return a list with the following elements:
-'success' (logical indicating if all extractions and validations were successful
-within the maximum number of interactions), 'response' (the LLM response
-after extraction and validation functions have been applied; NULL if
-unsuccesful); 'failed_response' (if unsuccessful, the LLM response
-after the maximum number of interactions; NULL if successful), 'chat_history'
-(a dataframe with the full chat history which led to the final response),
+when unsucessful after the maximum number of interactions).
+If return mode 'full', the function will return a list with the following elements:
+'response' (the LLM response after extraction and validation functions have been applied;
+NULL is returned when unsucessful after the maximum number of interactions),
+'chat_history' (a dataframe with the full chat history which led to the final response),
 'chat_history_clean' (a dataframe with the cleaned chat history which led to
 the final response; here, only the first and last message from the user, the
 last message from the assistant, and all messages from the system are kept),
-'start_time' (the time when the function was called), 'end_time' (the time
-when the function ended), 'duration_seconds' (the duration of the function in
-seconds), and 'http_list' (a list with all HTTP requests and full responses made
-for chat completions). When using 'full' and you want to access a specific
-element during (base R) piping, you can use the '\code{\link[=extract_from_return_list]{extract_from_return_list()}}'
-function to assist in this
+'start_time' (the time when the function was called),
+'end_time' (the time when the function ended),
+'duration_seconds' (the duration of the function in seconds), and
+'http_list' (a list with all HTTP requests and full responses made for chat completions).
+When using 'full' and you want to access a specific element during (base R) piping,
+you can use the '\code{\link[=extract_from_return_list]{extract_from_return_list()}}' function to assist in this
 }
 \description{
 This function is responsible for sending strings or \code{\link[=tidyprompt]{tidyprompt()}} objects,

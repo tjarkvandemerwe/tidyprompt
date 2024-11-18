@@ -94,25 +94,30 @@ prompt_wrap_internal <- function(
     validation_fn = NULL,
     type = c("unspecified", "mode", "tool")
 ) {
-  if (
-    is.null(modify_fn)
-    || !is.function(modify_fn)
-    || length(formals(modify_fn)) != 1
-  )
-    stop(paste0(
-      "Modify_fn should be provided; it should be a function that takes one argument,",
-      " which is the previous prompt text.",
-      "(Other arguments will be taken from the parent environment and do not need",
-      " to be passed as arguments to the function)."
-    ))
-
-  type <- match.arg(type)
+  if (!is.null(modify_fn)) {
+    if (
+      !is.function(modify_fn)
+      || length(formals(modify_fn)) != 1
+    ) {
+      stop(paste0(
+        "Modify_fn should be a function that takes one argument,",
+        " which is the previous prompt text.",
+        "(Other arguments will be taken from the parent environment and do not need",
+        " to be passed as arguments to the function)."
+      ))
+    }
+  }
 
   if (!is.null(validation_fn) && !is.function(validation_fn))
     stop("Validation_fn should be a function.")
 
   if (!is.null(extraction_fn) && !is.function(extraction_fn))
     stop("Extraction_fn should be a function.")
+
+  if (all(sapply(list(modify_fn, extraction_fn, validation_fn), is.null)))
+    stop("At least one of modify_fn, extraction_fn, or validation_fn must be provided.")
+
+  type <- match.arg(type)
 
   # Create prompt wrap
   prompt_wrap <- structure(

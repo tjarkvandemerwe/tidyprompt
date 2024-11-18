@@ -25,7 +25,8 @@ https://ollama.com/docs/api/chat
 \item{verbose}{A logical indicating whether the interaction with the LLM provider
 should be printed to the console}
 
-\item{url}{The URL to the Ollama API}
+\item{url}{The URL to the Ollama API endpoint for chat completion
+(typically: "http://localhost:11434/api/chat")}
 }
 \value{
 A new \code{\link[=llm_provider]{llm_provider()}} object for use of the Ollama API

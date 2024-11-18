@@ -27,7 +27,8 @@ documentation for more information: https://platform.openai.com/docs/api-referen
 \item{verbose}{A logical indicating whether the interaction with the LLM provider
 should be printed to the console. Default is TRUE.}
 
-\item{url}{The URL to the OpenAI API}
+\item{url}{The URL to the OpenAI API endpoint for chat completion
+(typically: "https://api.openai.com/v1/chat/completions")}
 
 \item{api_key}{The API key to use for authentication with the OpenAI API}
 }

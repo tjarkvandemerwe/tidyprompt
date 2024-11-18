@@ -23,7 +23,7 @@ documentation for more information: https://docs.x.ai/api/endpoints#chat-complet
 \item{verbose}{A logical indicating whether the interaction with the LLM provider
 should be printed to the console. Default is TRUE.}
 
-\item{url}{The URL to the XAI API}
+\item{url}{The URL to the XAI API endpoint for chat completion}
 
 \item{api_key}{The API key to use for authentication with the XAI API}
 }

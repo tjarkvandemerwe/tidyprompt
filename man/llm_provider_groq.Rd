@@ -24,7 +24,7 @@ documentation for more information: https://console.groq.com/docs/api-reference#
 \item{verbose}{A logical indicating whether the interaction with the LLM provider
 should be printed to the console}
 
-\item{url}{The URL to the Groq API}
+\item{url}{The URL to the Groq API endpoint for chat completion}
 
 \item{api_key}{The API key to use for authentication with the Groq API}
 }

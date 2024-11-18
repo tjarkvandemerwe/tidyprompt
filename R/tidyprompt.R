@@ -213,7 +213,9 @@ construct_prompt_text <- function(tidyprompt) {
 
   if (length(prompt_wraps) > 0) {
     for (i in 1:length(prompt_wraps)) {
-      prompt_text <- prompt_wraps[[i]]$modify_fn(prompt_text)
+      modify_fn <- prompt_wraps[[i]]$modify_fn
+      if (!is.null(modify_fn))
+        prompt_text <- prompt_wraps[[i]]$modify_fn(prompt_text)
     }
   }
   return(prompt_text)
@@ -233,7 +235,7 @@ get_extractions_and_validations <- function(tidyprompt) {
 
   extractions <- list()
   validations <- list()
-  prompt_wraps <- get_prompt_wraps_ordered(tidyprompt) |> rev() # In reverse order
+  prompt_wraps <- get_prompt_wraps_ordered(tidyprompt)
 
   if (length(prompt_wraps) == 0)
     return(list(extractions = extractions, validations = validations))

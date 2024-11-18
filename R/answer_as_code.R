@@ -15,23 +15,24 @@
 #' informing the LLM that they must code in R to answer the prompt
 #' @param pkgs_to_use A character vector of package names that may be used
 #' in the R code that the LLM will generate. If evaluating the R code, these
-#' will be pre-loaded in the R session
-#' @param evaluate_code Logical indicating whether the R code should be
-#' evaluated. If TRUE, the R code will be evaluated in a new R session
-#' (using the 'callr' package)
-#' @param evaluation_session A pre-existing `r_session` object (from the 'callr' package)
-#' to evaluate the R code (e.g., with certain objects loaded). If NULL, a
-#' new `r_session` object will be created
+#' packages will be pre-loaded in the R session
+#' @param objects_to_use A named list of objects that may be used in the R code
+#' that the LLM will generate. If evaluating the R code, these objects will be pre-loaded
+#' in the R session. The names of the list will be used as the object names in the
+#' R session
 #' @param list_packages Logical indicating whether the LLM should be informed
-#' about the packages that may be used in the R code (if TRUE, a list of the
+#' about the packages that may be used in their R code (if TRUE, a list of the
 #' loaded packages will be shown in the initial prompt)
 #' @param list_objects Logical indicating whether the LLM should be informed
-#' about the objects that already exist in the R session (if TRUE, a list of the objects
+#' about the existence of 'objects_to_use' (if TRUE, a list of the objects
 #' plus their types will be shown in the initial prompt)
 #' @param skim_dataframes Logical indicating whether the LLM should be informed
-#' about the structure of dataframes that already exist in the R session (if TRUE,
-#' a skim summary of each dataframe will be shown in the initial prompt). This
-#' uses the function [skim_with_labels_and_levels()]
+#' about the structure of dataframes present in 'objects_to_use' (if TRUE,
+#' a skim summary of each `data.frame` type object will be shown in the initial prompt).
+#' This uses the function [skim_with_labels_and_levels()]
+#' @param evaluate_code Logical indicating whether the R code should be
+#' evaluated. If TRUE, the R code will be evaluated in a separate R session
+#' (using the 'callr' package)
 #' @param output_as_tool Logical indicating whether the console output of the
 #' evaluated R code should be sent back to the LLM, meaning the LLM will use
 #' R code as a tool to formulate an answer to the prompt. If TRUE, the LLM
@@ -65,22 +66,29 @@ answer_as_code <- function(
     prompt,
     add_text = "You must code in the programming language 'R' to answer this prompt.",
     pkgs_to_use = c(),
-    evaluate_code = TRUE,
-    evaluation_session = NULL,
+    objects_to_use = list(),
     list_packages = TRUE,
     list_objects = TRUE,
     skim_dataframes = TRUE,
+    evaluate_code = TRUE,
     output_as_tool = FALSE,
     return_mode = c("full", "code", "console", "object", "formatted_output", "llm_answer")
 ) {
-  prompt <- tidyprompt(prompt)
-
   ## Validate settings
 
+  return_mode <- match.arg(return_mode)
+
+  if (
+    !is.list(objects_to_use)
+    ||
+    (
+      length(objects_to_use) > 0
+      && is.null(names(objects_to_use))
+    )
+  )
+    stop("'objects_to_use' must be a named list")
   if (evaluate_code & !requireNamespace("callr", quietly = TRUE))
     stop("The 'callr' package is required to evaluate R code.")
-  if (!evaluate_code)
-    evaluation_session <- NULL
   if (!evaluate_code & output_as_tool)
     output_as_tool <- FALSE
   if (output_as_tool)
@@ -88,20 +96,33 @@ answer_as_code <- function(
   if (!evaluate_code & return_mode %in% c("console", "object", "formatted_output"))
     stop("The return mode must be 'full', 'code', or 'llm_answer' if 'evaluate_code' is FALSE.")
 
-  return_mode <- match.arg(return_mode)
-
 
   ## Validate evaluation_session & load packages
 
   if (evaluate_code) {
-    if (is.null(evaluation_session)) {
-      evaluation_session <- callr::r_session$new() # Make new r_session
-    } else if (!inherits(evaluation_session, "r_session")) {
+    evaluation_session <- callr::r_session$new() # Make new r_session
+
+    # Check if packages are installed
+    installed_pkgs <- evaluation_session$run(function(pkgs_to_use) {
+      # Check if each package is installed and return as a named list
+      installed_pkgs <- setNames(
+        lapply(pkgs_to_use, function(pkg) {
+          pkg %in% utils::installed.packages()[, "Package"]
+        }),
+        pkgs_to_use
+      )
+
+      installed_pkgs
+    }, args = list(pkgs_to_use = pkgs_to_use))
+
+    if (any(installed_pkgs == FALSE)) {
       stop(paste0(
-        "evaluation_session must be an r_session object"
+        "The following packages are not installed: ",
+        names(installed_pkgs)[installed_pkgs == FALSE]
       ))
     }
 
+    # Load the packages
     loaded_pkgs <- evaluation_session$run(function(pkgs_to_use) {
       for (pkg_name in pkgs_to_use) {
         library(pkg_name, character.only = TRUE)
@@ -110,8 +131,32 @@ answer_as_code <- function(
       loaded_pkgs <- names(session_info$otherPkgs)
       loaded_pkgs
     }, args = list(pkgs_to_use = pkgs_to_use))
+
+    # Load the objects
+    loaded_objects <- evaluation_session$run(function(objects_to_use) {
+      for (i in seq_along(objects_to_use)) {
+        obj <- objects_to_use[[i]]
+        obj_name <- names(objects_to_use)[i]
+
+        # Assign to the global environment of the r_session
+        assign(obj_name, obj, envir = parent.env(environment()))
+      }
+
+      # List objects in the global environment
+      ls(envir = .GlobalEnv)
+    }, args = list(objects_to_use = objects_to_use))
+    loaded_objects
+
+    if (!all(loaded_objects %in% names(objects_to_use))) {
+      stop(paste0(
+        "The following objects could not be loaded: ",
+        names(objects_to_use)[!(names(objects_to_use) %in% names(loaded_objects))]
+      ))
+    }
+
   } else {
     loaded_pkgs <- pkgs_to_use
+    loaded_objects <- names(objects_to_use)
   }
 
 
@@ -137,29 +182,22 @@ answer_as_code <- function(
       "You may not install or load any additional packages."
     )
 
-    if (list_objects & !is.null(evaluation_session)) {
-      objects <- evaluation_session$run(function() {
-        objects <- ls(envir = parent.env(environment()))
-        object_types <- sapply(objects, function(obj) class(get(obj)))
-        data.frame(Object_name = objects, Type = object_types)
-      })
+    if (list_objects) {
+      object_types <- sapply(objects_to_use, function(obj) class(obj))
+      objects_df <- data.frame(Object_name = names(objects_to_use), Type = object_types)
 
       if (nrow(objects) > 0) {
         new_text <- glue::glue(
           "{new_text}\n",
           "These objects already exist in the R session:\n\n",
-          "{objects |> df_to_string()}.\n\n",
+          "{objects_df |> df_to_string()}.\n\n",
           "Do not define these objects in your R code."
         )
 
         if (skim_dataframes) {
-          dataframes <- objects$Object_name[objects$Type == "data.frame"]
+          dataframes <- objects_df$Object_name[objects_df$Type == "data.frame"]
           for (df_name in dataframes) {
-            df <- evaluation_session$run(function(df_name) {
-              df <- get(df_name)
-              df
-            }, args = list(df_name = df_name))
-
+            df <- objects_to_use[[df_name]]
             new_text <- glue::glue(
               "{new_text}\n\n",
               "Summary of the dataframe '{df_name}':\n",

@@ -8,11 +8,11 @@ answer_as_code(
   prompt,
   add_text = "You must code in the programming language 'R' to answer this prompt.",
   pkgs_to_use = c(),
-  evaluate_code = TRUE,
-  evaluation_session = NULL,
+  objects_to_use = list(),
   list_packages = TRUE,
   list_objects = TRUE,
   skim_dataframes = TRUE,
+  evaluate_code = TRUE,
   output_as_tool = FALSE,
   return_mode = c("full", "code", "console", "object", "formatted_output", "llm_answer")
 )
@@ -25,28 +25,29 @@ informing the LLM that they must code in R to answer the prompt}
 
 \item{pkgs_to_use}{A character vector of package names that may be used
 in the R code that the LLM will generate. If evaluating the R code, these
-will be pre-loaded in the R session}
+packages will be pre-loaded in the R session}
 
-\item{evaluate_code}{Logical indicating whether the R code should be
-evaluated. If TRUE, the R code will be evaluated in a new R session
-(using the 'callr' package)}
-
-\item{evaluation_session}{A pre-existing \code{r_session} object (from the 'callr' package)
-to evaluate the R code (e.g., with certain objects loaded). If NULL, a
-new \code{r_session} object will be created}
+\item{objects_to_use}{A named list of objects that may be used in the R code
+that the LLM will generate. If evaluating the R code, these objects will be pre-loaded
+in the R session. The names of the list will be used as the object names in the
+R session}
 
 \item{list_packages}{Logical indicating whether the LLM should be informed
-about the packages that may be used in the R code (if TRUE, a list of the
+about the packages that may be used in their R code (if TRUE, a list of the
 loaded packages will be shown in the initial prompt)}
 
 \item{list_objects}{Logical indicating whether the LLM should be informed
-about the objects that already exist in the R session (if TRUE, a list of the objects
+about the existence of 'objects_to_use' (if TRUE, a list of the objects
 plus their types will be shown in the initial prompt)}
 
 \item{skim_dataframes}{Logical indicating whether the LLM should be informed
-about the structure of dataframes that already exist in the R session (if TRUE,
-a skim summary of each dataframe will be shown in the initial prompt). This
-uses the function \code{\link[=skim_with_labels_and_levels]{skim_with_labels_and_levels()}}}
+about the structure of dataframes present in 'objects_to_use' (if TRUE,
+a skim summary of each \code{data.frame} type object will be shown in the initial prompt).
+This uses the function \code{\link[=skim_with_labels_and_levels]{skim_with_labels_and_levels()}}}
+
+\item{evaluate_code}{Logical indicating whether the R code should be
+evaluated. If TRUE, the R code will be evaluated in a separate R session
+(using the 'callr' package)}
 
 \item{output_as_tool}{Logical indicating whether the console output of the
 evaluated R code should be sent back to the LLM, meaning the LLM will use

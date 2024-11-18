@@ -304,7 +304,8 @@ make_llm_provider_request <- function(
 #'  https://ollama.com/docs/api/chat
 #' @param verbose A logical indicating whether the interaction with the LLM provider
 #' should be printed to the console
-#' @param url The URL to the Ollama API
+#' @param url The URL to the Ollama API endpoint for chat completion
+#' (typically: "http://localhost:11434/api/chat")
 #'
 #' @return A new [llm_provider()] object for use of the Ollama API
 #'
@@ -371,7 +372,8 @@ llm_provider_ollama <- function(
 #'  documentation for more information: https://platform.openai.com/docs/api-reference/chat
 #' @param verbose A logical indicating whether the interaction with the LLM provider
 #' should be printed to the console. Default is TRUE.
-#' @param url The URL to the OpenAI API
+#' @param url The URL to the OpenAI API endpoint for chat completion
+#' (typically: "https://api.openai.com/v1/chat/completions")
 #' @param api_key The API key to use for authentication with the OpenAI API
 #'
 #' @return A new [llm_provider()] object for use of the OpenAI API
@@ -435,7 +437,7 @@ llm_provider_openai <- function(
 #'  documentation for more information: https://openrouter.ai/docs/parameters
 #' @param verbose A logical indicating whether the interaction with the LLM provider
 #' should be printed to the console.
-#' @param url The URL to the OpenRouter API
+#' @param url The URL to the OpenRouter API endpoint for chat completion
 #' @param api_key The API key to use for authentication with the OpenRouter API
 #'
 #' @return A new [llm_provider()] object for use of the OpenRouter API
@@ -468,7 +470,7 @@ llm_provider_openrouter <- function(
 #'  documentation for more information: https://docs.mistral.ai/api/#tag/chat
 #' @param verbose A logical indicating whether the interaction with the LLM provider
 #' should be printed to the consol
-#' @param url The URL to the Mistral API
+#' @param url The URL to the Mistral API endpoint for chat completion
 #' @param api_key The API key to use for authentication with the Mistral API
 #'
 #' @return A new [llm_provider()] object for use of the Mistral API
@@ -500,7 +502,7 @@ llm_provider_mistral <- function(
 #' @param verbose A logical indicating whether the interaction with the LLM provider
 #' should be printed to the console
 #' @param api_key The API key to use for authentication with the Groq API
-#' @param url The URL to the Groq API
+#' @param url The URL to the Groq API endpoint for chat completion
 #'
 #' @return A new [llm_provider()] object for use of the Groq API
 #'
@@ -530,7 +532,7 @@ llm_provider_groq <- function(
 #'  documentation for more information: https://docs.x.ai/api/endpoints#chat-completions
 #' @param verbose A logical indicating whether the interaction with the LLM provider
 #' should be printed to the console. Default is TRUE.
-#' @param url The URL to the XAI API
+#' @param url The URL to the XAI API endpoint for chat completion
 #' @param api_key The API key to use for authentication with the XAI API
 #'
 #' @return A new [llm_provider()] object for use of the XAI API
@@ -564,7 +566,7 @@ llm_provider_xai <- function(
 #'  & https://github.com/google/generative-ai-docs/blob/main/site/en/gemini-api/docs/get-started/rest.ipynb
 #' @param verbose A logical indicating whether the interaction with the LLM provider
 #' should be printed to the console
-#' @param url The URL to the Google Gemini API
+#' @param url The URL to the Google Gemini API endpoint for chat completion
 #' @param api_key The API key to use for authentication with the Google Gemini API
 #' (see: https://aistudio.google.com/app/apikey)
 #'

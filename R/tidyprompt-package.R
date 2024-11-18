@@ -5,6 +5,7 @@
 #' @importFrom jsonlite fromJSON
 #' @importFrom methods is
 #' @importFrom stats setNames
+#' @importFrom utils installed.packages
 #' @importFrom utils sessionInfo
 #' @importFrom utils tail
 ## usethis namespace: end

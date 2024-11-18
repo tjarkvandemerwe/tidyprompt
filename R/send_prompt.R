@@ -26,25 +26,22 @@
 #' setting will overrule the 'stream' setting in the LLM provider
 #' @param return_mode One of 'full' or 'only_response'. See return value
 #'
-#' @return If return mode 'only_response',the function will only return the LLM response
+#' @return If return mode 'only_response', the function will return only the LLM response
 #' after extraction and validation functions have been applied (NULL is returned
-#' when unsucessful after the maximum number of interactions). If return mode 'full',
-#' the function, the function will return a list with the following elements:
-#' 'success' (logical indicating if all extractions and validations were successful
-#' within the maximum number of interactions), 'response' (the LLM response
-#' after extraction and validation functions have been applied; NULL if
-#' unsuccesful); 'failed_response' (if unsuccessful, the LLM response
-#' after the maximum number of interactions; NULL if successful), 'chat_history'
-#' (a dataframe with the full chat history which led to the final response),
+#' when unsucessful after the maximum number of interactions).
+#' If return mode 'full', the function will return a list with the following elements:
+#' 'response' (the LLM response after extraction and validation functions have been applied;
+#' NULL is returned when unsucessful after the maximum number of interactions),
+#' 'chat_history' (a dataframe with the full chat history which led to the final response),
 #' 'chat_history_clean' (a dataframe with the cleaned chat history which led to
 #' the final response; here, only the first and last message from the user, the
 #' last message from the assistant, and all messages from the system are kept),
-#' 'start_time' (the time when the function was called), 'end_time' (the time
-#' when the function ended), 'duration_seconds' (the duration of the function in
-#' seconds), and 'http_list' (a list with all HTTP requests and full responses made
-#' for chat completions). When using 'full' and you want to access a specific
-#' element during (base R) piping, you can use the '[extract_from_return_list()]'
-#' function to assist in this
+#' 'start_time' (the time when the function was called),
+#' 'end_time' (the time when the function ended),
+#' 'duration_seconds' (the duration of the function in seconds), and
+#' 'http_list' (a list with all HTTP requests and full responses made for chat completions).
+#' When using 'full' and you want to access a specific element during (base R) piping,
+#' you can use the '[extract_from_return_list()]' function to assist in this
 #'
 #' @export
 #'
@@ -183,6 +180,7 @@ send_prompt <- function(
       success <- TRUE
 
     any_prompt_wrap_not_done <- FALSE
+    llm_break <- FALSE
     for (prompt_wrap in prompt_wraps) {
       role <- "user"
 
@@ -215,7 +213,18 @@ send_prompt <- function(
           any_prompt_wrap_not_done <- TRUE; break
         }
 
-        # If no llm_feedback, extraction was succesful
+        if (inherits(extraction_result, "llm_break")) {
+          if (!extraction_result$success) {
+            any_prompt_wrap_not_done <- TRUE # Will result in no success
+          } else {
+            any_prompt_wrap_not_done <- FALSE # Will result in success
+          }
+          response <- extraction_result$object_to_return
+          llm_break <- TRUE
+          break
+        }
+
+        # If no llm_feedback or break, extraction was succesful
         response <- extraction_result
       }
 
@@ -228,11 +237,28 @@ send_prompt <- function(
           response <- send_chat(validation_result)
           any_prompt_wrap_not_done <- TRUE; break
         }
+
+        if (inherits(validation_result, "llm_break")) {
+          if (!validation_result$success) {
+            any_prompt_wrap_not_done <- TRUE # Will result in no success
+          } else {
+            any_prompt_wrap_not_done <- FALSE # Will result in success
+          }
+          response <- validation_result$object_to_return
+          llm_break <- TRUE
+          break
+        }
       }
     }
 
     if (!any_prompt_wrap_not_done)
       success <- TRUE
+
+    if (llm_break) {
+      break
+    }
+
+
   }
 
 
@@ -241,10 +267,9 @@ send_prompt <- function(
   if (!success) {
     warning(paste0(
       "Failed to reach a valid answer after the maximum of ",
-      max_interactions, " interactions."
+      max_interactions, " interactions"
     ))
 
-    failed_response <- response
     response <- NULL
   }
 
@@ -253,24 +278,16 @@ send_prompt <- function(
 
   if (return_mode == "full") {
     return_list <- list()
-    return_list$success <- success
 
-    if (success) {
-      return_list$response <- response
-    } else {
-      return_list$failed_response <- failed_response
-    }
-
+    return_list$response <- response
     return_list$chat_history <- chat_history
     return_list$chat_history_clean <- clean_chat_history_fn(chat_history)
-
     return_list$start_time <- start_time
     return_list$end_time <- Sys.time()
     return_list$duration_seconds <-
       as.numeric(difftime(
         return_list$end_time, return_list$start_time, units = "secs"
       ))
-
     return_list$http_list <- http_list
 
     return(return_list)

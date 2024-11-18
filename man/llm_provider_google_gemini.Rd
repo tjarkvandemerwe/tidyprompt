@@ -23,7 +23,7 @@ documentation for more information: https://ai.google.dev/gemini-api/docs/text-g
 \item{verbose}{A logical indicating whether the interaction with the LLM provider
 should be printed to the console}
 
-\item{url}{The URL to the Google Gemini API}
+\item{url}{The URL to the Google Gemini API endpoint for chat completion}
 
 \item{api_key}{The API key to use for authentication with the Google Gemini API
 (see: https://aistudio.google.com/app/apikey)}

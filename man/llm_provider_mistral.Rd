@@ -24,7 +24,7 @@ documentation for more information: https://docs.mistral.ai/api/#tag/chat
 \item{verbose}{A logical indicating whether the interaction with the LLM provider
 should be printed to the consol}
 
-\item{url}{The URL to the Mistral API}
+\item{url}{The URL to the Mistral API endpoint for chat completion}
 
 \item{api_key}{The API key to use for authentication with the Mistral API}
 }
