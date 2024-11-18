@@ -6,15 +6,12 @@
 #' accompanying extraction function to call the functions (handled by
 #' [send_prompt()]). Functions should contain docstring-like documentation
 #' within them, as this will be parsed to provide the LLM with information
-#' about the function's purpose and its arguments. See
-#' \code{vignette("example_usage", package = "tidyprompt")} which demonstrates
-#' an example for this function under section
-#' "Giving tools to the LLM (autonomous function-calling)".
+#' about the function's purpose and its arguments.
 #'
 #' @param prompt A single string or a [tidyprompt()] object
 #' @param tool_functions A list of R functions that the LLM can call.
 #' These functions should contain docstring-like documentation within them.
-#' See [extract_tool_function_docs_for_llm()] for more details.
+#' See [add_tools_extract_documentation()] for more details.
 #'
 #' @return A [tidyprompt()] with an added [prompt_wrap()] which
 #' will allow the LLM to call R functions
@@ -23,7 +20,7 @@
 #' @example inst/examples/add_tools.R
 #'
 #' @family llm_tools
-#' @seealso [answer_as_code()] [extract_tool_function_docs_for_llm()]
+#' @seealso [answer_as_code()] [add_tools_extract_documentation()]
 add_tools <- function(prompt, tool_functions = list()) {
   prompt <- tidyprompt(prompt)
 
@@ -41,7 +38,7 @@ add_tools <- function(prompt, tool_functions = list()) {
 
   # Convert tool_functions to named list, taking the name from the function documentation
   tool_functions <- setNames(tool_functions, sapply(tool_functions, function(f) {
-    docs <- extract_tool_function_docs_for_llm(f)
+    docs <- add_tools_extract_documentation(f)
     return(docs$name)
   }))
 
@@ -57,7 +54,7 @@ add_tools <- function(prompt, tool_functions = list()) {
     )
 
     for (tool_function in tool_functions) {
-      docs <- extract_tool_function_docs_for_llm(tool_function)
+      docs <- add_tools_extract_documentation(tool_function)
 
       new_prompt <- glue::glue(
         "{new_prompt}
@@ -172,7 +169,7 @@ add_tools <- function(prompt, tool_functions = list()) {
 #'  - example: An example of how the LLM should call the function
 #' @export
 #' @example inst/examples/add_tools.R
-extract_tool_function_docs_for_llm <- function(func) {
+add_tools_extract_documentation <- function(func) {
   # Convert the function to a character string
   func_text <- utils::capture.output(print(func))
 
@@ -180,11 +177,11 @@ extract_tool_function_docs_for_llm <- function(func) {
   doc_lines <- grep("^\\s*#'", func_text, value = TRUE)
 
   # Extract parameters, return values, and examples using the generic function
-  name <- extract_doc_section(doc_lines, "llm_tool::name")
-  description <- extract_doc_section(doc_lines, "llm_tool::description")
-  params <- extract_doc_section(doc_lines, "llm_tool::param")
-  return_value <- extract_doc_section(doc_lines, "llm_tool::return")
-  example <- extract_doc_section(doc_lines, "llm_tool::example")
+  name <- add_tools_extract_documentation_section(doc_lines, "llm_tool::name")
+  description <- add_tools_extract_documentation_section(doc_lines, "llm_tool::description")
+  params <- add_tools_extract_documentation_section(doc_lines, "llm_tool::param")
+  return_value <- add_tools_extract_documentation_section(doc_lines, "llm_tool::return")
+  example <- add_tools_extract_documentation_section(doc_lines, "llm_tool::example")
 
   # Convert example to how LLM should call it
   converted_example <- sub("^(\\w+)\\((.*)\\)$", "FUNCTION[\\1](\\2)", example)
@@ -204,14 +201,15 @@ extract_tool_function_docs_for_llm <- function(func) {
 
 #' Extract a specific section from a function's docstring-like documentation block
 #'
-#' This is an internal helper function for extract_tool_function_docs_for_llm
+#' This is an internal helper function for add_tools_extract_documentation
 #'
 #' @param doc_lines A character vector of lines from a function's documentation block
 #' @param section_keyword The keyword to search for in the documentation block,
 #' e.g., 'llm_tool::description'
 #'
 #' @return The extracted section as a character string or list
-extract_doc_section <- function(doc_lines, section_keyword) {
+#' @noRd
+add_tools_extract_documentation_section <- function(doc_lines, section_keyword) {
   # Identify lines that contain the section keyword
   section_starts <- grep(paste0("^\\s*#'\\s*", section_keyword), doc_lines)
 

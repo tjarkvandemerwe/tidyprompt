@@ -81,6 +81,7 @@ tidyprompt.tidyprompt <- function(input) {
 #'
 #' @return TRUE if the tidyprompt is valid, otherwise an error is thrown
 #' @export
+#' @example inst/examples/tidyprompt.R
 #' @family tidyprompt_helpers
 validate_tidyprompt <- function(tidyprompt) {
   if (!inherits(tidyprompt, "tidyprompt"))
@@ -118,6 +119,7 @@ validate_tidyprompt <- function(tidyprompt) {
 #'
 #' @return TRUE if the object is a valid tidyprompt, otherwise FALSE
 #' @export
+#' @example inst/examples/tidyprompt.R
 #' @family tidyprompt_helpers
 is_tidyprompt <- function(tidyprompt) {
   tryCatch({
@@ -135,6 +137,7 @@ is_tidyprompt <- function(tidyprompt) {
 #'
 #' @return The base prompt from the tidyprompt
 #' @export
+#' @example inst/examples/tidyprompt.R
 #' @family tidyprompt_helpers
 get_base_prompt <- function(tidyprompt) {
   tidyprompt <- validate_tidyprompt(tidyprompt)
@@ -152,6 +155,7 @@ get_base_prompt <- function(tidyprompt) {
 #'
 #' @return A list of prompt wraps from the tidyprompt
 #' @export
+#' @example inst/examples/tidyprompt.R
 #' @family tidyprompt_helpers
 get_prompt_wraps <- function(tidyprompt) {
   tidyprompt <- validate_tidyprompt(tidyprompt)
@@ -172,6 +176,7 @@ get_prompt_wraps <- function(tidyprompt) {
 #'
 #' @return A list of prompt wraps from the tidyprompt, reordered in order of operations
 #' @export
+#' @example inst/examples/tidyprompt.R
 #' @family tidyprompt_helpers
 get_prompt_wraps_ordered <- function(tidyprompt) {
   tidyprompt <- validate_tidyprompt(tidyprompt)

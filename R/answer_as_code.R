@@ -253,7 +253,7 @@ answer_as_code <- function(
     return_list <- list()
     return_list$llm_answer <- x
 
-    extracted_code <- extract_r_code_from_string(x)
+    extracted_code <- answer_as_code_extract_r_code(x)
 
     if (length(extracted_code) == 0) {
       if (output_as_tool) {
@@ -387,7 +387,9 @@ answer_as_code <- function(
 #' from an LLM
 #'
 #' @return A character vector containing the extracted R code
-extract_r_code_from_string <- function(input_string) {
+#'
+#' @noRd
+answer_as_code_extract_r_code <- function(input_string) {
   # Use regular expression to match all content between ```r and ```, with case-insensitive matching
   matches <- gregexpr("(?s)```[rR]\\s*(.*?)\\s*```", input_string, perl = TRUE)
   extracted_code <- regmatches(input_string, matches)

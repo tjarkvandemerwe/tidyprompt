@@ -11,7 +11,7 @@ add_tools(prompt, tool_functions = list())
 
 \item{tool_functions}{A list of R functions that the LLM can call.
 These functions should contain docstring-like documentation within them.
-See \code{\link[=extract_tool_function_docs_for_llm]{extract_tool_function_docs_for_llm()}} for more details.}
+See \code{\link[=add_tools_extract_documentation]{add_tools_extract_documentation()}} for more details.}
 }
 \value{
 A \code{\link[=tidyprompt]{tidyprompt()}} with an added \code{\link[=prompt_wrap]{prompt_wrap()}} which
@@ -24,10 +24,7 @@ prompt will be modified to include information, as well as an
 accompanying extraction function to call the functions (handled by
 \code{\link[=send_prompt]{send_prompt()}}). Functions should contain docstring-like documentation
 within them, as this will be parsed to provide the LLM with information
-about the function's purpose and its arguments. See
-\code{vignette("example_usage", package = "tidyprompt")} which demonstrates
-an example for this function under section
-"Giving tools to the LLM (autonomous function-calling)".
+about the function's purpose and its arguments.
 }
 \examples{
 # Example fake weather function to add to the prompt:
@@ -64,7 +61,8 @@ temperature_in_location <- function(
   }
 }
 
-extract_tool_function_docs_for_llm(temperature_in_location) # Used internally by add_tools()
+# Attempt to extract documentation as it is extracted by add_tools():
+add_tools_extract_documentation(temperature_in_location)
 
 prompt <- "Hi, what is the weather in Enschede? Give me Celcius degrees" |>
   add_tools(tool_functions = list(temperature_in_location))
@@ -118,6 +116,6 @@ prompt <- "Hi, what is the weather in Enschede? Give me Celcius degrees" |>
 }
 }
 \seealso{
-\code{\link[=answer_as_code]{answer_as_code()}} \code{\link[=extract_tool_function_docs_for_llm]{extract_tool_function_docs_for_llm()}}
+\code{\link[=answer_as_code]{answer_as_code()}} \code{\link[=add_tools_extract_documentation]{add_tools_extract_documentation()}}
 }
 \concept{llm_tools}
