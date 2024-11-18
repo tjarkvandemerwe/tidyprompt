@@ -90,6 +90,63 @@ Chain-of-Thought Prompting Elicits Reasoning in Large Language Models.
 <code><a href="answer_by_react.html">answer_by_react</a>()</code></p></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span>  <span class="st">"What is 5 + 5?"</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>    <span class="fu">answer_by_chain_of_thought</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="answer_as_integer.html">answer_as_integer</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="fu"><a href="llm_provider_ollama.html">llm_provider_ollama</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># --- Sending request to LLM provider (llama3.1:8b): ---</span></span></span>
+<span class="r-in"><span>  <span class="co">#   You are given a user's prompt.</span></span></span>
+<span class="r-in"><span>  <span class="co">#   To answer the user's prompt, you need to think step by step to arrive at a final answer.</span></span></span>
+<span class="r-in"><span>  <span class="co">#</span></span></span>
+<span class="r-in"><span>  <span class="co">#   ----- START OF USER'S PROMPT -----</span></span></span>
+<span class="r-in"><span>  <span class="co">#   What is 5 + 5?</span></span></span>
+<span class="r-in"><span>  <span class="co">#</span></span></span>
+<span class="r-in"><span>  <span class="co">#   You must answer with only an integer (use no other characters).</span></span></span>
+<span class="r-in"><span>  <span class="co">#   ----- END OF USER'S PROMPT -----</span></span></span>
+<span class="r-in"><span>  <span class="co">#</span></span></span>
+<span class="r-in"><span>  <span class="co">#   What are the steps you would take to answer the user's prompt?</span></span></span>
+<span class="r-in"><span>  <span class="co">#   Describe your thought process in the following format:</span></span></span>
+<span class="r-in"><span>  <span class="co">#     &gt;&gt; step 1: &lt;step 1 description&gt;</span></span></span>
+<span class="r-in"><span>  <span class="co">#     &gt;&gt; step 2: &lt;step 2 description&gt;</span></span></span>
+<span class="r-in"><span>  <span class="co">#     (etc.)</span></span></span>
+<span class="r-in"><span>  <span class="co">#</span></span></span>
+<span class="r-in"><span>  <span class="co">#   When you are done, you must type:</span></span></span>
+<span class="r-in"><span>  <span class="co">#   FINISH[&lt;put here your final answer to the user's prompt&gt;]</span></span></span>
+<span class="r-in"><span>  <span class="co">#</span></span></span>
+<span class="r-in"><span>  <span class="co">#   Make sure your final answer follows the logical conclusion of your thought process.</span></span></span>
+<span class="r-in"><span>  <span class="co"># --- Receiving response from LLM provider: ---</span></span></span>
+<span class="r-in"><span>  <span class="co">#   &gt;&gt; step 1: Recognize that the user's prompt is a simple arithmetic question asking for</span></span></span>
+<span class="r-in"><span>  <span class="co">#   the sum of two numbers.</span></span></span>
+<span class="r-in"><span>  <span class="co">#</span></span></span>
+<span class="r-in"><span>  <span class="co">#   &gt;&gt; step 2: Identify the specific numbers mentioned in the prompt, which are 5 and 5.</span></span></span>
+<span class="r-in"><span>  <span class="co">#</span></span></span>
+<span class="r-in"><span>  <span class="co">#   &gt;&gt; step 3: Recall basic addition facts from memory or knowledge.</span></span></span>
+<span class="r-in"><span>  <span class="co">#   In this case, knowing that 5 + 0 = 5, 5 + 1 = 6, 5 + 2 = 7, and so on up to 5 + 4 = 9,</span></span></span>
+<span class="r-in"><span>  <span class="co">#   it is clear that the next step in adding 5 to itself would be to keep the same sum.</span></span></span>
+<span class="r-in"><span>  <span class="co">#</span></span></span>
+<span class="r-in"><span>  <span class="co">#   &gt;&gt; step 4: Apply the addition principle by considering the original number (5) as being</span></span></span>
+<span class="r-in"><span>  <span class="co">#   added to itself once more. Since 5 + 1 = 6 and the process of adding 1 increases the total</span></span></span>
+<span class="r-in"><span>  <span class="co">#   sum, then 5 + 2 must equal 7, thus indicating a direct progression in the sum as the additive</span></span></span>
+<span class="r-in"><span>  <span class="co">#   amount increases.</span></span></span>
+<span class="r-in"><span>  <span class="co">#</span></span></span>
+<span class="r-in"><span>  <span class="co">#   &gt;&gt; step 5: From steps 3 and 4, conclude that since 5 added to itself (once) would be 10,</span></span></span>
+<span class="r-in"><span>  <span class="co">#   then when it is added again (to itself), it would continue from the last result which was</span></span></span>
+<span class="r-in"><span>  <span class="co">#   achieved by adding one more than the original number. Therefore, it must follow the pattern</span></span></span>
+<span class="r-in"><span>  <span class="co">#   established in step 3 where each additional amount increases the total sum.</span></span></span>
+<span class="r-in"><span>  <span class="co">#</span></span></span>
+<span class="r-in"><span>  <span class="co">#   &gt;&gt; step 6: Now knowing that the operation of adding a second 5 to the first one results in</span></span></span>
+<span class="r-in"><span>  <span class="co">#   increasing the sum to the next integer after 10 (based on steps 3 and 4), determine what the</span></span></span>
+<span class="r-in"><span>  <span class="co">#   next integer is after 10. Knowing that integers are whole numbers without fractions, it's</span></span></span>
+<span class="r-in"><span>  <span class="co">#   clear that if you add another unit to 10, it becomes 11.</span></span></span>
+<span class="r-in"><span>  <span class="co">#</span></span></span>
+<span class="r-in"><span>  <span class="co">#   FINISH[10]</span></span></span>
+<span class="r-in"><span>  <span class="co"># [1] 10</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

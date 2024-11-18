@@ -79,6 +79,25 @@ will append the text to the end of the current prompt text</p>
 <code><a href="set_system_prompt.html">set_system_prompt</a>()</code></p></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">prompt</span> <span class="op">&lt;-</span> <span class="st">"Hi there!"</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu">add_text</span><span class="op">(</span><span class="st">"How is your day?"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">prompt</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">&lt;tidyprompt&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">The base prompt is modified by a wrapper function, resulting in:</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">&gt; </span>Hi there!</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">&gt; </span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">&gt; </span>How is your day? </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">Use '&lt;tidyprompt&gt;$prompt_wraps' to show the wrapper functions.</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">Use '&lt;tidyprompt&gt;$base_prompt' to show the base prompt text.</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">Use '&lt;tidyprompt&gt; |&gt; construct_prompt_text()' to get the full prompt text.</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span><span class="va">prompt</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="construct_prompt_text.html">construct_prompt_text</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Hi there!\n\nHow is your day?"</span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 
