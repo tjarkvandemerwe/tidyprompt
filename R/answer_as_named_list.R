@@ -55,7 +55,7 @@ answer_as_named_list <- function(
           } else {
             ""
           }
-          glue::glue("-- {x}: <<value>>{instruction}")
+          glue::glue("  -- {x}: <<value>>{instruction}")
         }
       ),
       collapse = "\n"

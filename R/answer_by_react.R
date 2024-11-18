@@ -37,22 +37,22 @@ answer_by_react <- function(
   modify_fn <- function(original_prompt_text) {
     new_prompt <- glue::glue(
       "You are given a user's prompt.
-        To answer the user's prompt, you need to think step by step, take an action if needed, and then return a final answer.
+      To answer the user's prompt, you need to think step by step, take an action if needed, and then return a final answer.
 
-        ----- START OF USER'S PROMPT -----
-        {original_prompt_text}
-        ----- END OF USER'S PROMPT -----
+      ----- START OF USER'S PROMPT -----
+      {original_prompt_text}
+      ----- END OF USER'S PROMPT -----
 
-        Use the following structure:
-          Thought: <describe your thought process>
-          Action: <if needed, describe the action you take (e.g., look up information)>
-          Observation: <describe the result or observation from the action>
-          (Repeat Thought -> Action -> Observation as necessary)
+      Use the following structure:
+        Thought: <describe your thought process>
+        Action: <if needed, describe the action you take (e.g., look up information)>
+        Observation: <describe the result or observation from the action>
+      (Repeat Thought -> Action -> Observation as necessary)
 
-          When you are done, you must type:
-          FINISH[<put here your final answer to the user's prompt>]
+      When you are done, you must type:
+        FINISH[<put here your final answer to the user's prompt>]
 
-          Ensure your final answer aligns with your reasoning and observations."
+      Ensure your final answer aligns with your reasoning and observations."
     )
 
     return(new_prompt)
@@ -70,8 +70,8 @@ answer_by_react <- function(
       tolower(extracted_response) == "final answer"
     ) {
       return(llm_feedback(glue::glue(
-        "Error, could not parse your final answer.
-          Please type: 'FINISH[<put here your final answer to the original prompt>]'"
+        "Error, could not parse your final answer.\n",
+        "Please type: 'FINISH[<put here your final answer to the original prompt>]'"
       )))
     }
 

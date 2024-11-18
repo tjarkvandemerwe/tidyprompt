@@ -47,7 +47,7 @@ is inspired by the method described in Wei et al. (2022).
   #     (etc.)
   #
   #   When you are done, you must type:
-  #   FINISH[<put here your final answer to the user's prompt>]
+  #     FINISH[<put here your final answer to the user's prompt>]
   #
   #   Make sure your final answer follows the logical conclusion of your thought process.
   # --- Receiving response from LLM provider: ---

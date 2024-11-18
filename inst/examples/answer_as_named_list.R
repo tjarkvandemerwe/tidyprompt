@@ -12,9 +12,9 @@
   #   Create a persona for me, please.
   #
   #   Respond with a named list like so:
-  #   -- name: <<value>> (The name of the persona)
-  #   -- age: <<value>> (The age of the persona)
-  #   -- occupation: <<value>> (The occupation of the persona)
+  #     -- name: <<value>> (The name of the persona)
+  #     -- age: <<value>> (The age of the persona)
+  #     -- occupation: <<value>> (The occupation of the persona)
   #   Each name must correspond to: name, age, occupation
   # --- Receiving response from LLM provider: ---
   #   Here is your persona:

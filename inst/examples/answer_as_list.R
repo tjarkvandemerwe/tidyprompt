@@ -6,9 +6,9 @@
 #     What are some delicious fruits?
 #
 #     Respond with a list, like so:
-#     -- <<fruit 1>>
-#     -- <<fruit 2>>
-#     etc.
+#       -- <<fruit 1>>
+#       -- <<fruit 2>>
+#       etc.
 #     The list should contain 5 unique items.
 #   --- Receiving response from LLM provider: ---
 #     Here's a list of delicious fruits:

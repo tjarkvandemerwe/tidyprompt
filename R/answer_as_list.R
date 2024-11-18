@@ -26,7 +26,8 @@ answer_as_list <- function(
 
   list_instruction <- glue::glue(
     "Respond with a list, like so:\n",
-    "-- <<{item_name} 1>>\n"
+    "  -- <<{item_name} 1>>",
+    .trim = FALSE
   )
 
   if (!is.null(n_unique_items)) {
@@ -41,14 +42,16 @@ answer_as_list <- function(
   if (is.null(n_unique_items) || n_unique_items > 1) {
     list_instruction <- glue::glue(
       "{list_instruction}\n",
-      "-- <<{item_name} 2>>\n"
+      "  -- <<{item_name} 2>>",
+      .trim = FALSE
     )
   }
 
   if (is.null(n_unique_items) || n_unique_items > 2) {
     list_instruction <- glue::glue(
       "{list_instruction}\n",
-      "etc."
+      "  etc.",
+      .trim = FALSE
     )
   }
 
@@ -60,7 +63,8 @@ answer_as_list <- function(
 
     list_instruction <- glue::glue(
       "{list_instruction}\n",
-      "The list should contain {n_unique_items} unique {item_or_items}."
+      "The list should contain {n_unique_items} unique {item_or_items}.",
+      .trim = FALSE
     )
   }
 
@@ -74,14 +78,16 @@ answer_as_list <- function(
 
     list_instruction <- glue::glue(
       "{list_instruction}\n\n",
-      "{item_explanation}"
+      "{item_explanation}",
+      .trim = FALSE
     )
   }
 
   modify_fn <- function(original_prompt_text) {
     glue::glue(
       "{original_prompt_text}\n\n",
-      "{list_instruction}"
+      "{list_instruction}",
+      .trim = FALSE
     )
   }
 
@@ -100,7 +106,8 @@ answer_as_list <- function(
     if (length(items) == 0) {
       return(llm_feedback(glue::glue(
         "Could not parse any listed items from your response.",
-        "{list_instruction}"
+        "{list_instruction}",
+        .trim = FALSE
       )))
     }
 
@@ -113,7 +120,8 @@ answer_as_list <- function(
     if (!is.null(n_unique_items) && length(items) != n_unique_items) {
       return(llm_feedback(glue::glue(
         "The number of unique items in your list should be {n_unique_items}.",
-        "{list_instruction}"
+        "{list_instruction}",
+        .trim = FALSE
       )))
     }
 

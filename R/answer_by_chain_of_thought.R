@@ -32,27 +32,27 @@ answer_by_chain_of_thought <- function(
   modify_fn <- function(original_prompt_text) {
     new_prompt <- glue::glue(
       "You are given a user's prompt.
-        To answer the user's prompt, you need to think step by step to arrive at a final answer.
+      To answer the user's prompt, you need to think step by step to arrive at a final answer.
 
-        ----- START OF USER'S PROMPT -----
-        {original_prompt_text}
-        ----- END OF USER'S PROMPT -----
+      ----- START OF USER'S PROMPT -----
+      {original_prompt_text}
+      ----- END OF USER'S PROMPT -----
 
-        What are the steps you would take to answer the user's prompt?
-        Describe your thought process in the following format:
-          >> step 1: <step 1 description>
-          >> step 2: <step 2 description>
-          (etc.)"
+      What are the steps you would take to answer the user's prompt?
+      Describe your thought process in the following format:
+        >> step 1: <step 1 description>
+        >> step 2: <step 2 description>
+        (etc.)"
     )
 
     if (extract_from_finish_brackets) {
       new_prompt <- glue::glue(
         "{new_prompt}
 
-          When you are done, you must type:
+        When you are done, you must type:
           FINISH[<put here your final answer to the user's prompt>]
 
-          Make sure your final answer follows the logical conclusion of your thought process."
+        Make sure your final answer follows the logical conclusion of your thought process."
       )
     }
 
@@ -71,8 +71,8 @@ answer_by_chain_of_thought <- function(
       tolower(extracted_response) == "final answer"
     ) {
       return(llm_feedback(glue::glue(
-        "Error, could not parse your final answer.
-          Please type: 'FINISH[<put here your final answer to the original prompt>]'"
+        "Error, could not parse your final answer.\n",
+        "Please type: 'FINISH[<put here your final answer to the original prompt>]'"
       )))
     }
 
