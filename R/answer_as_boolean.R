@@ -1,6 +1,10 @@
 #' Make LLM answer as a boolean (TRUE or FALSE)
 #'
 #' @param prompt A single string or a [tidyprompt()] object
+#' @param true_definition (optional) Definition of what would constitute TRUE.
+#' This will be included in the instruction to the LLM. Should be a single string
+#' @param false_definition (optional) Definition of what would constitute FALSE.
+#' This will be included in the instruction to the LLM. Should be a single string
 #' @param add_instruction_to_prompt (optional) Add instruction for replying
 #' as a boolean to the prompt text. Set to FALSE for debugging if extractions/validations
 #' are working as expected (without instruction the answer should fail the
@@ -14,9 +18,15 @@
 #' @family answer_as
 answer_as_boolean <- function(
     prompt,
+    true_definition = NULL,
+    false_definition = NULL,
     add_instruction_to_prompt = TRUE
 ) {
   instruction <- "You must answer with only TRUE or FALSE (use no other characters)."
+  if (!is.null(true_definition))
+    instruction <- paste(instruction, glue::glue("TRUE means: {true_definition}."))
+  if (!is.null(false_definition))
+    instruction <- paste(instruction, glue::glue("FALSE means: {false_definition}."))
 
   # Define modification/extraction/validation functions:
   modify_fn <- function(original_prompt_text) {
