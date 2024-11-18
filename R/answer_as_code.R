@@ -59,6 +59,7 @@
 #' will handle R code generation and possibly evaluation
 #'
 #' @export
+#' @example inst/examples/answer_as_code.R
 #'
 #' @family answer_as
 #' @seealso [add_tools()]
@@ -186,7 +187,7 @@ answer_as_code <- function(
       object_types <- sapply(objects_to_use, function(obj) class(obj))
       objects_df <- data.frame(Object_name = names(objects_to_use), Type = object_types)
 
-      if (nrow(objects) > 0) {
+      if (nrow(objects_df) > 0) {
         new_text <- glue::glue(
           "{new_text}\n",
           "These objects already exist in the R session:\n\n",
