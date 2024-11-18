@@ -14,6 +14,8 @@
 #'
 #' @export
 #'
+#' @example inst/examples/answer_as_named_list.R
+#'
 #' @family answer_as
 #'
 #' @seealso [answer_as_list()] [llm_feedback()]
@@ -103,7 +105,7 @@ answer_as_named_list <- function(
     }
 
     # Return the named list
-    named_list
+    named_list |> as.list()
   }
 
   validation_fn <- function(named_list) {
@@ -138,6 +140,8 @@ answer_as_named_list <- function(
         )))
       }
     }
+
+    return(TRUE)
   }
 
   prompt_wrap(prompt, modify_fn, extraction_fn, validation_fn)

@@ -14,6 +14,8 @@
 #' @export
 #'
 #' @family answer_as
+#'
+#' @example inst/examples/answer_as_integer.R
 answer_as_integer <- function(
     prompt,
     min = NULL,

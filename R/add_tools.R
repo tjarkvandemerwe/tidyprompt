@@ -20,6 +20,7 @@
 #' will allow the LLM to call R functions
 #'
 #' @export
+#' @example inst/examples/add_tools.R
 #'
 #' @family llm_tools
 #' @seealso [answer_as_code()] [extract_tool_function_docs_for_llm()]

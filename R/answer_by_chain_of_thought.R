@@ -15,6 +15,7 @@
 #' that the LLM follows the chain of thought mode in answering the prompt
 #'
 #' @export
+#' @example inst/examples/answer_by_chain_of_thought.R
 #'
 #' @references
 #' Wei, J., Wang, X., Schuurmans, D., Bosma, M., Ichter, B., Xia, F., Chi, E., Le, Q., & Zhou, D. (2022).

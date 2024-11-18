@@ -13,6 +13,7 @@
 #' @return A single string representing the df
 #'
 #' @export
+#' @example inst/examples/df_to_string.R
 #'
 #' @family text_helpers
 df_to_string <- function(df, how = c("wide", "long")) {

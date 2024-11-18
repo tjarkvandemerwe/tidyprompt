@@ -8,6 +8,8 @@
 #'
 #' @export
 #'
+#' @example inst/examples/answer_as_regex.R
+#'
 #' @family answer_as
 answer_as_regex <- function(
     prompt,

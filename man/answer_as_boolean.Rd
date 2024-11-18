@@ -32,6 +32,21 @@ will ensure that the LLM response is a boolean
 \description{
 Make LLM answer as a boolean (TRUE or FALSE)
 }
+\examples{
+\dontrun{
+  "Are you a large language model?" |>
+    answer_as_boolean() |>
+    send_prompt(llm_provider_ollama())
+  # --- Sending request to LLM provider (llama3.1:8b): ---
+  #   Are you a large language model?
+  #
+  #   You must answer with only TRUE or FALSE (use no other characters).
+  # --- Receiving response from LLM provider: ---
+  #   TRUE
+  # [1] TRUE
+}
+
+}
 \seealso{
 Other answer_as: 
 \code{\link{answer_as_code}()},

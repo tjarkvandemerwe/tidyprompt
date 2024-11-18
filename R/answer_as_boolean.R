@@ -16,6 +16,8 @@
 #' @export
 #'
 #' @family answer_as
+#'
+#' @example inst/examples/answer_as_boolean.R
 answer_as_boolean <- function(
     prompt,
     true_definition = NULL,

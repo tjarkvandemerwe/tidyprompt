@@ -12,6 +12,7 @@
 #' will append the text to the end of the current prompt text
 #'
 #' @export
+#' @example inst/examples/add_text.R
 #'
 #' @family other_prompt_wraps
 add_text <- function(

@@ -12,6 +12,8 @@
 #'
 #' @export
 #'
+#' @example inst/examples/answer_as_list.R
+#'
 #' @family answer_as
 #' @seealso [answer_as_named_list()]
 answer_as_list <- function(

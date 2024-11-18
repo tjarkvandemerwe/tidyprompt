@@ -22,6 +22,12 @@ A single string representing the df
 Converts a data frame to a string format, intended for sending it to a LLM
 (or for display or logging).
 }
+\examples{
+cars |>
+  head(5) |>
+  df_to_string() |>
+  cat()
+}
 \seealso{
 Other text_helpers: 
 \code{\link{skim_with_labels_and_levels}()}

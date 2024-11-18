@@ -23,6 +23,13 @@ will append the text to the end of the current prompt text
 Add text to a prompt by adding a \code{\link[=prompt_wrap]{prompt_wrap()}} which will append the text to
 the before or after the current prompt text.
 }
+\examples{
+prompt <- "Hi there!" |>
+  add_text("How is your day?")
+prompt
+prompt |>
+  construct_prompt_text()
+}
 \seealso{
 Other other_prompt_wraps: 
 \code{\link{set_system_prompt}()}

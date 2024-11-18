@@ -20,6 +20,7 @@
 #' that the LLM follows the ReAct mode in answering the prompt
 #'
 #' @export
+#' @example inst/examples/answer_by_react.R
 #'
 #' @references
 #' Yao, S., Wu, Y., Cheung, W., Wang, Z., Narasimhan, K., & Kong, L. (2022).
