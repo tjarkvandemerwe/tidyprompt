@@ -204,17 +204,38 @@ make_llm_provider_request <- function(
     role <- NULL
     message <- ""
 
+    parse_json_from_stream <- function(x) {
+      char <- x |>
+        rawToChar() |>
+        strsplit(split = "\ndata: ") |>
+        unlist()
+
+      parsed_data <- lapply(char, function(chunk) {
+        json_text <- sub("^data:\\s*", "", chunk)
+        # Use tryCatch to handle potential errors
+        tryCatch(
+          jsonlite::fromJSON(json_text),
+          error = function(e) NULL  # Return NULL if there's an error
+        )
+      })
+
+      parsed_data
+    }
+
     write_stream_function <- function(x) {
       if (stream_api_type == "ollama") {
-        content <- x |> rawToChar() |> jsonlite::fromJSON()
+        content <- parse_json_from_stream(x)[[1]]
 
-        if (verbose)
+        if (verbose & !is.null(content$message$content))
           cat(content$message$content)
 
-        if (is.null(role))
+        if (is.null(role) & !is.null(content$message$role))
           role <<- content$message$role
 
-        message <<- paste0(message, content$message$content)
+        if (!is.null(content$message$content)) {
+          if (verbose)
+            cat(content$message$content)
+        }
       }
 
       if (stream_api_type == "openai") {
@@ -518,7 +539,7 @@ llm_provider_mistral <- function(
 llm_provider_groq <- function(
     parameters = list(
       model = "llama-3.1-8b-instant",
-      stream = getOption("tidyprompt.stream", TRUE)
+      stream = FALSE
     ),
     verbose = getOption("tidyprompt.verbose", TRUE),
     url = "https://api.groq.com/openai/v1/chat/completions",
