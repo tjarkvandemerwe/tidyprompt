@@ -29,6 +29,7 @@
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/get_prompt_wraps_ordered.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/index.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/is_tidyprompt.html</loc></url>
+<url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/llm_break.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/llm_feedback.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/llm_provider.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/llm_provider_fake.html</loc></url>
@@ -45,6 +46,7 @@
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/prompt_wrap.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/prompt_wrap.tidyprompt.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/prompt_wrap_internal.html</loc></url>
+<url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/quit_if.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/send_prompt.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/set_system_prompt.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/skim_with_labels_and_levels.html</loc></url>
