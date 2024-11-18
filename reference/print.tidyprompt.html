@@ -106,21 +106,31 @@ readability, similar to the printing of tibbles in the tidyverse</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span>  <span class="co"># Creating a simple tidyprompt object</span></span></span>
-<span class="r-in"><span>  <span class="va">prompt_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="tidyprompt.html">tidyprompt</a></span><span class="op">(</span><span class="st">"What is the capital of France?"</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Creating a simple tidyprompt object</span></span></span>
+<span class="r-in"><span><span class="va">prompt</span> <span class="op">&lt;-</span> <span class="fu"><a href="tidyprompt.html">tidyprompt</a></span><span class="op">(</span><span class="st">"What is the capital of France?"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co"># Print the prompt object</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">prompt_obj</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Print the prompt object</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">prompt</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">&lt;tidyprompt&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">base prompt:</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">&gt; </span>What is the capital of France? </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">Use '&lt;tidyprompt&gt;$base_prompt' to show the base prompt text.</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">Use '&lt;tidyprompt&gt; |&gt; construct_prompt_text()' to get the full prompt text.</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co"># Adding some wrapper functions</span></span></span>
-<span class="r-in"><span>  <span class="va">prompt_obj</span> <span class="op">&lt;-</span> <span class="va">prompt_obj</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="prompt_wrap.html">prompt_wrap</a></span><span class="op">(</span>modify_fn <span class="op">=</span> \<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Answer concisely: "</span>, <span class="va">x</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Adding some wrapper functions</span></span></span>
+<span class="r-in"><span><span class="va">prompt</span> <span class="op">&lt;-</span> <span class="va">prompt</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="prompt_wrap.html">prompt_wrap</a></span><span class="op">(</span>modify_fn <span class="op">=</span> \<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Answer concisely: "</span>, <span class="va">x</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co"># Print the modified prompt object</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">prompt_obj</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
-<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Print the modified prompt object</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">prompt</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">&lt;tidyprompt&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">The base prompt is modified by a wrapper function, resulting in:</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">&gt; </span>Answer concisely: What is the capital of France? </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">Use '&lt;tidyprompt&gt;$prompt_wraps' to show the wrapper functions.</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">Use '&lt;tidyprompt&gt;$base_prompt' to show the base prompt text.</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">Use '&lt;tidyprompt&gt; |&gt; construct_prompt_text()' to get the full prompt text.</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

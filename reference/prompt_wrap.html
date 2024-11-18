@@ -111,6 +111,88 @@ Most other prompt wraps will be 'unspecified', like <code><a href="answer_as_reg
     <div class="dont-index"><p><code><a href="tidyprompt.html">tidyprompt()</a></code> <code><a href="send_prompt.html">send_prompt()</a></code></p></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">#' Make LLM answer as an integer (between min and max)</span></span></span>
+<span class="r-in"><span><span class="co">#'</span></span></span>
+<span class="r-in"><span><span class="co">#' @param prompt A single string or a [tidyprompt()] object</span></span></span>
+<span class="r-in"><span><span class="co">#' @param min (optional) Minimum value for the integer</span></span></span>
+<span class="r-in"><span><span class="co">#' @param max (optional) Maximum value for the integer</span></span></span>
+<span class="r-in"><span><span class="co">#' @param add_instruction_to_prompt (optional) Add instruction for replying</span></span></span>
+<span class="r-in"><span><span class="co">#' as an integer to the prompt text. Set to FALSE for debugging if extractions/validations</span></span></span>
+<span class="r-in"><span><span class="co">#' are working as expected (without instruction the answer should fail the</span></span></span>
+<span class="r-in"><span><span class="co">#' validation function, initiating a retry)</span></span></span>
+<span class="r-in"><span><span class="co">#'</span></span></span>
+<span class="r-in"><span><span class="co">#' @return A [tidyprompt()] with an added [prompt_wrap()] which</span></span></span>
+<span class="r-in"><span><span class="co">#' will ensure that the LLM response is an integer.</span></span></span>
+<span class="r-in"><span><span class="co">#'</span></span></span>
+<span class="r-in"><span><span class="co">#' @export</span></span></span>
+<span class="r-in"><span><span class="co">#'</span></span></span>
+<span class="r-in"><span><span class="co">#' @family answer_as</span></span></span>
+<span class="r-in"><span><span class="co">#'</span></span></span>
+<span class="r-in"><span><span class="co">#' @example inst/examples/answer_as_integer.R</span></span></span>
+<span class="r-in"><span><span class="va">answer_as_integer</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="va">prompt</span>,</span></span>
+<span class="r-in"><span>    <span class="va">min</span> <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
+<span class="r-in"><span>    <span class="va">max</span> <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
+<span class="r-in"><span>    <span class="va">add_instruction_to_prompt</span> <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">instruction</span> <span class="op">&lt;-</span> <span class="st">"You must answer with only an integer (use no other characters)."</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">min</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">max</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="va">instruction</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">instruction</span>, <span class="fu">glue</span><span class="fu">::</span><span class="fu"><a href="https://glue.tidyverse.org/reference/glue.html" class="external-link">glue</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>      <span class="st">"Enter an integer between {min} and {max}."</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">min</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="va">instruction</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">instruction</span>, <span class="fu">glue</span><span class="fu">::</span><span class="fu"><a href="https://glue.tidyverse.org/reference/glue.html" class="external-link">glue</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>      <span class="st">"Enter an integer greater than or equal to {min}."</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">max</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="va">instruction</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">instruction</span>, <span class="fu">glue</span><span class="fu">::</span><span class="fu"><a href="https://glue.tidyverse.org/reference/glue.html" class="external-link">glue</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>      <span class="st">"Enter an integer less than or equal to {max}."</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># Define modification/extraction/validation functions:</span></span></span>
+<span class="r-in"><span>  <span class="va">modify_fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">original_prompt_text</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="va">add_instruction_to_prompt</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>      <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">original_prompt_text</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>    <span class="fu">glue</span><span class="fu">::</span><span class="fu"><a href="https://glue.tidyverse.org/reference/glue.html" class="external-link">glue</a></span><span class="op">(</span><span class="st">"{original_prompt_text}\n\n{instruction}"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="va">extraction_fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="va">extracted</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/warning.html" class="external-link">suppressWarnings</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">extracted</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>      <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fu"><a href="llm_feedback.html">llm_feedback</a></span><span class="op">(</span><span class="va">instruction</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="op">}</span></span></span>
+<span class="r-in"><span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">extracted</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="va">validation_fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="kw">if</span> <span class="op">(</span><span class="va">x</span> <span class="op">!=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">floor</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span> <span class="co"># Not a whole number</span></span></span>
+<span class="r-in"><span>      <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fu"><a href="llm_feedback.html">llm_feedback</a></span><span class="op">(</span><span class="va">instruction</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>    <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">min</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="va">x</span> <span class="op">&lt;</span> <span class="va">min</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>      <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fu"><a href="llm_feedback.html">llm_feedback</a></span><span class="op">(</span><span class="fu">glue</span><span class="fu">::</span><span class="fu"><a href="https://glue.tidyverse.org/reference/glue.html" class="external-link">glue</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>        <span class="st">"The number should be greater than or equal to {min}."</span></span></span>
+<span class="r-in"><span>      <span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="op">}</span></span></span>
+<span class="r-in"><span>    <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">max</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="va">x</span> <span class="op">&gt;</span> <span class="va">max</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>      <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fu"><a href="llm_feedback.html">llm_feedback</a></span><span class="op">(</span><span class="fu">glue</span><span class="fu">::</span><span class="fu"><a href="https://glue.tidyverse.org/reference/glue.html" class="external-link">glue</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>        <span class="st">"The number should be less than or equal to {max}."</span></span></span>
+<span class="r-in"><span>      <span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="op">}</span></span></span>
+<span class="r-in"><span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="fu">prompt_wrap</span><span class="op">(</span><span class="va">prompt</span>, <span class="va">modify_fn</span>, <span class="va">extraction_fn</span>, <span class="va">validation_fn</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 
