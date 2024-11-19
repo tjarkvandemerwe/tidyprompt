@@ -35,9 +35,15 @@
     </div>
 
     <div class="section level2">
-      <h2 id="all-functions">All functions<a class="anchor" aria-label="anchor" href="#all-functions"></a></h2>
+      <h2 id="prompt-wrapping-and-evaluation">Prompt wrapping and evaluation<a class="anchor" aria-label="anchor" href="#prompt-wrapping-and-evaluation"></a></h2>
 
 
+
+
+    </div><div class="section level2">
+
+      <h3 id="tidyprompt">tidyprompt<a class="anchor" aria-label="anchor" href="#tidyprompt"></a></h3>
+      <div class="section-desc"><p>Functions for creating and handling tidyprompt objects. These functions are typically called internally; in most scenarios, prompt wrap functions can be used.</p></div>
 
 
     </div><div class="section level2">
@@ -47,23 +53,116 @@
 
       <dl><dt>
 
-          <code><a href="add_text.html">add_text()</a></code>
+          <code><a href="tidyprompt.html">tidyprompt()</a></code>
 
         </dt>
-        <dd>Add text to a tidyprompt</dd>
+        <dd>Methods to create, construct, and empower prompt objects</dd>
       </dl><dl><dt>
 
-          <code><a href="add_tools.html">add_tools()</a></code>
+          <code><a href="is_tidyprompt.html">is_tidyprompt()</a></code>
 
         </dt>
-        <dd>Enable R function calling for prompt evaluation by a LLM</dd>
+        <dd>Validate tidyprompt, returning TRUE if valid, otherwise FALSE</dd>
       </dl><dl><dt>
 
-          <code><a href="add_tools_extract_documentation.html">add_tools_extract_documentation()</a></code>
+          <code><a href="validate_tidyprompt.html">validate_tidyprompt()</a></code>
 
         </dt>
-        <dd>Extract docstring-documentation from a function</dd>
+        <dd>Validate tidyprompt, returning self if valid, otherwise error</dd>
       </dl><dl><dt>
+
+          <code><a href="get_base_prompt.html">get_base_prompt()</a></code>
+
+        </dt>
+        <dd>Get base prompt from tidyprompt</dd>
+      </dl><dl><dt>
+
+          <code><a href="construct_prompt_text.html">construct_prompt_text()</a></code>
+
+        </dt>
+        <dd>Construct prompt text from a tidyprompt object</dd>
+      </dl><dl><dt>
+
+          <code><a href="get_prompt_wraps.html">get_prompt_wraps()</a></code>
+
+        </dt>
+        <dd>Get prompt wraps from tidyprompt</dd>
+      </dl><dl><dt>
+
+          <code><a href="get_prompt_wraps_ordered.html">get_prompt_wraps_ordered()</a></code>
+
+        </dt>
+        <dd>Extract only prompt wraps and reorder them in order of operations</dd>
+      </dl><dl><dt>
+
+          <code><a href="get_extractions_and_validations.html">get_extractions_and_validations()</a></code>
+
+        </dt>
+        <dd>Get extractions and validations from a tidyprompt</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="prompt-wrap">prompt_wrap<a class="anchor" aria-label="anchor" href="#prompt-wrap"></a></h3>
+      <div class="section-desc"><p>Functions for creating prompt wraps.</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="prompt_wrap.html">prompt_wrap()</a></code>
+
+        </dt>
+        <dd>Wrap a prompt or tidyprompt with additional functionality</dd>
+      </dl><dl><dt>
+
+          <code><a href="llm_feedback.html">llm_feedback()</a></code>
+
+        </dt>
+        <dd>Create an <code>llm_feedback</code> object</dd>
+      </dl><dl><dt>
+
+          <code><a href="llm_break.html">llm_break()</a></code>
+
+        </dt>
+        <dd>Create an <code>llm_break</code> object</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="send-prompt">send_prompt<a class="anchor" aria-label="anchor" href="#send-prompt"></a></h3>
+      <div class="section-desc"><p>Function to evaluate prompts with an LLM provider.</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="send_prompt.html">send_prompt()</a></code>
+
+        </dt>
+        <dd>Send a prompt or <code><a href="../reference/tidyprompt.html">tidyprompt()</a></code> to a LLM provider</dd>
+      </dl></div><div class="section level2">
+      <h2 id="prompt-wrap-library">Prompt wrap library<a class="anchor" aria-label="anchor" href="#prompt-wrap-library"></a></h2>
+
+      <div class="section-desc"><p>A library of pre-built prompt wraps for common use cases.</p></div>
+
+
+    </div><div class="section level2">
+
+      <h3 id="answer-as-structured-output-">Answer as (structured output)<a class="anchor" aria-label="anchor" href="#answer-as-structured-output-"></a></h3>
+      <div class="section-desc"><p>Functions to have LLMs answer in a specific format.</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
 
           <code><a href="answer_as_boolean.html">answer_as_boolean()</a></code>
 
@@ -99,7 +198,18 @@
 
         </dt>
         <dd>Make LLM answer match a specific regex</dd>
-      </dl><dl><dt>
+      </dl></div><div class="section level2">
+
+      <h3 id="answer-by-mode-">Answer by (mode)<a class="anchor" aria-label="anchor" href="#answer-by-mode-"></a></h3>
+      <div class="section-desc"><p>Functions to have LLMs answer in a specific way.</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
 
           <code><a href="answer_by_chain_of_thought.html">answer_by_chain_of_thought()</a></code>
 
@@ -111,97 +221,105 @@
 
         </dt>
         <dd>Set ReAct mode for a prompt</dd>
-      </dl><dl><dt>
+      </dl></div><div class="section level2">
 
-          <code><a href="chat_history.html">chat_history()</a></code>
+      <h3 id="tools-function-calling-">Tools (function-calling)<a class="anchor" aria-label="anchor" href="#tools-function-calling-"></a></h3>
+      <div class="section-desc"><p>Functions that empower a LLM with tools.</p></div>
 
-        </dt>
-        <dd>Create or validate <code>chat_history</code> object</dd>
-      </dl><dl><dt>
 
-          <code><a href="chat_history.character.html">chat_history(<i>&lt;character&gt;</i>)</a></code>
+    </div><div class="section level2">
 
-        </dt>
-        <dd>Method for <code><a href="../reference/chat_history.html">chat_history()</a></code> when the input is a single string</dd>
-      </dl><dl><dt>
 
-          <code><a href="chat_history.data.frame.html">chat_history(<i>&lt;data.frame&gt;</i>)</a></code>
 
-        </dt>
-        <dd>Method for <code><a href="../reference/chat_history.html">chat_history()</a></code> when the input is a <code>data.frame</code></dd>
-      </dl><dl><dt>
 
-          <code><a href="chat_history.default.html">chat_history(<i>&lt;default&gt;</i>)</a></code>
+      <dl><dt>
+
+          <code><a href="add_tools.html">add_tools()</a></code>
 
         </dt>
-        <dd>Default method for <code><a href="../reference/chat_history.html">chat_history()</a></code></dd>
+        <dd>Enable R function calling for prompt evaluation by a LLM</dd>
       </dl><dl><dt>
 
-          <code><a href="construct_prompt_text.html">construct_prompt_text()</a></code>
+          <code><a href="add_tools_extract_documentation.html">add_tools_extract_documentation()</a></code>
 
         </dt>
-        <dd>Construct prompt text from a tidyprompt object</dd>
+        <dd>Extract docstring-documentation from a function</dd>
       </dl><dl><dt>
 
-          <code><a href="df_to_string.html">df_to_string()</a></code>
+          <code><a href="answer_as_code.html">answer_as_code()</a></code>
 
         </dt>
-        <dd>Convert a dataframe to a string representation</dd>
-      </dl><dl><dt>
+        <dd>Instruct LLM to answer a prompt with R code</dd>
+      </dl></div><div class="section level2">
 
-          <code><a href="extract_from_return_list.html">extract_from_return_list()</a></code>
+      <h3 id="miscellaneous">Miscellaneous<a class="anchor" aria-label="anchor" href="#miscellaneous"></a></h3>
 
-        </dt>
-        <dd>Function to extract a specific element from a list</dd>
-      </dl><dl><dt>
 
-          <code><a href="get_base_prompt.html">get_base_prompt()</a></code>
 
-        </dt>
-        <dd>Get base prompt from tidyprompt</dd>
-      </dl><dl><dt>
+    </div><div class="section level2">
 
-          <code><a href="get_extractions_and_validations.html">get_extractions_and_validations()</a></code>
 
-        </dt>
-        <dd>Get extractions and validations from a tidyprompt</dd>
-      </dl><dl><dt>
 
-          <code><a href="get_prompt_wraps.html">get_prompt_wraps()</a></code>
+
+      <dl><dt>
+
+          <code><a href="add_text.html">add_text()</a></code>
 
         </dt>
-        <dd>Get prompt wraps from tidyprompt</dd>
+        <dd>Add text to a tidyprompt</dd>
       </dl><dl><dt>
 
-          <code><a href="get_prompt_wraps_ordered.html">get_prompt_wraps_ordered()</a></code>
+          <code><a href="set_system_prompt.html">set_system_prompt()</a></code>
 
         </dt>
-        <dd>Extract only prompt wraps and reorder them in order of operations</dd>
+        <dd>Set system prompt</dd>
       </dl><dl><dt>
 
-          <code><a href="is_tidyprompt.html">is_tidyprompt()</a></code>
+          <code><a href="quit_if.html">quit_if()</a></code>
 
         </dt>
-        <dd>Check if object is a valid tidyprompt</dd>
-      </dl><dl><dt>
+        <dd>Make evaluation of a prompt stop if LLM gives a specific response</dd>
+      </dl></div><div class="section level2">
+      <h2 id="llm-providers">LLM providers<a class="anchor" aria-label="anchor" href="#llm-providers"></a></h2>
 
-          <code><a href="llm_break.html">llm_break()</a></code>
+      <div class="section-desc"><p>Functions to interact with LLM providers.</p></div>
 
-        </dt>
-        <dd>Create an <code>llm_break</code> object</dd>
-      </dl><dl><dt>
 
-          <code><a href="llm_feedback.html">llm_feedback()</a></code>
+    </div><div class="section level2">
 
-        </dt>
-        <dd>Create an <code>llm_feedback</code> object</dd>
-      </dl><dl><dt>
+      <h3 id="llm-provider-creation">LLM provider creation<a class="anchor" aria-label="anchor" href="#llm-provider-creation"></a></h3>
+
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
 
           <code><a href="llm_provider.html">llm_provider</a></code>
 
         </dt>
         <dd><code><a href="../reference/llm_provider.html">llm_provider()</a></code> R6 Class</dd>
       </dl><dl><dt>
+
+          <code><a href="make_llm_provider_request.html">make_llm_provider_request()</a></code>
+
+        </dt>
+        <dd>Make a request to an LLM provider</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="pre-built-llm-providers">Pre-built LLM providers<a class="anchor" aria-label="anchor" href="#pre-built-llm-providers"></a></h3>
+
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
 
           <code><a href="llm_provider_fake.html">llm_provider_fake()</a></code>
 
@@ -249,98 +367,78 @@
 
         </dt>
         <dd>Create a new XAI (Grok) <code><a href="../reference/llm_provider.html">llm_provider()</a></code> instance</dd>
-      </dl><dl><dt>
+      </dl></div><div class="section level2">
 
-          <code><a href="make_llm_provider_request.html">make_llm_provider_request()</a></code>
+      <h3 id="chat-history">chat_history<a class="anchor" aria-label="anchor" href="#chat-history"></a></h3>
 
-        </dt>
-        <dd>Make a request to an LLM provider</dd>
-      </dl><dl><dt>
 
-          <code><a href="print.tidyprompt.html">print(<i>&lt;tidyprompt&gt;</i>)</a></code>
 
-        </dt>
-        <dd>Print method for <code><a href="../reference/tidyprompt.html">tidyprompt()</a></code> objects</dd>
-      </dl><dl><dt>
+    </div><div class="section level2">
 
-          <code><a href="prompt_wrap.html">prompt_wrap()</a></code>
 
-        </dt>
-        <dd>Wrap a prompt or tidyprompt with additional functionality</dd>
-      </dl><dl><dt>
 
-          <code><a href="prompt_wrap.default.html">prompt_wrap(<i>&lt;default&gt;</i>)</a></code>
+
+      <dl><dt>
+
+          <code><a href="chat_history.html">chat_history()</a></code>
 
         </dt>
-        <dd>Default method for <code><a href="../reference/prompt_wrap.html">prompt_wrap()</a></code></dd>
-      </dl><dl><dt>
+        <dd>Create or validate <code>chat_history</code> object</dd>
+      </dl></div><div class="section level2">
+      <h2 id="helper-functions">Helper functions<a class="anchor" aria-label="anchor" href="#helper-functions"></a></h2>
 
-          <code><a href="prompt_wrap.tidyprompt.html">prompt_wrap(<i>&lt;tidyprompt&gt;</i>)</a></code>
 
-        </dt>
-        <dd><code><a href="../reference/prompt_wrap.html">prompt_wrap()</a></code> method for when a <code><a href="../reference/tidyprompt.html">tidyprompt()</a></code> object is supplied</dd>
-      </dl><dl><dt>
 
-          <code><a href="quit_if.html">quit_if()</a></code>
 
-        </dt>
-        <dd>Make evaluation of a prompt stop if LLM gives a specific response</dd>
-      </dl><dl><dt>
+    </div><div class="section level2">
 
-          <code><a href="send_prompt.html">send_prompt()</a></code>
+      <h3 id="text-helpers">Text helpers<a class="anchor" aria-label="anchor" href="#text-helpers"></a></h3>
+      <div class="section-desc"><p>Functions to create text to be used in prompts.</p></div>
 
-        </dt>
-        <dd>Send a prompt or <code><a href="../reference/tidyprompt.html">tidyprompt()</a></code> to a LLM provider</dd>
-      </dl><dl><dt>
 
-          <code><a href="set_system_prompt.html">set_system_prompt()</a></code>
+    </div><div class="section level2">
 
-        </dt>
-        <dd>Set system prompt</dd>
-      </dl><dl><dt>
 
-          <code><a href="skim_with_labels_and_levels.html">skim_with_labels_and_levels()</a></code>
+
+
+      <dl><dt>
+
+          <code><a href="df_to_string.html">df_to_string()</a></code>
 
         </dt>
-        <dd>Skim a dataframe and include labels and levels</dd>
-      </dl><dl><dt>
-
-          <code><a href="tidyprompt.html">tidyprompt()</a></code>
-
-        </dt>
-        <dd>Methods to create, construct, and empower prompt objects</dd>
-      </dl><dl><dt>
-
-          <code><a href="tidyprompt.character.html">tidyprompt(<i>&lt;character&gt;</i>)</a></code>
-
-        </dt>
-        <dd>Method to create a tidyprompt object from a character string</dd>
-      </dl><dl><dt>
-
-          <code><a href="tidyprompt.default.html">tidyprompt(<i>&lt;default&gt;</i>)</a></code>
-
-        </dt>
-        <dd>Default method to create a tidyprompt object</dd>
-      </dl><dl><dt>
-
-          <code><a href="tidyprompt.tidyprompt.html">tidyprompt(<i>&lt;tidyprompt&gt;</i>)</a></code>
-
-        </dt>
-        <dd>Validate and return tidyprompt</dd>
-      </dl><dl><dt>
-
-          <code><a href="validate_tidyprompt.html">validate_tidyprompt()</a></code>
-
-        </dt>
-        <dd>Validate tidyprompt</dd>
+        <dd>Convert a dataframe to a string representation</dd>
       </dl><dl><dt>
 
           <code><a href="vector_list_to_string.html">vector_list_to_string()</a></code>
 
         </dt>
         <dd>Convert a named or unnamed list/vector to a string representation</dd>
+      </dl><dl><dt>
+
+          <code><a href="skim_with_labels_and_levels.html">skim_with_labels_and_levels()</a></code>
+
+        </dt>
+        <dd>Skim a dataframe and include labels and levels</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="other-helper-functions">Other helper functions<a class="anchor" aria-label="anchor" href="#other-helper-functions"></a></h3>
+
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="extract_from_return_list.html">extract_from_return_list()</a></code>
+
+        </dt>
+        <dd>Function to extract a specific element from a list</dd>
       </dl></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">
