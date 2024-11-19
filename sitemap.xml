@@ -17,6 +17,9 @@
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/answer_as_regex.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/answer_by_chain_of_thought.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/answer_by_react.html</loc></url>
+<url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/chat_history.character.html</loc></url>
+<url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/chat_history.data.frame.html</loc></url>
+<url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/chat_history.default.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/chat_history.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/construct_prompt_text.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/df_to_string.html</loc></url>
@@ -43,7 +46,6 @@
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/prompt_wrap.default.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/prompt_wrap.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/prompt_wrap.tidyprompt.html</loc></url>
-<url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/prompt_wrap_internal.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/quit_if.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/send_prompt.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/set_system_prompt.html</loc></url>

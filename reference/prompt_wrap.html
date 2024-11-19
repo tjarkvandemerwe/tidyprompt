@@ -108,7 +108,20 @@ Most other prompt wraps will be 'unspecified', like <code><a href="answer_as_reg
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="tidyprompt.html">tidyprompt()</a></code> <code><a href="send_prompt.html">send_prompt()</a></code></p></div>
+    <div class="dont-index"><p><code><a href="tidyprompt.html">tidyprompt()</a></code> <code><a href="send_prompt.html">send_prompt()</a></code></p>
+<p>Other prompt_wrap:
+<code><a href="add_text.html">add_text</a>()</code>,
+<code><a href="add_tools.html">add_tools</a>()</code>,
+<code><a href="answer_as_boolean.html">answer_as_boolean</a>()</code>,
+<code><a href="answer_as_code.html">answer_as_code</a>()</code>,
+<code><a href="answer_as_integer.html">answer_as_integer</a>()</code>,
+<code><a href="answer_as_list.html">answer_as_list</a>()</code>,
+<code><a href="answer_as_named_list.html">answer_as_named_list</a>()</code>,
+<code><a href="answer_as_regex.html">answer_as_regex</a>()</code>,
+<code><a href="answer_by_chain_of_thought.html">answer_by_chain_of_thought</a>()</code>,
+<code><a href="answer_by_react.html">answer_by_react</a>()</code>,
+<code><a href="quit_if.html">quit_if</a>()</code>,
+<code><a href="set_system_prompt.html">set_system_prompt</a>()</code></p></div>
     </div>
 
     <div class="section level2">
@@ -128,9 +141,11 @@ Most other prompt wraps will be 'unspecified', like <code><a href="answer_as_reg
 <span class="r-in"><span><span class="co">#'</span></span></span>
 <span class="r-in"><span><span class="co">#' @export</span></span></span>
 <span class="r-in"><span><span class="co">#'</span></span></span>
-<span class="r-in"><span><span class="co">#' @family answer_as</span></span></span>
-<span class="r-in"><span><span class="co">#'</span></span></span>
 <span class="r-in"><span><span class="co">#' @example inst/examples/answer_as_integer.R</span></span></span>
+<span class="r-in"><span><span class="co">#'</span></span></span>
+<span class="r-in"><span><span class="co">#' @family prompt_wrap</span></span></span>
+<span class="r-in"><span><span class="co">#' @family pre_built_prompt_wraps</span></span></span>
+<span class="r-in"><span><span class="co">#' @family answer_as_prompt_wraps</span></span></span>
 <span class="r-in"><span><span class="va">answer_as_integer</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="va">prompt</span>,</span></span>
 <span class="r-in"><span>    <span class="va">min</span> <span class="op">=</span> <span class="cn">NULL</span>,</span></span>

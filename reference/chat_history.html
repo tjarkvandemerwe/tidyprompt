@@ -59,13 +59,15 @@ system prompt to the chat history.</p>
 
 
 <dl><dt id="arg-chat-history">chat_history<a class="anchor" aria-label="anchor" href="#arg-chat-history"></a></dt>
-<dd><p>A single string, a dataframe with 'role' and 'content' columns,
-or NULL.</p></dd>
+<dd><p>A single string, a <code>data.frame</code> with 'role' and 'content' columns,
+or NULL. If a <code>data.frame</code> is provided, it should contain 'role' and 'content' columns,
+where 'role' is either 'user', 'assistant', or 'system', and 'content' is a character string
+representing a chat message</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A valid chat history dataframe (of class `chat_history“).</p>
+    <p>A valid chat history <code>data.frame</code> (of class <code>chat_history</code>)</p>
     </div>
 
     <div class="section level2">
