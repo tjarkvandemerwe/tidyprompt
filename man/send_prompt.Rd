@@ -118,5 +118,9 @@ in the prompt wraps (see \code{\link[=prompt_wrap]{prompt_wrap()}}). If the maxi
 \seealso{
 \code{\link[=tidyprompt]{tidyprompt()}}, \code{\link[=prompt_wrap]{prompt_wrap()}}, \code{\link[=llm_provider]{llm_provider()}}, \code{\link[=llm_provider_ollama]{llm_provider_ollama()}},
 \code{\link[=llm_provider_openai]{llm_provider_openai()}}, \code{\link[=llm_provider_openrouter]{llm_provider_openrouter()}}
+
+Other prompt_evaluation: 
+\code{\link{llm_break}()},
+\code{\link{llm_feedback}()}
 }
 \concept{prompt_evaluation}

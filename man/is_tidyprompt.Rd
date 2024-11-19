@@ -2,7 +2,7 @@
 % Please edit documentation in R/tidyprompt.R
 \name{is_tidyprompt}
 \alias{is_tidyprompt}
-\title{Check if object is a valid tidyprompt}
+\title{Validate tidyprompt, returning TRUE if valid, otherwise FALSE}
 \usage{
 is_tidyprompt(tidyprompt)
 }
@@ -13,7 +13,7 @@ is_tidyprompt(tidyprompt)
 TRUE if the object is a valid tidyprompt, otherwise FALSE
 }
 \description{
-Check if object is a valid tidyprompt
+Validate tidyprompt, returning TRUE if valid, otherwise FALSE
 }
 \seealso{
 Other tidyprompt: 

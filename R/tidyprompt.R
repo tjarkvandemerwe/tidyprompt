@@ -34,6 +34,7 @@ tidyprompt <- function(input) {
 #' @return An error message stating that input type is not suitable
 #'
 #' @exportS3Method tidyprompt default
+#' @keywords internal
 tidyprompt.default <- function(input) {
   stop(paste0(
     "Input (the base prompt) to tidyprompt() must be a character string"
@@ -49,6 +50,7 @@ tidyprompt.default <- function(input) {
 #' @return A tidyprompt object
 #'
 #' @exportS3Method tidyprompt character
+#' @keywords internal
 tidyprompt.character <- function(input) {
   if (length(input) != 1)
     stop("Input (the base prompt) must be length 1")
@@ -66,13 +68,14 @@ tidyprompt.character <- function(input) {
 
 
 
-#' Validate and return tidyprompt
+#' Validate tidyprompt
 #'
 #' @param input A tidyprompt object
 #'
 #' @return A validated tidyprompt object
 #'
 #' @exportS3Method tidyprompt tidyprompt
+#' @keywords internal
 tidyprompt.tidyprompt <- function(input) {
   validate_tidyprompt(input)
   return(input)
@@ -80,7 +83,7 @@ tidyprompt.tidyprompt <- function(input) {
 
 
 
-#' Validate tidyprompt
+#' Validate tidyprompt, returning self if valid, otherwise error
 #'
 #' @param tidyprompt A tidyprompt object
 #'
@@ -119,7 +122,7 @@ validate_tidyprompt <- function(tidyprompt) {
 
 
 
-#' Check if object is a valid tidyprompt
+#' Validate tidyprompt, returning TRUE if valid, otherwise FALSE
 #'
 #' @param tidyprompt A tidyprompt object
 #'

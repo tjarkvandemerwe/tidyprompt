@@ -2,7 +2,7 @@
 % Please edit documentation in R/tidyprompt.R
 \name{validate_tidyprompt}
 \alias{validate_tidyprompt}
-\title{Validate tidyprompt}
+\title{Validate tidyprompt, returning self if valid, otherwise error}
 \usage{
 validate_tidyprompt(tidyprompt)
 }
@@ -13,7 +13,7 @@ validate_tidyprompt(tidyprompt)
 TRUE if the tidyprompt is valid, otherwise an error is thrown
 }
 \description{
-Validate tidyprompt
+Validate tidyprompt, returning self if valid, otherwise error
 }
 \seealso{
 Other tidyprompt: 

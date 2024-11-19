@@ -15,3 +15,4 @@ An error message stating that input type is not suitable
 \description{
 Is called when the input is not a character string or a tidyprompt object.
 }
+\keyword{internal}

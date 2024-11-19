@@ -22,7 +22,6 @@
 #'
 #' @seealso [answer_as_code()] [add_tools_extract_documentation()]
 #'
-#' @family prompt_wrap
 #' @family pre_built_prompt_wraps
 #' @family llm_tools
 #' @family add_tools

@@ -1,4 +1,68 @@
 url: https://tjarkvandemerwe.github.io/tidyprompt/
 template:
   bootstrap: 5
-
+reference:
+- title: Prompt wrapping and evaluation
+- subtitle: tidyprompt
+  desc: Functions for creating and handling tidyprompt objects. These functions are typically called internally; in most scenarios, prompt wrap functions can be used.
+- contents:
+  - tidyprompt
+  - is_tidyprompt
+  - validate_tidyprompt
+  - get_base_prompt
+  - construct_prompt_text
+  - starts_with("get_prompt_wraps")
+  - get_extractions_and_validations
+- subtitle: prompt_wrap
+  desc: Functions for creating prompt wraps.
+- contents:
+  - prompt_wrap
+  - llm_feedback
+  - llm_break
+- subtitle: send_prompt
+  desc: Function to evaluate prompts with an LLM provider.
+- contents:
+  - send_prompt
+- title: Prompt wrap library
+  desc: A library of pre-built prompt wraps for common use cases.
+- subtitle: Answer as (structured output)
+  desc: Functions to have LLMs answer in a specific format.
+- contents:
+  - starts_with("answer_as")
+- subtitle: Answer by (mode)
+  desc: Functions to have LLMs answer in a specific way.
+- contents:
+  - starts_with("answer_by")
+- subtitle: Tools (function-calling)
+  desc: Functions that empower a LLM with tools.
+- contents:
+  - add_tools
+  - add_tools_extract_documentation
+  - answer_as_code
+- subtitle: Miscellaneous
+- contents:
+  - add_text
+  - set_system_prompt
+  - quit_if
+- title: LLM providers
+  desc: Functions to interact with LLM providers.
+- subtitle: LLM provider creation
+- contents:
+  - llm_provider
+  - make_llm_provider_request
+- subtitle: Pre-built LLM providers
+- contents:
+  - starts_with("llm_provider_")
+- subtitle: chat_history
+- contents:
+  - starts_with("chat_history")
+- title: Helper functions
+- subtitle: Text helpers
+  desc: Functions to create text to be used in prompts.
+- contents:
+  - df_to_string
+  - vector_list_to_string
+  - skim_with_labels_and_levels
+- subtitle: Other helper functions
+- contents:
+  - extract_from_return_list

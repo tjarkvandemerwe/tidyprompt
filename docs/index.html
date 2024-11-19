@@ -55,15 +55,15 @@
 <div class="page-header"><h1 id="tidyprompt">tidyprompt<a class="anchor" aria-label="anchor" href="#tidyprompt"></a>
 </h1></div>
 <!-- badges: start -->
-<!-- badges: end -->
+
 <p><code>tidyprompt</code> is an R package to prompt and empower your large language models (LLMs), the tidy way.</p>
 <p>Key features of <code>tidyprompt</code> are:</p>
 <ul>
 <li><p><strong>tidy prompting</strong>: Quickly and elegantly construct prompts for LLMs, using piping syntax (inspired by the <code>tidyverse</code>). Wrap a base prompt in prompt wraps to influence how the LLM handles the prompt. A library of pre-built prompt wraps is included, but you can also write your own.</p></li>
 <li><p><strong>structured output</strong>: Extract structured output from the LLM’s response, and validate it. Automatic retries with feedback to the LLM, if the output is not as expected.</p></li>
 <li><p><strong>reasoning modes</strong>: Make your LLM answer in a specific mode, such as chain-of-thought or ReAct (Reasoning and Acting) modes.</p></li>
-<li><p><strong>function calling</strong>: Give your LLM the ability to autonomously call R functions (‘tools’). With this, the LLM can retrieve information or take other actions.</p></li>
-<li><p><strong>compatible with all LLM providers</strong>: Usable with any LLM provider that supports chat completion. Use included LLM providers such as Ollama (on your local PC or your own server) or the OpenAI API. Or easily write a hook for any other LLM provider.</p></li>
+<li><p><strong>function calling</strong>: Give your LLM the ability to autonomously call R functions (‘tools’). With this, the LLM can retrieve information or take other actions. ‘tidyprompt’ also supports R code generation and evaluation, allowing LLMs to run R code.</p></li>
+<li><p><strong>compatible with all LLM providers</strong>: Usable with any LLM provider that supports chat completion. Use included LLM providers such as Ollama (local PC/on your own server), OpenAI, OpenRouter (offering various providers), Mistral, Groq, XAI (Grok), or Google Gemini. Or easily write your own hook for any other LLM provider.</p></li>
 </ul>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -77,32 +77,36 @@
 <h2 id="example-usage">Example usage<a class="anchor" aria-label="anchor" href="#example-usage"></a>
 </h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/tjarkvandemerwe/tidyprompt" class="external-link">tidyprompt</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'tidyprompt'</span></span>
-<span><span class="co">#&gt; The following object is masked from 'package:utils':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     prompt</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/tjarkvandemerwe/tidyprompt" class="external-link">tidyprompt</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="setup-an-llm-provider">Setup an LLM provider<a class="anchor" aria-label="anchor" href="#setup-an-llm-provider"></a>
 </h3>
 <p><code>tidyprompt</code> can be used with any LLM provider capable of completing a chat.</p>
-<p>At the moment, <code>tidyprompt</code> includes pre-built functions to connect with Ollama and the OpenAI API.</p>
-<p>With the <code>create_llm_provider</code> function, you can easily write a hook for any other LLM provider. You could make API calls using the <code>httr</code> package or use another R package that already has a hook for the LLM provider you want to use.</p>
+<p>At the moment, <code>tidyprompt</code> includes pre-built functions to connect with various LLM providers, such as Ollama, OpenAI, OpenRouter, Mistral, Groq, XAI (Grok), and Google Gemini.</p>
+<p>With the <code>llm_provider</code> function, you can easily write a hook for any other LLM provider. You could make API calls using the <code>httr</code> package or use another R package that already has a hook for the LLM provider you want to use. If your API of choice follows the structure of the OpenAI API, you can very easily call the <code>llm_provider_openai</code> function and change the relevant parameters (like the url and the API key).</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Ollama running on local PC</span></span>
-<span><span class="va">ollama</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_ollama_llm_provider.html">create_ollama_llm_provider</a></span><span class="op">(</span></span>
-<span>  parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>model <span class="op">=</span> <span class="st">"llama3.1:8b"</span>, url <span class="op">=</span> <span class="st">"http://localhost:11434/api/chat"</span><span class="op">)</span></span>
+<span><span class="va">ollama</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/llm_provider_ollama.html">llm_provider_ollama</a></span><span class="op">(</span></span>
+<span>  parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>model <span class="op">=</span> <span class="st">"llama3.1:8b"</span><span class="op">)</span>,</span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># OpenAI API</span></span>
-<span><span class="va">openai</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_openai_llm_provider.html">create_openai_llm_provider</a></span><span class="op">(</span></span>
-<span>  parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>model <span class="op">=</span> <span class="st">"gpt-4o-mini"</span>, api_key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"OPENAI_API_KEY"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">openai</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/llm_provider_openai.html">llm_provider_openai</a></span><span class="op">(</span></span>
+<span>  parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>model <span class="op">=</span> <span class="st">"gpt-4o-mini"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Create your own LLM provider hook using create_llm_provider(); </span></span>
-<span><span class="co">#   see ?create_llm_provider for more information, and take a look at</span></span>
-<span><span class="co">#   the source code of create_ollama_llm_provider() and create_openai_llm_provider()</span></span></code></pre></div>
+<span><span class="co"># Various providers via OpenRouter (e.g., Anthropic)</span></span>
+<span><span class="va">openrouter</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/llm_provider_openrouter.html">llm_provider_openrouter</a></span><span class="op">(</span></span>
+<span>  parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>model <span class="op">=</span> <span class="st">"anthropic/claude-3.5-sonnet"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># ... functions also included for Mistral, Groq, XAI (Grok), and Google Gemini</span></span>
+<span></span>
+<span><span class="co"># ... or easily create your own hook for any other LLM provider;</span></span>
+<span><span class="co">#   see ?llm_provider for more information; also take a look at the source code of</span></span>
+<span><span class="co">#   llm_provider_ollama() and llm_provider_openai(). For APIs that follow the structure</span></span>
+<span><span class="co">#   of the OpenAI API for chat completion, you can use llm_provider_openai() and change</span></span>
+<span><span class="co">#   the relevant parameters (like the url and the API key).</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="basic-prompting">Basic prompting<a class="anchor" aria-label="anchor" href="#basic-prompting"></a>
@@ -112,22 +116,35 @@
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  <span class="st">"Hi there!"</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="va">ollama</span><span class="op">)</span></span>
+<span><span class="co">#&gt; --- Sending request to LLM provider (llama3.1:8b): ---</span></span>
+<span><span class="co">#&gt; Hi there!</span></span>
+<span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
+<span><span class="co">#&gt; It's nice to meet you. Is there something I can help you with or would you like to chat?</span></span>
 <span><span class="co">#&gt; [1] "It's nice to meet you. Is there something I can help you with or would you like to chat?"</span></span></code></pre></div>
 <p><code>add_text</code> is a simple example of a prompt wrap. It simply adds some text at the end of the base prompt.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  <span class="st">"Hi there!"</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="reference/add_text.html">add_text</a></span><span class="op">(</span><span class="st">"What is a large language model? Explain in 10 words."</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="va">ollama</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "Complex computer program trained on vast texts to generate human-like responses."</span></span></code></pre></div>
+<span><span class="co">#&gt; --- Sending request to LLM provider (llama3.1:8b): ---</span></span>
+<span><span class="co">#&gt; Hi there!</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; What is a large language model? Explain in 10 words.</span></span>
+<span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
+<span><span class="co">#&gt; Advanced computer program that understands and generates human-like written text.</span></span>
+<span><span class="co">#&gt; [1] "Advanced computer program that understands and generates human-like written text."</span></span></code></pre></div>
 <p>You can also construct the final prompt text, without sending it to an LLM provider.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  <span class="st">"Hi there!"</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="reference/add_text.html">add_text</a></span><span class="op">(</span><span class="st">"What is a large language model? Explain in 10 words."</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="reference/construct_prompt_text.html">construct_prompt_text</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Hi there!</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; What is a large language model? Explain in 10 words.</span></span></code></pre></div>
+<span>    <span class="fu"><a href="reference/add_text.html">add_text</a></span><span class="op">(</span><span class="st">"What is a large language model? Explain in 10 words."</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;tidyprompt&gt;</span></span>
+<span><span class="co">#&gt; The base prompt is modified by a wrapper function, resulting in:</span></span>
+<span><span class="co">#&gt; &gt; Hi there!</span></span>
+<span><span class="co">#&gt; &gt; </span></span>
+<span><span class="co">#&gt; &gt; What is a large language model? Explain in 10 words. </span></span>
+<span><span class="co">#&gt; Use '&lt;tidyprompt&gt;$prompt_wraps' to show the wrapper functions.</span></span>
+<span><span class="co">#&gt; Use '&lt;tidyprompt&gt;$base_prompt' to show the base prompt text.</span></span>
+<span><span class="co">#&gt; Use '&lt;tidyprompt&gt; |&gt; construct_prompt_text()' to show the full prompt text.</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="retrieving-output-in-a-specific-format">Retrieving output in a specific format<a class="anchor" aria-label="anchor" href="#retrieving-output-in-a-specific-format"></a>
@@ -138,12 +155,12 @@
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  <span class="st">"What is 2 + 2?"</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="reference/answer_as_integer.html">answer_as_integer</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="va">ollama</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; --- Sending message to LLM-provider: ---</span></span>
+<span>    <span class="fu"><a href="reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="va">ollama</span><span class="op">)</span></span>
+<span><span class="co">#&gt; --- Sending request to LLM provider (llama3.1:8b): ---</span></span>
 <span><span class="co">#&gt; What is 2 + 2?</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; You must answer with only an integer (use no other characters).</span></span>
-<span><span class="co">#&gt; --- Received response from LLM-provider: ---</span></span>
+<span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
 <span><span class="co">#&gt; 4</span></span>
 <span><span class="co">#&gt; [1] 4</span></span></code></pre></div>
 <p>Below is an example of a prompt which will initially fail, but will succeed after a retry.</p>
@@ -151,16 +168,16 @@
 <code class="sourceCode R"><span>  <span class="st">"What is 2 + 2?"</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="reference/add_text.html">add_text</a></span><span class="op">(</span><span class="st">"Please write out your reply in words, use no numbers."</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="reference/answer_as_integer.html">answer_as_integer</a></span><span class="op">(</span>add_instruction_to_prompt <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="va">ollama</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; --- Sending message to LLM-provider: ---</span></span>
+<span>    <span class="fu"><a href="reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="va">ollama</span><span class="op">)</span></span>
+<span><span class="co">#&gt; --- Sending request to LLM provider (llama3.1:8b): ---</span></span>
 <span><span class="co">#&gt; What is 2 + 2?</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Please write out your reply in words, use no numbers.</span></span>
-<span><span class="co">#&gt; --- Received response from LLM-provider: ---</span></span>
-<span><span class="co">#&gt; Four.</span></span>
-<span><span class="co">#&gt; --- Sending message to LLM-provider: ---</span></span>
+<span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
+<span><span class="co">#&gt; Two plus two equals four.</span></span>
+<span><span class="co">#&gt; --- Sending request to LLM provider (llama3.1:8b): ---</span></span>
 <span><span class="co">#&gt; You must answer with only an integer (use no other characters).</span></span>
-<span><span class="co">#&gt; --- Received response from LLM-provider: ---</span></span>
+<span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
 <span><span class="co">#&gt; 4</span></span>
 <span><span class="co">#&gt; [1] 4</span></span></code></pre></div>
 </div>
@@ -173,8 +190,8 @@
 <code class="sourceCode R"><span>  <span class="st">"What is 2 + 2?"</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="reference/answer_by_chain_of_thought.html">answer_by_chain_of_thought</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="reference/answer_as_integer.html">answer_as_integer</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="va">ollama</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; --- Sending message to LLM-provider: ---</span></span>
+<span>    <span class="fu"><a href="reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="va">ollama</span><span class="op">)</span></span>
+<span><span class="co">#&gt; --- Sending request to LLM provider (llama3.1:8b): ---</span></span>
 <span><span class="co">#&gt; You are given a user's prompt.</span></span>
 <span><span class="co">#&gt; To answer the user's prompt, you need to think step by step to arrive at a final answer.</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -194,26 +211,28 @@
 <span><span class="co">#&gt; FINISH[&lt;put here your final answer to the user's prompt&gt;]</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Make sure your final answer follows the logical conclusion of your thought process.</span></span>
-<span><span class="co">#&gt; --- Received response from LLM-provider: ---</span></span>
-<span><span class="co">#&gt; &gt;&gt; step 1: Identify the mathematical operation in the prompt,</span></span>
-<span><span class="co">#&gt; which is a simple addition problem.</span></span>
+<span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
+<span><span class="co">#&gt; &gt;&gt; step 1: Identify the mathematical operation requested in the prompt, which is addition.</span></span>
+<span><span class="co">#&gt; The prompt asks for the sum of 2 and 2.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; &gt;&gt; step 2: Recall the basic arithmetic fact that 2 + 2 equals a specific</span></span>
-<span><span class="co">#&gt; numerical value.</span></span>
+<span><span class="co">#&gt; &gt;&gt; step 2: Recall the basic arithmetic fact that 2 + 2 equals a specific number.</span></span>
+<span><span class="co">#&gt; This is a fundamental math concept that can be recalled from memory or learned through experience.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; &gt;&gt; step 3: Apply this knowledge to determine the result of the addition problem,</span></span>
-<span><span class="co">#&gt; using the known facts about numbers and their operations.</span></span>
+<span><span class="co">#&gt; &gt;&gt; step 3: Apply this knowledge to determine that the sum of 2 and 2 is indeed 4.</span></span>
+<span><span class="co">#&gt; The numerical value of 4 is derived directly from knowing that 2 added to itself results in a total count of four items, quantities, or values.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; &gt;&gt; step 4: Conclude that based on this mathematical understanding, the</span></span>
-<span><span class="co">#&gt; solution to the prompt "What is 2 + 2?" is a fixed numerical quantity.</span></span>
-<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; FINISH4</span></span>
+<span><span class="co">#&gt; --- Sending request to LLM provider (llama3.1:8b): ---</span></span>
+<span><span class="co">#&gt; Error, could not parse your final answer.</span></span>
+<span><span class="co">#&gt; Please type: 'FINISH[&lt;put here your final answer to the original prompt&gt;]'</span></span>
+<span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
 <span><span class="co">#&gt; FINISH[4]</span></span>
 <span><span class="co">#&gt; [1] 4</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="giving-tools-to-the-llm-autonomous-function-calling">Giving tools to the LLM (autonomous function-calling)<a class="anchor" aria-label="anchor" href="#giving-tools-to-the-llm-autonomous-function-calling"></a>
 </h3>
-<p>With <code>tidyprompt</code>, you can define R functions and give the LLM the ability to call them. This enables the LLM to retrieve additional information or take other actions.</p>
+<p>With <code>tidyprompt</code> and the <code>add_tools</code> prompt wrap, you can define your own R functions and give the LLM the ability to call them. This enables the LLM to retrieve additional information or take other actions.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  <span class="co"># Define a function that returns fake data about the temperature in a location</span></span>
 <span>  <span class="va">temperature_in_location</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span></span>
@@ -231,11 +250,11 @@
 <span>    <span class="co">#'</span></span>
 <span>    <span class="co">#' llm_tool::example</span></span>
 <span>    <span class="co">#' temperature_in_location("Amsterdam", "Fahrenheit")</span></span>
-<span>    </span>
+<span></span>
 <span>    <span class="co"># As shown above, one can use docstring-like text to document the function.</span></span>
 <span>    <span class="co">#   This will provide the LLM information on what the function does,</span></span>
 <span>    <span class="co">#   and how it should be used.</span></span>
-<span>    </span>
+<span></span>
 <span>    <span class="va">location</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/match.arg.html" class="external-link">match.arg</a></span><span class="op">(</span><span class="va">location</span><span class="op">)</span></span>
 <span>    <span class="va">unit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/match.arg.html" class="external-link">match.arg</a></span><span class="op">(</span><span class="va">unit</span><span class="op">)</span></span>
 <span></span>
@@ -258,8 +277,8 @@
 <span>    <span class="fu"><a href="reference/add_text.html">add_text</a></span><span class="op">(</span><span class="st">"I want to know the Celcius degrees."</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="reference/answer_as_integer.html">answer_as_integer</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="reference/add_tools.html">add_tools</a></span><span class="op">(</span><span class="va">temperature_in_location</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="va">ollama</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; --- Sending message to LLM-provider: ---</span></span>
+<span>    <span class="fu"><a href="reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="va">ollama</span><span class="op">)</span></span>
+<span><span class="co">#&gt; --- Sending request to LLM provider (llama3.1:8b): ---</span></span>
 <span><span class="co">#&gt; Hi, what is the weather temperature in Enschede?</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; I want to know the Celcius degrees.</span></span>
@@ -281,21 +300,43 @@
 <span><span class="co">#&gt; example usage: FUNCTION[temperature_in_location]("Amsterdam", "Fahrenheit")</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; After you call a function, wait until you receive more information.</span></span>
-<span><span class="co">#&gt; --- Received response from LLM-provider: ---</span></span>
-<span><span class="co">#&gt; I'll use the provided function to get the current temperature in Enschede.</span></span>
+<span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
+<span><span class="co">#&gt; I'll call the `temperature_in_location` function with the necessary arguments.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; FUNCTION[temperature_in_location]("Enschede", "Celcius")</span></span>
-<span><span class="co">#&gt; --- Sending message to LLM-provider: ---</span></span>
+<span><span class="co">#&gt; --- Sending request to LLM provider (llama3.1:8b): ---</span></span>
 <span><span class="co">#&gt; function called: temperature_in_location</span></span>
 <span><span class="co">#&gt; arguments used: location = Enschede, unit = Celcius</span></span>
 <span><span class="co">#&gt; result: 22.7</span></span>
-<span><span class="co">#&gt; --- Received response from LLM-provider: ---</span></span>
-<span><span class="co">#&gt; So the current temperature in Enschede is 22.7 degrees Celsius.</span></span>
-<span><span class="co">#&gt; --- Sending message to LLM-provider: ---</span></span>
+<span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
+<span><span class="co">#&gt; The current temperature in Enschede is 22.7°C.</span></span>
+<span><span class="co">#&gt; --- Sending request to LLM provider (llama3.1:8b): ---</span></span>
 <span><span class="co">#&gt; You must answer with only an integer (use no other characters).</span></span>
-<span><span class="co">#&gt; --- Received response from LLM-provider: ---</span></span>
+<span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
 <span><span class="co">#&gt; 22</span></span>
 <span><span class="co">#&gt; [1] 22</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="code-generation-and-evaluation">Code generation and evaluation<a class="anchor" aria-label="anchor" href="#code-generation-and-evaluation"></a>
+</h3>
+<p><code>answer_as_code</code> is a more advanced prompt wrap, which has various options to enable LLM code generation. R code can be extracted, parsed for validity, and optionally be evaluated in a dedicated R session (using the <code>callr</code> package). The prompt wrap can also be set to ‘tool mode’ (with <code>output_as_tool = TRUE</code>), where the output of R code is returned to the LLM, so that it can be used to formulate a final answer.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># From prompt to ggplot</span></span>
+<span><span class="va">plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span>
+<span>  <span class="st">"Create a scatter plot of miles per gallon (mpg) versus"</span>,</span>
+<span>  <span class="st">" horsepower (hp) for the cars in the mtcars dataset."</span>,</span>
+<span>  <span class="st">" Use different colors to represent the number of cylinders (cyl)."</span>,</span>
+<span>  <span class="st">" Make the plot nice and readable,"</span>,</span>
+<span>  <span class="st">" but also be creative, a little crazy, and have humour!"</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/answer_as_code.html">answer_as_code</a></span><span class="op">(</span></span>
+<span>    pkgs_to_use <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ggplot2"</span><span class="op">)</span>,</span>
+<span>    evaluate_code <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    return_mode <span class="op">=</span> <span class="st">"object"</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="va">openai</span><span class="op">)</span></span>
+<span><span class="va">plot</span></span></code></pre></div>
+<p><img src="figure/answer_as_code1-1.png"></p>
 </div>
 <div class="section level3">
 <h3 id="creating-your-own-prompt-wraps">Creating your own prompt wraps<a class="anchor" aria-label="anchor" href="#creating-your-own-prompt-wraps"></a>
@@ -303,7 +344,7 @@
 <p>Under the hood, prompts are just lists of a base prompt (a string) and a series of prompt wraps.</p>
 <p>You can thus create a function which takes a prompt and appends a new prompt wrap to it.</p>
 <p>Take a look at the source code for function <code>add_text</code>:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">add_text</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span></span>
 <span>    <span class="va">prompt</span>,</span>
 <span>    <span class="va">text</span>, <span class="va">position</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"after"</span>, <span class="st">"before"</span><span class="op">)</span>, <span class="va">sep</span> <span class="op">=</span> <span class="st">"\n\n"</span></span>
@@ -321,7 +362,7 @@
 <span>  <span class="fu"><a href="reference/prompt_wrap.html">prompt_wrap</a></span><span class="op">(</span><span class="va">prompt</span>, <span class="va">modify_fn</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 <p>More complex prompt wraps may also add extraction and validation functions. Take a look at the source code for function <code>answer_as_integer</code>:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">answer_as_integer</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span></span>
 <span>    <span class="va">prompt</span>,</span>
 <span>    <span class="va">min</span> <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -351,19 +392,19 @@
 <span>  <span class="va">extraction_fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="va">extracted</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/warning.html" class="external-link">suppressWarnings</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span></span>
 <span>    <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">extracted</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>      <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fu"><a href="reference/create_llm_feedback.html">create_llm_feedback</a></span><span class="op">(</span><span class="va">instruction</span><span class="op">)</span><span class="op">)</span></span>
+<span>      <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fu"><a href="reference/llm_feedback.html">llm_feedback</a></span><span class="op">(</span><span class="va">instruction</span><span class="op">)</span><span class="op">)</span></span>
 <span>    <span class="op">}</span></span>
 <span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">extracted</span><span class="op">)</span></span>
 <span>  <span class="op">}</span></span>
 <span></span>
 <span>  <span class="va">validation_fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">min</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="va">x</span> <span class="op">&lt;</span> <span class="va">min</span><span class="op">)</span> <span class="op">{</span></span>
-<span>      <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fu"><a href="reference/create_llm_feedback.html">create_llm_feedback</a></span><span class="op">(</span><span class="fu">glue</span><span class="fu">::</span><span class="fu"><a href="https://glue.tidyverse.org/reference/glue.html" class="external-link">glue</a></span><span class="op">(</span></span>
+<span>      <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fu"><a href="reference/llm_feedback.html">llm_feedback</a></span><span class="op">(</span><span class="fu">glue</span><span class="fu">::</span><span class="fu"><a href="https://glue.tidyverse.org/reference/glue.html" class="external-link">glue</a></span><span class="op">(</span></span>
 <span>        <span class="st">"The number should be greater than or equal to {min}."</span></span>
 <span>      <span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span>    <span class="op">}</span></span>
 <span>    <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">max</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="va">x</span> <span class="op">&gt;</span> <span class="va">max</span><span class="op">)</span> <span class="op">{</span></span>
-<span>      <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fu"><a href="reference/create_llm_feedback.html">create_llm_feedback</a></span><span class="op">(</span><span class="fu">glue</span><span class="fu">::</span><span class="fu"><a href="https://glue.tidyverse.org/reference/glue.html" class="external-link">glue</a></span><span class="op">(</span></span>
+<span>      <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fu"><a href="reference/llm_feedback.html">llm_feedback</a></span><span class="op">(</span><span class="fu">glue</span><span class="fu">::</span><span class="fu"><a href="https://glue.tidyverse.org/reference/glue.html" class="external-link">glue</a></span><span class="op">(</span></span>
 <span>        <span class="st">"The number should be less than or equal to {max}."</span></span>
 <span>      <span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span>    <span class="op">}</span></span>
@@ -415,7 +456,12 @@
 </ul>
 </div>
 
-
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/tjarkvandemerwe/tidyprompt/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/tjarkvandemerwe/tidyprompt/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+</ul>
+</div>
 
   </aside>
 </div>

@@ -16,3 +16,4 @@ Calls error which indicates that the input was not a \code{character} or \code{d
 When input is a \code{character} or \code{data.frame}, the appropriate method will be called
 (see `\code{\link[=chat_history.character]{chat_history.character()}} and \code{\link[=chat_history.data.frame]{chat_history.data.frame()}}).
 }
+\keyword{internal}

@@ -12,3 +12,4 @@
 \description{
 Creates a \code{chat_history} object from a single string.
 }
+\keyword{internal}

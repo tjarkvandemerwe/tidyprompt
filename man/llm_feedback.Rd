@@ -49,7 +49,13 @@ validation_fn <- function(x, min = 0, max = 100) {
 # This validation_fn would be part of a prompt_wrap()
 }
 \seealso{
-Other prompt_wrap_creation: 
-\code{\link{llm_break}()}
+Other prompt_wrap: 
+\code{\link{llm_break}()},
+\code{\link{prompt_wrap}()}
+
+Other prompt_evaluation: 
+\code{\link{llm_break}()},
+\code{\link{send_prompt}()}
 }
-\concept{prompt_wrap_creation}
+\concept{prompt_evaluation}
+\concept{prompt_wrap}

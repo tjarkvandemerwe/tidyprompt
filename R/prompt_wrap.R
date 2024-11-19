@@ -32,6 +32,7 @@
 #' @example R/answer_as_integer.R
 #'
 #' @family prompt_wrap
+#' @family pre_built_prompt_wraps
 #'
 #' @seealso [tidyprompt()] [send_prompt()]
 prompt_wrap <- function(
@@ -55,8 +56,8 @@ prompt_wrap <- function(
 #'
 #' @return A [tidyprompt()] object with the [prompt_wrap()] appended to it
 #'
-#' @export
 #' @exportS3Method prompt_wrap tidyprompt
+#' @keywords internal
 prompt_wrap.tidyprompt <- function(prompt, ...) {
   prompt_wrap_internal(prompt, ...)
 }
@@ -73,8 +74,8 @@ prompt_wrap.tidyprompt <- function(prompt, ...) {
 #'
 #' @return A [tidyprompt()] object with the [prompt_wrap()] appended to it
 #'
-#' @export
 #' @exportS3Method prompt_wrap default
+#' @keywords internal
 prompt_wrap.default <- function(prompt, ...) {
   prompt <- tidyprompt(prompt)
   prompt_wrap_internal(prompt, ...)
@@ -93,6 +94,7 @@ prompt_wrap.default <- function(prompt, ...) {
 #' @return A [tidyprompt()] object with the [prompt_wrap()] appended to it
 #'
 #' @noRd
+#' @keywords internal
 prompt_wrap_internal <- function(
     prompt,
     modify_fn = NULL,

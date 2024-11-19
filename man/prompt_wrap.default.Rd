@@ -18,3 +18,4 @@ A \code{\link[=tidyprompt]{tidyprompt()}} object with the \code{\link[=prompt_wr
 Attempts to create a \code{\link[=tidyprompt]{tidyprompt()}} object from whatever is passed as 'prompt';
 then calls the internal function to append the \code{\link[=prompt_wrap]{prompt_wrap()}}.
 }
+\keyword{internal}

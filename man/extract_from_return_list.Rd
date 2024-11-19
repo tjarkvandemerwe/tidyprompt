@@ -32,3 +32,4 @@ can be useful for further piping.
   # [1] "It's nice to meet you. Is there something I can help you with or would you like to chat?"
 }
 }
+\concept{miscellaneous_helpers}

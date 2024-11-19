@@ -8,9 +8,9 @@
 #'
 #' @param x A [tidyprompt()] object. The object should contain:
 #'   \describe{
-#'     \item{`base_prompt`}{A character string containing the base prompt text.}
+#'     \item{`base_prompt`}{A character string containing the base prompt text}
 #'     \item{`prompt_wraps`}{A list containing wrapper functions that modify
-#'     the base prompt.}
+#'     the base prompt}
 #'   }
 #' @param ... Additional arguments passed to `print.tidyprompt`
 #' (not used; needs to be present in line with guidelines for generic functions)
@@ -37,9 +37,11 @@
 #'
 #' # Print the modified prompt object
 #' print(prompt)
-#' @exportS3Method print tidyprompt
 #'
-#' @family tidyprompt_helpers
+#' @family tidyprompt
+#'
+#' @noRd
+#' @keywords internal
 print.tidyprompt <- function(x, ...) {
   cat(cli::col_blue("<tidyprompt>\n"))
 

@@ -52,5 +52,5 @@ test_that("chat_history.data.frame errors on non-character content column", {
 test_that("chat_history.default errors on invalid input types", {
   # Test with numeric input
   expect_error(chat_history(42),
-               "The input must be either a data frame with 'role' and 'content' columns, or a single character string.")
+               "The input must be either a data frame with 'role' and 'content' columns, or a single string.")
 })

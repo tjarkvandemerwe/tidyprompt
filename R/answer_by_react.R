@@ -30,7 +30,6 @@
 #'
 #' @seealso [add_tools()] [answer_as_code()]
 #'
-#' @family prompt_wrap
 #' @family pre_built_prompt_wraps
 #' @family answer_by_prompt_wraps
 answer_by_react <- function(

@@ -51,7 +51,13 @@ extraction_fn <- function(x) {
 # This extraction_fn would be part of a prompt_wrap()
 }
 \seealso{
-Other prompt_wrap_creation: 
-\code{\link{llm_feedback}()}
+Other prompt_wrap: 
+\code{\link{llm_feedback}()},
+\code{\link{prompt_wrap}()}
+
+Other prompt_evaluation: 
+\code{\link{llm_feedback}()},
+\code{\link{send_prompt}()}
 }
-\concept{prompt_wrap_creation}
+\concept{prompt_evaluation}
+\concept{prompt_wrap}

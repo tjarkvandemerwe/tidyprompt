@@ -15,3 +15,4 @@ A tidyprompt object
 \description{
 Method to create a tidyprompt object from a character string
 }
+\keyword{internal}

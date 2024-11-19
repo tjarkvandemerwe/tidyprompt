@@ -21,8 +21,4 @@ The order of operations is as follows:
 \item "Tool"
 }
 }
-\seealso{
-Other tidyprompt_helpers: 
-\code{\link{print.tidyprompt}()}
-}
 \concept{tidyprompt_helpers}

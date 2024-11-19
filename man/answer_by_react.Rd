@@ -82,7 +82,7 @@ ReAct: Synergizing Reasoning and Acting in Language Models.
 \seealso{
 \code{\link[=add_tools]{add_tools()}} \code{\link[=answer_as_code]{answer_as_code()}}
 
-Other prompt_wrap: 
+Other pre_built_prompt_wraps: 
 \code{\link{add_text}()},
 \code{\link{add_tools}()},
 \code{\link{answer_as_boolean}()},
@@ -96,22 +96,8 @@ Other prompt_wrap:
 \code{\link{quit_if}()},
 \code{\link{set_system_prompt}()}
 
-Other pre_built_prompt_wraps: 
-\code{\link{add_text}()},
-\code{\link{add_tools}()},
-\code{\link{answer_as_boolean}()},
-\code{\link{answer_as_code}()},
-\code{\link{answer_as_integer}()},
-\code{\link{answer_as_list}()},
-\code{\link{answer_as_named_list}()},
-\code{\link{answer_as_regex}()},
-\code{\link{answer_by_chain_of_thought}()},
-\code{\link{quit_if}()},
-\code{\link{set_system_prompt}()}
-
 Other answer_by_prompt_wraps: 
 \code{\link{answer_by_chain_of_thought}()}
 }
 \concept{answer_by_prompt_wraps}
 \concept{pre_built_prompt_wraps}
-\concept{prompt_wrap}

@@ -57,7 +57,7 @@ Make LLM answer as a list of items
 \seealso{
 \code{\link[=answer_as_named_list]{answer_as_named_list()}}
 
-Other prompt_wrap: 
+Other pre_built_prompt_wraps: 
 \code{\link{add_text}()},
 \code{\link{add_tools}()},
 \code{\link{answer_as_boolean}()},
@@ -71,19 +71,6 @@ Other prompt_wrap:
 \code{\link{quit_if}()},
 \code{\link{set_system_prompt}()}
 
-Other pre_built_prompt_wraps: 
-\code{\link{add_text}()},
-\code{\link{add_tools}()},
-\code{\link{answer_as_boolean}()},
-\code{\link{answer_as_code}()},
-\code{\link{answer_as_integer}()},
-\code{\link{answer_as_named_list}()},
-\code{\link{answer_as_regex}()},
-\code{\link{answer_by_chain_of_thought}()},
-\code{\link{answer_by_react}()},
-\code{\link{quit_if}()},
-\code{\link{set_system_prompt}()}
-
 Other answer_as_prompt_wraps: 
 \code{\link{answer_as_boolean}()},
 \code{\link{answer_as_code}()},
@@ -93,4 +80,3 @@ Other answer_as_prompt_wraps:
 }
 \concept{answer_as_prompt_wraps}
 \concept{pre_built_prompt_wraps}
-\concept{prompt_wrap}

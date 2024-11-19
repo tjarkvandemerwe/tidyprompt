@@ -85,7 +85,7 @@ Chain-of-Thought Prompting Elicits Reasoning in Large Language Models.
 \url{doi:10.48550/arXiv.2201.11903}
 }
 \seealso{
-Other prompt_wrap: 
+Other pre_built_prompt_wraps: 
 \code{\link{add_text}()},
 \code{\link{add_tools}()},
 \code{\link{answer_as_boolean}()},
@@ -99,22 +99,8 @@ Other prompt_wrap:
 \code{\link{quit_if}()},
 \code{\link{set_system_prompt}()}
 
-Other pre_built_prompt_wraps: 
-\code{\link{add_text}()},
-\code{\link{add_tools}()},
-\code{\link{answer_as_boolean}()},
-\code{\link{answer_as_code}()},
-\code{\link{answer_as_integer}()},
-\code{\link{answer_as_list}()},
-\code{\link{answer_as_named_list}()},
-\code{\link{answer_as_regex}()},
-\code{\link{answer_by_react}()},
-\code{\link{quit_if}()},
-\code{\link{set_system_prompt}()}
-
 Other answer_by_prompt_wraps: 
 \code{\link{answer_by_react}()}
 }
 \concept{answer_by_prompt_wraps}
 \concept{pre_built_prompt_wraps}
-\concept{prompt_wrap}

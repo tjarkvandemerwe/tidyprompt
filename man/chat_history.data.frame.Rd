@@ -14,3 +14,4 @@ representing a chat message}
 \description{
 Creates a \code{chat_history} object from a data frame.
 }
+\keyword{internal}

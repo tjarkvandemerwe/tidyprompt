@@ -17,3 +17,4 @@ A \code{\link[=tidyprompt]{tidyprompt()}} object with the \code{\link[=prompt_wr
 \description{
 Calls the internal function to append the prompt wrap.
 }
+\keyword{internal}

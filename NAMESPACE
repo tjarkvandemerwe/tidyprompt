@@ -3,7 +3,6 @@
 S3method(chat_history,character)
 S3method(chat_history,data.frame)
 S3method(chat_history,default)
-S3method(print,tidyprompt)
 S3method(prompt_wrap,default)
 S3method(prompt_wrap,tidyprompt)
 S3method(tidyprompt,character)

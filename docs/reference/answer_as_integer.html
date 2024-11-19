@@ -55,8 +55,7 @@
 
 
 <dl><dt id="arg-prompt">prompt<a class="anchor" aria-label="anchor" href="#arg-prompt"></a></dt>
-<dd><p>A single string, a prompt_wrap object, or a list
-of prompt_wrap objects.</p></dd>
+<dd><p>A single string or a <code><a href="tidyprompt.html">tidyprompt()</a></code> object</p></dd>
 
 
 <dt id="arg-min">min<a class="anchor" aria-label="anchor" href="#arg-min"></a></dt>
@@ -71,15 +70,53 @@ of prompt_wrap objects.</p></dd>
 <dd><p>(optional) Add instruction for replying
 as an integer to the prompt text. Set to FALSE for debugging if extractions/validations
 are working as expected (without instruction the answer should fail the
-validation function, initiating a retry).</p></dd>
+validation function, initiating a retry)</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A prompt list with an added prompt wrapper object which
+    <p>A <code><a href="tidyprompt.html">tidyprompt()</a></code> with an added <code><a href="prompt_wrap.html">prompt_wrap()</a></code> which
 will ensure that the LLM response is an integer.</p>
     </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p>Other pre_built_prompt_wraps:
+<code><a href="add_text.html">add_text</a>()</code>,
+<code><a href="add_tools.html">add_tools</a>()</code>,
+<code><a href="answer_as_boolean.html">answer_as_boolean</a>()</code>,
+<code><a href="answer_as_code.html">answer_as_code</a>()</code>,
+<code><a href="answer_as_list.html">answer_as_list</a>()</code>,
+<code><a href="answer_as_named_list.html">answer_as_named_list</a>()</code>,
+<code><a href="answer_as_regex.html">answer_as_regex</a>()</code>,
+<code><a href="answer_by_chain_of_thought.html">answer_by_chain_of_thought</a>()</code>,
+<code><a href="answer_by_react.html">answer_by_react</a>()</code>,
+<code><a href="prompt_wrap.html">prompt_wrap</a>()</code>,
+<code><a href="quit_if.html">quit_if</a>()</code>,
+<code><a href="set_system_prompt.html">set_system_prompt</a>()</code></p>
+<p>Other answer_as_prompt_wraps:
+<code><a href="answer_as_boolean.html">answer_as_boolean</a>()</code>,
+<code><a href="answer_as_code.html">answer_as_code</a>()</code>,
+<code><a href="answer_as_list.html">answer_as_list</a>()</code>,
+<code><a href="answer_as_named_list.html">answer_as_named_list</a>()</code>,
+<code><a href="answer_as_regex.html">answer_as_regex</a>()</code></p></div>
+    </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span>  <span class="st">"What is 5 + 5?"</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>    <span class="fu">answer_as_integer</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="fu"><a href="llm_provider_ollama.html">llm_provider_ollama</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># --- Sending request to LLM provider (llama3.1:8b): ---</span></span></span>
+<span class="r-in"><span>  <span class="co">#   What is 5 + 5?</span></span></span>
+<span class="r-in"><span>  <span class="co">#</span></span></span>
+<span class="r-in"><span>  <span class="co">#   You must answer with only an integer (use no other characters).</span></span></span>
+<span class="r-in"><span>  <span class="co"># --- Receiving response from LLM provider: ---</span></span></span>
+<span class="r-in"><span>  <span class="co">#   10</span></span></span>
+<span class="r-in"><span>  <span class="co"># [1] 10</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

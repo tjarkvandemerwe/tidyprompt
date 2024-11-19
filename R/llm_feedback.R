@@ -17,9 +17,11 @@
 #' @return An object of class "llm_feedback" containing the feedback text
 #'
 #' @export
+#'
 #' @example inst/examples/llm_feedback.R
 #'
-#' @family prompt_wrap_creation
+#' @family prompt_wrap
+#' @family prompt_evaluation
 llm_feedback <- function(text, tool_result = FALSE) {
   if (!tool_result) {
     return(structure(

@@ -24,9 +24,11 @@
 #' @return An object of class "llm_break"
 #'
 #' @export
+#'
 #' @example inst/examples/llm_break.R
 #'
-#' @family prompt_wrap_creation
+#' @family prompt_wrap
+#' @family prompt_evaluation
 llm_break <- function(
     object_to_return = NULL,
     success = FALSE

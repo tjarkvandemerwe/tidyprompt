@@ -18,7 +18,6 @@
 #'
 #' @seealso [answer_as_list()] [llm_feedback()]
 #'
-#' @family prompt_wrap
 #' @family pre_built_prompt_wraps
 #' @family answer_as_prompt_wraps
 answer_as_named_list <- function(

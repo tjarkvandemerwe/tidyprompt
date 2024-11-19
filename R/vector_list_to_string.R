@@ -12,6 +12,7 @@
 #' @return A single string representing the list/vector.
 #'
 #' @export
+#'
 #' @example inst/examples/vector_list_to_string.R
 #'
 #' @family text_helpers

@@ -64,7 +64,6 @@
 #'
 #' @seealso [add_tools()]
 #'
-#' @family prompt_wrap
 #' @family pre_built_prompt_wraps
 #' @family answer_as_prompt_wraps
 #' @family llm_tools

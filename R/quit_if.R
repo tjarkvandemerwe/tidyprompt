@@ -38,7 +38,6 @@
 #'
 #' @example inst/examples/quit_if.R
 #'
-#' @family prompt_wrap
 #' @family pre_built_prompt_wraps
 #' @family miscellaneous_prompt_wraps
 quit_if <- function(

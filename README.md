@@ -28,7 +28,8 @@ Key features of `tidyprompt` are:
 
 - **function calling**: Give your LLM the ability to autonomously call R
   functions (‘tools’). With this, the LLM can retrieve information or
-  take other actions.
+  take other actions. ‘tidyprompt’ also supports R code generation and
+  evaluation, allowing LLMs to run R code.
 
 - **compatible with all LLM providers**: Usable with any LLM provider
   that supports chat completion. Use included LLM providers such as

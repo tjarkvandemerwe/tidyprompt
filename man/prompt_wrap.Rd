@@ -64,7 +64,6 @@ specified criteria.
 #'
 #' @example inst/examples/answer_as_integer.R
 #'
-#' @family prompt_wrap
 #' @family pre_built_prompt_wraps
 #' @family answer_as_prompt_wraps
 answer_as_integer <- function(
@@ -132,6 +131,10 @@ answer_as_integer <- function(
 \code{\link[=tidyprompt]{tidyprompt()}} \code{\link[=send_prompt]{send_prompt()}}
 
 Other prompt_wrap: 
+\code{\link{llm_break}()},
+\code{\link{llm_feedback}()}
+
+Other pre_built_prompt_wraps: 
 \code{\link{add_text}()},
 \code{\link{add_tools}()},
 \code{\link{answer_as_boolean}()},
@@ -145,4 +148,5 @@ Other prompt_wrap:
 \code{\link{quit_if}()},
 \code{\link{set_system_prompt}()}
 }
+\concept{pre_built_prompt_wraps}
 \concept{prompt_wrap}

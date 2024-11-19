@@ -2,7 +2,7 @@
 % Please edit documentation in R/tidyprompt.R
 \name{tidyprompt.tidyprompt}
 \alias{tidyprompt.tidyprompt}
-\title{Validate and return tidyprompt}
+\title{Validate tidyprompt}
 \usage{
 \method{tidyprompt}{tidyprompt}(input)
 }
@@ -13,5 +13,6 @@
 A validated tidyprompt object
 }
 \description{
-Validate and return tidyprompt
+Validate tidyprompt
 }
+\keyword{internal}

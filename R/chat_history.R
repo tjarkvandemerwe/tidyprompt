@@ -33,6 +33,7 @@ chat_history <- function(chat_history) {
 #' @param chat_history Object which is not `character` or `data.frame`
 #'
 #' @exportS3Method chat_history default
+#' @keywords internal
 chat_history.default <- function(chat_history) {
   stop("The input must be either a data frame with 'role' and 'content' columns, or a single string.")
 }
@@ -46,6 +47,7 @@ chat_history.default <- function(chat_history) {
 #' @param chat_history A single string
 #'
 #' @exportS3Method chat_history character
+#' @keywords internal
 chat_history.character <- function(chat_history) {
   if (length(chat_history) != 1) {
     stop("A single character string is expected for chat history input.")
@@ -70,6 +72,7 @@ chat_history.character <- function(chat_history) {
 #' representing a chat message
 #'
 #' @exportS3Method chat_history data.frame
+#' @keywords internal
 chat_history.data.frame <- function(chat_history) {
   if (!all(c("role", "content") %in% names(chat_history))) {
     stop("The data frame must contain'role' and 'content' columns.")
