@@ -310,6 +310,6 @@ A validation function, on the other hand, only checks if the LLM's response pass
 extraction and validation functions can return feedback to the LLM.
 
 For more information, on what you can do with prompt wraps, see the documentation
-of the `prompt_wrap` class creator function: `create_prompt_wrap`. For examples of prompt wrap functions,
+of the `prompt_wrap` class creator function: `prompt_wrap`. For examples of prompt wrap functions,
 see, for instance the documentation and source code of `add_text`, `answer_as_integer`,
 `answer_by_chain_of_thought`, and `add_tools`.

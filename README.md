@@ -464,9 +464,9 @@ and validation functions can return feedback to the LLM.
 
 For more information, on what you can do with prompt wraps, see the
 documentation of the `prompt_wrap` class creator function:
-`create_prompt_wrap`. For examples of prompt wrap functions, see, for
-instance the documentation and source code of `add_text`,
-`answer_as_integer`, `answer_by_chain_of_thought`, and `add_tools`.
+`prompt_wrap`. For examples of prompt wrap functions, see, for instance
+the documentation and source code of `add_text`, `answer_as_integer`,
+`answer_by_chain_of_thought`, and `add_tools`.
 
 ## More information and contributing
 
