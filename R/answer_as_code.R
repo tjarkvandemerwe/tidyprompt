@@ -59,10 +59,15 @@
 #' will handle R code generation and possibly evaluation
 #'
 #' @export
+#'
 #' @example inst/examples/answer_as_code.R
 #'
-#' @family answer_as
 #' @seealso [add_tools()]
+#'
+#' @family prompt_wrap
+#' @family pre_built_prompt_wraps
+#' @family answer_as_prompt_wraps
+#' @family llm_tools
 answer_as_code <- function(
     prompt,
     add_text = "You must code in the programming language 'R' to answer this prompt.",

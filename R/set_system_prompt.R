@@ -16,7 +16,9 @@
 #'
 #' @example inst/examples/set_system_prompt.R
 #'
-#' @family other_prompt_wraps
+#' @family prompt_wrap
+#' @family pre_built_prompt_wraps
+#' @family miscellaneous_prompt_wraps
 set_system_prompt <- function(prompt, system_prompt) {
   prompt <- tidyprompt(prompt)
 

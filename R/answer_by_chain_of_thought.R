@@ -22,7 +22,9 @@
 #' Chain-of-Thought Prompting Elicits Reasoning in Large Language Models.
 #' <doi:10.48550/arXiv.2201.11903>
 #'
-#' @family answer_by
+#' @family prompt_wrap
+#' @family pre_built_prompt_wraps
+#' @family answer_by_prompt_wraps
 answer_by_chain_of_thought <- function(
     prompt,
     extract_from_finish_brackets = TRUE

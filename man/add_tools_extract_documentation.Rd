@@ -123,3 +123,8 @@ prompt <- "Hi, what is the weather in Enschede? Give me Celcius degrees" |>
   #   Is there anything else I can help you with?"
 }
 }
+\seealso{
+Other add_tools: 
+\code{\link{add_tools}()}
+}
+\concept{add_tools}

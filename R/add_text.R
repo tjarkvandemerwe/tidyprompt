@@ -12,9 +12,12 @@
 #' will append the text to the end of the current prompt text
 #'
 #' @export
+#'
 #' @example inst/examples/add_text.R
 #'
-#' @family other_prompt_wraps
+#' @family prompt_wrap
+#' @family pre_built_prompt_wraps
+#' @family miscellaneous_prompt_wraps
 add_text <- function(
     prompt,
     text, position = c("after", "before"), sep = "\n\n"

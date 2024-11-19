@@ -17,10 +17,15 @@
 #' will allow the LLM to call R functions
 #'
 #' @export
+#'
 #' @example inst/examples/add_tools.R
 #'
-#' @family llm_tools
 #' @seealso [answer_as_code()] [add_tools_extract_documentation()]
+#'
+#' @family prompt_wrap
+#' @family pre_built_prompt_wraps
+#' @family llm_tools
+#' @family add_tools
 add_tools <- function(prompt, tool_functions = list()) {
   prompt <- tidyprompt(prompt)
 
@@ -167,8 +172,12 @@ add_tools <- function(prompt, tool_functions = list()) {
 #'  - parameters: A named list of parameters with descriptions
 #'  - return_value: A description of the return value
 #'  - example: An example of how the LLM should call the function
+
 #' @export
+#'
 #' @example inst/examples/add_tools.R
+#'
+#' @family add_tools
 add_tools_extract_documentation <- function(func) {
   # Convert the function to a character string
   func_text <- utils::capture.output(print(func))
@@ -208,6 +217,7 @@ add_tools_extract_documentation <- function(func) {
 #' e.g., 'llm_tool::description'
 #'
 #' @return The extracted section as a character string or list
+#'
 #' @noRd
 add_tools_extract_documentation_section <- function(doc_lines, section_keyword) {
   # Identify lines that contain the section keyword

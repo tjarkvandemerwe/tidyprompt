@@ -31,7 +31,37 @@ prompt |>
   construct_prompt_text()
 }
 \seealso{
-Other other_prompt_wraps: 
+Other prompt_wrap: 
+\code{\link{add_tools}()},
+\code{\link{answer_as_boolean}()},
+\code{\link{answer_as_code}()},
+\code{\link{answer_as_integer}()},
+\code{\link{answer_as_list}()},
+\code{\link{answer_as_named_list}()},
+\code{\link{answer_as_regex}()},
+\code{\link{answer_by_chain_of_thought}()},
+\code{\link{answer_by_react}()},
+\code{\link{prompt_wrap}()},
+\code{\link{quit_if}()},
+\code{\link{set_system_prompt}()}
+
+Other pre_built_prompt_wraps: 
+\code{\link{add_tools}()},
+\code{\link{answer_as_boolean}()},
+\code{\link{answer_as_code}()},
+\code{\link{answer_as_integer}()},
+\code{\link{answer_as_list}()},
+\code{\link{answer_as_named_list}()},
+\code{\link{answer_as_regex}()},
+\code{\link{answer_by_chain_of_thought}()},
+\code{\link{answer_by_react}()},
+\code{\link{quit_if}()},
+\code{\link{set_system_prompt}()}
+
+Other miscellaneous_prompt_wraps: 
+\code{\link{quit_if}()},
 \code{\link{set_system_prompt}()}
 }
-\concept{other_prompt_wraps}
+\concept{miscellaneous_prompt_wraps}
+\concept{pre_built_prompt_wraps}
+\concept{prompt_wrap}

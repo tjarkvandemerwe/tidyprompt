@@ -24,61 +24,15 @@ that the LLM output will meet the desired criteria. The \code{\link[=tidyprompt]
 object offers many possibilities, such as structured and validated output,
 LLM function calling, and LLM code generation and evaluation.
 }
-\examples{
-tidyprompt("Hi!")
-
-# Add to a tidyprompt using a prompt_wrap():
-tidyprompt("Hi!") |>
-  add_text("How are you?")
-
-# Strings can be input for prompt wraps; therefore,
-#   a call to tidyprompt() is not necessary:
-"Hi" |>
-  add_text("How are you?")
-
-# Example of adding extraction & validation with a prompt_wrap():
-prompt <- "Hi" |>
-  add_text("What is 5 + 5?") |>
-  answer_as_integer()
-
-\dontrun{
-  # tidyprompt objects are evaluated by send_prompt(), which will
-  #   handle construct the prompt text, send it to the LLM provider,
-  #   and apply the extraction and validation functions from the tidyprompt object
-  prompt |>
-    send_prompt(llm_provider_ollama())
-  # --- Sending request to LLM provider (llama3.1:8b): ---
-  #   Hi
-  #
-  #   What is 5 + 5?
-  #
-  #   You must answer with only an integer (use no other characters).
-  # --- Receiving response from LLM provider: ---
-  #   10
-  # [1] 10
-
-  # See prompt_wrap() and send_prompt() for more details
-}
-
-# `tidyprompt` objects may be validated with these helpers:
-valid_tidyprompt <- validate_tidyprompt(prompt) # Returns self if valid
-is_valid <- is_tidyprompt(prompt) # Returns TRUE if valid
-
-# Get base prompt text
-get_base_prompt(prompt)
-
-# Get all prompt wraps
-get_prompt_wraps(prompt)
-
-# Get ordered prompt wraps (by type: tool, mode, unspecified)
-get_prompt_wraps_ordered(prompt)
-
-# Construct prompt text
-construct_prompt_text(prompt)
-
-# Get extraction and validation functions
-get_extractions_and_validations(prompt)
-}
 \seealso{
 \code{\link[=prompt_wrap]{prompt_wrap()}} \code{\link[=send_prompt]{send_prompt()}}
+
+Other tidyprompt: 
+\code{\link{construct_prompt_text}()},
+\code{\link{get_base_prompt}()},
+\code{\link{get_extractions_and_validations}()},
+\code{\link{get_prompt_wraps}()},
+\code{\link{is_tidyprompt}()},
+\code{\link{validate_tidyprompt}()}
 }
+\concept{tidyprompt}

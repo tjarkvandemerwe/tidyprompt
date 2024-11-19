@@ -15,9 +15,11 @@
 #'
 #' @export
 #'
-#' @family answer_as
-#'
 #' @example inst/examples/answer_as_boolean.R
+#'
+#' @family prompt_wrap
+#' @family pre_built_prompt_wraps
+#' @family answer_as_prompt_wraps
 answer_as_boolean <- function(
     prompt,
     true_definition = NULL,

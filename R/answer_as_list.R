@@ -14,8 +14,11 @@
 #'
 #' @example inst/examples/answer_as_list.R
 #'
-#' @family answer_as
 #' @seealso [answer_as_named_list()]
+#'
+#' @family prompt_wrap
+#' @family pre_built_prompt_wraps
+#' @family answer_as_prompt_wraps
 answer_as_list <- function(
     prompt,
     item_name = "item",

@@ -5,12 +5,15 @@
 #' for `data.frame` and `character` inputs and includes a helper function to add a
 #' system prompt to the chat history.
 #'
-#' @param chat_history A single string, a dataframe with 'role' and 'content' columns,
-#' or NULL.
+#' @param chat_history A single string, a `data.frame` with 'role' and 'content' columns,
+#' or NULL. If a `data.frame` is provided, it should contain 'role' and 'content' columns,
+#' where 'role' is either 'user', 'assistant', or 'system', and 'content' is a character string
+#' representing a chat message
 #'
-#' @return A valid chat history dataframe (of class `chat_history``).
+#' @return A valid chat history `data.frame` (of class `chat_history`)
 #'
 #' @export
+#'
 #' @example inst/examples/chat_history.R
 #'
 #' @family chat_history
@@ -18,11 +21,30 @@ chat_history <- function(chat_history) {
   UseMethod("chat_history")
 }
 
+
+
+#' Default method for `chat_history()`
+#'
+#' Calls error which indicates that the input was not a `character` or `data.frame`.
+#'
+#' @details When input is a `character` or `data.frame`, the appropriate method will be called
+#' (see `[chat_history.character()] and [chat_history.data.frame()]).
+#'
+#' @param chat_history Object which is not `character` or `data.frame`
+#'
 #' @exportS3Method chat_history default
 chat_history.default <- function(chat_history) {
-  stop("The input must be either a data frame with 'role' and 'content' columns, or a single character string.")
+  stop("The input must be either a data frame with 'role' and 'content' columns, or a single string.")
 }
 
+
+
+#' Method for `chat_history()` when the input is a single string
+#'
+#' Creates a `chat_history` object from a single string.
+#'
+#' @param chat_history A single string
+#'
 #' @exportS3Method chat_history character
 chat_history.character <- function(chat_history) {
   if (length(chat_history) != 1) {
@@ -37,6 +59,16 @@ chat_history.character <- function(chat_history) {
   return(invisible(chat_data))
 }
 
+
+
+#' Method for `chat_history()` when the input is a `data.frame`
+#'
+#' Creates a `chat_history` object from a data frame.
+#'
+#' @param chat_history A data frame with 'role' and 'content' columns,
+#' where 'role' is either 'user', 'assistant', or 'system', and 'content' is a character string
+#' representing a chat message
+#'
 #' @exportS3Method chat_history data.frame
 chat_history.data.frame <- function(chat_history) {
   if (!all(c("role", "content") %in% names(chat_history))) {

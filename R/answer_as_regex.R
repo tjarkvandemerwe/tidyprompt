@@ -18,7 +18,9 @@
 #'
 #' @example inst/examples/answer_as_regex.R
 #'
-#' @family answer_as
+#' @family prompt_wrap
+#' @family pre_built_prompt_wraps
+#' @family answer_as_prompt_wraps
 answer_as_regex <- function(
     prompt,
     regex,

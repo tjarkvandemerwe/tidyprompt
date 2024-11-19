@@ -14,9 +14,11 @@
 #' a new prompt object will be created with that character string as the base prompt.
 #'
 #' @return A prompt object (or an error if an unsuitable input is provided)
+#'
 #' @export
-#' @example inst/examples/tidyprompt.R
+#'
 #' @seealso [prompt_wrap()] [send_prompt()]
+#' @family tidyprompt
 tidyprompt <- function(input) {
   UseMethod("tidyprompt")
 }
@@ -30,6 +32,7 @@ tidyprompt <- function(input) {
 #' @param input Input to create_tidyprompt
 #'
 #' @return An error message stating that input type is not suitable
+#'
 #' @exportS3Method tidyprompt default
 tidyprompt.default <- function(input) {
   stop(paste0(
@@ -44,6 +47,7 @@ tidyprompt.default <- function(input) {
 #' @param input Input to create_tidyprompt; the base prompt
 #'
 #' @return A tidyprompt object
+#'
 #' @exportS3Method tidyprompt character
 tidyprompt.character <- function(input) {
   if (length(input) != 1)
@@ -67,6 +71,7 @@ tidyprompt.character <- function(input) {
 #' @param input A tidyprompt object
 #'
 #' @return A validated tidyprompt object
+#'
 #' @exportS3Method tidyprompt tidyprompt
 tidyprompt.tidyprompt <- function(input) {
   validate_tidyprompt(input)
@@ -80,9 +85,10 @@ tidyprompt.tidyprompt <- function(input) {
 #' @param tidyprompt A tidyprompt object
 #'
 #' @return TRUE if the tidyprompt is valid, otherwise an error is thrown
+#'
 #' @export
-#' @example inst/examples/tidyprompt.R
-#' @family tidyprompt_helpers
+#'
+#' @family tidyprompt
 validate_tidyprompt <- function(tidyprompt) {
   if (!inherits(tidyprompt, "tidyprompt"))
     stop("tidyprompt is not of class 'tidyprompt'")
@@ -118,9 +124,10 @@ validate_tidyprompt <- function(tidyprompt) {
 #' @param tidyprompt A tidyprompt object
 #'
 #' @return TRUE if the object is a valid tidyprompt, otherwise FALSE
+#'
 #' @export
-#' @example inst/examples/tidyprompt.R
-#' @family tidyprompt_helpers
+#'
+#' @family tidyprompt
 is_tidyprompt <- function(tidyprompt) {
   tryCatch({
     validate_tidyprompt(tidyprompt)
@@ -136,9 +143,10 @@ is_tidyprompt <- function(tidyprompt) {
 #' @param tidyprompt A tidyprompt object
 #'
 #' @return The base prompt from the tidyprompt
+#'
 #' @export
-#' @example inst/examples/tidyprompt.R
-#' @family tidyprompt_helpers
+#'
+#' @family tidyprompt
 get_base_prompt <- function(tidyprompt) {
   tidyprompt <- validate_tidyprompt(tidyprompt)
 
@@ -154,9 +162,10 @@ get_base_prompt <- function(tidyprompt) {
 #' @param tidyprompt A tidyprompt object
 #'
 #' @return A list of prompt wraps from the tidyprompt
+#'
 #' @export
-#' @example inst/examples/tidyprompt.R
-#' @family tidyprompt_helpers
+#'
+#' @family tidyprompt
 get_prompt_wraps <- function(tidyprompt) {
   tidyprompt <- validate_tidyprompt(tidyprompt)
   return(tidyprompt$prompt_wraps)
@@ -176,7 +185,6 @@ get_prompt_wraps <- function(tidyprompt) {
 #'
 #' @return A list of prompt wraps from the tidyprompt, reordered in order of operations
 #' @export
-#' @example inst/examples/tidyprompt.R
 #' @family tidyprompt_helpers
 get_prompt_wraps_ordered <- function(tidyprompt) {
   tidyprompt <- validate_tidyprompt(tidyprompt)
@@ -207,9 +215,10 @@ get_prompt_wraps_ordered <- function(tidyprompt) {
 #' @param tidyprompt A tidyprompt object
 #'
 #' @return The prompt text constructed from the tidyprompt object
+#'
 #' @export
 #'
-#' @family tidyprompt_helpers
+#' @family tidyprompt
 construct_prompt_text <- function(tidyprompt) {
   tidyprompt <- validate_tidyprompt(tidyprompt)
 
@@ -219,9 +228,7 @@ construct_prompt_text <- function(tidyprompt) {
 
   if (length(prompt_wraps) > 0) {
     for (i in 1:length(prompt_wraps)) {
-      modify_fn <- prompt_wraps[[i]]$modify_fn
-      if (!is.null(modify_fn))
-        prompt_text <- prompt_wraps[[i]]$modify_fn(prompt_text)
+      prompt_text <- prompt_wraps[[i]]$modify_fn(prompt_text)
     }
   }
   return(prompt_text)
@@ -234,14 +241,16 @@ construct_prompt_text <- function(tidyprompt) {
 #' @param tidyprompt A tidyprompt object
 #'
 #' @return A list with two lists: extractions and validations
+#'
 #' @export
-#' @family tidyprompt_helpers
+#'
+#' @family tidyprompt
 get_extractions_and_validations <- function(tidyprompt) {
   tidyprompt <- validate_tidyprompt(tidyprompt)
 
   extractions <- list()
   validations <- list()
-  prompt_wraps <- get_prompt_wraps_ordered(tidyprompt)
+  prompt_wraps <- get_prompt_wraps_ordered(tidyprompt) |> rev() # In reverse order
 
   if (length(prompt_wraps) == 0)
     return(list(extractions = extractions, validations = validations))

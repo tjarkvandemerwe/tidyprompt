@@ -7,11 +7,13 @@
 chat_history(chat_history)
 }
 \arguments{
-\item{chat_history}{A single string, a dataframe with 'role' and 'content' columns,
-or NULL.}
+\item{chat_history}{A single string, a \code{data.frame} with 'role' and 'content' columns,
+or NULL. If a \code{data.frame} is provided, it should contain 'role' and 'content' columns,
+where 'role' is either 'user', 'assistant', or 'system', and 'content' is a character string
+representing a chat message}
 }
 \value{
-A valid chat history dataframe (of class `chat_history``).
+A valid chat history \code{data.frame} (of class \code{chat_history})
 }
 \description{
 This function creates and validates a \code{chat_history} object, ensuring that it matches

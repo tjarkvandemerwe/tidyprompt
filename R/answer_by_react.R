@@ -20,6 +20,7 @@
 #' that the LLM follows the ReAct mode in answering the prompt
 #'
 #' @export
+#'
 #' @example inst/examples/answer_by_react.R
 #'
 #' @references
@@ -27,7 +28,11 @@
 #' ReAct: Synergizing Reasoning and Acting in Language Models.
 #' <doi:10.48550/arXiv.2210.03629>
 #'
-#' @family answer_by
+#' @seealso [add_tools()] [answer_as_code()]
+#'
+#' @family prompt_wrap
+#' @family pre_built_prompt_wraps
+#' @family answer_by_prompt_wraps
 answer_by_react <- function(
     prompt,
     extract_from_finish_brackets = TRUE
