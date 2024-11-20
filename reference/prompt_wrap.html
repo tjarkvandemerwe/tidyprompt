@@ -62,7 +62,7 @@ specified criteria.</p>
 <span>  modify_fn <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  extraction_fn <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  validation_fn <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"unspecified"</span>, <span class="st">"mode"</span>, <span class="st">"tool"</span><span class="op">)</span></span>
+<span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"unspecified"</span>, <span class="st">"mode"</span>, <span class="st">"tool"</span>, <span class="st">"break"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -81,16 +81,19 @@ first argument) and returns the new prompt text</p></dd>
 
 <dt id="arg-extraction-fn">extraction_fn<a class="anchor" aria-label="anchor" href="#arg-extraction-fn"></a></dt>
 <dd><p>A function that takes the LLM response (as first argument)
-and attempts to extract a value from it.Upon succesful extraction, the function
+and attempts to extract a value from it. Upon succesful extraction, the function
 should return the extracted value. If the extraction fails, the function should
-return a <code><a href="llm_feedback.html">llm_feedback()</a></code> message which will be sent back to the LLM</p></dd>
+return a <code><a href="llm_feedback.html">llm_feedback()</a></code> message which will be sent back to the LLM to
+initiate a retry. A special object <code><a href="llm_break.html">llm_break()</a></code> can be returned to break the
+extraction and validation loop</p></dd>
 
 
 <dt id="arg-validation-fn">validation_fn<a class="anchor" aria-label="anchor" href="#arg-validation-fn"></a></dt>
 <dd><p>A function that takes the (extracted) LLM response
 (as first argument) and attempts to validate it. Upon succesful validation,
 the function should return TRUE. If the validation fails, the function should
-return a <code><a href="llm_feedback.html">llm_feedback()</a></code> message which will be sent back to the LLM</p></dd>
+return a <code><a href="llm_feedback.html">llm_feedback()</a></code> message which will be sent back to the LLM. A special
+object <code><a href="llm_break.html">llm_break()</a></code> can be returned to break the extraction and validation loop</p></dd>
 
 
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
@@ -100,6 +103,7 @@ When constructing the prompt text, prompt wraps are applied to the base prompt
 in the following order: 'unspecified', 'break', 'mode', 'tool'. When evaluating
 the LLM response and applying extraction and validation functions,
 prompt wraps are applied in the reverse order: 'tool', 'mode', 'break', 'unspecified'.
+Order among the same type is preserved in the order they were added to the prompt.
 Example of a tool is <code><a href="add_tools.html">add_tools()</a></code>; example of a mode is <code><a href="answer_by_react.html">answer_by_react()</a></code>.
 Example of a break is <code><a href="quit_if.html">quit_if()</a></code>. Most other prompt wraps will be 'unspecified',
 like <code><a href="answer_as_regex.html">answer_as_regex()</a></code> or <code><a href="add_text.html">add_text()</a></code></p></dd>
@@ -132,7 +136,38 @@ like <code><a href="answer_as_regex.html">answer_as_regex()</a></code> or <code>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">#' Make LLM answer as an integer (between min and max)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># A custom prompt_wrap may be created during piping</span></span></span>
+<span class="r-in"><span><span class="va">prompt</span> <span class="op">&lt;-</span> <span class="st">"Hi there!"</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu">prompt_wrap</span><span class="op">(</span></span></span>
+<span class="r-in"><span>    modify_fn <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">base_prompt</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>      <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">base_prompt</span>, <span class="st">"How are you?"</span>, sep <span class="op">=</span> <span class="st">"\n\n"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="op">}</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># (Shorter notation of the above:)</span></span></span>
+<span class="r-in"><span><span class="va">prompt</span> <span class="op">&lt;-</span> <span class="st">"Hi there!"</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu">prompt_wrap</span><span class="op">(</span>\<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"How are you?"</span>, sep <span class="op">=</span> <span class="st">"\n\n"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># It may often be preferred to make a function which takes a prompt and</span></span></span>
+<span class="r-in"><span><span class="co">#   returns a wrapped prompt:</span></span></span>
+<span class="r-in"><span><span class="va">my_prompt_wrap</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">tidyprompt</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">tidyprompt</span> <span class="op">&lt;-</span> <span class="fu"><a href="tidyprompt.html">tidyprompt</a></span><span class="op">(</span><span class="va">tidyprompt</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="va">modify_fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">base_prompt</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">base_prompt</span>, <span class="st">"How are you?"</span>, sep <span class="op">=</span> <span class="st">"\n\n"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="fu">prompt_wrap</span><span class="op">(</span><span class="va">tidyprompt</span>, <span class="va">modify_fn</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="va">prompt</span> <span class="op">&lt;-</span> <span class="st">"Hi there!"</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu">my_prompt_wrap</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># For more advanced examples, take a look at the source code of the</span></span></span>
+<span class="r-in"><span><span class="co">#   pre-built prompt wraps in the tidyprompt package, like</span></span></span>
+<span class="r-in"><span><span class="co">#   answer_as_boolean, answer_as_integer, add_tools, answer_as_code, etc.</span></span></span>
+<span class="r-in"><span><span class="co"># Below is the source code for the 'answer_as_integer' prompt wrap function:</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#' Make LLM answer as an integer (between min and max)</span></span></span>
 <span class="r-in"><span><span class="co">#'</span></span></span>
 <span class="r-in"><span><span class="co">#' @param prompt A single string or a [tidyprompt()] object</span></span></span>
 <span class="r-in"><span><span class="co">#' @param min (optional) Minimum value for the integer</span></span></span>
