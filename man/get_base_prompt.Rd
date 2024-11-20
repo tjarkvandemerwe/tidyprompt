@@ -18,9 +18,9 @@ Get base prompt from tidyprompt
 \seealso{
 Other tidyprompt: 
 \code{\link{construct_prompt_text}()},
-\code{\link{get_extractions_and_validations}()},
 \code{\link{get_prompt_wraps}()},
 \code{\link{is_tidyprompt}()},
+\code{\link{print.tidyprompt}()},
 \code{\link{tidyprompt}()},
 \code{\link{validate_tidyprompt}()}
 }

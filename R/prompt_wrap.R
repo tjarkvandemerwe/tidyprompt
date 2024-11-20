@@ -18,12 +18,15 @@
 #' (as first argument) and attempts to validate it. Upon succesful validation,
 #' the function should return TRUE. If the validation fails, the function should
 #' return a [llm_feedback()] message which will be sent back to the LLM
-#' @param type The type of prompt wrap; one of 'unspecified', 'mode', or 'tool'.
+#' @param type The type of prompt wrap; one of 'unspecified', 'mode', 'tool', or 'break'.
 #' Types are used to determine the order in which prompt wraps are applied.
-#' Tools are applied first, then modes, then unspecified wraps. Example
-#' of a tool is [add_tools()]; example of a mode is [answer_by_react()].
-#' Most other prompt wraps will be 'unspecified', like [answer_as_regex()] or
-#' [add_text()]
+#' When constructing the prompt text, prompt wraps are applied to the base prompt
+#' in the following order: 'unspecified', 'break', 'mode', 'tool'. When evaluating
+#' the LLM response and applying extraction and validation functions,
+#' prompt wraps are applied in the reverse order: 'tool', 'mode', 'break', 'unspecified'.
+#' Example of a tool is [add_tools()]; example of a mode is [answer_by_react()].
+#' Example of a break is [quit_if()]. Most other prompt wraps will be 'unspecified',
+#' like [answer_as_regex()] or [add_text()]
 #'
 #' @return A [tidyprompt()] object with the [prompt_wrap()] appended to it
 #'
@@ -100,7 +103,7 @@ prompt_wrap_internal <- function(
     modify_fn = NULL,
     extraction_fn = NULL,
     validation_fn = NULL,
-    type = c("unspecified", "mode", "tool")
+    type = c("unspecified", "mode", "tool", "break")
 ) {
   if (!is.null(modify_fn)) {
     if (

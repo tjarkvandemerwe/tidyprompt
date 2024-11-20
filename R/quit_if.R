@@ -104,5 +104,5 @@ quit_if <- function(
     return(x)
   }
 
-  prompt_wrap(prompt, modify_fn, extraction_fn)
+  prompt_wrap(prompt, modify_fn, extraction_fn, type = "break")
 }

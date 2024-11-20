@@ -19,9 +19,9 @@ Validate tidyprompt, returning self if valid, otherwise error
 Other tidyprompt: 
 \code{\link{construct_prompt_text}()},
 \code{\link{get_base_prompt}()},
-\code{\link{get_extractions_and_validations}()},
 \code{\link{get_prompt_wraps}()},
 \code{\link{is_tidyprompt}()},
+\code{\link{print.tidyprompt}()},
 \code{\link{tidyprompt}()}
 }
 \concept{tidyprompt}

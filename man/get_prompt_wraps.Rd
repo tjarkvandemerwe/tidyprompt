@@ -4,10 +4,21 @@
 \alias{get_prompt_wraps}
 \title{Get prompt wraps from tidyprompt}
 \usage{
-get_prompt_wraps(tidyprompt)
+get_prompt_wraps(
+  tidyprompt,
+  order = c("default", "modification", "evaluation")
+)
 }
 \arguments{
 \item{tidyprompt}{A tidyprompt object}
+
+\item{order}{The order in which to return the prompt wraps. Options are "default",
+"modification", and "evaluation".
+"default" returns the prompt wraps in the order they were added.
+"modification" returns the prompt wraps in the order of "unspecified", "break", "mode", "tool";
+this is the order in which the prompt wraps are applied to the base prompt when constructing the prompt text.
+"evaluation" returns the prompt wraps in the order of "tool", "mode", "break", "unspecified";
+this is the order in which the prompt wraps are applied to the LLM response when extracting and validating.}
 }
 \value{
 A list of prompt wraps from the tidyprompt
@@ -19,8 +30,8 @@ Get prompt wraps from tidyprompt
 Other tidyprompt: 
 \code{\link{construct_prompt_text}()},
 \code{\link{get_base_prompt}()},
-\code{\link{get_extractions_and_validations}()},
 \code{\link{is_tidyprompt}()},
+\code{\link{print.tidyprompt}()},
 \code{\link{tidyprompt}()},
 \code{\link{validate_tidyprompt}()}
 }

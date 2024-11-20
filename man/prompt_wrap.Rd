@@ -28,12 +28,15 @@ return a \code{\link[=llm_feedback]{llm_feedback()}} message which will be sent 
 the function should return TRUE. If the validation fails, the function should
 return a \code{\link[=llm_feedback]{llm_feedback()}} message which will be sent back to the LLM}
 
-\item{type}{The type of prompt wrap; one of 'unspecified', 'mode', or 'tool'.
+\item{type}{The type of prompt wrap; one of 'unspecified', 'mode', 'tool', or 'break'.
 Types are used to determine the order in which prompt wraps are applied.
-Tools are applied first, then modes, then unspecified wraps. Example
-of a tool is \code{\link[=add_tools]{add_tools()}}; example of a mode is \code{\link[=answer_by_react]{answer_by_react()}}.
-Most other prompt wraps will be 'unspecified', like \code{\link[=answer_as_regex]{answer_as_regex()}} or
-\code{\link[=add_text]{add_text()}}}
+When constructing the prompt text, prompt wraps are applied to the base prompt
+in the following order: 'unspecified', 'break', 'mode', 'tool'. When evaluating
+the LLM response and applying extraction and validation functions,
+prompt wraps are applied in the reverse order: 'tool', 'mode', 'break', 'unspecified'.
+Example of a tool is \code{\link[=add_tools]{add_tools()}}; example of a mode is \code{\link[=answer_by_react]{answer_by_react()}}.
+Example of a break is \code{\link[=quit_if]{quit_if()}}. Most other prompt wraps will be 'unspecified',
+like \code{\link[=answer_as_regex]{answer_as_regex()}} or \code{\link[=add_text]{add_text()}}}
 }
 \value{
 A \code{\link[=tidyprompt]{tidyprompt()}} object with the \code{\link[=prompt_wrap]{prompt_wrap()}} appended to it

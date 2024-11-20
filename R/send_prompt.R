@@ -91,14 +91,7 @@ send_prompt <- function(
     http_list <- list()
 
 
-  ## 2 Retrieve prompt evaluation settings
-
-  extractions_validations <- get_extractions_and_validations(prompt)
-  extraction_functions <- extractions_validations$extractions
-  validation_functions <- extractions_validations$validations
-
-
-  ## 3 Chat_history & send_chat
+  ## 2 Chat_history & send_chat
 
   create_chat_df <- function(
     role = character(), content = character(), tool_result = logical()
@@ -163,14 +156,14 @@ send_prompt <- function(
   }
 
 
-  ## 4 Retrieve initial response
+  ## 3 Retrieve initial response
 
   response <- prompt |> construct_prompt_text() |> send_chat()
 
 
-  ## 5 Apply extractions and validations
+  ## 4 Apply extractions and validations
 
-  prompt_wraps <- get_prompt_wraps_ordered(prompt) |> rev() # In reverse order
+  prompt_wraps <- get_prompt_wraps(prompt, order = "evaluation")
   # (Tools, then modes, then unspecified prompt_wraps)
 
   tries <- 0; success <- FALSE
@@ -263,7 +256,7 @@ send_prompt <- function(
   }
 
 
-  ## 6 Final evaluation
+  ## 5 Final evaluation
 
   if (!success) {
     warning(paste0(

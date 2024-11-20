@@ -40,7 +40,7 @@
 #'
 #' @family tidyprompt
 #'
-#' @noRd
+#' @exportS3Method
 #' @keywords internal
 print.tidyprompt <- function(x, ...) {
   cat(cli::col_blue("<tidyprompt>\n"))

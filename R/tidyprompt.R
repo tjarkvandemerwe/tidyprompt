@@ -163,52 +163,52 @@ get_base_prompt <- function(tidyprompt) {
 #' Get prompt wraps from tidyprompt
 #'
 #' @param tidyprompt A tidyprompt object
+#' @param order The order in which to return the prompt wraps. Options are "default",
+#' "modification", and "evaluation".
+#'  "default" returns the prompt wraps in the order they were added.
+#'  "modification" returns the prompt wraps in the order of "unspecified", "break", "mode", "tool";
+#' this is the order in which the prompt wraps are applied to the base prompt when constructing the prompt text.
+#'  "evaluation" returns the prompt wraps in the order of "tool", "mode", "break", "unspecified";
+#'  this is the order in which the prompt wraps are applied to the LLM response when extracting and validating.
 #'
 #' @return A list of prompt wraps from the tidyprompt
 #'
 #' @export
 #'
 #' @family tidyprompt
-get_prompt_wraps <- function(tidyprompt) {
+get_prompt_wraps <- function(
+    tidyprompt,
+    order = c(
+      "default",
+      "modification",
+      "evaluation"
+    )
+) {
   tidyprompt <- validate_tidyprompt(tidyprompt)
-  return(tidyprompt$prompt_wraps)
-}
+  order <- match.arg(order)
 
+  prompt_wraps <- tidyprompt$prompt_wraps
 
+  if (order == "default")
+    return(prompt_wraps)
 
-#' Extract only prompt wraps and reorder them in order of operations
-#'
-#' This function extracts only prompt wraps from a tidyprompt object and reorders them.
-#' The order of operations is as follows:
-#'   1. "Unspecified"
-#'   2. "Mode"
-#'   3. "Tool"
-#'
-#' @param tidyprompt A tidyprompt object
-#'
-#' @return A list of prompt wraps from the tidyprompt, reordered in order of operations
-#' @export
-#' @family tidyprompt_helpers
-get_prompt_wraps_ordered <- function(tidyprompt) {
-  tidyprompt <- validate_tidyprompt(tidyprompt)
+  if (length(prompt_wraps) == 0)
+    return(list())
 
-  prompt_wraps <- get_prompt_wraps(tidyprompt)
+  t_unspecified <-
+    prompt_wraps[sapply(prompt_wraps, function(x) x$type == "unspecified")]
+  t_mode <-
+    prompt_wraps[sapply(prompt_wraps, function(x) x$type == "mode")]
+  t_tool <-
+    prompt_wraps[sapply(prompt_wraps, function(x) x$type == "tool")]
+  t_break <-
+    prompt_wraps[sapply(prompt_wraps, function(x) x$type == "break")]
 
-  # Extract types from the prompt wraps, defaulting to "unspecified" if type is NULL
-  types <- sapply(prompt_wraps, function(x) {
-    if (!is.null(x$type)) x$type else "unspecified"
-  })
+  if (order == "modification")
+    return(c(t_unspecified, t_break, t_mode, t_tool))
 
-  reordered_prompt_wraps <- c(
-    prompt_wraps[types == "unspecified"],
-    prompt_wraps[types == "mode"],
-    prompt_wraps[types == "tool"]
-  )
-
-  if (length(prompt_wraps) != length(reordered_prompt_wraps))
-    stop("Some prompt wraps have an invalid type")
-
-  return(reordered_prompt_wraps)
+  if (order == "evaluation")
+    return(c(t_tool, t_mode, t_break, t_unspecified))
 }
 
 
@@ -226,43 +226,14 @@ construct_prompt_text <- function(tidyprompt) {
   tidyprompt <- validate_tidyprompt(tidyprompt)
 
   prompt_text <- get_base_prompt(tidyprompt)
-
-  prompt_wraps <- get_prompt_wraps_ordered(tidyprompt)
+  prompt_wraps <- get_prompt_wraps(tidyprompt, order = "modification")
 
   if (length(prompt_wraps) > 0) {
     for (i in 1:length(prompt_wraps)) {
+      if (is.null(prompt_wraps[[i]]$modify_fn))
+        next
       prompt_text <- prompt_wraps[[i]]$modify_fn(prompt_text)
     }
   }
   return(prompt_text)
-}
-
-
-
-#' Get extractions and validations from a tidyprompt
-#'
-#' @param tidyprompt A tidyprompt object
-#'
-#' @return A list with two lists: extractions and validations
-#'
-#' @export
-#'
-#' @family tidyprompt
-get_extractions_and_validations <- function(tidyprompt) {
-  tidyprompt <- validate_tidyprompt(tidyprompt)
-
-  extractions <- list()
-  validations <- list()
-  prompt_wraps <- get_prompt_wraps_ordered(tidyprompt) |> rev() # In reverse order
-
-  if (length(prompt_wraps) == 0)
-    return(list(extractions = extractions, validations = validations))
-
-  for (i in 1:length(prompt_wraps)) {
-    wrap <- prompt_wraps[[i]]
-    extractions <- c(extractions, wrap$extraction_fn)
-    validations <- c(validations, wrap$validation_fn)
-  }
-
-  return(list(extractions = extractions, validations = validations))
 }

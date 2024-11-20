@@ -43,11 +43,5 @@ get_base_prompt(prompt)
 # Get all prompt wraps
 get_prompt_wraps(prompt)
 
-# Get ordered prompt wraps (by type: tool, mode, unspecified)
-get_prompt_wraps_ordered(prompt)
-
 # Construct prompt text
 construct_prompt_text(prompt)
-
-# Get extraction and validation functions
-get_extractions_and_validations(prompt)
