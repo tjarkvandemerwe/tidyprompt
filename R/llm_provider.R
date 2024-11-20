@@ -661,6 +661,9 @@ llm_provider_google_gemini <- function(
 #' should be printed to the console. Default is TRUE.
 #'
 #' @return A new [llm_provider()] object for use of the fake LLM provider
+#'
+#' @noRd
+#' @keywords internal
 llm_provider_fake <- function(verbose = getOption("tidyprompt.verbose", TRUE)) {
   complete_chat <- function(chat_history) {
     last_msg <- tail(chat_history$content, 1)

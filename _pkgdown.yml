@@ -8,11 +8,9 @@ reference:
 - contents:
   - tidyprompt
   - is_tidyprompt
-  - validate_tidyprompt
   - get_base_prompt
   - construct_prompt_text
-  - starts_with("get_prompt_wraps")
-  - get_extractions_and_validations
+  - get_prompt_wraps
 - subtitle: prompt_wrap
   desc: Functions for creating prompt wraps.
 - contents:
@@ -46,7 +44,7 @@ reference:
   - quit_if
 - title: LLM providers
   desc: Functions to interact with LLM providers.
-- subtitle: LLM provider creation
+- subtitle: LLM provider class
 - contents:
   - llm_provider
   - make_llm_provider_request

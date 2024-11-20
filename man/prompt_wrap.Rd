@@ -2,7 +2,7 @@
 % Please edit documentation in R/prompt_wrap.R
 \name{prompt_wrap}
 \alias{prompt_wrap}
-\title{Wrap a prompt or tidyprompt with additional functionality}
+\title{Wrap a prompt with empowering functions}
 \usage{
 prompt_wrap(
   prompt,

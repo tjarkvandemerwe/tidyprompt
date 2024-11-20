@@ -1,4 +1,4 @@
-#' Wrap a prompt or tidyprompt with additional functionality
+#' Wrap a prompt with empowering functions
 #'
 #' This function takes a single string or a [tidyprompt()] object and
 #' adds a new prompt wrap to it. A prompt wrap is a set of functions
