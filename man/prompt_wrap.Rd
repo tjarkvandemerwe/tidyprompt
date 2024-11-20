@@ -9,7 +9,7 @@ prompt_wrap(
   modify_fn = NULL,
   extraction_fn = NULL,
   validation_fn = NULL,
-  type = c("unspecified", "mode", "tool")
+  type = c("unspecified", "mode", "tool", "break")
 )
 }
 \arguments{
@@ -19,14 +19,17 @@ prompt_wrap(
 first argument) and returns the new prompt text}
 
 \item{extraction_fn}{A function that takes the LLM response (as first argument)
-and attempts to extract a value from it.Upon succesful extraction, the function
+and attempts to extract a value from it. Upon succesful extraction, the function
 should return the extracted value. If the extraction fails, the function should
-return a \code{\link[=llm_feedback]{llm_feedback()}} message which will be sent back to the LLM}
+return a \code{\link[=llm_feedback]{llm_feedback()}} message which will be sent back to the LLM to
+initiate a retry. A special object \code{\link[=llm_break]{llm_break()}} can be returned to break the
+extraction and validation loop}
 
 \item{validation_fn}{A function that takes the (extracted) LLM response
 (as first argument) and attempts to validate it. Upon succesful validation,
 the function should return TRUE. If the validation fails, the function should
-return a \code{\link[=llm_feedback]{llm_feedback()}} message which will be sent back to the LLM}
+return a \code{\link[=llm_feedback]{llm_feedback()}} message which will be sent back to the LLM. A special
+object \code{\link[=llm_break]{llm_break()}} can be returned to break the extraction and validation loop}
 
 \item{type}{The type of prompt wrap; one of 'unspecified', 'mode', 'tool', or 'break'.
 Types are used to determine the order in which prompt wraps are applied.
@@ -34,6 +37,7 @@ When constructing the prompt text, prompt wraps are applied to the base prompt
 in the following order: 'unspecified', 'break', 'mode', 'tool'. When evaluating
 the LLM response and applying extraction and validation functions,
 prompt wraps are applied in the reverse order: 'tool', 'mode', 'break', 'unspecified'.
+Order among the same type is preserved in the order they were added to the prompt.
 Example of a tool is \code{\link[=add_tools]{add_tools()}}; example of a mode is \code{\link[=answer_by_react]{answer_by_react()}}.
 Example of a break is \code{\link[=quit_if]{quit_if()}}. Most other prompt wraps will be 'unspecified',
 like \code{\link[=answer_as_regex]{answer_as_regex()}} or \code{\link[=add_text]{add_text()}}}
@@ -50,6 +54,37 @@ that the prompt and LLM response is in the correct format and meets the
 specified criteria.
 }
 \examples{
+# A custom prompt_wrap may be created during piping
+prompt <- "Hi there!" |>
+  prompt_wrap(
+    modify_fn = function(base_prompt) {
+      paste(base_prompt, "How are you?", sep = "\n\n")
+    }
+  )
+
+# (Shorter notation of the above:)
+prompt <- "Hi there!" |>
+  prompt_wrap(\(x) paste(x, "How are you?", sep = "\n\n"))
+
+# It may often be preferred to make a function which takes a prompt and
+#   returns a wrapped prompt:
+my_prompt_wrap <- function(tidyprompt) {
+  tidyprompt <- tidyprompt(tidyprompt)
+
+  modify_fn <- function(base_prompt) {
+    paste(base_prompt, "How are you?", sep = "\n\n")
+  }
+
+  prompt_wrap(tidyprompt, modify_fn)
+}
+prompt <- "Hi there!" |>
+  my_prompt_wrap()
+
+# For more advanced examples, take a look at the source code of the
+#   pre-built prompt wraps in the tidyprompt package, like
+#   answer_as_boolean, answer_as_integer, add_tools, answer_as_code, etc.
+# Below is the source code for the 'answer_as_integer' prompt wrap function:
+
 #' Make LLM answer as an integer (between min and max)
 #'
 #' @param prompt A single string or a [tidyprompt()] object
