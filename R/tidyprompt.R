@@ -72,68 +72,60 @@ tidyprompt.character <- function(input) {
 #'
 #' @param input A tidyprompt object
 #'
-#' @return A validated tidyprompt object
+#' @return the input object if the tidyprompt is valid,
+#'  otherwise an error is thrown
 #'
 #' @exportS3Method tidyprompt tidyprompt
+#'
 #' @keywords internal
 tidyprompt.tidyprompt <- function(input) {
-  validate_tidyprompt(input)
+  if (!is.list(input))
+    stop("The tidyprompt object must be a list")
+
+  if (is.null(names(input)))
+    stop("The tidyprompt object must have names")
+
+  if (!"base_prompt" %in% names(input))
+    stop("The tidyprompt object must have $base_prompt")
+
+  if (
+    !is.character(input$base_prompt) |
+    input$base_prompt |> length() != 1
+  )
+    stop("$base_prompt must be a single string")
+
+  if ("prompt_wraps" %in% names(input)) {
+    if (!is.list(input$prompt_wraps))
+      stop("$prompt_wraps must be a list")
+
+    if (!all(sapply(input$prompt_wraps, function(x) inherits(x, "prompt_wrap"))))
+      stop(paste0(
+        "All elements of $prompt_wraps must be of class `prompt_wrap`.",
+        " Create a `prompt_wrap` object with the prompt_wrap() function"
+      ))
+  }
+
   return(input)
 }
 
 
 
-#' Validate tidyprompt, returning self if valid, otherwise error
+#' Validate tidyprompt: returns TRUE if a valid tidyprompt object, otherwise FALSE
 #'
 #' @param tidyprompt A tidyprompt object
 #'
-#' @return TRUE if the tidyprompt is valid, otherwise an error is thrown
-#'
-#' @export
-#'
-#' @family tidyprompt
-validate_tidyprompt <- function(tidyprompt) {
-  if (!inherits(tidyprompt, "tidyprompt"))
-    stop("tidyprompt is not of class 'tidyprompt'")
-
-  if (!"base_prompt" %in% names(tidyprompt))
-    stop("The tidyprompt object must have a base prompt")
-
-  if (
-    !is.character(tidyprompt$base_prompt) |
-    tidyprompt$base_prompt |> length() != 1
-  )
-    stop("The base prompt must be a single character string")
-
-  if ("prompt_wraps" %in% names(tidyprompt)) {
-    if (!is.list(tidyprompt$prompt_wraps))
-      stop("The prompt_wraps must be a list")
-
-    if (!all(sapply(tidyprompt$prompt_wraps, function(x) inherits(x, "prompt_wrap"))))
-      stop(paste0(
-        "All elements of prompt_wraps must be of class 'prompt_wrap'.",
-        " Create a prompt_wrap object with the prompt_wrap() function."
-      ))
-  }
-
-  # Validators return visible:
-  return(tidyprompt)
-}
-
-
-
-#' Validate tidyprompt, returning TRUE if valid, otherwise FALSE
-#'
-#' @param tidyprompt A tidyprompt object
-#'
-#' @return TRUE if the object is a valid tidyprompt, otherwise FALSE
+#' @return Logical indicating whether the input is a valid tidyprompt object
 #'
 #' @export
 #'
 #' @family tidyprompt
 is_tidyprompt <- function(tidyprompt) {
+  if (!inherits(tidyprompt, "tidyprompt"))
+    return(FALSE)
+
   tryCatch({
-    validate_tidyprompt(tidyprompt)
+    invisible(tidyprompt(tidyprompt))
+    TRUE
   }, error = function(e) {
     FALSE
   })
@@ -151,7 +143,7 @@ is_tidyprompt <- function(tidyprompt) {
 #'
 #' @family tidyprompt
 get_base_prompt <- function(tidyprompt) {
-  tidyprompt <- validate_tidyprompt(tidyprompt)
+  tidyprompt <- tidyprompt(tidyprompt)
 
   base_prompt <- tidyprompt$base_prompt
 
@@ -184,7 +176,7 @@ get_prompt_wraps <- function(
       "evaluation"
     )
 ) {
-  tidyprompt <- validate_tidyprompt(tidyprompt)
+  tidyprompt <- tidyprompt(tidyprompt)
   order <- match.arg(order)
 
   prompt_wraps <- tidyprompt$prompt_wraps
@@ -223,7 +215,7 @@ get_prompt_wraps <- function(
 #'
 #' @family tidyprompt
 construct_prompt_text <- function(tidyprompt) {
-  tidyprompt <- validate_tidyprompt(tidyprompt)
+  tidyprompt <- tidyprompt(tidyprompt)
 
   prompt_text <- get_base_prompt(tidyprompt)
   prompt_wraps <- get_prompt_wraps(tidyprompt, order = "modification")

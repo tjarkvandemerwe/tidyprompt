@@ -56,8 +56,7 @@ Other tidyprompt:
 \code{\link{get_base_prompt}()},
 \code{\link{get_prompt_wraps}()},
 \code{\link{is_tidyprompt}()},
-\code{\link{tidyprompt}()},
-\code{\link{validate_tidyprompt}()}
+\code{\link{tidyprompt}()}
 }
 \concept{tidyprompt}
 \keyword{internal}

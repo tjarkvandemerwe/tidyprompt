@@ -34,8 +34,7 @@ prompt <- "Hi" |>
 }
 
 # `tidyprompt` objects may be validated with these helpers:
-valid_tidyprompt <- validate_tidyprompt(prompt) # Returns self if valid
-is_valid <- is_tidyprompt(prompt) # Returns TRUE if valid
+is_tidyprompt(prompt) # Returns TRUE if input is a valid tidyprompt object
 
 # Get base prompt text
 get_base_prompt(prompt)

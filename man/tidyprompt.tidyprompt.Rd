@@ -10,7 +10,8 @@
 \item{input}{A tidyprompt object}
 }
 \value{
-A validated tidyprompt object
+the input object if the tidyprompt is valid,
+otherwise an error is thrown
 }
 \description{
 Validate tidyprompt
