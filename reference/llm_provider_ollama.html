@@ -58,9 +58,8 @@
 <li><p>stream: A logical indicating whether the API should stream responses</p></li>
 </ul><p>Additional parameters may be passed by adding them to the parameters list;
 these parameters will be passed to the Ollama API via the body of the POST request.
-Options specifically can be set with the $set_options function (e.g.,
-ollama$set_options(list(temperature = 0.8))). See available options at
-https://ollama.com/docs/api/chat</p></dd>
+Note that various Ollama options need to be set in a list named 'options' within
+the parameters list (e.g., context window size is represented in $parameters$options$num_ctx).</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
