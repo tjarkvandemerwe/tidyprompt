@@ -17,8 +17,7 @@ Other llm_provider:
 \code{\link{llm_provider_ollama}()},
 \code{\link{llm_provider_openai}()},
 \code{\link{llm_provider_openrouter}()},
-\code{\link{llm_provider_xai}()},
-\code{\link{make_llm_provider_request}()}
+\code{\link{llm_provider_xai}()}
 }
 \concept{llm_provider}
 \section{Public fields}{

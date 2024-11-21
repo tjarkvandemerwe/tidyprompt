@@ -20,9 +20,10 @@ should be a project API key (not a user API key)
 \item url: The URL to the OpenAI API (may also be an alternative endpoint
 that provides a similar API.)
 \item stream: A logical indicating whether the API should stream responses
+}
+
 Additional parameters are appended to the request body; see the OpenAI API
-documentation for more information: https://platform.openai.com/docs/api-reference/chat
-}}
+documentation for more information: https://platform.openai.com/docs/api-reference/chat}
 
 \item{verbose}{A logical indicating whether the interaction with the LLM provider
 should be printed to the console. Default is TRUE.}
@@ -96,7 +97,6 @@ Other llm_provider:
 \code{\link{llm_provider_mistral}()},
 \code{\link{llm_provider_ollama}()},
 \code{\link{llm_provider_openrouter}()},
-\code{\link{llm_provider_xai}()},
-\code{\link{make_llm_provider_request}()}
+\code{\link{llm_provider_xai}()}
 }
 \concept{llm_provider}

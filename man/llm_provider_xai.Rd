@@ -16,9 +16,10 @@ llm_provider_xai(
 \itemize{
 \item model: The name of the model to use
 \item stream: A logical indicating whether the API should stream responses
+}
+
 Additional parameters are appended to the request body; see the XAI API
-documentation for more information: https://docs.x.ai/api/endpoints#chat-completions
-}}
+documentation for more information: https://docs.x.ai/api/endpoints#chat-completions}
 
 \item{verbose}{A logical indicating whether the interaction with the LLM provider
 should be printed to the console. Default is TRUE.}
@@ -91,7 +92,6 @@ Other llm_provider:
 \code{\link{llm_provider_mistral}()},
 \code{\link{llm_provider_ollama}()},
 \code{\link{llm_provider_openai}()},
-\code{\link{llm_provider_openrouter}()},
-\code{\link{make_llm_provider_request}()}
+\code{\link{llm_provider_openrouter}()}
 }
 \concept{llm_provider}
