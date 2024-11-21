@@ -296,9 +296,9 @@ make_llm_provider_request <- function(
 #'
 #'  Additional parameters may be passed by adding them to the parameters list;
 #'  these parameters will be passed to the Ollama API via the body of the POST request.
-#'  Options specifically can be set with the $set_options function (e.g.,
-#'  ollama$set_options(list(temperature = 0.8))). See available options at
-#'  https://ollama.com/docs/api/chat
+#'  Note that various Ollama options need to be set in a list named 'options' within
+#'  the parameters list (e.g., context window size is represented in $parameters$options$num_ctx).
+#   See available settings at https://github.com/ollama/ollama/blob/main/docs/api.md
 #' @param verbose A logical indicating whether the interaction with the LLM provider
 #' should be printed to the console
 #' @param url The URL to the Ollama API endpoint for chat completion
