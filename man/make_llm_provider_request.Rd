@@ -27,7 +27,7 @@ should be printed to the console. Default is TRUE.}
 
 \item{stream_api_type}{The type of API to use; specifically required to handle streaming.
 Currently, "openai" and "ollama" have been implemented. "openai" should also work
-with other similar APIs for chat completion.}
+with other similar APIs for chat completion}
 }
 \value{
 A list with the role and content of the response from the LLM provider

@@ -5,7 +5,7 @@
 \title{Create a new Groq \code{\link[=llm_provider]{llm_provider()}} instance}
 \usage{
 llm_provider_groq(
-  parameters = list(model = "llama-3.1-8b-instant", stream = FALSE),
+  parameters = list(model = "llama-3.1-8b-instant", stream = TRUE),
   verbose = getOption("tidyprompt.verbose", TRUE),
   url = "https://api.groq.com/openai/v1/chat/completions",
   api_key = Sys.getenv("GROQ_API_KEY")
@@ -16,9 +16,10 @@ llm_provider_groq(
 \itemize{
 \item model: The name of the model to use
 \item stream: A logical indicating whether the API should stream responses
+}
+
 Additional parameters are appended to the request body; see the Groq API
-documentation for more information: https://console.groq.com/docs/api-reference#chat-create
-}}
+documentation for more information: https://console.groq.com/docs/api-reference#chat-create}
 
 \item{verbose}{A logical indicating whether the interaction with the LLM provider
 should be printed to the console}
@@ -91,7 +92,6 @@ Other llm_provider:
 \code{\link{llm_provider_ollama}()},
 \code{\link{llm_provider_openai}()},
 \code{\link{llm_provider_openrouter}()},
-\code{\link{llm_provider_xai}()},
-\code{\link{make_llm_provider_request_old}()}
+\code{\link{llm_provider_xai}()}
 }
 \concept{llm_provider}

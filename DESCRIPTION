@@ -31,7 +31,7 @@ VignetteBuilder: knitr
 Imports: 
     cli,
     glue,
-    httr,
+    httr2,
     jsonlite,
     methods,
     skimr,

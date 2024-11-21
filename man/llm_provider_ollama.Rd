@@ -15,12 +15,13 @@ llm_provider_ollama(
 \itemize{
 \item model: The name of the model to use
 \item stream: A logical indicating whether the API should stream responses
+}
+
 Additional parameters may be passed by adding them to the parameters list;
 these parameters will be passed to the Ollama API via the body of the POST request.
 Options specifically can be set with the $set_options function (e.g.,
 ollama$set_options(list(temperature = 0.8))). See available options at
-https://ollama.com/docs/api/chat
-}}
+https://ollama.com/docs/api/chat}
 
 \item{verbose}{A logical indicating whether the interaction with the LLM provider
 should be printed to the console}
@@ -92,7 +93,6 @@ Other llm_provider:
 \code{\link{llm_provider_mistral}()},
 \code{\link{llm_provider_openai}()},
 \code{\link{llm_provider_openrouter}()},
-\code{\link{llm_provider_xai}()},
-\code{\link{make_llm_provider_request_old}()}
+\code{\link{llm_provider_xai}()}
 }
 \concept{llm_provider}

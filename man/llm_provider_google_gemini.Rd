@@ -15,10 +15,11 @@ llm_provider_google_gemini(
 \item{parameters}{A named list of parameters. Currently the following parameters are required:
 \itemize{
 \item model: The name of the model to use (see: https://ai.google.dev/gemini-api/docs/models/gemini)
+}
+
 Additional parameters are appended to the request body; see the Google AI Studio API
 documentation for more information: https://ai.google.dev/gemini-api/docs/text-generation
-& https://github.com/google/generative-ai-docs/blob/main/site/en/gemini-api/docs/get-started/rest.ipynb
-}}
+& https://github.com/google/generative-ai-docs/blob/main/site/en/gemini-api/docs/get-started/rest.ipynb}
 
 \item{verbose}{A logical indicating whether the interaction with the LLM provider
 should be printed to the console}
@@ -30,12 +31,62 @@ should be printed to the console}
 }
 \value{
 A new \code{\link[=llm_provider]{llm_provider()}} object for use of the Google Gemini API
+
+A new \code{\link[=llm_provider]{llm_provider()}} object for use of the Google Gemini API
 }
 \description{
 Creates an \code{\link[=llm_provider]{llm_provider()}} object that interacts with the Google Gemini API.
 Streaming is not yet supported in this implementation.
 }
 \examples{
+# Various providers:
+ollama <- llm_provider_ollama()
+openai <- llm_provider_openai()
+openrouter <- llm_provider_openrouter()
+mistral <- llm_provider_mistral()
+groq <- llm_provider_groq()
+xai <- llm_provider_xai()
+gemini <- llm_provider_google_gemini()
+
+# Initialize with settings:
+ollama <- llm_provider_ollama(
+  parameters = list(
+    model = "llama3.2:3b",
+    stream = TRUE
+  ),
+  verbose = TRUE,
+  url = "http://localhost:11434/api/chat"
+)
+
+# Change settings:
+ollama$verbose <- FALSE
+ollama$parameters$stream <- FALSE
+ollama$parameters$model <- "llama3.1:8b"
+
+\dontrun{
+  # Try a simple chat message with '$complete_chat()':
+  response <- ollama$complete_chat("Hi!")
+  response
+  # $role
+  # [1] "assistant"
+  #
+  # $content
+  # [1] "How's it going? Is there something I can help you with or would you like
+  # to chat?"
+  #
+  # $http
+  # Response [http://localhost:11434/api/chat]
+  # Date: 2024-11-18 14:21
+  # Status: 200
+  # Content-Type: application/json; charset=utf-8
+  # Size: 375 B
+
+  # Use with send_prompt():
+  "Hi" |>
+    send_prompt(ollama)
+  # [1] "How's your day going so far? Is there something I can help you with or
+  # would you like to chat?"
+}
 # Various providers:
 ollama <- llm_provider_ollama()
 openai <- llm_provider_openai()
@@ -93,7 +144,11 @@ Other llm_provider:
 \code{\link{llm_provider_ollama}()},
 \code{\link{llm_provider_openai}()},
 \code{\link{llm_provider_openrouter}()},
-\code{\link{llm_provider_xai}()},
-\code{\link{make_llm_provider_request_old}()}
+\code{\link{llm_provider_xai}()}
 }
 \concept{llm_provider}
+\concept{llm_provider
+Create a new Google Gemini \code{\link[=llm_provider]{llm_provider()}} instance
+
+Creates an \code{\link[=llm_provider]{llm_provider()}} object that interacts with the Google Gemini API.
+Streaming is not yet supported in this implementation.}

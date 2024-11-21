@@ -184,7 +184,7 @@ llm_provider <- R6::R6Class(
 #' should be printed to the console. Default is TRUE.
 #' @param stream_api_type The type of API to use; specifically required to handle streaming.
 #' Currently, "openai" and "ollama" have been implemented. "openai" should also work
-#' with other similar APIs for chat completion.
+#' with other similar APIs for chat completion
 #'
 #' @return A list with the role and content of the response from the LLM provider
 #'
@@ -288,133 +288,12 @@ make_llm_provider_request <- function(
 
 
 
-#' Make a request to an LLM provider
-#'
-#' Helper function to handle making requests to LLM providers, to be used
-#' within a complete_chat() function for a LLM provider.
-#'
-#' @param url The URL of the LLM provider API endpoint
-#' @param headers A list of headers to be passed to the API (can be NULL)
-#' @param body The body of the POST request
-#' @param stream A logical indicating whether the API should stream responses
-#' @param verbose A logical indicating whether the interaction with the LLM provider
-#' should be printed to the console. Default is TRUE.
-#' @param stream_api_type The type of API to use; specifically required to handle streaming.
-#' Currently, "openai" and "ollama" have been implemented. "openai" should also work
-#' with other similar APIs for chat completion. If your API handles streaming in a
-#' different way, you may need to implement your own version of this function
-#' (you are then encouraged to submit a pull request to the GitHub repo of 'tidyprompt').
-#'
-#' @return A list with the role and content of the response from the LLM provider
-#'
-#' @export
-#' @example inst/examples/llm_provider.R
-#'
-#' @family llm_provider
-make_llm_provider_request_old <- function(
-    url, headers = NULL, body, stream = NULL, verbose = getOption("tidyprompt.verbose", TRUE),
-    stream_api_type = c("openai", "ollama")
-) {
-  if (!is.null(stream) && stream) {
-    stream_api_type <- match.arg(stream_api_type)
-
-    role <- NULL
-    message <- ""
-
-    write_stream_function <- function(x) {
-      if (stream_api_type == "ollama") {
-        content <- x |> rawToChar() |> jsonlite::fromJSON()
-
-        if (verbose)
-          cat(content$message$content)
-
-        if (is.null(role))
-          role <<- content$message$role
-
-        message <<- paste0(message, content$message$content)
-      }
-
-      if (stream_api_type == "openai") {
-        char <- x |>
-          rawToChar() |>
-          strsplit(split = "\ndata: ") |>
-          unlist()
-
-        parsed_data <- lapply(char, function(chunk) {
-          json_text <- sub("^data:\\s*", "", chunk)
-          # Use tryCatch to handle potential errors
-          tryCatch(
-            jsonlite::fromJSON(json_text),
-            error = function(e) NULL  # Return NULL if there's an error
-          )
-        })
-
-        if (is.null(role)) {
-          role <<- parsed_data[[1]]$choices$delta$role
-        }
-
-        for (data in parsed_data) {
-          addition <- data$choices$delta$content
-
-          if (!is.null(addition)) {
-            message <<- paste0(message, addition)
-            if (verbose)
-              cat(addition)
-          }
-        }
-      }
-    }
-
-    httr::handle_reset(url)
-    response <- httr::POST(
-      url,
-      httr::add_headers(.headers = headers),
-      httr::write_stream(write_stream_function),
-      body = body,
-      encode = "json"
-    )
-
-    if (verbose)
-      cat("\n")
-  } else {
-    response <- httr::POST(
-      url,
-      httr::add_headers(.headers = headers),
-      body = body,
-      encode = "json"
-    )
-  }
-
-  if (httr::status_code(response) != 200)
-    stop("Error: ", httr::status_code(response), " - ", httr::content(response, as = "text"))
-
-  # If not streaming, parse the response content
-  if (is.null(stream) || isFALSE(stream)) {
-    content <- httr::content(response, as = "parsed")
-
-    if (stream_api_type == "ollama") {
-      role <- content$message$role
-      message <- content$message$content
-    } else { # OpenAI type API:
-      role <- content$choices[[1]]$message$role
-      message <- content$choices[[1]]$message$content
-    }
-  }
-
-  return(list(
-    role = role,
-    content = message,
-    http = response
-  ))
-}
-
-
-
 #' Create a new Ollama [llm_provider()] instance
 #'
 #' @param parameters A named list of parameters. Currently the following parameters are required:
 #'    - model: The name of the model to use
 #'    - stream: A logical indicating whether the API should stream responses
+#'
 #'  Additional parameters may be passed by adding them to the parameters list;
 #'  these parameters will be passed to the Ollama API via the body of the POST request.
 #'  Options specifically can be set with the $set_options function (e.g.,
@@ -487,6 +366,7 @@ llm_provider_ollama <- function(
 #'    - url: The URL to the OpenAI API (may also be an alternative endpoint
 #'    that provides a similar API.)
 #'    - stream: A logical indicating whether the API should stream responses
+#'
 #'  Additional parameters are appended to the request body; see the OpenAI API
 #'  documentation for more information: https://platform.openai.com/docs/api-reference/chat
 #' @param verbose A logical indicating whether the interaction with the LLM provider
@@ -553,6 +433,7 @@ llm_provider_openai <- function(
 #' @param parameters A named list of parameters. Currently the following parameters are required:
 #'    - model: The name of the model to use
 #'    - stream: A logical indicating whether the API should stream responses
+#'
 #'  Additional parameters are appended to the request body; see the OpenRouter API
 #'  documentation for more information: https://openrouter.ai/docs/parameters
 #' @param verbose A logical indicating whether the interaction with the LLM provider
@@ -587,6 +468,7 @@ llm_provider_openrouter <- function(
 #' @param parameters A named list of parameters. Currently the following parameters are required:
 #'    - model: The name of the model to use
 #'    - stream: A logical indicating whether the API should stream responses
+#'
 #'  Additional parameters are appended to the request body; see the Mistral API
 #'  documentation for more information: https://docs.mistral.ai/api/#tag/chat
 #' @param verbose A logical indicating whether the interaction with the LLM provider
@@ -619,6 +501,7 @@ llm_provider_mistral <- function(
 #' @param parameters A named list of parameters. Currently the following parameters are required:
 #'   - model: The name of the model to use
 #'   - stream: A logical indicating whether the API should stream responses
+#'
 #'  Additional parameters are appended to the request body; see the Groq API
 #'  documentation for more information: https://console.groq.com/docs/api-reference#chat-create
 #' @param verbose A logical indicating whether the interaction with the LLM provider
@@ -635,7 +518,7 @@ llm_provider_mistral <- function(
 llm_provider_groq <- function(
     parameters = list(
       model = "llama-3.1-8b-instant",
-      stream = FALSE
+      stream = TRUE
     ),
     verbose = getOption("tidyprompt.verbose", TRUE),
     url = "https://api.groq.com/openai/v1/chat/completions",
@@ -651,6 +534,7 @@ llm_provider_groq <- function(
 #' @param parameters A named list of parameters. Currently the following parameters are required:
 #'   - model: The name of the model to use
 #'   - stream: A logical indicating whether the API should stream responses
+#'
 #'  Additional parameters are appended to the request body; see the XAI API
 #'  documentation for more information: https://docs.x.ai/api/endpoints#chat-completions
 #' @param verbose A logical indicating whether the interaction with the LLM provider
@@ -684,7 +568,31 @@ llm_provider_xai <- function(
 #' Streaming is not yet supported in this implementation.
 #'
 #' @param parameters A named list of parameters. Currently the following parameters are required:
+#'    - model: The name of the model to use (see: https://ai.google.dev/gemini-api/docs/models/gemini)#'
+#'
+#'  Additional parameters are appended to the request body; see the Google AI Studio API
+#'  documentation for more information: https://ai.google.dev/gemini-api/docs/text-generation
+#'  & https://github.com/google/generative-ai-docs/blob/main/site/en/gemini-api/docs/get-started/rest.ipynb
+#' @param verbose A logical indicating whether the interaction with the LLM provider
+#' should be printed to the console
+#' @param url The URL to the Google Gemini API endpoint for chat completion
+#' @param api_key The API key to use for authentication with the Google Gemini API
+#' (see: https://aistudio.google.com/app/apikey)
+#'
+#' @return A new [llm_provider()] object for use of the Google Gemini API
+#'
+#' @export
+#' @example inst/examples/llm_providers.R
+#'
+#' @family llm_provider
+#' Create a new Google Gemini [llm_provider()] instance
+#'
+#' Creates an [llm_provider()] object that interacts with the Google Gemini API.
+#' Streaming is not yet supported in this implementation.
+#'
+#' @param parameters A named list of parameters. Currently the following parameters are required:
 #'    - model: The name of the model to use (see: https://ai.google.dev/gemini-api/docs/models/gemini)
+#'
 #'  Additional parameters are appended to the request body; see the Google AI Studio API
 #'  documentation for more information: https://ai.google.dev/gemini-api/docs/text-generation
 #'  & https://github.com/google/generative-ai-docs/blob/main/site/en/gemini-api/docs/get-started/rest.ipynb
@@ -710,15 +618,10 @@ llm_provider_google_gemini <- function(
 ) {
   complete_chat <- function(chat_history) {
     # Construct URL for the API request
-    url <- paste0(
+    endpoint <- paste0(
       self$url,
       self$parameters$model,
-      ":generateContent",
-      "?key=", self$api_key
-    )
-
-    headers <- c(
-      "Content-Type" = "application/json"
+      ":generateContent"
     )
 
     # Format chat_history for API compatibility with the 'contents' format
@@ -738,20 +641,26 @@ llm_provider_google_gemini <- function(
     for (name in names(self$parameters))
       body[[name]] <- self$parameters[[name]]
 
-
-    # Send the POST request with the properly formatted body
-    response <- httr::POST(url, httr::add_headers(.headers = headers), body = body, encode = "json")
+    # Send the POST request with httr2
+    response <- httr2::request(endpoint) |>
+      httr2::req_headers(
+        `Content-Type` = "application/json",
+        `Authorization` = paste("Bearer", self$api_key)
+      ) |>
+      httr2::req_body_json(body) |>
+      httr2::req_url_query(key = self$api_key) |>
+      httr2::req_perform()
 
     # Check if the request was successful
-    if (httr::status_code(response) == 200) {
-      content <- httr::content(response, as = "parsed")
+    if (httr2::resp_status(response) == 200) {
+      content <- httr2::resp_body_json(response)
 
       return(list(
         role = "assistant",
         content = content$candidates[[1]]$content$parts[[1]]$text
       ))
     } else {
-      stop("Error: ", httr::status_code(response), " - ", httr::content(response, as = "text"))
+      stop("Error: ", httr2::resp_status(response), " - ", httr2::resp_body_string(response))
     }
   }
 
