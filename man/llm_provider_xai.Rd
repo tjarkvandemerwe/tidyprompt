@@ -92,6 +92,6 @@ Other llm_provider:
 \code{\link{llm_provider_ollama}()},
 \code{\link{llm_provider_openai}()},
 \code{\link{llm_provider_openrouter}()},
-\code{\link{make_llm_provider_request}()}
+\code{\link{make_llm_provider_request_old}()}
 }
 \concept{llm_provider}

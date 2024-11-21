@@ -177,6 +177,123 @@ llm_provider <- R6::R6Class(
 #' within a complete_chat() function for a LLM provider.
 #'
 #' @param url The URL of the LLM provider API endpoint
+#' @param headers A named list of headers to be passed to the API (can be NULL)
+#' @param body The body of the POST request
+#' @param stream A logical indicating whether the API should stream responses
+#' @param verbose A logical indicating whether the interaction with the LLM provider
+#' should be printed to the console. Default is TRUE.
+#' @param stream_api_type The type of API to use; specifically required to handle streaming.
+#' Currently, "openai" and "ollama" have been implemented. "openai" should also work
+#' with other similar APIs for chat completion.
+#'
+#' @return A list with the role and content of the response from the LLM provider
+#'
+#' @export
+make_llm_provider_request <- function(
+    url, headers = NULL, body, stream = NULL, verbose = getOption("tidyprompt.verbose", TRUE),
+    stream_api_type = c("openai", "ollama")
+) {
+  stream_api_type <- match.arg(stream_api_type)
+
+  req <- httr2::request(url) |>
+    httr2::req_body_json(body) |>
+    httr2::req_headers(!!!headers)
+
+  role <- NULL
+  message <- ""
+
+  if (!is.null(stream) && stream) {
+    # Stream response handling
+    response <- httr2::req_perform_stream(
+      req, buffer_kb = 0.001, round = "line",
+      callback = function(chunk) {
+        if (stream_api_type == "ollama") {
+          stream <- rawToChar(chunk) |> strsplit("\n") |> unlist()
+
+          for (x in stream) {
+            content <- tryCatch(
+              jsonlite::fromJSON(x),
+              error = function(e) NULL
+            )
+
+            if (is.null(content$message$content))
+              next
+
+            if (is.null(role))
+              role <<- content$message$role
+
+            message <<- paste0(message, content$message$content)
+
+            if (verbose)
+              cat(content$message$content)
+          }
+        }
+
+        if (stream_api_type == "openai") {
+          char <- rawToChar(chunk) |> strsplit(split = "\ndata: ") |> unlist()
+
+          parsed_data <- lapply(char, function(chunk) {
+            json_text <- sub("^data:\\s*", "", chunk)
+            tryCatch(
+              jsonlite::fromJSON(json_text),
+              error = function(e) NULL
+            )
+          })
+
+          if (is.null(role)) {
+            role <<- parsed_data[[1]]$choices$delta$role
+          }
+
+          for (data in parsed_data) {
+            addition <- data$choices$delta$content
+
+            if (!is.null(addition)) {
+              message <<- paste0(message, addition)
+              if (verbose)
+                cat(addition)
+            }
+          }
+        }
+
+        return(TRUE)
+      }
+    )
+
+    if (verbose) cat("\n")
+  } else {
+    # Non-streaming response
+    response <- httr2::req_perform(req)
+    content <- httr2::resp_body_json(response)
+
+    if (stream_api_type == "ollama") {
+      role <- content$message$role
+      message <- content$message$content
+    } else { # OpenAI type API
+      role <- content$choices[[1]]$message$role
+      message <- content$choices[[1]]$message$content
+    }
+  }
+
+  # Error handling
+  if (httr2::resp_status(response) != 200) {
+    stop("Error: ", httr2::resp_status(response), " - ", httr2::resp_body_string(response))
+  }
+
+  return(list(
+    role = role,
+    content = message,
+    http = response
+  ))
+}
+
+
+
+#' Make a request to an LLM provider
+#'
+#' Helper function to handle making requests to LLM providers, to be used
+#' within a complete_chat() function for a LLM provider.
+#'
+#' @param url The URL of the LLM provider API endpoint
 #' @param headers A list of headers to be passed to the API (can be NULL)
 #' @param body The body of the POST request
 #' @param stream A logical indicating whether the API should stream responses
@@ -194,7 +311,7 @@ llm_provider <- R6::R6Class(
 #' @example inst/examples/llm_provider.R
 #'
 #' @family llm_provider
-make_llm_provider_request <- function(
+make_llm_provider_request_old <- function(
     url, headers = NULL, body, stream = NULL, verbose = getOption("tidyprompt.verbose", TRUE),
     stream_api_type = c("openai", "ollama")
 ) {
