@@ -125,8 +125,6 @@ answer_as_integer <- function(
     ))
   }
 
-
-  # Define modification/extraction/validation functions:
   modify_fn <- function(original_prompt_text) {
     if (!add_instruction_to_prompt) {
       return(original_prompt_text)
