@@ -401,7 +401,6 @@ answer_as_boolean <- function(
   if (!is.null(false_definition))
     instruction <- paste(instruction, glue::glue("FALSE means: {false_definition}."))
 
-  # Define modification/extraction/validation functions:
   modify_fn <- function(original_prompt_text) {
     if (!add_instruction_to_prompt) {
       return(original_prompt_text)
