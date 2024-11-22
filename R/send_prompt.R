@@ -144,7 +144,7 @@ send_prompt <- function(
     keep_rows <- c(
       system_rows,
       user_rows[c(1, length(user_rows))],
-      tail(assistant_rows, 1),
+      utils::tail(assistant_rows, 1),
       tool_result_rows
     )
 

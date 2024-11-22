@@ -26,16 +26,14 @@ Suggests:
     knitr,
     rmarkdown,
     testthat (>= 3.0.0),
-    callr
+    callr,
+    skimr,
+    cli
 VignetteBuilder: knitr
 Imports: 
-    cli,
     glue,
     httr2,
     jsonlite,
-    methods,
-    skimr,
-    stats,
     stringr,
     utils
 Config/testthat/edition: 3

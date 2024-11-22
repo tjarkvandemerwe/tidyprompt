@@ -83,15 +83,18 @@ answer_as_code <- function(
 
   return_mode <- match.arg(return_mode)
 
-  if (
-    !is.list(objects_to_use)
-    ||
-    (
-      length(objects_to_use) > 0
-      && is.null(names(objects_to_use))
-    )
+  stopifnot(
+    is.character(add_text), length(add_text) == 1,
+    is.character(pkgs_to_use), length(pkgs_to_use) > 0,
+    is.list(objects_to_use),
+    length(objects_to_use) == 0 || !is.null(names(objects_to_use)),
+    is.logical(list_packages),
+    is.logical(list_objects),
+    is.logical(skim_dataframes),
+    is.logical(evaluate_code),
+    is.logical(output_as_tool)
   )
-    stop("'objects_to_use' must be a named list")
+
   if (evaluate_code & !requireNamespace("callr", quietly = TRUE))
     stop("The 'callr' package is required to evaluate R code.")
   if (!evaluate_code & output_as_tool)
@@ -99,7 +102,7 @@ answer_as_code <- function(
   if (output_as_tool)
     return_mode <- "llm_answer"
   if (!evaluate_code & return_mode %in% c("console", "object", "formatted_output"))
-    stop("The return mode must be 'full', 'code', or 'llm_answer' if 'evaluate_code' is FALSE.")
+    stop("The return mode must be 'full', 'code', or 'llm_answer' if 'evaluate_code' is FALSE")
 
 
   ## Validate evaluation_session & load packages
@@ -110,14 +113,9 @@ answer_as_code <- function(
     # Check if packages are installed
     installed_pkgs <- evaluation_session$run(function(pkgs_to_use) {
       # Check if each package is installed and return as a named list
-      installed_pkgs <- setNames(
-        lapply(pkgs_to_use, function(pkg) {
-          pkg %in% utils::installed.packages()[, "Package"]
-        }),
-        pkgs_to_use
-      )
-
-      installed_pkgs
+      sapply(pkgs_to_use, function(pkg) {
+        pkg %in% utils::installed.packages()[, "Package"]
+      }, simplify = TRUE, USE.NAMES = TRUE)
     }, args = list(pkgs_to_use = pkgs_to_use))
 
     if (any(installed_pkgs == FALSE)) {
@@ -201,13 +199,22 @@ answer_as_code <- function(
 
         if (skim_dataframes) {
           dataframes <- objects_df$Object_name[objects_df$Type == "data.frame"]
-          for (df_name in dataframes) {
-            df <- objects_to_use[[df_name]]
-            new_text <- glue::glue(
-              "{new_text}\n\n",
-              "Summary of the dataframe '{df_name}':\n",
-              "{df |> skim_with_labels_and_levels() |> df_to_string()}\n\n"
-            )
+          if (length(dataframes) > 0) {
+            if (!requireNamespace("skimr", quietly = TRUE)) {
+              warning(paste0(
+                "The 'skimr' package is required to skim dataframes.",
+                " Skim summary of dataframes currently not shown in prompt"
+              ))
+            } else {
+              for (df_name in dataframes) {
+                df <- objects_to_use[[df_name]]
+                new_text <- glue::glue(
+                  "{new_text}\n\n",
+                  "Summary of the dataframe '{df_name}':\n",
+                  "{df |> skim_with_labels_and_levels() |> df_to_string()}\n\n"
+                )
+              }
+            }
           }
         }
 

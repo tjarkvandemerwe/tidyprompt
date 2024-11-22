@@ -43,9 +43,9 @@
 #' @exportS3Method
 #' @keywords internal
 print.tidyprompt <- function(x, ...) {
-  cat(cli::col_blue("<tidyprompt>\n"))
+  cat(col_blue("<tidyprompt>\n"))
 
-  line_prefix <- cli::col_green("> ")
+  line_prefix <- col_green("> ")
 
   format_with_prefix <- function(text, line_prefix) {
     # Split the text by line breaks to preserve them
@@ -57,28 +57,46 @@ print.tidyprompt <- function(x, ...) {
 
   n_wraps <- length(x$prompt_wraps)
   if (n_wraps == 0) {
-    cat(cli::col_silver("base prompt:\n"))  # Use gray for metadata
+    cat(col_silver("base prompt:\n"))  # Use gray for metadata
     formatted_text <- format_with_prefix(x$base_prompt, line_prefix)
     cat(formatted_text, "\n")
   }
 
   if (n_wraps == 1) {
-    cat(cli::col_silver(paste("The base prompt is modified by a prompt wrap, resulting in:\n")))
+    cat(col_silver(paste("The base prompt is modified by a prompt wrap, resulting in:\n")))
   }
 
   if (n_wraps > 1) {
-    cat(cli::col_silver(paste("The base prompt is modified by", n_wraps, "prompt wraps, resulting in:\n")))
+    cat(col_silver(paste("The base prompt is modified by", n_wraps, "prompt wraps, resulting in:\n")))
   }
 
   if (n_wraps > 0) {
     full_text <- x |> construct_prompt_text()
     formatted_text <- format_with_prefix(full_text, line_prefix)
     cat(formatted_text, "\n")
-    cat(cli::col_silver("Use '<tidyprompt>$prompt_wraps' to show the prompt wraps.\n"))
+    cat(col_silver("Use '<tidyprompt>$prompt_wraps' to show the prompt wraps.\n"))
   }
 
-  cat(cli::col_silver("Use '<tidyprompt>$base_prompt' to show the base prompt text.\n"))
-  cat(cli::col_silver("Use '<tidyprompt> |> construct_prompt_text()' to get the full prompt text.\n"))
+  cat(col_silver("Use '<tidyprompt>$base_prompt' to show the base prompt text.\n"))
+  cat(col_silver("Use '<tidyprompt> |> construct_prompt_text()' to get the full prompt text.\n"))
 
   return(invisible(x))
+}
+
+col_blue <- function(text) {
+  if (requireNamespace("cli", quietly = TRUE))
+    return(cli::col_blue(text))
+  return(text)
+}
+
+col_green <- function(text) {
+  if (requireNamespace("cli", quietly = TRUE))
+    return(cli::col_green(text))
+  return(text)
+}
+
+col_silver <- function(text) {
+  if (requireNamespace("cli", quietly = TRUE))
+    return(cli::col_silver(text))
+  return(text)
 }

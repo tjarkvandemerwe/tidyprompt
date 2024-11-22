@@ -41,10 +41,10 @@ add_tools <- function(prompt, tool_functions = list()) {
     stop("No tool functions provided.")
 
   # Convert tool_functions to named list, taking the name from the function documentation
-  tool_functions <- setNames(tool_functions, sapply(tool_functions, function(f) {
+  names(tool_functions) <- sapply(tool_functions, function(f) {
     docs <- add_tools_extract_documentation(f)
     return(docs$name)
-  }))
+  })
 
   modify_fn <- function(original_prompt_text) {
     new_prompt <- glue::glue(

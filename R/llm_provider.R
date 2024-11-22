@@ -692,7 +692,7 @@ llm_provider_google_gemini <- function(
 #' @keywords internal
 llm_provider_fake <- function(verbose = getOption("tidyprompt.verbose", TRUE)) {
   complete_chat <- function(chat_history) {
-    last_msg <- tail(chat_history$content, 1)
+    last_msg <- utils::tail(chat_history$content, 1)
 
     answer_as_integer_input <-
       "You must answer with only an integer (use no other characters)."

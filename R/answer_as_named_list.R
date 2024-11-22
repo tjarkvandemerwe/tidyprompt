@@ -94,7 +94,8 @@ answer_as_named_list <- function(
     values <- stringr::str_trim(named_items[, 3])
 
     # Create named list
-    named_list <- setNames(values, names)
+    named_list <- values
+    names(named_list) <- names
 
     # Validate all expected names are present
     missing_names <- setdiff(item_names, names(named_list))
