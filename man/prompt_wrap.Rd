@@ -61,6 +61,7 @@ prompt <- "Hi there!" |>
       paste(base_prompt, "How are you?", sep = "\n\n")
     }
   )
+prompt
 
 # (Shorter notation of the above:)
 prompt <- "Hi there!" |>
@@ -68,14 +69,12 @@ prompt <- "Hi there!" |>
 
 # It may often be preferred to make a function which takes a prompt and
 #   returns a wrapped prompt:
-my_prompt_wrap <- function(tidyprompt) {
-  tidyprompt <- tidyprompt(tidyprompt)
-
+my_prompt_wrap <- function(prompt) {
   modify_fn <- function(base_prompt) {
     paste(base_prompt, "How are you?", sep = "\n\n")
   }
 
-  prompt_wrap(tidyprompt, modify_fn)
+  prompt_wrap(prompt, modify_fn)
 }
 prompt <- "Hi there!" |>
   my_prompt_wrap()
