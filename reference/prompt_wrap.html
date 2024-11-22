@@ -28,7 +28,7 @@ specified criteria."></head><body>
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/example_usage.html">Example usage</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting_started.html">Example usage</a></li>
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -143,6 +143,16 @@ like <code><a href="answer_as_regex.html">answer_as_regex()</a></code> or <code>
 <span class="r-in"><span>      <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">base_prompt</span>, <span class="st">"How are you?"</span>, sep <span class="op">=</span> <span class="st">"\n\n"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>    <span class="op">}</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">prompt</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">&lt;tidyprompt&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">The base prompt is modified by a prompt wrap, resulting in:</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">&gt; </span>Hi there!</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">&gt; </span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">&gt; </span>How are you? </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">Use '&lt;tidyprompt&gt;$prompt_wraps' to show the prompt wraps.</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">Use '&lt;tidyprompt&gt;$base_prompt' to show the base prompt text.</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">Use '&lt;tidyprompt&gt; |&gt; construct_prompt_text()' to get the full prompt text.</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># (Shorter notation of the above:)</span></span></span>
 <span class="r-in"><span><span class="va">prompt</span> <span class="op">&lt;-</span> <span class="st">"Hi there!"</span> <span class="op">|&gt;</span></span></span>
@@ -150,14 +160,12 @@ like <code><a href="answer_as_regex.html">answer_as_regex()</a></code> or <code>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># It may often be preferred to make a function which takes a prompt and</span></span></span>
 <span class="r-in"><span><span class="co">#   returns a wrapped prompt:</span></span></span>
-<span class="r-in"><span><span class="va">my_prompt_wrap</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">tidyprompt</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="va">tidyprompt</span> <span class="op">&lt;-</span> <span class="fu"><a href="tidyprompt.html">tidyprompt</a></span><span class="op">(</span><span class="va">tidyprompt</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">my_prompt_wrap</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">prompt</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="va">modify_fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">base_prompt</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">base_prompt</span>, <span class="st">"How are you?"</span>, sep <span class="op">=</span> <span class="st">"\n\n"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="fu">prompt_wrap</span><span class="op">(</span><span class="va">tidyprompt</span>, <span class="va">modify_fn</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">prompt_wrap</span><span class="op">(</span><span class="va">prompt</span>, <span class="va">modify_fn</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span><span class="va">prompt</span> <span class="op">&lt;-</span> <span class="st">"Hi there!"</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu">my_prompt_wrap</span><span class="op">(</span><span class="op">)</span></span></span>
@@ -208,8 +216,6 @@ like <code><a href="answer_as_regex.html">answer_as_regex()</a></code> or <code>
 <span class="r-in"><span>    <span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co"># Define modification/extraction/validation functions:</span></span></span>
 <span class="r-in"><span>  <span class="va">modify_fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">original_prompt_text</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>    <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="va">add_instruction_to_prompt</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>      <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">original_prompt_text</span><span class="op">)</span></span></span>
