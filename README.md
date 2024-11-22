@@ -48,7 +48,7 @@ You can install the development version of tidyprompt from
 remotes::install_github("tjarkvandemerwe/tidyprompt")
 ```
 
-## Example usage
+## Getting started
 
 ``` r
 library(tidyprompt)
@@ -113,7 +113,7 @@ valid (including retries with feedback to the LLM if it is not).
 #> [1] "It's nice to meet you. Is there something I can help you with or would you like to chat?"
 ```
 
-`add_text` is a simple example of a prompt wrap. It simply adds some
+`add_text()` is a simple example of a prompt wrap. It simply adds some
 text at the end of the base prompt.
 
 ``` r
@@ -431,7 +431,7 @@ prompt <- "Hi there!" |>
   my_prompt_wrap()
 ```
 
-Take look at the source code of `answer_as_boolean`, which also uses
+Take look at the source code of `answer_as_boolean()`, which also uses
 extraction:
 
 ``` r
@@ -476,13 +476,13 @@ examples of prompt wraps.
 In some cases, you may want to exit the extraction or validation process
 early. For instance, your LLM may indicate that it is unable to answer
 the prompt. In such cases, you can have your extraction or validation
-function return `llm_exit()`. This will cause the evaluation loop to
+function return `llm_break()`. This will cause the evaluation loop to
 break, forwarding to the return statement of `send_prompt()`. See
 `quit_if()` for an example of this.
 
 #### Extraction versus validation functions
 
-Both extraction and validation functions can return `llm_exit()` or
+Both extraction and validation functions can return `llm_break()` or
 `llm_feedback()`. The difference between extraction and validation
 functions is only that an extraction may transform the LLM response and
 pass it on to the next extraction and/or validation functions, while a
@@ -490,7 +490,7 @@ validation function only checks if the LLM response passes a logical
 test (without altering the response). Thus, if you wish, you can perform
 validations in an extraction function.
 
-#### Order in which prompt wraps are applied
+#### Prompt wrap types and order of application
 
 When constructing the prompt text and when evaluating a prompt, prompt
 wraps are applied prompt wrap after prompt wrap (e.g., first the

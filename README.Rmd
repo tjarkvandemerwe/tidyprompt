@@ -46,9 +46,9 @@ You can install the development version of tidyprompt from [GitHub](https://gith
 remotes::install_github("tjarkvandemerwe/tidyprompt")
 ```
 
-## Example usage
+## Getting started
 
-```{r child = 'vignettes/example_usage.Rmd'}
+```{r child = 'vignettes/getting_started.Rmd'}
 ```
 
 ## More information and contributing

@@ -119,8 +119,8 @@ and valid (including retries with feedback to the LLM if it is not).</p>
 <span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
 <span><span class="co">#&gt; It's nice to meet you. Is there something I can help you with or would you like to chat?</span></span>
 <span><span class="co">#&gt; [1] "It's nice to meet you. Is there something I can help you with or would you like to chat?"</span></span></code></pre></div>
-<p><code>add_text</code> is a simple example of a prompt wrap. It simply
-adds some text at the end of the base prompt.</p>
+<p><code><a href="../reference/add_text.html">add_text()</a></code> is a simple example of a prompt wrap. It
+simply adds some text at the end of the base prompt.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  <span class="st">"Hi there!"</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/add_text.html">add_text</a></span><span class="op">(</span><span class="st">"What is a large language model? Explain in 10 words."</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -415,8 +415,8 @@ prompt and returns a wrapped prompt:</p>
 <span><span class="op">}</span></span>
 <span><span class="va">prompt</span> <span class="op">&lt;-</span> <span class="st">"Hi there!"</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">my_prompt_wrap</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p>Take look at the source code of <code>answer_as_boolean</code>, which
-also uses extraction:</p>
+<p>Take look at the source code of <code><a href="../reference/answer_as_boolean.html">answer_as_boolean()</a></code>,
+which also uses extraction:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">answer_as_boolean</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span></span>
 <span>    <span class="va">prompt</span>,</span>
@@ -458,7 +458,7 @@ for more advanced examples of prompt wraps.</p>
 <p>In some cases, you may want to exit the extraction or validation
 process early. For instance, your LLM may indicate that it is unable to
 answer the prompt. In such cases, you can have your extraction or
-validation function return <code>llm_exit()</code>. This will cause the
+validation function return <code><a href="../reference/llm_break.html">llm_break()</a></code>. This will cause the
 evaluation loop to break, forwarding to the return statement of
 <code><a href="../reference/send_prompt.html">send_prompt()</a></code>. See <code><a href="../reference/quit_if.html">quit_if()</a></code> for an example of
 this.</p>
@@ -467,7 +467,7 @@ this.</p>
 <h4 id="extraction-versus-validation-functions">Extraction versus validation functions<a class="anchor" aria-label="anchor" href="#extraction-versus-validation-functions"></a>
 </h4>
 <p>Both extraction and validation functions can return
-<code>llm_exit()</code> or <code><a href="../reference/llm_feedback.html">llm_feedback()</a></code>. The difference
+<code><a href="../reference/llm_break.html">llm_break()</a></code> or <code><a href="../reference/llm_feedback.html">llm_feedback()</a></code>. The difference
 between extraction and validation functions is only that an extraction
 may transform the LLM response and pass it on to the next extraction
 and/or validation functions, while a validation function only checks if
@@ -476,7 +476,7 @@ Thus, if you wish, you can perform validations in an extraction
 function.</p>
 </div>
 <div class="section level4">
-<h4 id="order-in-which-prompt-wraps-are-applied">Order in which prompt wraps are applied<a class="anchor" aria-label="anchor" href="#order-in-which-prompt-wraps-are-applied"></a>
+<h4 id="prompt-wrap-types-and-order-of-application">Prompt wrap types and order of application<a class="anchor" aria-label="anchor" href="#prompt-wrap-types-and-order-of-application"></a>
 </h4>
 <p>When constructing the prompt text and when evaluating a prompt,
 prompt wraps are applied prompt wrap after prompt wrap (e.g., first the
