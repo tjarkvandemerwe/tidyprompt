@@ -8,13 +8,13 @@
 [![R-CMD-check](https://github.com/tjarkvandemerwe/tidyprompt/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/tjarkvandemerwe/tidyprompt/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-`tidyprompt` is an R package to prompt and empower your large language
+‘tidyprompt’ is an R package to prompt and empower your large language
 models (LLMs), the tidy way.
 
-Key features of `tidyprompt` are:
+Key features of ‘tidyprompt’ are:
 
 - **tidy prompting**: Quickly and elegantly construct prompts for LLMs,
-  using piping syntax (inspired by the `tidyverse`). Wrap a base prompt
+  using piping syntax (inspired by the ‘tidyverse’). Wrap a base prompt
   in prompt wraps to influence how the LLM handles the prompt. A library
   of pre-built prompt wraps is included, but you can also write your
   own.
@@ -48,7 +48,7 @@ You can install the development version of tidyprompt from
 remotes::install_github("tjarkvandemerwe/tidyprompt")
 ```
 
-## Example usage
+## Getting started
 
 ``` r
 library(tidyprompt)
@@ -56,19 +56,19 @@ library(tidyprompt)
 
 ### Setup an LLM provider
 
-`tidyprompt` can be used with any LLM provider capable of completing a
+‘tidyprompt’ can be used with any LLM provider capable of completing a
 chat.
 
-At the moment, `tidyprompt` includes pre-built functions to connect with
+At the moment, ‘tidyprompt’ includes pre-built functions to connect with
 various LLM providers, such as Ollama, OpenAI, OpenRouter, Mistral,
 Groq, XAI (Grok), and Google Gemini.
 
-With the `llm_provider` function, you can easily write a hook for any
-other LLM provider. You could make API calls using the `httr` package or
-use another R package that already has a hook for the LLM provider you
-want to use. If your API of choice follows the structure of the OpenAI
-API, you can very easily call the `llm_provider_openai` function and
-change the relevant parameters (like the url and the API key).
+With `llm_provider()`, you can easily write a hook for any other LLM
+provider. You could make API calls using the ‘httr’ package or use
+another R package that already has a hook for the LLM provider you want
+to use. If your API of choice follows the structure of the OpenAI API,
+you can call `llm_provider_openai()` and change the relevant parameters
+(like the URL and the API key).
 
 ``` r
 # Ollama running on local PC
@@ -113,7 +113,7 @@ valid (including retries with feedback to the LLM if it is not).
 #> [1] "It's nice to meet you. Is there something I can help you with or would you like to chat?"
 ```
 
-`add_text` is a simple example of a prompt wrap. It simply adds some
+`add_text()` is a simple example of a prompt wrap. It simply adds some
 text at the end of the base prompt.
 
 ``` r
@@ -136,13 +136,13 @@ LLM provider.
   "Hi there!" |>
     add_text("What is a large language model? Explain in 10 words.")
 #> <tidyprompt>
-#> The base prompt is modified by a wrapper function, resulting in:
+#> The base prompt is modified by a prompt wrap, resulting in:
 #> > Hi there!
 #> > 
 #> > What is a large language model? Explain in 10 words. 
-#> Use '<tidyprompt>$prompt_wraps' to show the wrapper functions.
+#> Use '<tidyprompt>$prompt_wraps' to show the prompt wraps.
 #> Use '<tidyprompt>$base_prompt' to show the base prompt text.
-#> Use '<tidyprompt> |> construct_prompt_text()' to show the full prompt text.
+#> Use '<tidyprompt> |> construct_prompt_text()' to get the full prompt text.
 ```
 
 ### Retrieving output in a specific format
@@ -151,14 +151,17 @@ Using prompt wraps, you can force the LLM to return the output in a
 specific format. You can also extract the output to turn it from a
 character into another data type.
 
-For instance, the `answer_as_integer` prompt wrap will force the LLM to
-return an integer.
+For instance, `answer_as_integer()` adds a prompt wrap which forces the
+LLM to reply with an integer.
 
 To achieve this, the prompt wrap will add some text to the base prompt,
 asking the LLM to reply with an integer. However, the prompt wrap does
 more: it also will attempt to extract and validate the integer from the
 LLM’s response. If extraction or validation fails, feedback is sent back
-to the LLM, after which the LLM can retry answering the prompt.
+to the LLM, after which the LLM can retry answering the prompt. Because
+the extraction function turns the original character response into a
+numeric value, the final output from `send_prompt()` will also be a
+numeric type.
 
 ``` r
   "What is 2 + 2?" |>
@@ -174,7 +177,7 @@ to the LLM, after which the LLM can retry answering the prompt.
 ```
 
 Below is an example of a prompt which will initially fail, but will
-succeed after a retry.
+succeed after `llm_feedback()` and a retry.
 
 ``` r
   "What is 2 + 2?" |>
@@ -200,11 +203,12 @@ Prompt wraps may also be used to add a reasoning mode to the LLM. It is
 hypothesized that this could improve the LLM’s performance on more
 complex tasks.
 
-For instance, function `answer_by_chain_of_thought` will add chain of
-thought reasoning mode to the LLM. This wraps the base prompt within a
-request for the LLM to reason step by step, asking it to provide the
-final answer within ‘FINISH\[<final answer here>\]’. An extraction
-function then ensures only the final answer is returned.
+For instance, `answer_by_chain_of_thought()` will add chain of thought
+reasoning mode to the prompt evaluation by the LLM. The function wraps
+the base prompt text within a request for the LLM to reason step by
+step, asking it to provide the final answer within
+‘FINISH\[<final answer here>\]’. An extraction function then ensures
+only the final answer is returned.
 
 ``` r
   "What is 2 + 2?" |>
@@ -252,9 +256,9 @@ function then ensures only the final answer is returned.
 
 ### Giving tools to the LLM (autonomous function-calling)
 
-With `tidyprompt` and the `add_tools` prompt wrap, you can define your
-own R functions and give the LLM the ability to call them. This enables
-the LLM to retrieve additional information or take other actions.
+With `add_tools()`, you can define your own R functions and give the LLM
+the ability to call them and process their output. This enables the LLM
+to autonomously retrieve additional information or take other actions.
 
 ``` r
   # Define a function that returns fake data about the temperature in a location
@@ -342,12 +346,13 @@ the LLM to retrieve additional information or take other actions.
 
 ### Code generation and evaluation
 
-`answer_as_code` is a more advanced prompt wrap, which has various
-options to enable LLM code generation. R code can be extracted, parsed
-for validity, and optionally be evaluated in a dedicated R session
-(using the `callr` package). The prompt wrap can also be set to ‘tool
-mode’ (with `output_as_tool = TRUE`), where the output of R code is
-returned to the LLM, so that it can be used to formulate a final answer.
+`answer_as_code()` provides a more advanced prompt wrap, which has
+various options to enable LLM code generation. R code can be extracted,
+parsed for validity, and optionally be evaluated in a dedicated R
+session (using the ‘callr’ package). The prompt wrap can also be set to
+‘tool mode’ (with `output_as_tool = TRUE`), where the output of R code
+is returned to the LLM, so that it can be used to formulate a final
+answer.
 
 ``` r
 # From prompt to ggplot
@@ -367,60 +372,81 @@ plot <- paste0(
 plot
 ```
 
-![](figure/answer_as_code1-1.png)
-
 ### Creating your own prompt wraps
 
-Under the hood, prompts are just lists of a base prompt (a string) and a
-series of prompt wraps.
+Using `prompt_wrap()`, you can create your own prompt wraps. An input
+for `prompt_wrap()` wrap may be string or a tidyprompt object. If you
+pass a string, it will be automatically turned into a tidyprompt object.
 
-You can thus create a function which takes a prompt and appends a new
-prompt wrap to it.
+Under the hood, a tidyprompt object is just a list with a base prompt (a
+string) and a series of prompt wraps. `prompt_wrap()` adds a new prompt
+wrap to the list of prompt wraps. Each prompt wrap is a list with a
+modification function, an extraction function, and/or a validation
+function (at least one of these functions must be present). The
+modification function alters the prompt text, the extraction function
+applies a transformation to the LLM’s response, and the validation
+function checks if the (transformed) LLM’s response is valid.
 
-Take a look at the source code for function `add_text`:
+Both extraction and validation functions can return feedback to the LLM,
+using `llm_feedback()`. When an extraction or validation function
+returns this, a message is sent back to the LLM, and the LLM can retry
+answering the prompt according to the feedback. Feedback messages may be
+a reiteration of instruction or a specific error message which occured
+during extraction or validation. When all extractions and validations
+have been applied without resulting in feedback, the LLM’s response
+(after transformations by the extraction functions) will be returned.
+(`send_prompt()` is responsible for executing this process.)
+
+Below is a simple example of a prompt wrap, which just adds some text to
+the base prompt:
 
 ``` r
-add_text <- function(
-    prompt,
-    text, position = c("after", "before"), sep = "\n\n"
-) {
-  position <- match.arg(position)
-
-  modify_fn <- function(original_prompt_text) {
-    if (position == "after") {
-      paste(original_prompt_text, text, sep = sep)
-    } else {
-      paste(text, original_prompt_text, sep = sep)
+prompt <- "Hi there!" |>
+  prompt_wrap(
+    modify_fn = function(base_prompt) {
+      paste(base_prompt, "How are you?", sep = "\n\n")
     }
+  )
+```
+
+Shorter notation of the above would be:
+
+``` r
+prompt <- "Hi there!" |>
+  prompt_wrap(\(x) paste(x, "How are you?", sep = "\n\n"))
+```
+
+Often times, it may be preferred to make a function which takes a prompt
+and returns a wrapped prompt:
+
+``` r
+my_prompt_wrap <- function(prompt) {
+  modify_fn <- function(base_prompt) {
+    paste(base_prompt, "How are you?", sep = "\n\n")
   }
 
   prompt_wrap(prompt, modify_fn)
 }
+prompt <- "Hi there!" |>
+  my_prompt_wrap()
 ```
 
-More complex prompt wraps may also add extraction and validation
-functions. Take a look at the source code for function
-`answer_as_integer`:
+Take look at the source code of `answer_as_boolean()`, which also uses
+extraction:
 
 ``` r
-answer_as_integer <- function(
+answer_as_boolean <- function(
     prompt,
-    min = NULL,
-    max = NULL,
+    true_definition = NULL,
+    false_definition = NULL,
     add_instruction_to_prompt = TRUE
 ) {
-  instruction <- "You must answer with only an integer (use no other characters)."
+  instruction <- "You must answer with only TRUE or FALSE (use no other characters)."
+  if (!is.null(true_definition))
+    instruction <- paste(instruction, glue::glue("TRUE means: {true_definition}."))
+  if (!is.null(false_definition))
+    instruction <- paste(instruction, glue::glue("FALSE means: {false_definition}."))
 
-  if (!is.null(min) && !is.null(max)) {
-    instruction <- paste(instruction, glue::glue("Enter an integer between {min} and {max}."))
-  } else if (!is.null(min)) {
-    instruction <- paste(instruction, glue::glue("Enter an integer greater than or equal to {min}."))
-  } else if (!is.null(max)) {
-    instruction <- paste(instruction, glue::glue("Enter an integer less than or equal to {max}."))
-  }
-
-
-  # Define modification/extraction/validation functions:
   modify_fn <- function(original_prompt_text) {
     if (!add_instruction_to_prompt) {
       return(original_prompt_text)
@@ -430,48 +456,66 @@ answer_as_integer <- function(
   }
 
   extraction_fn <- function(x) {
-    extracted <- suppressWarnings(as.integer(x))
-    if (is.na(extracted)) {
-      return(llm_feedback(instruction))
+    normalized <- tolower(trimws(x))
+    if (normalized %in% c("true", "false")) {
+      return(as.logical(normalized))
     }
-    return(extracted)
+    return(llm_feedback(instruction))
   }
 
-  validation_fn <- function(x) {
-    if (!is.null(min) && x < min) {
-      return(llm_feedback(glue::glue(
-        "The number should be greater than or equal to {min}."
-      )))
-    }
-    if (!is.null(max) && x > max) {
-      return(llm_feedback(glue::glue(
-        "The number should be less than or equal to {max}."
-      )))
-    }
-    return(TRUE)
-  }
-
-  prompt_wrap(prompt, modify_fn, extraction_fn, validation_fn)
+  prompt_wrap(prompt, modify_fn, extraction_fn)
 }
 ```
 
-They key difference between an extraction and validation function is
-that an extraction function alters the LLM’s response and passes on the
-altered response to next extraction and/or validation functions, and
-eventually to the return statement of send_prompt (if extractions and
-validations are succesful). A validation function, on the other hand,
-only checks if the LLM’s response passes a logical test. Both extraction
-and validation functions can return feedback to the LLM.
+Take a look at the source code of, for instance, `answer_as_integer()`,
+`answer_by_chain_of_thought()`, and `add_tools()` for more advanced
+examples of prompt wraps.
 
-For more information, on what you can do with prompt wraps, see the
-documentation of the `prompt_wrap` class creator function:
-`prompt_wrap`. For examples of prompt wrap functions, see, for instance
-the documentation and source code of `add_text`, `answer_as_integer`,
-`answer_by_chain_of_thought`, and `add_tools`.
+#### Breaking out of the evaluation loop
+
+In some cases, you may want to exit the extraction or validation process
+early. For instance, your LLM may indicate that it is unable to answer
+the prompt. In such cases, you can have your extraction or validation
+function return `llm_break()`. This will cause the evaluation loop to
+break, forwarding to the return statement of `send_prompt()`. See
+`quit_if()` for an example of this.
+
+#### Extraction versus validation functions
+
+Both extraction and validation functions can return `llm_break()` or
+`llm_feedback()`. The difference between extraction and validation
+functions is only that an extraction may transform the LLM response and
+pass it on to the next extraction and/or validation functions, while a
+validation function only checks if the LLM response passes a logical
+test (without altering the response). Thus, if you wish, you can perform
+validations in an extraction function.
+
+#### Prompt wrap types and order of application
+
+When constructing the prompt text and when evaluating a prompt, prompt
+wraps are applied prompt wrap after prompt wrap (e.g., first the
+extraction and validation functions of one wrap, then of the other).
+
+The order in which prompt wraps are applied is important. Currently,
+four types of prompt wraps are distinguished: ‘unspecified’, ‘break’,
+‘mode’, and ‘tool’.
+
+When constructing the prompt text, prompt wraps are applied in the order
+of these types. Prompt wraps will be automatically reordered if
+necesarry (keeping intact the order of prompt wraps of the same type).
+
+When evaluating the prompt, prompt wraps are applied in the reverse
+order of types (i.e., first ‘tool’, then ‘mode’, then ‘break’, and
+finally ‘unspecified’). This is because ‘tool’ prompt wraps may return a
+value to be used in the final answer, ‘mode’ prompt wraps alter how a
+LLM forms a final answer, ‘break’ prompt wraps quit evaluation early
+based on a specific final answer, and ‘unspecified’ prompt wraps are the
+most general type of prompt wraps which force a final answer to be in a
+specific format.
 
 ## More information and contributing
 
-`tidyprompt` is under active development by Luka Koning
+‘tidyprompt’ is under active development by Luka Koning
 (<l.koning@kennispunttwente.nl>) and Tjark van de Merwe
 (<t.vandemerwe@kennispunttwente.nl>). Note that in this stage, the
 package is not yet fully stable and its architecture is subject to
