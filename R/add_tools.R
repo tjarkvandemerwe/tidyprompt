@@ -40,11 +40,10 @@ add_tools <- function(prompt, tool_functions = list()) {
   if (length(tool_functions) == 0)
     stop("No tool functions provided.")
 
-  # Convert tool_functions to named list, taking the name from the function documentation
-  names(tool_functions) <- sapply(tool_functions, function(f) {
-    docs <- add_tools_extract_documentation(f)
-    return(docs$name)
-  })
+  # Convert tool_functions to named list
+  tool_names <- sapply(substitute(tool_functions)[-1], deparse)
+  # Ensure the names of tool_functions match the captured names
+  names(tool_functions) <- tool_names
 
   modify_fn <- function(original_prompt_text) {
     new_prompt <- glue::glue(
@@ -57,27 +56,31 @@ add_tools <- function(prompt, tool_functions = list()) {
         The following functions are available:"
     )
 
-    for (tool_function in tool_functions) {
-      docs <- add_tools_extract_documentation(tool_function)
+    for (tool_fn_name in names(tool_functions)) {
+      tool_function <- tool_functions[[tool_fn_name]]
+      docs <- add_tools_extract_documentation(tool_function, tool_fn_name)
 
-      new_prompt <- glue::glue(
-        "{new_prompt}
+      fn_llm_text <- glue::glue("  function name: {tool_fn_name}")
+      if (length(docs$description) > 0)
+        fn_llm_text <- glue::glue("{fn_llm_text}\n  description: {docs$description}")
+      if (length(docs$parameters) > 0) {
+        fn_llm_text <- glue::glue(
+          "{fn_llm_text}\n  arguments:",
+          paste(
+            sapply(names(docs$parameters), function(param_name) {
+              param_description <- docs$parameters[[param_name]]
+              glue::glue("    - {param_name}: {param_description}")
+            }),
+            collapse = "\n"
+          )
+        )
+      }
+      if (length(docs$return_value) > 0)
+        fn_llm_text <- glue::glue("{fn_llm_text}\n  return value: {docs$return_value}")
+      if (length(docs$example) > 0)
+        fn_llm_text <- glue::glue("{fn_llm_text}\n  example usage: {docs$example}")
 
-          function name: {docs$name}
-          description: {docs$description}
-          arguments:
-            {
-              paste(
-                sapply(names(docs$parameters), function(param_name) {
-                  param_description <- docs$parameters[[param_name]]
-                  glue::glue(\"  - {param_name}: {param_description}\")
-                }),
-                collapse = '\n            '
-              )
-            }
-          return value: {docs$return_value}
-          example usage: {docs$example}"
-      )
+      new_prompt <- glue::glue("{new_prompt}\n\n{fn_llm_text}")
     }
 
     new_prompt <- glue::glue(
@@ -160,6 +163,7 @@ add_tools <- function(prompt, tool_functions = list()) {
 #' @param func A function object which has internal, docstring-like, roxygen-like documentation,
 #' with the 'llm_tool::' tags: 'name', 'description', 'param', 'return', and 'example'
 #' (e.g., llm_tool::name my_function_name).
+#' @param name The name of the function (optional)
 #'
 #' @details Note that for 'example' it must be a one-line example of how the function is used in R,
 #' this will be converted to how LLM should call the function in text (slightly different
@@ -177,189 +181,43 @@ add_tools <- function(prompt, tool_functions = list()) {
 #' @example inst/examples/add_tools.R
 #'
 #' @family add_tools
-add_tools_extract_documentation <- function(func) {
-  name <- character(0)
-  description <- character(0)
-  params <- character(0)
-  return_value <- character(0)
-  example <- character(0)
+add_tools_extract_documentation <- function(func, name = NULL) {
+  stopifnot(
+    is.function(func),
+    is.null(name) || (is.character(name) & length(name) == 1)
+  )
 
+  docs <- list()
+  if (is.null(name))
+    name <- deparse(substitute(func))
 
   # Convert the function to a character string
   func_text <- utils::capture.output(print(func))
   # Find documentation lines
   doc_lines <- grep("^\\s*#'", func_text, value = TRUE)
+
   if (length(doc_lines) > 0) {
-    # Extract parameters, return values, and examples using the generic function
-    name <- add_tools_extract_documentation_section(doc_lines, "llm_tool::name")
-    description <- add_tools_extract_documentation_section(doc_lines, "llm_tool::description")
-    parameters <- add_tools_extract_documentation_section(doc_lines, "llm_tool::param")
-    return_value <- add_tools_extract_documentation_section(doc_lines, "llm_tool::return")
-    example <- add_tools_extract_documentation_section(doc_lines, "llm_tool::example")
+    # Extract inline documentation from the function
+    docs$description <- add_tools_extract_llm_documentation_section(doc_lines, "llm_tool::description")
+    docs$parameters <- add_tools_extract_llm_documentation_section(doc_lines, "llm_tool::param")
+    docs$return_value <- add_tools_extract_llm_documentation_section(doc_lines, "llm_tool::return")
+    docs$example <- add_tools_extract_llm_documentation_section(doc_lines, "llm_tool::example")
   } else {
-    # Custom docstring documentation not found, so let's attempt to
-    #   extract from a helpfile if it exists for this function
-
-    # Get the function name
-    name <- deparse(substitute(func))
-
-    # Get the package name if the function is from a package
-    if (grepl("::", name)) {
-      # Extract function name and package name
-      func_name <- gsub(".*::", "", name)
-      package_name <- gsub("::.*", "", name)
-    } else {
-      # Get the package name from the environment of the function
-      func <- get(name, mode = "function")
-      package_env <- environment(func)
-      package_name <- environmentName(package_env)
-    }
-
-    # Get the function's help file
-    help_file <- utils::help(name, package = as.character(package_name))
-
-    if (length(help_file) == 0) {
-      # No help file found, return empty strings
-      warning(paste0(
-        "No documentation found for function '", name,
-        "'. Please add docstring-like documentation to the function",
-        " (see 'add_tools_extract_documentation()' for details)"
-      ))
-
-      return(list(
-        name = name,
-        description = description,
-        parameters = parameters,
-        return_value = return_value,
-        example = example
-      ))
-    }
-
-    # Extract the text from the help file
-    help_text <- tools:::Rd2txt(utils:::.getHelpFile(as.character(help_file))) |>
-      capture.output()
-    # help_text |> cat()
-    # help_text
-
-    # Function to dynamically parse help text
-    parse_help_text <- function(help_text) {
-      # Helper function to remove overstruck sequences
-      remove_overstrike <- function(text) {
-        repeat {
-          # Replace overstruck sequences
-          new_text <- gsub("(.)(\\x08)(.)", "\\3", text, perl = TRUE)
-          if (identical(new_text, text)) break
-          text <- new_text
-        }
-        return(text)
-      }
-
-      # Clean up and remove formatting artifacts from all lines
-      clean_text <- remove_overstrike(help_text)
-      clean_text <- gsub("\\\\b", "", clean_text) # Remove remaining `\b` escape sequences
-      clean_text <- trimws(clean_text) # Remove leading/trailing whitespace
-
-      # Extract the first non-empty line as the title
-      title <- clean_text[nzchar(clean_text)][1]
-      title_index <- which(clean_text == title)[1]
-      clean_text <- clean_text[-title_index] # Remove the title line
-
-      # Find headers dynamically by looking for lines that match header pattern
-      header_pattern <- "^[[:space:]]*[[:alpha:][:space:]\\(\\)]+:\\s*$"
-      header_indices <- grep(header_pattern, clean_text)
-      headers <- clean_text[header_indices]
-      headers <- gsub(":", "", headers) # Remove colon for easier matching
-      headers <- trimws(headers)
-
-      # Initialize result list
-      parsed_result <- list(Title = title)
-
-      # Loop through headers and extract content
-      for (i in seq_along(headers)) {
-        current_header <- headers[i]
-        current_start <- header_indices[i]
-        next_start <- ifelse(i < length(header_indices),
-                             header_indices[i + 1] - 1,
-                             length(clean_text))
-
-        # Extract content for the current section
-        section_content <- clean_text[(current_start + 1):next_start]
-        # Remove empty lines
-        section_content <- section_content[nzchar(section_content)]
-
-        # For "Arguments" section, process differently
-        if (current_header == "Arguments") {
-          parsed_result[["Arguments"]] <- section_content
-        } else {
-          # For other sections, join the lines
-          section_text <- paste(section_content, collapse = "\n")
-          parsed_result[[current_header]] <- section_text
-        }
-      }
-
-      # Process Arguments section to extract argument names and descriptions
-      if ("Arguments" %in% names(parsed_result)) {
-        args_content <- parsed_result[["Arguments"]]
-        args_list <- list()
-        arg_name <- NULL
-        arg_desc_lines <- c()
-
-        for (line in args_content) {
-          # Check if the line is an argument name
-          arg_line_pattern <- "^\\s*([a-zA-Z0-9_\\.]+):\\s*(.*)$"
-          matches <- regexec(arg_line_pattern, line)
-          match <- regmatches(line, matches)[[1]]
-
-          if (length(match) >= 2 && nzchar(match[2])) {
-            # Save previous argument description if exists
-            if (!is.null(arg_name)) {
-              arg_desc <- paste(arg_desc_lines, collapse = " ")
-              arg_desc <- trimws(arg_desc)
-              args_list[[arg_name]] <- arg_desc
-            }
-            # Start new argument
-            arg_name <- match[2]
-            arg_desc_lines <- if (nzchar(match[3])) match[3] else c()
-          } else if (!is.null(arg_name)) {
-            # Continuation of argument description
-            arg_desc_lines <- c(arg_desc_lines, line)
-          }
-        }
-        # Save the last argument description
-        if (!is.null(arg_name)) {
-          arg_desc <- paste(arg_desc_lines, collapse = " ")
-          arg_desc <- trimws(arg_desc)
-          args_list[[arg_name]] <- arg_desc
-        }
-        parsed_result[["Arguments"]] <- args_list
-      }
-
-      # Return parsed result
-      return(parsed_result)
-    }
-
-    # Test the function with the provided help_text
-    parsed_help <- parse_help_text(help_text)
-    # parsed_help
-
-    description <- paste0(parsed_help$Title, ": ", parsed_help$Description)
-    parameters <- parsed_help$Arguments
-    return_value <- parsed_help$Value
-    example <- parsed_help$Examples
+    # Docstring documentation not found,
+    #   so let's try to extract from the function's help file
+    docs <- add_tools_extract_helpfile_documentation(name)
   }
 
   # Convert example to how LLM should call it
-  example <- gsub("\\b(\\w+)\\(", "FUNCTION[\\1](", example)
-  # example <- gsub("(\"[^\"]*\")", "\\1", converted_example) # Keep the quotes around the arguments
+  docs$example <- gsub("\\b(\\w+)\\(", "FUNCTION[\\1](", docs$example)
 
-  # Return the results as a list
-  return(list(
-    name = name,
-    description = description,
-    parameters = parameters,
-    return_value = return_value,
-    example = example
-  ))
+  for (name in names(docs)) {
+    if (length(docs[[name]]) == 0) {
+      docs[[name]] <- NULL
+    }
+  }
+
+  docs
 }
 
 
@@ -375,7 +233,8 @@ add_tools_extract_documentation <- function(func) {
 #' @return The extracted section as a character string or list
 #'
 #' @noRd
-add_tools_extract_documentation_section <- function(doc_lines, section_keyword) {
+#' @keywords internal
+add_tools_extract_llm_documentation_section <- function(doc_lines, section_keyword) {
   # Identify lines that contain the section keyword
   section_starts <- grep(paste0("^\\s*#'\\s*", section_keyword), doc_lines)
 
@@ -444,3 +303,170 @@ add_tools_extract_documentation_section <- function(doc_lines, section_keyword) 
   return(trimmed_section)
 }
 
+
+
+#' Extract documentation from a function's help file
+#'
+#' This function extracts documentation from a function's help file. It is used
+#' as a fallback when the function does not contain docstring-like documentation.
+#'
+#'
+#' @param name A name of a function
+#'
+#' @return A list with the following elements:
+#' - name: The name of the function
+#' - description: A description of the function
+#' - parameters: A named list of parameters with descriptions
+#' - return_value: A description of the return value
+#' - example: An example of how the LLM should call the function. This is
+#'  not extracted from the help file, but is an empty character string
+#'  (because examples tend to be more complex and contain other functions,
+#'  which may confuse the LLM)
+#'
+#' @noRd
+#' @keywords internal
+add_tools_extract_helpfile_documentation <- function(name) {
+  # Get the package name if the function is from a package
+  if (grepl("::", name)) {
+    # Extract function name and package name
+    func_name <- gsub(".*::", "", name)
+    package_name <- gsub("::.*", "", name)
+  } else {
+    # Get the package name from the environment of the function
+    func <- get(name, mode = "function", envir = base::globalenv())
+    package_env <- environment(func)
+    package_name <- environmentName(package_env)
+  }
+
+  # Get the function's help file
+  help_file <- utils::help(name, package = as.character(package_name))
+
+  if (length(help_file) == 0) {
+    # No help file found
+    # Argument names without description:
+    args <- formals(func)
+    for (x in names(args))
+      args[[x]] <- ""
+
+    return(list(
+      name = name,
+      description = character(0),
+      parameters = args,
+      return_value = character(0),
+      example = character(0)
+    ))
+  }
+
+  # Extract the text from the help file
+  help_text <- tools:::Rd2txt(utils:::.getHelpFile(as.character(help_file))) |>
+    capture.output()
+  # help_text |> cat()
+  # help_text
+
+  # Function to dynamically parse help text
+  parse_help_text <- function(help_text) {
+    # Helper function to remove overstruck sequences
+    remove_overstrike <- function(text) {
+      repeat {
+        # Replace overstruck sequences
+        new_text <- gsub("(.)(\\x08)(.)", "\\3", text, perl = TRUE)
+        if (identical(new_text, text)) break
+        text <- new_text
+      }
+      return(text)
+    }
+
+    # Clean up and remove formatting artifacts from all lines
+    clean_text <- remove_overstrike(help_text)
+    clean_text <- gsub("\\\\b", "", clean_text) # Remove remaining `\b` escape sequences
+    clean_text <- trimws(clean_text) # Remove leading/trailing whitespace
+
+    # Extract the first non-empty line as the title
+    title <- clean_text[nzchar(clean_text)][1]
+    title_index <- which(clean_text == title)[1]
+    clean_text <- clean_text[-title_index] # Remove the title line
+
+    # Find headers dynamically by looking for lines that match header pattern
+    header_pattern <- "^[[:space:]]*[[:alpha:][:space:]\\(\\)]+:\\s*$"
+    header_indices <- grep(header_pattern, clean_text)
+    headers <- clean_text[header_indices]
+    headers <- gsub(":", "", headers) # Remove colon for easier matching
+    headers <- trimws(headers)
+
+    # Initialize result list
+    parsed_result <- list(Title = title)
+
+    # Loop through headers and extract content
+    for (i in seq_along(headers)) {
+      current_header <- headers[i]
+      current_start <- header_indices[i]
+      next_start <- ifelse(i < length(header_indices),
+                           header_indices[i + 1] - 1,
+                           length(clean_text))
+
+      # Extract content for the current section
+      section_content <- clean_text[(current_start + 1):next_start]
+      # Remove empty lines
+      section_content <- section_content[nzchar(section_content)]
+
+      # For "Arguments" section, process differently
+      if (current_header == "Arguments") {
+        parsed_result[["Arguments"]] <- section_content
+      } else {
+        # For other sections, join the lines
+        section_text <- paste(section_content, collapse = "\n")
+        parsed_result[[current_header]] <- section_text
+      }
+    }
+
+    # Process Arguments section to extract argument names and descriptions
+    if ("Arguments" %in% names(parsed_result)) {
+      args_content <- parsed_result[["Arguments"]]
+      args_list <- list()
+      arg_name <- NULL
+      arg_desc_lines <- c()
+
+      for (line in args_content) {
+        # Check if the line is an argument name
+        arg_line_pattern <- "^\\s*([a-zA-Z0-9_\\.]+):\\s*(.*)$"
+        matches <- regexec(arg_line_pattern, line)
+        match <- regmatches(line, matches)[[1]]
+
+        if (length(match) >= 2 && nzchar(match[2])) {
+          # Save previous argument description if exists
+          if (!is.null(arg_name)) {
+            arg_desc <- paste(arg_desc_lines, collapse = " ")
+            arg_desc <- trimws(arg_desc)
+            args_list[[arg_name]] <- arg_desc
+          }
+          # Start new argument
+          arg_name <- match[2]
+          arg_desc_lines <- if (nzchar(match[3])) match[3] else c()
+        } else if (!is.null(arg_name)) {
+          # Continuation of argument description
+          arg_desc_lines <- c(arg_desc_lines, line)
+        }
+      }
+      # Save the last argument description
+      if (!is.null(arg_name)) {
+        arg_desc <- paste(arg_desc_lines, collapse = " ")
+        arg_desc <- trimws(arg_desc)
+        args_list[[arg_name]] <- arg_desc
+      }
+      parsed_result[["Arguments"]] <- args_list
+    }
+
+    # Return parsed result
+    return(parsed_result)
+  }
+
+  parsed_help <- parse_help_text(help_text)
+
+  return(list(
+    name = name,
+    description = paste0(parsed_help$Title, ": ", parsed_help$Description),
+    parameters = parsed_help$Arguments,
+    return_value = parsed_help$Value,
+    example = character(0)
+  ))
+}
