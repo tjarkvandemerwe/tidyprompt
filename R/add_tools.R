@@ -60,33 +60,45 @@ add_tools <- function(prompt, tool_functions = list()) {
       tool_function <- tool_functions[[tool_fn_name]]
       docs <- add_tools_extract_documentation(tool_function, tool_fn_name)
 
-      fn_llm_text <- glue::glue("  function name: {tool_fn_name}")
+      fn_llm_text <- glue::glue(
+        "  function name: {tool_fn_name}", .trim = FALSE
+      )
       if (length(docs$description) > 0)
-        fn_llm_text <- glue::glue("{fn_llm_text}\n  description: {docs$description}")
+        fn_llm_text <- glue::glue(
+          "{fn_llm_text}\n  description: {docs$description}", .trim = FALSE
+        )
       if (length(docs$parameters) > 0) {
         fn_llm_text <- glue::glue(
-          "{fn_llm_text}\n  arguments:",
+          "{fn_llm_text}\n  arguments:\n",
           paste(
             sapply(names(docs$parameters), function(param_name) {
               param_description <- docs$parameters[[param_name]]
-              glue::glue("    - {param_name}: {param_description}")
+              glue::glue("    - {param_name}: {param_description}", .trim = FALSE)
             }),
             collapse = "\n"
-          )
+          ),
+          .trim = FALSE
         )
       }
       if (length(docs$return_value) > 0)
-        fn_llm_text <- glue::glue("{fn_llm_text}\n  return value: {docs$return_value}")
+        fn_llm_text <- glue::glue(
+          "{fn_llm_text}\n  return value: {docs$return_value}", .trim = FALSE
+        )
       if (length(docs$example) > 0)
-        fn_llm_text <- glue::glue("{fn_llm_text}\n  example usage: {docs$example}")
+        fn_llm_text <- glue::glue(
+          "{fn_llm_text}\n  example usage: {docs$example}", .trim = FALSE
+        )
 
-      new_prompt <- glue::glue("{new_prompt}\n\n{fn_llm_text}")
+      new_prompt <- glue::glue(
+        "{new_prompt}\n\n{fn_llm_text}", .trim = FALSE
+      )
     }
 
     new_prompt <- glue::glue(
       "{new_prompt}
 
-        After you call a function, wait until you receive more information."
+        After you call a function, wait until you receive more information.",
+      .trim = FALSE
     )
 
     return(new_prompt)
