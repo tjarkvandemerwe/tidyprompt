@@ -60,7 +60,11 @@ answer_by_chain_of_thought <- function(
     return(new_prompt)
   }
 
-  extraction_fn <- extraction_fn_finish
+  extraction_fn <- function(llm_response) {
+    if (!extract_from_finish_brackets)
+      return(llm_response)
+    extraction_fn_finish(llm_response)
+  }
 
   prompt_wrap(prompt, modify_fn, extraction_fn, type = "mode")
 }

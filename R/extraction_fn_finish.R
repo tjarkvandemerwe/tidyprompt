@@ -14,10 +14,6 @@
 #' @noRd
 #' @keywords internal
 extraction_fn_finish <- function(llm_response) {
-  if (!extract_from_finish_brackets) {
-    return(llm_response)
-  }
-
   # First attempt: Extract text between FINISH[...]
   extracted_response <- stringr::str_extract(
     llm_response,
@@ -43,7 +39,8 @@ extraction_fn_finish <- function(llm_response) {
   # Final check for successful extraction
   if (
     is.na(extracted_response) ||
-    tolower(trimws(extracted_response)) %in% c("answer", "final answer")
+    tolower(trimws(extracted_response)) %in% c("answer", "final answer") ||
+    extracted_response |> stringr::str_trim() == ""
   ) {
     return(llm_feedback(glue::glue(
       "Error, could not parse your final answer.\n",
