@@ -8,12 +8,15 @@
 #' of a 'FINISH' variant.
 #'
 #' @param llm_response Response of a large language model
+#' @param lenience Whether lenience should be applied when extracting;
+#' when TRUE, extraction fallback method will be to extract anything after
+#' the last occurence of a variation on 'FINISH'
 #'
 #' @return Extracted final answer
 #'
 #' @noRd
 #' @keywords internal
-extraction_fn_finish <- function(llm_response) {
+extraction_fn_finish <- function(llm_response, lenience = TRUE) {
   # First attempt: Extract text between FINISH[...]
   extracted_response <- stringr::str_extract(
     llm_response,
@@ -21,7 +24,7 @@ extraction_fn_finish <- function(llm_response) {
   )
 
   # If extraction fails, try alternative method
-  if (is.na(extracted_response)) {
+  if (is.na(extracted_response) & lenience) {
     # Use regex to match 'FINISH' variants and capture text after any punctuation
     pattern <- "(?si)\\bFINISH\\w*\\W*(.*)"
     matches <- stringr::str_match_all(llm_response, pattern)[[1]]
