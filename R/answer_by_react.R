@@ -62,25 +62,7 @@ answer_by_react <- function(
     return(new_prompt)
   }
 
-  extraction_fn <- function(llm_response) {
-    if (!extract_from_finish_brackets) {
-      return(llm_response)
-    }
-    extracted_response <- stringr::str_extract(llm_response, "(?si)(?<=FINISH\\[).+?(?=\\])")
-
-    if (
-      is.na(extracted_response) ||
-      tolower(extracted_response) == "answer" ||
-      tolower(extracted_response) == "final answer"
-    ) {
-      return(llm_feedback(glue::glue(
-        "Error, could not parse your final answer.\n",
-        "Please type: 'FINISH[<put here your final answer to the original prompt>]'"
-      )))
-    }
-
-    return(extracted_response)
-  }
+  extraction_fn <- extraction_fn_finish
 
   prompt_wrap(prompt, modify_fn, extraction_fn, type = "mode")
 }
