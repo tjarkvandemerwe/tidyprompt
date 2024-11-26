@@ -57,7 +57,7 @@ vignette.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">add_tools_extract_documentation</span><span class="op">(</span><span class="va">func</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">add_tools_extract_documentation</span><span class="op">(</span><span class="va">func</span>, name <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -68,6 +68,10 @@ vignette.</p>
 <dd><p>A function object which has internal, docstring-like, roxygen-like documentation,
 with the 'llm_tool::' tags: 'name', 'description', 'param', 'return', and 'example'
 (e.g., llm_tool::name my_function_name).</p></dd>
+
+
+<dt id="arg-name">name<a class="anchor" aria-label="anchor" href="#arg-name"></a></dt>
+<dd><p>The name of the function (optional)</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -126,28 +130,13 @@ syntax).</p>
 <span class="r-in"><span>  <span class="op">}</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Attempt to extract documentation as it is extracted by add_tools():</span></span></span>
-<span class="r-in"><span><span class="fu">add_tools_extract_documentation</span><span class="op">(</span><span class="va">temperature_in_location</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $name</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> character(0)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $description</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> character(0)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $parameters</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> character(0)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $return_value</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> character(0)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $example</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> character(0)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">prompt</span> <span class="op">&lt;-</span> <span class="st">"Hi, what is the weather in Enschede? Give me Celcius degrees"</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="add_tools.html">add_tools</a></span><span class="op">(</span>tool_functions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">temperature_in_location</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span>  <span class="co"># Attempt to extract documentation as it is extracted by add_tools():</span></span></span>
+<span class="r-in"><span>  <span class="fu">add_tools_extract_documentation</span><span class="op">(</span><span class="va">temperature_in_location</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="va">prompt</span> <span class="op">&lt;-</span> <span class="st">"Hi, what is the weather in Enschede? Give me Celcius degrees"</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="add_tools.html">add_tools</a></span><span class="op">(</span>tool_functions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">temperature_in_location</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="va">prompt</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="fu"><a href="llm_provider_ollama.html">llm_provider_ollama</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="co"># --- Sending request to LLM provider (llama3.1:8b): ---</span></span></span>
