@@ -46,7 +46,8 @@
 <span>  <span class="va">prompt</span>,</span>
 <span>  item_name <span class="op">=</span> <span class="st">"item"</span>,</span>
 <span>  item_explanation <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  n_unique_items <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  n_unique_items <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  list_mode <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"comma"</span>, <span class="st">"bullet"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -70,6 +71,13 @@ appended after the list instruction</p></dd>
 
 <dt id="arg-n-unique-items">n_unique_items<a class="anchor" aria-label="anchor" href="#arg-n-unique-items"></a></dt>
 <dd><p>(optional) Number of unique items required in the list</p></dd>
+
+
+<dt id="arg-list-mode">list_mode<a class="anchor" aria-label="anchor" href="#arg-list-mode"></a></dt>
+<dd><p>(optional) Mode of the list. Either "comma" or "bullet".
+"comma" mode expects items to be listed with a number and a period before.
+"bullet" mode expects items to be listed with "–" before each item.
+"comma" may work better for smaller large language models</p></dd>
 
 </dl></div>
     <div class="section level2">
