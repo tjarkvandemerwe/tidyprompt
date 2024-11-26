@@ -132,8 +132,11 @@ add_tools <- function(prompt, tool_functions = list()) {
     result <- tryCatch({
       do.call(tool_function, as.list(arguments_list))
     }, error = function(e) {
-      glue::glue("Error in {print(e$call) |> capture.output()}: {e$message}")
+      glue::glue("Error in {print(e$call) |> utils::capture.output()}: {e$message}")
     })
+
+    if (length(result) > 0)
+      result <- paste(result, collapse = ", ")
 
     # Create some context around the result
     argument_names <- names(formals(tool_function))
@@ -370,8 +373,8 @@ add_tools_extract_helpfile_documentation <- function(name) {
   }
 
   # Extract the text from the help file
-  help_text <- tools:::Rd2txt(utils:::.getHelpFile(as.character(help_file))) |>
-    capture.output()
+  help_text <- tools::Rd2txt(get_help_file(as.character(help_file))) |>
+    utils::capture.output()
   # help_text |> cat()
   # help_text
 
@@ -481,4 +484,79 @@ add_tools_extract_helpfile_documentation <- function(name) {
     return_value = parsed_help$Value,
     example = character(0)
   ))
+}
+
+
+
+#' Extract help file function
+#'
+#' @param file String containing name of file
+#'
+#' @noRd
+#' @keywords internal
+#'
+#' @source Function adapted from the CRAN package
+#' \href{https://cran.r-project.org/web/packages/devtoolbox/index.html}{'devtoolbox'},
+#' which based this function on the 'utils:::.getHelpFile' function
+get_help_file <- function(file){
+  path <- dirname(file)
+  dirpath <- dirname(path)
+
+  if (!file.exists(dirpath))
+    stop(
+      gettextf("invalid %s argument", sQuote("file")),
+      domain = NA
+    )
+
+  pkgname <- basename(dirpath)
+  RdDB <- file.path(path, pkgname)
+
+  if (!file.exists(paste0(RdDB, ".rdx")))
+    stop(
+      gettextf(
+        "package %s exists but was not installed under R >= 2.10.0 so help cannot be accessed",
+        sQuote(pkgname)
+      ),
+      domain = NA
+    )
+
+  # internal function from tools
+  fetchRdDB <- function(filebase, key = NULL) {
+    fun <- function(db) {
+      vals <- db$vals
+      vars <- db$vars
+      datafile <- db$datafile
+      compressed <- db$compressed
+      envhook <- db$envhook
+
+      fetch <- function(key){
+        lazyLoadDBfetch(vals[key][[1L]], datafile, compressed, envhook)
+      }
+
+      if (length(key)) {
+        if (!key %in% vars)
+          stop(
+            gettextf(
+              "No help on %s found in RdDB %s", sQuote(key), sQuote(filebase)
+            ),
+            domain = NA
+          )
+
+        fetch(key)
+      }
+      else {
+        res <- lapply(vars, fetch)
+        names(res) <- vars
+        res
+      }
+    }
+
+    res <- lazyLoadDBexec(filebase, fun)
+
+    if (length(key))
+      res
+    else invisible(res)
+  }
+
+  fetchRdDB(RdDB, basename(file))
 }

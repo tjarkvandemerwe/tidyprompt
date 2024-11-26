@@ -100,7 +100,7 @@ testthat::test_that("send prompt with tool added", {
   result <- "Hi, what is the weather temperature in Enschede?" |>
     add_text("I want to know the Celcius degrees.") |>
     answer_as_integer() |>
-    add_tools(temperature_in_location) |>
+    add_tools(list(temperature_in_location)) |>
     send_prompt(llm_provider_fake())
 
   is_whole_number <- function(x) {

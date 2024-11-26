@@ -22,46 +22,64 @@ answer_as_list <- function(
     prompt,
     item_name = "item",
     item_explanation = NULL,
-    n_unique_items = NULL
+    n_unique_items = NULL,
+    list_mode = c("bullet", "comma")
 ) {
   prompt <- tidyprompt(prompt)
-
-  list_instruction <- glue::glue(
-    "Respond with a list, like so:\n",
-    "  -- <<{item_name} 1>>",
-    .trim = FALSE
+  stopifnot(
+    is.character(item_name), length(item_name) == 1,
+    is.null(item_explanation) || (is.character(item_explanation) & lenght(item_explanation) == 1),
+    is.null(n_unique_items) || (is.numeric(n_unique_items) & n_unique_items > 0)
   )
+  list_mode <- match.arg(list_mode)
 
-  if (!is.null(n_unique_items)) {
-    if (!is.numeric(n_unique_items) || n_unique_items < 1) {
-      stop("n_unique_items must be a positive integer")
-    }
-    if (n_unique_items != floor(n_unique_items)) {
-      stop("n_unique_items must be a whole number")
-    }
-  }
-
-  if (is.null(n_unique_items) || n_unique_items > 1) {
+  # Adjust list instruction based on list_mode
+  if (list_mode == "bullet") {
     list_instruction <- glue::glue(
-      "{list_instruction}\n",
-      "  -- <<{item_name} 2>>",
+      "Respond with a list, like so:\n",
+      "  -- <<{item_name} 1>>",
       .trim = FALSE
     )
-  }
 
-  if (is.null(n_unique_items) || n_unique_items > 2) {
+    if (is.null(n_unique_items) || n_unique_items > 1) {
+      list_instruction <- glue::glue(
+        "{list_instruction}\n",
+        "  -- <<{item_name} 2>>",
+        .trim = FALSE
+      )
+    }
+
+    if (is.null(n_unique_items) || n_unique_items > 2) {
+      list_instruction <- glue::glue(
+        "{list_instruction}\n",
+        "  etc.",
+        .trim = FALSE
+      )
+    }
+  } else if (list_mode == "comma") {
     list_instruction <- glue::glue(
-      "{list_instruction}\n",
-      "  etc.",
+      "Respond with a list, like so:\n",
+      "  1. <<{item_name}>>",
       .trim = FALSE
     )
+
+    if (is.null(n_unique_items) || n_unique_items > 1) {
+      list_instruction <- glue::glue(
+        "{list_instruction}, 2. <<{item_name}>>",
+        .trim = FALSE
+      )
+    }
+
+    if (is.null(n_unique_items) || n_unique_items > 2) {
+      list_instruction <- glue::glue(
+        "{list_instruction}, etc.",
+        .trim = FALSE
+      )
+    }
   }
 
   if (!is.null(n_unique_items)) {
-    item_or_items <- "items"
-    if (n_unique_items == 1) {
-      item_or_items <- "item"
-    }
+    item_or_items <- ifelse(n_unique_items == 1, "item", "items")
 
     list_instruction <- glue::glue(
       "{list_instruction}\n",
@@ -71,13 +89,6 @@ answer_as_list <- function(
   }
 
   if (!is.null(item_explanation)) {
-    if (!is.character(item_explanation)) {
-      stop("item_explanation must be a string")
-    }
-    if (length(item_explanation) > 1) {
-      stop("item_explanation must be a single string")
-    }
-
     list_instruction <- glue::glue(
       "{list_instruction}\n\n",
       "{item_explanation}",
@@ -96,28 +107,56 @@ answer_as_list <- function(
   extraction_fn <- function(response) {
     if (!is.character(response)) {
       stop(paste0(
-        "Response to extract a list from must be a string",
-        " make sure that you do not apply any prompt wraps which make the",
+        "Response to extract a list from must be a string.",
+        " Make sure that you do not apply any prompt wraps which make the",
         " response unsuitable for list extraction."
       ))
     }
 
-    # Use str_extract_all to find all instances of '--' followed by multiple words
-    items <- stringr::str_extract_all(response, "--\\s*([^\\-\\n]+)")[[1]]
+    if (list_mode == "bullet") {
+      # Existing bullet mode extraction
+      items <- stringr::str_extract_all(response, "--\\s*([^\\-\\n]+)")[[1]]
+      if (length(items) == 0) {
+        return(llm_feedback(glue::glue(
+          "Could not parse any listed items from your response.",
+          "{list_instruction}",
+          .trim = FALSE
+        )))
+      }
+      items <- stringr::str_trim(stringr::str_remove_all(items, "--\\s*"))
+    } else if (list_mode == "comma") {
+      # Improved comma mode extraction
 
-    if (length(items) == 0) {
-      return(llm_feedback(glue::glue(
-        "Could not parse any listed items from your response.",
-        "{list_instruction}",
-        .trim = FALSE
-      )))
+      # Split the response by commas
+      items <- unlist(strsplit(response, ","))
+      if (length(items) == 0) {
+        return(llm_feedback(glue::glue(
+          "Could not parse any listed items from your response.",
+          "{list_instruction}",
+          .trim = FALSE
+        )))
+      }
+
+      # Trim whitespace
+      items <- stringr::str_trim(items)
+
+      # Remove any leading numbering (e.g., "1. ", "2. ")
+      items <- stringr::str_replace(items, "^\\d+\\.\\s*", "")
+
+      # Remove empty strings
+      items <- items[items != ""]
+
+      if (length(items) == 0) {
+        return(llm_feedback(glue::glue(
+          "Could not parse any valid items from your response.",
+          "{list_instruction}",
+          .trim = FALSE
+        )))
+      }
     }
 
-    # Make unique
+    # Make items unique
     items <- unique(items)
-
-    # Remove '--' prefix and trim whitespace
-    items <- stringr::str_trim(stringr::str_remove_all(items, "--\\s*"))
 
     if (!is.null(n_unique_items) && length(items) != n_unique_items) {
       return(llm_feedback(glue::glue(
@@ -133,3 +172,4 @@ answer_as_list <- function(
 
   prompt_wrap(prompt, modify_fn, extraction_fn)
 }
+

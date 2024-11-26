@@ -32,13 +32,13 @@ temperature_in_location <- function(
   }
 }
 
-# Attempt to extract documentation as it is extracted by add_tools():
-add_tools_extract_documentation(temperature_in_location)
-
-prompt <- "Hi, what is the weather in Enschede? Give me Celcius degrees" |>
-  add_tools(tool_functions = list(temperature_in_location))
-
 \dontrun{
+  # Attempt to extract documentation as it is extracted by add_tools():
+  add_tools_extract_documentation(temperature_in_location)
+
+  prompt <- "Hi, what is the weather in Enschede? Give me Celcius degrees" |>
+    add_tools(tool_functions = list(temperature_in_location))
+
   prompt |>
     send_prompt(llm_provider_ollama())
   # --- Sending request to LLM provider (llama3.1:8b): ---

@@ -4,12 +4,14 @@
 \alias{add_tools_extract_documentation}
 \title{Extract docstring-documentation from a function}
 \usage{
-add_tools_extract_documentation(func)
+add_tools_extract_documentation(func, name = NULL)
 }
 \arguments{
 \item{func}{A function object which has internal, docstring-like, roxygen-like documentation,
 with the 'llm_tool::' tags: 'name', 'description', 'param', 'return', and 'example'
 (e.g., llm_tool::name my_function_name).}
+
+\item{name}{The name of the function (optional)}
 }
 \value{
 A list with the following elements:
@@ -69,13 +71,13 @@ temperature_in_location <- function(
   }
 }
 
-# Attempt to extract documentation as it is extracted by add_tools():
-add_tools_extract_documentation(temperature_in_location)
-
-prompt <- "Hi, what is the weather in Enschede? Give me Celcius degrees" |>
-  add_tools(tool_functions = list(temperature_in_location))
-
 \dontrun{
+  # Attempt to extract documentation as it is extracted by add_tools():
+  add_tools_extract_documentation(temperature_in_location)
+
+  prompt <- "Hi, what is the weather in Enschede? Give me Celcius degrees" |>
+    add_tools(tool_functions = list(temperature_in_location))
+
   prompt |>
     send_prompt(llm_provider_ollama())
   # --- Sending request to LLM provider (llama3.1:8b): ---
