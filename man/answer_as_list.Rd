@@ -8,7 +8,8 @@ answer_as_list(
   prompt,
   item_name = "item",
   item_explanation = NULL,
-  n_unique_items = NULL
+  n_unique_items = NULL,
+  list_mode = c("bullet", "comma")
 )
 }
 \arguments{
