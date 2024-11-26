@@ -6,6 +6,10 @@
 #' should be. Item explanation should be a single string. It will be
 #' appended after the list instruction
 #' @param n_unique_items (optional) Number of unique items required in the list
+#' @param list_mode (optional) Mode of the list. Either "comma" or "bullet".
+#' "comma" mode expects items to be listed with a number and a period before.
+#' "bullet" mode expects items to be listed with "--" before each item.
+#' "comma" may work better for smaller large language models
 #'
 #' @return A [tidyprompt()] with an added [prompt_wrap()] which
 #' will ensure that the LLM response is a list of items
@@ -23,12 +27,12 @@ answer_as_list <- function(
     item_name = "item",
     item_explanation = NULL,
     n_unique_items = NULL,
-    list_mode = c("bullet", "comma")
+    list_mode = c("comma", "bullet")
 ) {
   prompt <- tidyprompt(prompt)
   stopifnot(
     is.character(item_name), length(item_name) == 1,
-    is.null(item_explanation) || (is.character(item_explanation) & lenght(item_explanation) == 1),
+    is.null(item_explanation) || (is.character(item_explanation) & length(item_explanation) == 1),
     is.null(n_unique_items) || (is.numeric(n_unique_items) & n_unique_items > 0)
   )
   list_mode <- match.arg(list_mode)
