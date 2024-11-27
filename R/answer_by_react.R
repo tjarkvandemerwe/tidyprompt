@@ -14,7 +14,13 @@
 #'
 #' @param prompt A single string or a [tidyprompt()] object
 #' @param extract_from_finish_brackets A logical indicating whether the final answer
-#' should be extracted from the text inside the "FINISH[...]" brackets.
+#' should be extracted from the text inside the "FINISH[...]" brackets
+#' @param extraction_lenience A logical indcating whether the extraction function should be lenient.
+#' If TRUE, the extraction function will attempt to extract the final answer
+#' even if it cannot be extracted from within the brackets, by extracting
+#' everything after the final occurence of 'FINISH' (if present). This may
+#' be useful for smaller LLMs which may not follow the output format
+#' as strictly
 #'
 #' @return A [tidyprompt()] with an added [prompt_wrap()] which will ensure
 #' that the LLM follows the ReAct mode in answering the prompt
@@ -34,7 +40,8 @@
 #' @family answer_by_prompt_wraps
 answer_by_react <- function(
     prompt,
-    extract_from_finish_brackets = TRUE
+    extract_from_finish_brackets = TRUE,
+    extraction_lenience = TRUE
 ) {
 
   # Define modification/extraction/validation functions:
@@ -65,7 +72,7 @@ answer_by_react <- function(
   extraction_fn <- function(llm_response) {
     if (!extract_from_finish_brackets)
       return(llm_response)
-    extraction_fn_finish(llm_response)
+    extraction_fn_finish(llm_response, extraction_lenience)
   }
 
   prompt_wrap(prompt, modify_fn, extraction_fn, type = "mode")

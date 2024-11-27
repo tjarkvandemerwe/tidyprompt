@@ -4,13 +4,24 @@
 \alias{answer_by_chain_of_thought}
 \title{Set chain of thought mode for a prompt}
 \usage{
-answer_by_chain_of_thought(prompt, extract_from_finish_brackets = TRUE)
+answer_by_chain_of_thought(
+  prompt,
+  extract_from_finish_brackets = TRUE,
+  extraction_lenience = TRUE
+)
 }
 \arguments{
 \item{prompt}{A single string or a \code{\link[=tidyprompt]{tidyprompt()}} object}
 
 \item{extract_from_finish_brackets}{A logical indicating whether the final answer
 should be extracted from the text inside the "FINISH\link{...}" brackets.}
+
+\item{extraction_lenience}{A logical indcating whether the extraction function should be lenient.
+If TRUE, the extraction function will attempt to extract the final answer
+even if it cannot be extracted from within the brackets, by extracting
+everything after the final occurence of 'FINISH' (if present). This may
+be useful for smaller LLMs which may not follow the output format
+as strictly}
 }
 \value{
 A \code{\link[=tidyprompt]{tidyprompt()}} with an added \code{\link[=prompt_wrap]{prompt_wrap()}} which will ensure
