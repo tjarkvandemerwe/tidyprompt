@@ -49,11 +49,20 @@ add_tools <- function(prompt, tool_functions = list()) {
     new_prompt <- glue::glue(
       "{original_prompt_text}
 
-        If you need more information, you can call functions to help you.
-        To call a function, type:
-          FUNCTION[<function name here>](<argument 1>, <argument 2>, etc...)
+    If you need more information, you can call functions to help you.
+    To call a function, output a JSON object with the following format:
 
-        The following functions are available:"
+    {{
+      \"function\": \"<function name>\",
+      \"arguments\": {{
+        \"<argument_name>\": <argument_value>,
+        ...
+      }}
+    }}
+
+    Make sure to provide valid JSON, and output only the JSON object without any additional text.
+
+    The following functions are available:"
     )
 
     for (tool_fn_name in names(tool_functions)) {
@@ -97,7 +106,7 @@ add_tools <- function(prompt, tool_functions = list()) {
     new_prompt <- glue::glue(
       "{new_prompt}
 
-        After you call a function, wait until you receive more information.",
+    After you call a function, wait until you receive more information.",
       .trim = FALSE
     )
 
@@ -105,43 +114,58 @@ add_tools <- function(prompt, tool_functions = list()) {
   }
 
   extraction_fn <- function(llm_response) {
-    # Check if the response contains a function call
-    function_call <- stringr::str_match(llm_response, "FUNCTION\\[(.*?)\\]\\((.*?)\\)")
+    # Try to extract JSON from the response
+    json_matches <- gregexpr("\\{.*\\}", llm_response, perl = TRUE)
+    if (json_matches[[1]][1] == -1) {
+      # No JSON found
+      return(llm_response)
+    }
 
-    # If no function call is found, return the response
-    if (is.na(function_call[1, 1]) || nrow(function_call) == 0) {
+    # Extract the JSON substring
+    json_str <- regmatches(llm_response, json_matches)[[1]]
+
+    # Try to parse the JSON
+    json_content <- NULL
+    for (js in json_str) {
+      json_content <- tryCatch({
+        jsonlite::fromJSON(js)
+      }, error = function(e) {
+        NULL
+      })
+      if (!is.null(json_content)) {
+        break
+      }
+    }
+
+    # If parsing fails or required keys are missing, return the response
+    if (is.null(json_content) || !"function" %in% names(json_content)) {
       return(llm_response)
     }
 
     # Extract the function name and arguments
-    function_name <- function_call[2]
-    arguments <- function_call[3]
+    function_name <- json_content[["function"]]
+    arguments <- json_content[["arguments"]]
 
-    # Clean up the arguments by removing quotes and splitting them
-    arguments_list <- strsplit(gsub("\"", "", arguments), ",\\s*")[[1]]
-
-    # Find the function in the list of tool functions
+    # Check if the function exists
     tool_function <- tool_functions[[function_name]]
 
-    # If the function is not found, return an error message
     if (is.null(tool_function)) {
       return(llm_feedback(glue::glue("Error: Function '{function_name}' not found.")))
     }
 
-    # Call the tool function with the arguments and capture errors
+    # Call the function with the arguments
     result <- tryCatch({
-      do.call(tool_function, as.list(arguments_list))
+      do.call(tool_function, arguments)
     }, error = function(e) {
-      glue::glue("Error in {print(e$call) |> utils::capture.output()}: {e$message}")
+      glue::glue("Error in {e$message}")
     })
 
     if (length(result) > 0)
       result <- paste(result, collapse = ", ")
 
     # Create some context around the result
-    argument_names <- names(formals(tool_function))
     string_of_named_arguments <-
-      paste(argument_names, arguments_list, sep = " = ") |>
+      paste(names(arguments), arguments, sep = " = ") |>
       paste(collapse = ", ")
 
     result_string <- glue::glue(
@@ -150,9 +174,10 @@ add_tools <- function(prompt, tool_functions = list()) {
       result: {result}"
     )
 
-    # Return the result (or the error feedback)
+    # Return the result
     return(llm_feedback(result_string, tool_result = TRUE))
   }
+
   # Add environment with tool functions as an attribute to the extraction function
   environment_with_tool_functions <- new.env()
   environment_with_tool_functions$tool_functions <- tool_functions
