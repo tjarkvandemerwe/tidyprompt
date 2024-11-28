@@ -5,15 +5,21 @@
 #' prompt will be modified to include information, as well as an
 #' accompanying extraction function to call the functions (handled by
 #' [send_prompt()]). Documentation for the functions is extracted from
-#' the help file (if available), or from docstring-like documentation
-#' within the function itself.
+#' the help file (if available), or from documentation added by
+#' [add_tools_add_documentation()].
+#'
+#' @details Note that this method of function calling is purely text-based.
+#' This makes it suitable for any LLM and any LLM provider. However,
+#' 'native' function calling (where the LLM model provider restricts the
+#' model to special tokens that can be used to call functions) may perform
+#' better in terms of accuracy and efficiency. 'tidyprompt' may support
+#' 'native' function calling in the future
 #'
 #' @param prompt A single string or a [tidyprompt()] object
 #' @param tool_functions An R function or a list of R functions that the LLM can call.
 #' If the function has been documented in a help file (e.g., because it is part of a
 #' package), the documentation will be parsed from the help file. If it is a custom
-#' function, it should contain docstring-like documentation within it (see
-#' [add_tools_extract_documentation()] for details on how to add documentation to a function)
+#' function, documentation should be added with [add_tools_add_documentation()]
 #'
 #' @return A [tidyprompt()] with an added [prompt_wrap()] which
 #' will allow the LLM to call R functions
@@ -22,7 +28,7 @@
 #'
 #' @example inst/examples/add_tools.R
 #'
-#' @seealso [answer_as_code()] [add_tools_extract_documentation()]
+#' @seealso [answer_as_code()] [add_tools_get_documentation()]
 #'
 #' @family pre_built_prompt_wraps
 #' @family llm_tools
@@ -31,21 +37,25 @@ add_tools <- function(prompt, tool_functions = list()) {
   prompt <- tidyprompt(prompt)
 
   # Check if tool_functions is single function, if so, convert to list
-  if (length(tool_functions) == 1 && is.function(tool_functions))
+  if (length(tool_functions) == 1 && is.function(tool_functions)) {
+    name <- deparse(substitute(tool_functions))
     tool_functions <- list(tool_functions)
-  # Check if is list & if all elements in list are functions
-  if (
-    !is.list(tool_functions) ||
-    !all(sapply(tool_functions, is.function))
-  )
-    stop("tool_functions must be a single function or a list of functions.")
-  if (length(tool_functions) == 0)
-    stop("No tool functions provided.")
+    names(tool_functions) <- name
+  } else {
+    # Check if is list & if all elements in list are functions
+    if (
+      !is.list(tool_functions) ||
+      !all(sapply(tool_functions, is.function))
+    )
+      stop("tool_functions must be a single function or a list of functions.")
+    if (length(tool_functions) == 0)
+      stop("No tool functions provided.")
 
-  # Convert tool_functions to named list
-  tool_names <- sapply(substitute(tool_functions)[-1], deparse)
-  # Ensure the names of tool_functions match the captured names
-  names(tool_functions) <- tool_names
+    # Convert tool_functions to named list
+    tool_names <- sapply(substitute(tool_functions)[-1], deparse)
+    # Ensure the names of tool_functions match the captured names
+    names(tool_functions) <- tool_names
+  }
 
   modify_fn <- function(original_prompt_text) {
     new_prompt <- glue::glue(
@@ -62,12 +72,14 @@ add_tools <- function(prompt, tool_functions = list()) {
       }}
     }}
 
+    (Note: you cannot call other functions within arguments.)
+
     The following functions are available:"
     )
 
     for (tool_fn_name in names(tool_functions)) {
       tool_function <- tool_functions[[tool_fn_name]]
-      docs <- add_tools_extract_documentation(tool_function, tool_fn_name)
+      docs <- add_tools_get_documentation(tool_function, tool_fn_name)
 
       fn_llm_text <- glue::glue(
         "  function name: {tool_fn_name}", .trim = FALSE
@@ -76,12 +88,12 @@ add_tools <- function(prompt, tool_functions = list()) {
         fn_llm_text <- glue::glue(
           "{fn_llm_text}\n  description: {docs$description}", .trim = FALSE
         )
-      if (length(docs$parameters) > 0) {
+      if (length(docs$arguments) > 0) {
         fn_llm_text <- glue::glue(
           "{fn_llm_text}\n  arguments:\n",
           paste(
-            sapply(names(docs$parameters), function(param_name) {
-              param_description <- docs$parameters[[param_name]]
+            sapply(names(docs$arguments), function(param_name) {
+              param_description <- docs$arguments[[param_name]]
               glue::glue("    - {param_name}: {param_description}", .trim = FALSE)
             }),
             collapse = "\n"
@@ -170,23 +182,21 @@ add_tools <- function(prompt, tool_functions = list()) {
 #'
 #' This function parses either the internal, docstring-like documentation or
 #' the help file documentation from a function. It is used to extract
-#' information about the function's name, description, parameters, and return value.
+#' information about the function's name, description, arguments, and return value.
 #' This information is used to provide an LLM with information about the functions,
 #' so that the LLM can call R functions.
 #'
 #' @param func A function object. The function should belong to a package
 #' and have roxygen-documentation available in a help file, or it should
-#' contain internal, roxygen-like, docstring-like documentation,
-#' with the 'llm_tool::' tags: 'name', 'description', 'param', and 'return'
-#' (e.g., llm_tool::name my_function_name) (see example)
+#' have documentation added by [add_tools_add_documentation()]
 #' @param name The name of the function if already known (optional).
-#' If not provided it will be extracted from the docstring-like documentation
-#' if available, or from the function object's name
+#' If not provided it will be extracted from the documentation or the
+#' function object's name
 #'
 #' @return A list with the following elements:
 #'  - name: The name of the function
 #'  - description: A description of the function
-#'  - parameters: A named list of parameters with descriptions
+#'  - arguments: A named list of arguments with descriptions
 #'  - return_value: A description of the return value
 #'
 #' @export
@@ -194,7 +204,7 @@ add_tools <- function(prompt, tool_functions = list()) {
 #' @example inst/examples/add_tools.R
 #'
 #' @family add_tools
-add_tools_extract_documentation <- function(func, name = NULL) {
+add_tools_get_documentation <- function(func, name = NULL) {
   stopifnot(
     is.function(func),
     is.null(name) || (is.character(name) & length(name) == 1)
@@ -204,21 +214,23 @@ add_tools_extract_documentation <- function(func, name = NULL) {
   if (is.null(name))
     name <- deparse(substitute(func))
 
-  # Convert the function to a character string
-  func_text <- utils::capture.output(print(func))
-  # Find documentation lines
-  doc_lines <- grep("^\\s*#'", func_text, value = TRUE)
+  if (!is.null(attr(func, "tidyprompt_fn_docs"))) {
+    docs <- attr(func, "tidyprompt_fn_docs")
 
-  if (length(doc_lines) > 0) {
-    # Extract inline documentation from the function
-    docs$description <- add_tools_extract_llm_documentation_section(doc_lines, "llm_tool::description")
-    docs$parameters <- add_tools_extract_llm_documentation_section(doc_lines, "llm_tool::param")
-    docs$return_value <- add_tools_extract_llm_documentation_section(doc_lines, "llm_tool::return")
+    stopifnot(
+      is.list(docs),
+      !is.null(names(docs)),
+      all(c("name", "description", "arguments", "return_value") %in% names(docs)),
+      is.character(docs$name) & length(docs$name) == 1,
+      is.character(docs$description) & length(docs$description) == 1,
+      is.list(docs$arguments),
+      !is.null(names(docs$arguments)),
+      is.character(docs$return_value) & length(docs$return_value) == 1
+    )
   } else {
-    # Docstring documentation not found,
-    #   so let's try to extract from the function's help file
-    docs <- add_tools_extract_helpfile_documentation(name)
+    docs <- add_tools_get_documentation_from_helpfile(name)
   }
+
 
   for (name in names(docs)) {
     if (length(docs[[name]]) == 0) {
@@ -229,87 +241,65 @@ add_tools_extract_documentation <- function(func, name = NULL) {
   docs
 }
 
-
-
-#' Extract a specific section from a function's docstring-like documentation block
+#' Add tidyprompt function documentation to a function
 #'
-#' This is an internal helper function for add_tools_extract_documentation
+#' This function adds documentation to a custom function. This documentation
+#' is used to extract information about the function's name, description, arguments,
+#' and return value. This information is used to provide an LLM with information
+#' about the functions, so that the LLM can call R functions. The intended
+#' use of this function is to add documentation to custom functions that do not
+#' have help files; [add_tools_get_documentation()] will extract the documentation
+#' from help files when available.
 #'
-#' @param doc_lines A character vector of lines from a function's documentation block
-#' @param section_keyword The keyword to search for in the documentation block,
-#' e.g., 'llm_tool::description'
+#' @param func A function object
+#' @param description A description of the function
+#' @param arguments A named list of arguments (arguments) with descriptions
+#' @param return_value A description of the return value
+#' @param name The name of the function (optional). If not provided, the function
+#' name will be extracted from the function object
 #'
-#' @return The extracted section as a character string or list
+#' @return The function object with the documentation added as an attribute
 #'
-#' @noRd
-#' @keywords internal
-add_tools_extract_llm_documentation_section <- function(doc_lines, section_keyword) {
-  # Identify lines that contain the section keyword
-  section_starts <- grep(paste0("^\\s*#'\\s*", section_keyword), doc_lines)
+#' @export
+#'
+#' @examples
+#' my_function <- function(x, y) { x + y }
+#' my_function_documented <- add_tools_add_documentation(
+#'    my_function,
+#'    description = "Add two numbers",
+#'    arguments = list(
+#'      x = "A number",
+#'      y = "Another number"
+#'    ),
+#'    return_value = "The sum of the two numbers"
+#'  )
+add_tools_add_documentation <- function(
+    func,
+    description,
+    arguments = list(),
+    return_value,
+    name = NULL
+) {
+  stopifnot(
+    is.function(func),
+    (is.null(name) | is.character(name) & length(name) == 1),
+    is.character(description) & length(description) == 1,
+    is.list(arguments),
+    !is.null(names(arguments)),
+    is.character(return_value) & length(return_value) == 1
+  )
 
-  # Stop if the section keyword is not found
-  if (length(section_starts) == 0) {
-    return(character(0))  # Return an empty character vector if no section found
-  }
+  if (is.null(name))
+    name <- deparse(substitute(func))
 
-  # Function to clean a single line
-  clean_line <- function(line) {
-    line <- gsub("^\\s*#'\\s*", "", line)  # Remove leading "#' "
-    line <- gsub("\\s*#'$", "", line)      # Remove trailing "#'"
-    return(trimws(line))  # Trim any remaining whitespace
-  }
+  attr(func, "tidyprompt_fn_docs") <- list(
+    name = name,
+    description = description,
+    arguments = arguments,
+    return_value = return_value
+  )
 
-  # For parameters, we want to return all of them
-  if (section_keyword == "llm_tool::param") {
-    param_lines <- doc_lines[section_starts]
-
-    # Clean up the lines
-    param_lines <- sapply(param_lines, clean_line)
-
-    # Remove section keyword from the start of each line; also remove leading "'# ' if it's there
-    param_lines <- gsub(paste0("^", section_keyword, "\\s*"), "", param_lines)
-    param_lines <- param_lines |> stats::setNames(NULL)
-
-    params_list <- list()
-    for (param_line in param_lines) {
-      param_parts <- strsplit(param_line, " ", fixed = TRUE)[[1]]
-      param_name <- param_parts[1]
-      param_description <- paste(param_parts[-1], collapse = " ")
-      params_list[[param_name]] <- param_description
-    }
-
-    return(params_list)
-  }
-
-  # For other sections, keep the existing logic but clean all lines
-  section_start <- section_starts[1]
-
-  # Determine where the section ends (next section or end of doc_lines)
-  next_section <- grep("^\\s*#'\\s*llm_tool::", doc_lines)
-  next_after_current <- next_section[next_section > section_start]
-
-  if (length(next_after_current) == 0) {
-    end_of_section <- length(doc_lines) + 1
-  } else {
-    end_of_section <- min(next_after_current)
-  }
-
-  # Extract and clean the section lines
-  section_lines <- doc_lines[section_start:(end_of_section - 1)]
-  section_lines <- sapply(section_lines, clean_line)
-
-  # Combine the lines and trim whitespace
-  trimmed_section <- trimws(paste(section_lines, collapse = "\n"))  # Join with newlines
-
-  # Remove the section keyword from the start of the trimmed section
-  trimmed_section <- gsub(paste0("^", section_keyword, "\\s*"), "", trimmed_section)
-
-  # For title, return just the first line
-  if (section_keyword == "") {
-    return(strsplit(trimmed_section, "\n")[[1]][1])
-  }
-
-  return(trimmed_section)
+  return(func)
 }
 
 
@@ -324,12 +314,12 @@ add_tools_extract_llm_documentation_section <- function(doc_lines, section_keywo
 #' @return A list with the following elements:
 #' - name: The name of the function
 #' - description: A description of the function
-#' - parameters: A named list of parameters with descriptions
+#' - arguments: A named list of arguments with descriptions
 #' - return_value: A description of the return value
 #'
 #' @noRd
 #' @keywords internal
-add_tools_extract_helpfile_documentation <- function(name) {
+add_tools_get_documentation_from_helpfile <- function(name) {
   # Get the package name if the function is from a package
   if (grepl("::", name)) {
     # Extract function name and package name
@@ -337,9 +327,17 @@ add_tools_extract_helpfile_documentation <- function(name) {
     package_name <- gsub("::.*", "", name)
   } else {
     # Get the package name from the environment of the function
-    func <- get(name, mode = "function", envir = base::globalenv())
+    func <- get(name, mode = "function")
     package_env <- environment(func)
     package_name <- environmentName(package_env)
+  }
+
+  if (package_name == "R_GlobalEnv") {
+    stop(paste0(
+      "No documentation found for function in global environment.",
+      " Use `add_tools_add_documentation()` to add documentation to function",
+      " (please note: you cannot pipe from function creation towards `add_tools_add_documentation()`)"
+    ))
   }
 
   # Get the function's help file
@@ -355,7 +353,7 @@ add_tools_extract_helpfile_documentation <- function(name) {
     return(list(
       name = name,
       description = character(0),
-      parameters = args,
+      arguments = args,
       return_value = character(0)
     ))
   }
@@ -468,7 +466,7 @@ add_tools_extract_helpfile_documentation <- function(name) {
   return(list(
     name = name,
     description = paste0(parsed_help$Title, ": ", parsed_help$Description),
-    parameters = parsed_help$Arguments,
+    arguments = parsed_help$Arguments,
     return_value = parsed_help$Value
   ))
 }

@@ -3,7 +3,7 @@
 ^README\.Rmd$
 ^LICENSE\.md$
 README_cache
-dev_playground/*
+playground/*
 vignettes/example_usage_cache/*
 ^_pkgdown\.yml$
 ^docs$
@@ -17,3 +17,4 @@ vignettes/figure/*
 cache/*
 figure/*
 vignettes/Rplots.pdf
+vignettes/precompile vignettes.R
