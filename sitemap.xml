@@ -8,7 +8,8 @@
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/index.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/add_text.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/add_tools.html</loc></url>
-<url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/add_tools_extract_documentation.html</loc></url>
+<url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/add_tools_add_documentation.html</loc></url>
+<url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/add_tools_get_documentation.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/answer_as_boolean.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/answer_as_code.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/answer_as_integer.html</loc></url>
@@ -24,6 +25,7 @@
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/construct_prompt_text.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/df_to_string.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/extract_from_return_list.html</loc></url>
+<url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/extraction_fn_json.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/get_base_prompt.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/get_prompt_wraps.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/index.html</loc></url>
