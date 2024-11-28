@@ -7,11 +7,15 @@
 add_tools_extract_documentation(func, name = NULL)
 }
 \arguments{
-\item{func}{A function object which has internal, docstring-like, roxygen-like documentation,
-with the 'llm_tool::' tags: 'name', 'description', 'param', 'return', and 'example'
-(e.g., llm_tool::name my_function_name).}
+\item{func}{A function object. The function should belong to a package
+and have roxygen-documentation available in a help file, or it should
+contain internal, roxygen-like, docstring-like documentation,
+with the 'llm_tool::' tags: 'name', 'description', 'param', and 'return'
+(e.g., llm_tool::name my_function_name) (see example)}
 
-\item{name}{The name of the function (optional)}
+\item{name}{The name of the function if already known (optional).
+If not provided it will be extracted from the docstring-like documentation
+if available, or from the function object's name}
 }
 \value{
 A list with the following elements:
@@ -20,21 +24,14 @@ A list with the following elements:
 \item description: A description of the function
 \item parameters: A named list of parameters with descriptions
 \item return_value: A description of the return value
-\item example: An example of how the LLM should call the function
 }
 }
 \description{
-This function parses docstring-like documentation from a function object.
-This is used to extract information about the function's name, description,
-parameters, return value, and example usage. 'add_tools()' uses this function
-to provide an LLM with information about the functions it can call. For an
-example of how such documentation within a function, see the 'example_usage'
-vignette.
-}
-\details{
-Note that for 'example' it must be a one-line example of how the function is used in R,
-this will be converted to how LLM should call the function in text (slightly different
-syntax).
+This function parses either the internal, docstring-like documentation or
+the help file documentation from a function. It is used to extract
+information about the function's name, description, parameters, and return value.
+This information is used to provide an LLM with information about the functions,
+so that the LLM can call R functions.
 }
 \examples{
 # Example fake weather function to add to the prompt:

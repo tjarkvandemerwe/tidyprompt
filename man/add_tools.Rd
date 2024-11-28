@@ -9,9 +9,11 @@ add_tools(prompt, tool_functions = list())
 \arguments{
 \item{prompt}{A single string or a \code{\link[=tidyprompt]{tidyprompt()}} object}
 
-\item{tool_functions}{A list of R functions that the LLM can call.
-These functions should contain docstring-like documentation within them.
-See \code{\link[=add_tools_extract_documentation]{add_tools_extract_documentation()}} for more details.}
+\item{tool_functions}{An R function or a list of R functions that the LLM can call.
+If the function has been documented in a help file (e.g., because it is part of a
+package), the documentation will be parsed from the help file. If it is a custom
+function, it should contain docstring-like documentation within it (see
+\code{\link[=add_tools_extract_documentation]{add_tools_extract_documentation()}} for details on how to add documentation to a function)}
 }
 \value{
 A \code{\link[=tidyprompt]{tidyprompt()}} with an added \code{\link[=prompt_wrap]{prompt_wrap()}} which
@@ -22,9 +24,9 @@ This function adds the ability for the a LLM to call R functions.
 Users can specify a list of functions that the LLM can call, and the
 prompt will be modified to include information, as well as an
 accompanying extraction function to call the functions (handled by
-\code{\link[=send_prompt]{send_prompt()}}). Functions should contain docstring-like documentation
-within them, as this will be parsed to provide the LLM with information
-about the function's purpose and its arguments.
+\code{\link[=send_prompt]{send_prompt()}}). Documentation for the functions is extracted from
+the help file (if available), or from docstring-like documentation
+within the function itself.
 }
 \examples{
 # Example fake weather function to add to the prompt:

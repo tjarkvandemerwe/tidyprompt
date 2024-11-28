@@ -4,14 +4,16 @@
 #' Users can specify a list of functions that the LLM can call, and the
 #' prompt will be modified to include information, as well as an
 #' accompanying extraction function to call the functions (handled by
-#' [send_prompt()]). Functions should contain docstring-like documentation
-#' within them, as this will be parsed to provide the LLM with information
-#' about the function's purpose and its arguments.
+#' [send_prompt()]). Documentation for the functions is extracted from
+#' the help file (if available), or from docstring-like documentation
+#' within the function itself.
 #'
 #' @param prompt A single string or a [tidyprompt()] object
-#' @param tool_functions A list of R functions that the LLM can call.
-#' These functions should contain docstring-like documentation within them.
-#' See [add_tools_extract_documentation()] for more details.
+#' @param tool_functions An R function or a list of R functions that the LLM can call.
+#' If the function has been documented in a help file (e.g., because it is part of a
+#' package), the documentation will be parsed from the help file. If it is a custom
+#' function, it should contain docstring-like documentation within it (see
+#' [add_tools_extract_documentation()] for details on how to add documentation to a function)
 #'
 #' @return A [tidyprompt()] with an added [prompt_wrap()] which
 #' will allow the LLM to call R functions
@@ -60,8 +62,6 @@ add_tools <- function(prompt, tool_functions = list()) {
       }}
     }}
 
-    Make sure to provide valid JSON, and output only the JSON object without any additional text.
-
     The following functions are available:"
     )
 
@@ -93,10 +93,6 @@ add_tools <- function(prompt, tool_functions = list()) {
         fn_llm_text <- glue::glue(
           "{fn_llm_text}\n  return value: {docs$return_value}", .trim = FALSE
         )
-      if (length(docs$example) > 0)
-        fn_llm_text <- glue::glue(
-          "{fn_llm_text}\n  example usage: {docs$example}", .trim = FALSE
-        )
 
       new_prompt <- glue::glue(
         "{new_prompt}\n\n{fn_llm_text}", .trim = FALSE
@@ -104,9 +100,9 @@ add_tools <- function(prompt, tool_functions = list()) {
     }
 
     new_prompt <- glue::glue(
-      "{new_prompt}
-
-    After you call a function, wait until you receive more information.",
+      "{new_prompt}\n\n",
+      "After you call a function, wait until you receive more information.\n",
+      "Use the information to decide your next steps or provide a final response.",
       .trim = FALSE
     )
 
@@ -114,77 +110,56 @@ add_tools <- function(prompt, tool_functions = list()) {
   }
 
   extraction_fn <- function(llm_response) {
-    # Try to extract JSON from the response
-    json_matches <- gregexpr("\\{.*\\}", llm_response, perl = TRUE)
-    if (json_matches[[1]][1] == -1) {
-      # No JSON found
-      return(llm_response)
-    }
+    jsons <- extraction_fn_json(llm_response)
 
-    # Extract the JSON substring
-    json_str <- regmatches(llm_response, json_matches)[[1]]
+    fn_results <- lapply(jsons, function(json) {
+      if (is.null(json[["function"]]))
+        return(NULL)
 
-    # Try to parse the JSON
-    json_content <- NULL
-    for (js in json_str) {
-      json_content <- tryCatch({
-        jsonlite::fromJSON(js)
-      }, error = function(e) {
-        NULL
-      })
-      if (!is.null(json_content)) {
-        break
+      if (json[["function"]] %in% names(tool_functions)) {
+        tool_function <- tool_functions[[json[["function"]]]]
+        arguments <- json[["arguments"]]
+
+        result <- tryCatch({
+          do.call(tool_function, arguments)
+        }, error = function(e) {
+          glue::glue("Error in {e$message}")
+        })
+
+        if (length(result) > 0)
+          result <- paste(result, collapse = ", ")
+
+        # Create some context around the result
+        string_of_named_arguments <-
+          paste(names(arguments), arguments, sep = " = ") |>
+          paste(collapse = ", ")
+
+        result_string <- glue::glue(
+          "function called: {json[[\"function\"]]}
+          arguments used: {string_of_named_arguments}
+          result: {result}"
+        )
+
+        return(result_string)
+      } else {
+        return(glue::glue("Error: Function '{json[[\"function\"]]}' not found."))
       }
-    }
-
-    # If parsing fails or required keys are missing, return the response
-    if (is.null(json_content) || !"function" %in% names(json_content)) {
-      return(llm_response)
-    }
-
-    # Extract the function name and arguments
-    function_name <- json_content[["function"]]
-    arguments <- json_content[["arguments"]]
-
-    # Check if the function exists
-    tool_function <- tool_functions[[function_name]]
-
-    if (is.null(tool_function)) {
-      return(llm_feedback(glue::glue("Error: Function '{function_name}' not found.")))
-    }
-
-    # Call the function with the arguments
-    result <- tryCatch({
-      do.call(tool_function, arguments)
-    }, error = function(e) {
-      glue::glue("Error in {e$message}")
     })
+    fn_results <- fn_results[!sapply(fn_results, is.null)]
 
-    if (length(result) > 0)
-      result <- paste(result, collapse = ", ")
+    if (length(fn_results) == 0)
+      return(llm_response)
 
-    # Create some context around the result
-    string_of_named_arguments <-
-      paste(names(arguments), arguments, sep = " = ") |>
-      paste(collapse = ", ")
-
-    result_string <- glue::glue(
-      "function called: {function_name}
-      arguments used: {string_of_named_arguments}
-      result: {result}"
-    )
-
-    # Return the result
-    return(llm_feedback(result_string, tool_result = TRUE))
+    return(llm_feedback(
+      paste(fn_results, collapse = "\n\n"),
+      tool_result = TRUE
+    ))
   }
 
   # Add environment with tool functions as an attribute to the extraction function
   environment_with_tool_functions <- new.env()
   environment_with_tool_functions$tool_functions <- tool_functions
   attr(extraction_fn, "environment") <- environment_with_tool_functions
-
-  # # Add tool_functions as an attribute to the extraction
-  # attr(extraction_fn, "tool_functions") <- tool_functions
 
   prompt_wrap(prompt, modify_fn, extraction_fn, type = "tool")
 }
@@ -193,29 +168,27 @@ add_tools <- function(prompt, tool_functions = list()) {
 
 #' Extract docstring-documentation from a function
 #'
-#' This function parses docstring-like documentation from a function object.
-#' This is used to extract information about the function's name, description,
-#' parameters, return value, and example usage. 'add_tools()' uses this function
-#' to provide an LLM with information about the functions it can call. For an
-#' example of how such documentation within a function, see the 'example_usage'
-#' vignette.
+#' This function parses either the internal, docstring-like documentation or
+#' the help file documentation from a function. It is used to extract
+#' information about the function's name, description, parameters, and return value.
+#' This information is used to provide an LLM with information about the functions,
+#' so that the LLM can call R functions.
 #'
-#' @param func A function object which has internal, docstring-like, roxygen-like documentation,
-#' with the 'llm_tool::' tags: 'name', 'description', 'param', 'return', and 'example'
-#' (e.g., llm_tool::name my_function_name).
-#' @param name The name of the function (optional)
-#'
-#' @details Note that for 'example' it must be a one-line example of how the function is used in R,
-#' this will be converted to how LLM should call the function in text (slightly different
-#' syntax).
+#' @param func A function object. The function should belong to a package
+#' and have roxygen-documentation available in a help file, or it should
+#' contain internal, roxygen-like, docstring-like documentation,
+#' with the 'llm_tool::' tags: 'name', 'description', 'param', and 'return'
+#' (e.g., llm_tool::name my_function_name) (see example)
+#' @param name The name of the function if already known (optional).
+#' If not provided it will be extracted from the docstring-like documentation
+#' if available, or from the function object's name
 #'
 #' @return A list with the following elements:
 #'  - name: The name of the function
 #'  - description: A description of the function
 #'  - parameters: A named list of parameters with descriptions
 #'  - return_value: A description of the return value
-#'  - example: An example of how the LLM should call the function
-
+#'
 #' @export
 #'
 #' @example inst/examples/add_tools.R
@@ -241,15 +214,11 @@ add_tools_extract_documentation <- function(func, name = NULL) {
     docs$description <- add_tools_extract_llm_documentation_section(doc_lines, "llm_tool::description")
     docs$parameters <- add_tools_extract_llm_documentation_section(doc_lines, "llm_tool::param")
     docs$return_value <- add_tools_extract_llm_documentation_section(doc_lines, "llm_tool::return")
-    docs$example <- add_tools_extract_llm_documentation_section(doc_lines, "llm_tool::example")
   } else {
     # Docstring documentation not found,
     #   so let's try to extract from the function's help file
     docs <- add_tools_extract_helpfile_documentation(name)
   }
-
-  # Convert example to how LLM should call it
-  docs$example <- gsub("\\b(\\w+)\\(", "FUNCTION[\\1](", docs$example)
 
   for (name in names(docs)) {
     if (length(docs[[name]]) == 0) {
@@ -350,7 +319,6 @@ add_tools_extract_llm_documentation_section <- function(doc_lines, section_keywo
 #' This function extracts documentation from a function's help file. It is used
 #' as a fallback when the function does not contain docstring-like documentation.
 #'
-#'
 #' @param name A name of a function
 #'
 #' @return A list with the following elements:
@@ -358,10 +326,6 @@ add_tools_extract_llm_documentation_section <- function(doc_lines, section_keywo
 #' - description: A description of the function
 #' - parameters: A named list of parameters with descriptions
 #' - return_value: A description of the return value
-#' - example: An example of how the LLM should call the function. This is
-#'  not extracted from the help file, but is an empty character string
-#'  (because examples tend to be more complex and contain other functions,
-#'  which may confuse the LLM)
 #'
 #' @noRd
 #' @keywords internal
@@ -392,8 +356,7 @@ add_tools_extract_helpfile_documentation <- function(name) {
       name = name,
       description = character(0),
       parameters = args,
-      return_value = character(0),
-      example = character(0)
+      return_value = character(0)
     ))
   }
 
@@ -506,8 +469,7 @@ add_tools_extract_helpfile_documentation <- function(name) {
     name = name,
     description = paste0(parsed_help$Title, ": ", parsed_help$Description),
     parameters = parsed_help$Arguments,
-    return_value = parsed_help$Value,
-    example = character(0)
+    return_value = parsed_help$Value
   ))
 }
 
