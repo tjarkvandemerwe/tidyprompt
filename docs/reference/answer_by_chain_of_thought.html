@@ -57,7 +57,11 @@ is inspired by the method described in Wei et al. (2022).</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">answer_by_chain_of_thought</span><span class="op">(</span><span class="va">prompt</span>, extract_from_finish_brackets <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">answer_by_chain_of_thought</span><span class="op">(</span></span>
+<span>  <span class="va">prompt</span>,</span>
+<span>  extract_from_finish_brackets <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  extraction_lenience <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -71,6 +75,15 @@ is inspired by the method described in Wei et al. (2022).</p>
 <dt id="arg-extract-from-finish-brackets">extract_from_finish_brackets<a class="anchor" aria-label="anchor" href="#arg-extract-from-finish-brackets"></a></dt>
 <dd><p>A logical indicating whether the final answer
 should be extracted from the text inside the "FINISH<a href="https://rdrr.io/r/base/dots.html" class="external-link">...</a>" brackets.</p></dd>
+
+
+<dt id="arg-extraction-lenience">extraction_lenience<a class="anchor" aria-label="anchor" href="#arg-extraction-lenience"></a></dt>
+<dd><p>A logical indcating whether the extraction function should be lenient.
+If TRUE, the extraction function will attempt to extract the final answer
+even if it cannot be extracted from within the brackets, by extracting
+everything after the final occurence of 'FINISH' (if present). This may
+be useful for smaller LLMs which may not follow the output format
+as strictly</p></dd>
 
 </dl></div>
     <div class="section level2">

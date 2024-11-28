@@ -57,11 +57,12 @@ reference:
   - starts_with("chat_history")
 - title: Helper functions
 - subtitle: Text helpers
-  desc: Functions to create text to be used in prompts.
+  desc: Functions to create text to be used in prompts, or to extract elements from text.
 - contents:
   - df_to_string
   - vector_list_to_string
   - skim_with_labels_and_levels
+  - extraction_fn_json
 - subtitle: Other helper functions
 - contents:
   - extract_from_return_list
