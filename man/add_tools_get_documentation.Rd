@@ -61,7 +61,7 @@ temperature_in_location <- function(
   }
 }
 
-# Add documentation to the function:
+# Add documentation to a function:
 temperature_in_location <- add_tools_add_documentation(
   temperature_in_location,
   description = "Get the temperature in a location",
@@ -76,7 +76,8 @@ temperature_in_location <- add_tools_add_documentation(
 add_tools_get_documentation(temperature_in_location)
 
 # You can also pass functions which are included in packages;
-#   documentation is then extracted from help files:
+#   documentation is then extracted from help files
+#   (so you don't need to manually add documentation):
 add_tools_get_documentation(list.files)
 
 # Example usage:
