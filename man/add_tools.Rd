@@ -12,8 +12,7 @@ add_tools(prompt, tool_functions = list())
 \item{tool_functions}{An R function or a list of R functions that the LLM can call.
 If the function has been documented in a help file (e.g., because it is part of a
 package), the documentation will be parsed from the help file. If it is a custom
-function, it should contain docstring-like documentation within it (see
-\code{\link[=add_tools_get_documentation]{add_tools_get_documentation()}} for details on how to add documentation to a function)}
+function, documentation should be added with \code{\link[=add_tools_add_documentation]{add_tools_add_documentation()}}}
 }
 \value{
 A \code{\link[=tidyprompt]{tidyprompt()}} with an added \code{\link[=prompt_wrap]{prompt_wrap()}} which
@@ -25,8 +24,8 @@ Users can specify a list of functions that the LLM can call, and the
 prompt will be modified to include information, as well as an
 accompanying extraction function to call the functions (handled by
 \code{\link[=send_prompt]{send_prompt()}}). Documentation for the functions is extracted from
-the help file (if available), or from docstring-like documentation
-within the function itself.
+the help file (if available), or from documentation added by
+\code{\link[=add_tools_add_documentation]{add_tools_add_documentation()}}.
 }
 \details{
 Note that this method of function calling is purely text-based.

@@ -35,7 +35,8 @@ reference:
   desc: Functions that empower a LLM with tools.
 - contents:
   - add_tools
-  - add_tools_extract_documentation
+  - add_tools_get_documentation
+  - add_tools_add_documentation
   - answer_as_code
 - subtitle: Miscellaneous
 - contents:

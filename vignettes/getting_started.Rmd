@@ -2,7 +2,7 @@
 title: "Getting started"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Example usage}
+  %\VignetteIndexEntry{Getting started}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -67,10 +67,8 @@ while verifying that the output is structured and valid (including retries with 
 #> --- Sending request to LLM provider (llama3.1:8b): ---
 #> Hi there!
 #> --- Receiving response from LLM provider: ---
-#> Error in `httr2::req_perform()` at tidyprompt/R/llm_provider.R:265:5:
-#> ! Failed to perform HTTP request.
-#> Caused by error in `curl::curl_fetch_memory()`:
-#> ! Failed to connect to localhost port 11434 after 2250 ms: Couldn't connect to server
+#> It's nice to meet you. Is there something I can help you with, or would you like to chat?
+#> [1] "It's nice to meet you. Is there something I can help you with, or would you like to chat?"
 ```
 `add_text()` is a simple example of a prompt wrap. It simply adds some text at the end of the base prompt.
 
@@ -84,10 +82,8 @@ while verifying that the output is structured and valid (including retries with 
 #> 
 #> What is a large language model? Explain in 10 words.
 #> --- Receiving response from LLM provider: ---
-#> Error in `httr2::req_perform()` at tidyprompt/R/llm_provider.R:265:5:
-#> ! Failed to perform HTTP request.
-#> Caused by error in `curl::curl_fetch_memory()`:
-#> ! Failed to connect to localhost port 11434 after 2269 ms: Couldn't connect to server
+#> Sophisticated computer program that processes and generates human-like written language.
+#> [1] "Sophisticated computer program that processes and generates human-like written language."
 ```
 You can also construct the final prompt text, without sending it to an LLM provider.
 
@@ -131,10 +127,8 @@ original character response into a numeric value, the final output from
 #> 
 #> You must answer with only an integer (use no other characters).
 #> --- Receiving response from LLM provider: ---
-#> Error in `httr2::req_perform()` at tidyprompt/R/llm_provider.R:265:5:
-#> ! Failed to perform HTTP request.
-#> Caused by error in `curl::curl_fetch_memory()`:
-#> ! Failed to connect to localhost port 11434 after 2259 ms: Couldn't connect to server
+#> 4
+#> [1] 4
 ```
 Below is an example of a prompt which will initially fail, but will succeed after
 `llm_feedback()` and a retry.
@@ -150,11 +144,14 @@ Below is an example of a prompt which will initially fail, but will succeed afte
 #> 
 #> Please write out your reply in words, use no numbers.
 #> --- Receiving response from LLM provider: ---
-#> Error in `httr2::req_perform()` at tidyprompt/R/llm_provider.R:265:5:
-#> ! Failed to perform HTTP request.
-#> Caused by error in `curl::curl_fetch_memory()`:
-#> ! Failed to connect to localhost port 11434 after 2242 ms: Couldn't connect to server
+#> Two plus two equals four.
+#> --- Sending request to LLM provider (llama3.1:8b): ---
+#> You must answer with only an integer (use no other characters).
+#> --- Receiving response from LLM provider: ---
+#> 4
+#> [1] 4
 ```
+
 ### Adding a reasoning mode to the LLM
 
 Prompt wraps may also be used to add a reasoning mode to the LLM. It is hypothesized that this could
@@ -193,10 +190,12 @@ function then ensures only the final answer is returned.
 #> 
 #> Make sure your final answer follows the logical conclusion of your thought process.
 #> --- Receiving response from LLM provider: ---
-#> Error in `httr2::req_perform()` at tidyprompt/R/llm_provider.R:265:5:
-#> ! Failed to perform HTTP request.
-#> Caused by error in `curl::curl_fetch_memory()`:
-#> ! Failed to connect to localhost port 11434 after 2248 ms: Couldn't connect to server
+#> >> step 1: Identify that the problem is a basic arithmetic operation involving addition.
+#> >> step 2: Recall the specific numbers involved in the operation, which are 2 and 2.
+#> >> step 3: Perform the operation by adding the two numbers together to get their sum.
+#> 
+#> FINISH[4]
+#> [1] 4
 ```
 
 ### Giving tools to the LLM (autonomous function-calling)
@@ -212,19 +211,6 @@ This enables the LLM to autonomously retrieve additional information or take oth
     location = c("Amsterdam", "Utrecht", "Enschede"),
     unit = c("Celcius", "Fahrenheit")
   ) {
-    #' llm_tool::name temperature_in_location
-    #'
-    #' llm_tool::description Get the temperature in a location
-    #'
-    #' llm_tool::param location Location, must be one of: "Amsterdam", "Utrecht", "Enschede"
-    #' llm_tool::param unit Unit, must be one of: "Celcius", "Fahrenheit"
-    #'
-    #' llm_tool::return The temperature in the specified location and unit
-
-    # As shown above, one can use docstring-like text to document the function.
-    #   This will provide the LLM information on what the function does,
-    #   and how it should be used.
-
     location <- match.arg(location)
     unit <- match.arg(unit)
 
@@ -242,33 +228,89 @@ This enables the LLM to autonomously retrieve additional information or take oth
     }
   }
 
-  print(utils::capture.output(print(temperature_in_location)))
-#>  [1] "function (location = c(\"Amsterdam\", \"Utrecht\", \"Enschede\"), unit = c(\"Celcius\", "
-#>  [2] "    \"Fahrenheit\")) "                                                                   
-#>  [3] "{"                                                                                       
-#>  [4] "    location <- match.arg(location)"                                                     
-#>  [5] "    unit <- match.arg(unit)"                                                             
-#>  [6] "    temperature_celcius <- switch(location, Amsterdam = 32.55, "                         
-#>  [7] "        Utrecht = 19.8, Enschede = 22.7)"                                                
-#>  [8] "    if (unit == \"Celcius\") {"                                                          
-#>  [9] "        return(temperature_celcius)"                                                     
-#> [10] "    }"                                                                                   
-#> [11] "    else {"                                                                              
-#> [12] "        return(temperature_celcius * 9/5 + 32)"                                          
-#> [13] "    }"                                                                                   
-#> [14] "}"                                                                                       
-#> [15] "<environment: 0x000002455e5e8ab0>"
+  # Add documentation to the function for the LLM
+  temperature_in_location <- add_tools_add_documentation(
+    temperature_in_location,
+    description = "Get the temperature in a location",
+    arguments = list(
+      location = "Location, must be one of: 'Amsterdam', 'Utrecht', 'Enschede'",
+      unit = "Unit, must be one of: 'Celcius', 'Fahrenheit'"
+    ),
+    return_value = "The temperature in the specified location and unit"
+  )
 
   # Ask the LLM a question which can be answered with the function
-  # "Hi, what is the weather temperature in Enschede?" |>
-  #   add_text("I want to know the Celcius degrees.") |>
-  #   answer_as_integer() |>
-  #   add_tools(temperature_in_location) |>
-  #   send_prompt(ollama)
+  "Hi, what is the weather temperature in Enschede?" |>
+    add_text("I want to know the Celcius degrees.") |>
+    answer_as_integer() |>
+    add_tools(temperature_in_location) |>
+    send_prompt(ollama)
+#> --- Sending request to LLM provider (llama3.1:8b): ---
+#> Hi, what is the weather temperature in Enschede?
+#> 
+#> I want to know the Celcius degrees.
+#> 
+#> You must answer with only an integer (use no other characters).
+#> 
+#> If you need more information, you can call functions to help you.
+#> To call a function, output a JSON object with the following format:
+#> 
+#> {
+#>   "function": "<function name>",
+#>   "arguments": {
+#>     "<argument_name>": <argument_value>,
+#>     ...
+#>   }
+#> }
+#> 
+#> (Note: you cannot call other functions within arguments.)
+#> 
+#> The following functions are available:
+#> 
+#>   function name: temperature_in_location
+#>   description: Get the temperature in a location
+#>   arguments:
+#>     - location: Location, must be one of: 'Amsterdam', 'Utrecht', 'Enschede'
+#>     - unit: Unit, must be one of: 'Celcius', 'Fahrenheit'
+#>   return value: The temperature in the specified location and unit
+#> 
+#> After you call a function, wait until you receive more information.
+#> Use the information to decide your next steps or provide a final response.
+#> --- Receiving response from LLM provider: ---
+#> To get the weather temperature in Enschede, I will call the `temperature_in_location` function with the required arguments.
+#> 
+#> Here's my first action:
+#> 
+#> ```
+#> {
+#>   "function": "temperature_in_location",
+#>   "arguments": {
+#>     "location": "Enschede",
+#>     "unit": "Celcius"
+#>   }
+#> }
+#> ```
+#> 
+#> Please wait for more information...
+#> --- Sending request to LLM provider (llama3.1:8b): ---
+#> function called: temperature_in_location
+#> arguments used: location = Enschede, unit = Celcius
+#> result: 22.7
+#> --- Receiving response from LLM provider: ---
+#> The current temperature in Enschede is 22.7°C.
+#> 
+#> So, my response to your original question is:
+#> 
+#> 22.7
+#> --- Sending request to LLM provider (llama3.1:8b): ---
+#> You must answer with only an integer (use no other characters).
+#> --- Receiving response from LLM provider: ---
+#> 22
+#> [1] 22
 ```
 
-`add_tools()` can also be used to give the LLM access to pre-existing functions from packages.
-The documentation will then be extracted from the available help files.
+`add_tools()` can also be used to give the LLM access to pre-existing functions from packages or base R.
+The documentation will then be extracted from the available help file.
 
 
 ``` r
@@ -319,51 +361,39 @@ The documentation will then be extracted from the available help files.
 #> After you call a function, wait until you receive more information.
 #> Use the information to decide your next steps or provide a final response.
 #> --- Receiving response from LLM provider: ---
-```
-
-````
-#> To get the list of files in your current directory, I will call the `list.files` function with the required arguments.
+#> I can call the "list.files" function with the necessary arguments.
 #> 
-#> Here is my JSON object:
+#> Here's my JSON object calling the function:
 #> 
 #> ```
 #> {
 #>   "function": "list.files",
 #>   "arguments": {
-#>     "path": "." // '.' corresponds to the working directory
+#>     "path": "."
 #>   }
 #> }
 #> ```
 #> 
-#> Please wait for a response.
-````
-
-```
+#> Please wait for the output to determine my next steps.
 #> --- Sending request to LLM provider (llama3.1:8b): ---
 #> function called: list.files
 #> arguments used: path = .
 #> result: getting_started.Rmd, getting_started.Rmd.orig, precompile vignettes.R
 #> --- Receiving response from LLM provider: ---
-#> It seems that `list.files` has returned a list of files in the current directory.
+#> The function has returned a result.
 #> 
-#> The output shows three files:
+#> It seems that I have a single file in my current directory (which is represented by the '.' argument), which are:
 #> 
 #> 1. `getting_started.Rmd`
 #> 2. `getting_started.Rmd.orig`
-#> 3. `precompile_vignettes.R`
+#> 3. `precompile vignettes.R`
 #> 
-#> These are the files present in the current directory.
+#> Since there are multiple files, and they do not match any specific pattern or condition mentioned in the problem statement, I will conclude that this is indeed the list of files in my current directory.
 #> 
-#> Since this is the final result, I will provide it as my response.
+#> Therefore, my final response is:
 #> 
-#> **Final Response:**
-#> 
-#> Files in your current directory:
-#> 
-#> * `getting_started.Rmd`
-#> * `getting_started.Rmd.orig`
-#> * `precompile vignettes.R`
-#> [1] "It seems that `list.files` has returned a list of files in the current directory.\n\nThe output shows three files:\n\n1. `getting_started.Rmd`\n2. `getting_started.Rmd.orig`\n3. `precompile_vignettes.R`\n\nThese are the files present in the current directory.\n\nSince this is the final result, I will provide it as my response.\n\n**Final Response:**\n\nFiles in your current directory:\n\n* `getting_started.Rmd`\n* `getting_started.Rmd.orig`\n* `precompile vignettes.R`"
+#> The files in your current directory are: `getting_started.Rmd`, `getting_started.Rmd.orig`, `precompile vignettes.R`.
+#> [1] "The function has returned a result.\n\nIt seems that I have a single file in my current directory (which is represented by the '.' argument), which are:\n\n1. `getting_started.Rmd`\n2. `getting_started.Rmd.orig`\n3. `precompile vignettes.R`\n\nSince there are multiple files, and they do not match any specific pattern or condition mentioned in the problem statement, I will conclude that this is indeed the list of files in my current directory.\n\nTherefore, my final response is:\n\nThe files in your current directory are: `getting_started.Rmd`, `getting_started.Rmd.orig`, `precompile vignettes.R`."
 ```
 
 ### Code generation and evaluation
@@ -374,6 +404,7 @@ for validity, and optionally be evaluated in a dedicated R session (using the
 'callr' package). The prompt wrap can also be set to 'tool mode' (with `output_as_tool = TRUE`),
 where the output of R code is returned to the LLM, so that it can be used to formulate
 a final answer.
+
 
 
 
@@ -394,6 +425,7 @@ plot <- paste0(
   send_prompt(openai)
 plot
 ```
+
 
 
 ### Creating your own prompt wraps
@@ -429,6 +461,7 @@ prompt <- "Hi there!" |>
     }
   )
 ```
+
 Shorter notation of the above would be:
 
 

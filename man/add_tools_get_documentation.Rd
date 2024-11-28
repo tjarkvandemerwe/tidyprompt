@@ -2,20 +2,18 @@
 % Please edit documentation in R/add_tools.R
 \name{add_tools_get_documentation}
 \alias{add_tools_get_documentation}
-\title{Extract docstring-documentation from a function}
+\title{Extract documentation from a function}
 \usage{
 add_tools_get_documentation(func, name = NULL)
 }
 \arguments{
 \item{func}{A function object. The function should belong to a package
-and have roxygen-documentation available in a help file, or it should
-contain internal, roxygen-like, docstring-like documentation,
-with the 'llm_tool::' tags: 'name', 'description', 'param', and 'return'
-(e.g., llm_tool::name my_function_name) (see example)}
+and have documentation available in a help file, or it should
+have documentation added by \code{\link[=add_tools_add_documentation]{add_tools_add_documentation()}}}
 
 \item{name}{The name of the function if already known (optional).
-If not provided it will be extracted from the docstring-like documentation
-if available, or from the function object's name}
+If not provided it will be extracted from the documentation or the
+function object's name}
 }
 \value{
 A list with the following elements:
@@ -27,11 +25,18 @@ A list with the following elements:
 }
 }
 \description{
-This function parses either the internal, docstring-like documentation or
-the help file documentation from a function. It is used to extract
-information about the function's name, description, arguments, and return value.
+This function extracts documentation from a help file (if available,
+i.e., when the function is part of a package) or from documentation added
+by \code{\link[=add_tools_add_documentation]{add_tools_add_documentation()}}. The extracted documentation includes
+the function's name, description, arguments, and return value.
 This information is used to provide an LLM with information about the functions,
 so that the LLM can call R functions.
+}
+\details{
+This function will prioritize documentation added by
+\code{\link[=add_tools_add_documentation]{add_tools_add_documentation()}} over documentation from a help file.
+Thus, it is possible to override the help file documentation by adding
+custom documentation
 }
 \examples{
 # Example fake weather function to add to the prompt:

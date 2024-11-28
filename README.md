@@ -109,8 +109,8 @@ valid (including retries with feedback to the LLM if it is not).
 #> --- Sending request to LLM provider (llama3.1:8b): ---
 #> Hi there!
 #> --- Receiving response from LLM provider: ---
-#> It's nice to meet you. Is there something I can help you with or would you like to chat?
-#> [1] "It's nice to meet you. Is there something I can help you with or would you like to chat?"
+#> It's nice to meet you. Is there something I can help you with, or would you like to chat?
+#> [1] "It's nice to meet you. Is there something I can help you with, or would you like to chat?"
 ```
 
 `add_text()` is a simple example of a prompt wrap. It simply adds some
@@ -125,8 +125,8 @@ text at the end of the base prompt.
 #> 
 #> What is a large language model? Explain in 10 words.
 #> --- Receiving response from LLM provider: ---
-#> Advanced computer program that understands and generates human-like written text.
-#> [1] "Advanced computer program that understands and generates human-like written text."
+#> Sophisticated computer program that processes and generates human-like written language.
+#> [1] "Sophisticated computer program that processes and generates human-like written language."
 ```
 
 You can also construct the final prompt text, without sending it to an
@@ -232,24 +232,14 @@ only the final answer is returned.
 #>   (etc.)
 #> 
 #> When you are done, you must type:
-#> FINISH[<put here your final answer to the user's prompt>]
+#>   FINISH[<put here your final answer to the user's prompt>]
 #> 
 #> Make sure your final answer follows the logical conclusion of your thought process.
 #> --- Receiving response from LLM provider: ---
-#> >> step 1: Identify the mathematical operation requested in the prompt, which is addition.
-#> The prompt asks for the sum of 2 and 2.
+#> >> step 1: Identify that the problem is a basic arithmetic operation involving addition.
+#> >> step 2: Recall the specific numbers involved in the operation, which are 2 and 2.
+#> >> step 3: Perform the operation by adding the two numbers together to get their sum.
 #> 
-#> >> step 2: Recall the basic arithmetic fact that 2 + 2 equals a specific number.
-#> This is a fundamental math concept that can be recalled from memory or learned through experience.
-#> 
-#> >> step 3: Apply this knowledge to determine that the sum of 2 and 2 is indeed 4.
-#> The numerical value of 4 is derived directly from knowing that 2 added to itself results in a total count of four items, quantities, or values.
-#> 
-#> FINISH4
-#> --- Sending request to LLM provider (llama3.1:8b): ---
-#> Error, could not parse your final answer.
-#> Please type: 'FINISH[<put here your final answer to the original prompt>]'
-#> --- Receiving response from LLM provider: ---
 #> FINISH[4]
 #> [1] 4
 ```
@@ -266,28 +256,12 @@ to autonomously retrieve additional information or take other actions.
     location = c("Amsterdam", "Utrecht", "Enschede"),
     unit = c("Celcius", "Fahrenheit")
   ) {
-    #' llm_tool::name temperature_in_location
-    #'
-    #' llm_tool::description Get the temperature in a location
-    #'
-    #' llm_tool::param location Location, must be one of: "Amsterdam", "Utrecht", "Enschede"
-    #' llm_tool::param unit Unit, must be one of: "Celcius", "Fahrenheit"
-    #'
-    #' llm_tool::return The temperature in the specified location and unit
-    #'
-    #' llm_tool::example
-    #' temperature_in_location("Amsterdam", "Fahrenheit")
-
-    # As shown above, one can use docstring-like text to document the function.
-    #   This will provide the LLM information on what the function does,
-    #   and how it should be used.
-
     location <- match.arg(location)
     unit <- match.arg(unit)
 
     temperature_celcius <- switch(
       location,
-      "Amsterdam" = 32.5,
+      "Amsterdam" = 32.55,
       "Utrecht" = 19.8,
       "Enschede" = 22.7
     )
@@ -298,6 +272,17 @@ to autonomously retrieve additional information or take other actions.
       return(temperature_celcius * 9/5 + 32)
     }
   }
+
+  # Add documentation to the function for the LLM
+  temperature_in_location <- add_tools_add_documentation(
+    temperature_in_location,
+    description = "Get the temperature in a location",
+    arguments = list(
+      location = "Location, must be one of: 'Amsterdam', 'Utrecht', 'Enschede'",
+      unit = "Unit, must be one of: 'Celcius', 'Fahrenheit'"
+    ),
+    return_value = "The temperature in the specified location and unit"
+  )
 
   # Ask the LLM a question which can be answered with the function
   "Hi, what is the weather temperature in Enschede?" |>
@@ -313,35 +298,147 @@ to autonomously retrieve additional information or take other actions.
 #> You must answer with only an integer (use no other characters).
 #> 
 #> If you need more information, you can call functions to help you.
-#> To call a function, type:
-#>   FUNCTION[<function name here>](<argument 1>, <argument 2>, etc...)
+#> To call a function, output a JSON object with the following format:
+#> 
+#> {
+#>   "function": "<function name>",
+#>   "arguments": {
+#>     "<argument_name>": <argument_value>,
+#>     ...
+#>   }
+#> }
+#> 
+#> (Note: you cannot call other functions within arguments.)
 #> 
 #> The following functions are available:
 #> 
-#> function name: temperature_in_location
-#> description: Get the temperature in a location
-#> arguments:
-#>     - location: Location, must be one of: "Amsterdam", "Utrecht", "Enschede"
-#>     - unit: Unit, must be one of: "Celcius", "Fahrenheit"
-#> return value: The temperature in the specified location and unit
-#> example usage: FUNCTION[temperature_in_location]("Amsterdam", "Fahrenheit")
+#>   function name: temperature_in_location
+#>   description: Get the temperature in a location
+#>   arguments:
+#>     - location: Location, must be one of: 'Amsterdam', 'Utrecht', 'Enschede'
+#>     - unit: Unit, must be one of: 'Celcius', 'Fahrenheit'
+#>   return value: The temperature in the specified location and unit
 #> 
 #> After you call a function, wait until you receive more information.
+#> Use the information to decide your next steps or provide a final response.
 #> --- Receiving response from LLM provider: ---
-#> I'll call the `temperature_in_location` function with the necessary arguments.
+#> To get the weather temperature in Enschede, I will call the `temperature_in_location` function with the required arguments.
 #> 
-#> FUNCTION[temperature_in_location]("Enschede", "Celcius")
+#> Here's my first action:
+#> 
+#> ```
+#> {
+#>   "function": "temperature_in_location",
+#>   "arguments": {
+#>     "location": "Enschede",
+#>     "unit": "Celcius"
+#>   }
+#> }
+#> ```
+#> 
+#> Please wait for more information...
 #> --- Sending request to LLM provider (llama3.1:8b): ---
 #> function called: temperature_in_location
 #> arguments used: location = Enschede, unit = Celcius
 #> result: 22.7
 #> --- Receiving response from LLM provider: ---
 #> The current temperature in Enschede is 22.7°C.
+#> 
+#> So, my response to your original question is:
+#> 
+#> 22.7
 #> --- Sending request to LLM provider (llama3.1:8b): ---
 #> You must answer with only an integer (use no other characters).
 #> --- Receiving response from LLM provider: ---
 #> 22
 #> [1] 22
+```
+
+`add_tools()` can also be used to give the LLM access to pre-existing
+functions from packages or base R. The documentation will then be
+extracted from the available help file.
+
+``` r
+  "What are the files in my current directory?" |>
+    add_tools(list.files) |>
+    send_prompt(ollama)
+#> --- Sending request to LLM provider (llama3.1:8b): ---
+#> What are the files in my current directory?
+#> 
+#> If you need more information, you can call functions to help you.
+#> To call a function, output a JSON object with the following format:
+#> 
+#> {
+#>   "function": "<function name>",
+#>   "arguments": {
+#>     "<argument_name>": <argument_value>,
+#>     ...
+#>   }
+#> }
+#> 
+#> (Note: you cannot call other functions within arguments.)
+#> 
+#> The following functions are available:
+#> 
+#>   function name: list.files
+#>   description: List the Files in a Directory/Folder: These functions produce a character vector of the names of files
+#> or directories in the named directory.
+#>   arguments:
+#>     - path: a character vector of full path names; the default corresponds to the working directory, 'getwd()'.  Tilde expansion (see 'path.expand') is performed.  Missing values will be ignored.  Elements with a marked encoding will be converted to the native encoding (and if that fails, considered non-existent).
+#>     - pattern: an optional regular expression.  Only file names which match the regular expression will be returned.
+#>     - all.files: a logical value.  If 'FALSE', only the names of visible files are returned (following Unix-style visibility, that is files whose name does not start with a dot).  If 'TRUE', all file names will be returned.
+#>     - full.names: a logical value.  If 'TRUE', the directory path is prepended to the file names to give a relative file path.  If 'FALSE', the file names (rather than paths) are returned.
+#>     - recursive: logical.  Should the listing recurse into directories?
+#>     - ignore.case: logical.  Should pattern-matching be case-insensitive?
+#>     - include.dirs: logical.  Should subdirectory names be included in recursive listings?  (They always are in non-recursive ones).
+#>     - no..: logical.  Should both '"."' and '".."' be excluded also from non-recursive listings?
+#>   return value: A character vector containing the names of the files in the
+#> specified directories (empty if there were no files).  If a path
+#> does not exist or is not a directory or is unreadable it is
+#> skipped.
+#> The files are sorted in alphabetical order, on the full path if
+#> 'full.names = TRUE'.
+#> 'list.dirs' implicitly has 'all.files = TRUE', and if 'recursive =
+#> TRUE', the answer includes 'path' itself (provided it is a
+#> readable directory).
+#> 'dir' is an alias for 'list.files'.
+#> 
+#> After you call a function, wait until you receive more information.
+#> Use the information to decide your next steps or provide a final response.
+#> --- Receiving response from LLM provider: ---
+#> I can call the "list.files" function with the necessary arguments.
+#> 
+#> Here's my JSON object calling the function:
+#> 
+#> ```
+#> {
+#>   "function": "list.files",
+#>   "arguments": {
+#>     "path": "."
+#>   }
+#> }
+#> ```
+#> 
+#> Please wait for the output to determine my next steps.
+#> --- Sending request to LLM provider (llama3.1:8b): ---
+#> function called: list.files
+#> arguments used: path = .
+#> result: getting_started.Rmd, getting_started.Rmd.orig, precompile vignettes.R
+#> --- Receiving response from LLM provider: ---
+#> The function has returned a result.
+#> 
+#> It seems that I have a single file in my current directory (which is represented by the '.' argument), which are:
+#> 
+#> 1. `getting_started.Rmd`
+#> 2. `getting_started.Rmd.orig`
+#> 3. `precompile vignettes.R`
+#> 
+#> Since there are multiple files, and they do not match any specific pattern or condition mentioned in the problem statement, I will conclude that this is indeed the list of files in my current directory.
+#> 
+#> Therefore, my final response is:
+#> 
+#> The files in your current directory are: `getting_started.Rmd`, `getting_started.Rmd.orig`, `precompile vignettes.R`.
+#> [1] "The function has returned a result.\n\nIt seems that I have a single file in my current directory (which is represented by the '.' argument), which are:\n\n1. `getting_started.Rmd`\n2. `getting_started.Rmd.orig`\n3. `precompile vignettes.R`\n\nSince there are multiple files, and they do not match any specific pattern or condition mentioned in the problem statement, I will conclude that this is indeed the list of files in my current directory.\n\nTherefore, my final response is:\n\nThe files in your current directory are: `getting_started.Rmd`, `getting_started.Rmd.orig`, `precompile vignettes.R`."
 ```
 
 ### Code generation and evaluation
@@ -525,3 +622,17 @@ If you encounter issues, please open an issue in the GitHub repository.
 You are welcome to contribute to the package by opening a pull request.
 If you have any questions or suggestions, you can also reach us via
 e-mail.
+
+### A note on ‘text-based’ versus ‘native’ handling of LLMs
+
+‘tidyprompt’ is primarily focused on ‘text-based’ handling of LLMs,
+where textual output is parsed to achieve structured output and other
+functionalities. This is in contrast to ‘native’ handling, where the LLM
+is directly controlled by the LLM provider to provide output in a
+certain manner (for instance, the available tokens are restricted to
+match a specific output format). While the latter may be more efficient,
+it tends to be more specific to LLM providers, certain models, and API
+structures. With ‘text-based’ processing, ‘tidyprompt’ aims to be more
+general and suitable for a wider range of LLM providers and models.
+Nonetheless, ‘tidyprompt’ may also include support for ‘native’
+processing in the future.

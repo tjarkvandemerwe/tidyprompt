@@ -178,16 +178,22 @@ add_tools <- function(prompt, tool_functions = list()) {
 
 
 
-#' Extract docstring-documentation from a function
+#' Extract documentation from a function
 #'
-#' This function parses either the internal, docstring-like documentation or
-#' the help file documentation from a function. It is used to extract
-#' information about the function's name, description, arguments, and return value.
+#' This function extracts documentation from a help file (if available,
+#' i.e., when the function is part of a package) or from documentation added
+#' by [add_tools_add_documentation()]. The extracted documentation includes
+#' the function's name, description, arguments, and return value.
 #' This information is used to provide an LLM with information about the functions,
 #' so that the LLM can call R functions.
 #'
+#' @details This function will prioritize documentation added by
+#' [add_tools_add_documentation()] over documentation from a help file.
+#' Thus, it is possible to override the help file documentation by adding
+#' custom documentation
+#'
 #' @param func A function object. The function should belong to a package
-#' and have roxygen-documentation available in a help file, or it should
+#' and have documentation available in a help file, or it should
 #' have documentation added by [add_tools_add_documentation()]
 #' @param name The name of the function if already known (optional).
 #' If not provided it will be extracted from the documentation or the
@@ -251,6 +257,11 @@ add_tools_get_documentation <- function(func, name = NULL) {
 #' have help files; [add_tools_get_documentation()] will extract the documentation
 #' from help files when available.
 #'
+#' @details If the function already has documentation, it will be overwritten
+#' by the documentation provided in this function (in terms of extraction
+#' by [add_tools_get_documentation()]). Thus, it is possible to override
+#' the help file documentation by adding custom documentation
+#'
 #' @param func A function object
 #' @param description A description of the function
 #' @param arguments A named list of arguments (arguments) with descriptions
@@ -262,17 +273,7 @@ add_tools_get_documentation <- function(func, name = NULL) {
 #'
 #' @export
 #'
-#' @examples
-#' my_function <- function(x, y) { x + y }
-#' my_function_documented <- add_tools_add_documentation(
-#'    my_function,
-#'    description = "Add two numbers",
-#'    arguments = list(
-#'      x = "A number",
-#'      y = "Another number"
-#'    ),
-#'    return_value = "The sum of the two numbers"
-#'  )
+#' @example inst/examples/add_tools.R
 add_tools_add_documentation <- function(
     func,
     description,
@@ -307,9 +308,10 @@ add_tools_add_documentation <- function(
 #' Extract documentation from a function's help file
 #'
 #' This function extracts documentation from a function's help file. It is used
-#' as a fallback when the function does not contain docstring-like documentation.
+#' as a fallback when the function does not contain documentation
+#' as added by [add_tools_add_documentation()].
 #'
-#' @param name A name of a function
+#' @param name (string) A name of a function (e.g., 'list.files')
 #'
 #' @return A list with the following elements:
 #' - name: The name of the function
@@ -361,8 +363,6 @@ add_tools_get_documentation_from_helpfile <- function(name) {
   # Extract the text from the help file
   help_text <- tools::Rd2txt(get_help_file(as.character(help_file))) |>
     utils::capture.output()
-  # help_text |> cat()
-  # help_text
 
   # Function to dynamically parse help text
   parse_help_text <- function(help_text) {
