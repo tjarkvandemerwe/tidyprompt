@@ -47,7 +47,7 @@
 <span>  item_name <span class="op">=</span> <span class="st">"item"</span>,</span>
 <span>  item_explanation <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  n_unique_items <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  list_mode <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"comma"</span>, <span class="st">"bullet"</span><span class="op">)</span></span>
+<span>  list_mode <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"bullet"</span>, <span class="st">"comma"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -74,10 +74,12 @@ appended after the list instruction</p></dd>
 
 
 <dt id="arg-list-mode">list_mode<a class="anchor" aria-label="anchor" href="#arg-list-mode"></a></dt>
-<dd><p>(optional) Mode of the list. Either "comma" or "bullet".
-"comma" mode expects items to be listed with a number and a period before.
-"bullet" mode expects items to be listed with "–" before each item.
-"comma" may work better for smaller large language models</p></dd>
+<dd><p>(optional) Mode of the list. Either "bullet" or "comma".
+"bullet mode expects items to be listed with "–" before each item, with a
+new line for each item (e.g., "– item1\n– item2\n– item3").
+"comma" mode expects items to be listed with a number and a period before
+(e.g., "1. item1, 2. item2, 3. item3"). "comma" mode may be easier for
+smaller LLMs to use</p></dd>
 
 </dl></div>
     <div class="section level2">
