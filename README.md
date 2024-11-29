@@ -476,6 +476,11 @@ plot <- paste0(
 plot
 ```
 
+<figure>
+<img src="figure/answer_as_code-1-1.png" alt="plot" />
+<figcaption aria-hidden="true">plot</figcaption>
+</figure>
+
 ### Creating your own prompt wraps
 
 Using `prompt_wrap()`, you can create your own prompt wraps. An input
