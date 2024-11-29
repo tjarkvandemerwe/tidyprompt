@@ -476,7 +476,7 @@ plot <- paste0(
 plot
 ```
 
-<img src="figure/answer_as_code1-1.png" width="75" />
+<img src="figure/answer_as_code1-1.png" width="400" />
 
 ### Creating your own prompt wraps
 
