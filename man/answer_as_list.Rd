@@ -9,7 +9,7 @@ answer_as_list(
   item_name = "item",
   item_explanation = NULL,
   n_unique_items = NULL,
-  list_mode = c("comma", "bullet")
+  list_mode = c("bullet", "comma")
 )
 }
 \arguments{
@@ -23,10 +23,12 @@ appended after the list instruction}
 
 \item{n_unique_items}{(optional) Number of unique items required in the list}
 
-\item{list_mode}{(optional) Mode of the list. Either "comma" or "bullet".
-"comma" mode expects items to be listed with a number and a period before.
-"bullet" mode expects items to be listed with "--" before each item.
-"comma" may work better for smaller large language models}
+\item{list_mode}{(optional) Mode of the list. Either "bullet" or "comma".
+"bullet mode expects items to be listed with "--" before each item, with a
+new line for each item (e.g., "-- item1\\n-- item2\\n-- item3").
+"comma" mode expects items to be listed with a number and a period before
+(e.g., "1. item1, 2. item2, 3. item3"). "comma" mode may be easier for
+smaller LLMs to use}
 }
 \value{
 A \code{\link[=tidyprompt]{tidyprompt()}} with an added \code{\link[=prompt_wrap]{prompt_wrap()}} which
