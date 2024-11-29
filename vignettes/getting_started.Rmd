@@ -426,7 +426,7 @@ plot <- paste0(
 plot
 ```
 ```{r echo=FALSE, out.width=504}
-knitr::include_graphics("figure/answer_as_code1-1.png")
+knitr::include_graphics(here::here("figure", "answer_as_code1-1.png"))
 ```
 
 
