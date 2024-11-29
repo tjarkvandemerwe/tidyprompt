@@ -117,23 +117,37 @@ will ensure that the LLM response is a list of items</p>
 <span class="r-in"><span>  <span class="st">"What are some delicious fruits?"</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>    <span class="fu">answer_as_list</span><span class="op">(</span>item_name <span class="op">=</span> <span class="st">"fruit"</span>, n_unique_items <span class="op">=</span> <span class="fl">5</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="fu"><a href="llm_provider_ollama.html">llm_provider_ollama</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#   --- Sending request to LLM provider (llama3.1:8b): ---</span></span></span>
-<span class="r-in"><span><span class="co">#     What are some delicious fruits?</span></span></span>
+<span class="r-in"><span><span class="co">#   What are some delicious fruits?</span></span></span>
 <span class="r-in"><span><span class="co">#</span></span></span>
-<span class="r-in"><span><span class="co">#     Respond with a list, like so:</span></span></span>
-<span class="r-in"><span><span class="co">#       -- &lt;&lt;fruit 1&gt;&gt;</span></span></span>
-<span class="r-in"><span><span class="co">#       -- &lt;&lt;fruit 2&gt;&gt;</span></span></span>
-<span class="r-in"><span><span class="co">#       etc.</span></span></span>
-<span class="r-in"><span><span class="co">#     The list should contain 5 unique items.</span></span></span>
+<span class="r-in"><span><span class="co">#   Respond with a list, like so:</span></span></span>
+<span class="r-in"><span><span class="co">#     -- &lt;&lt;fruit 1&gt;&gt;</span></span></span>
+<span class="r-in"><span><span class="co">#     -- &lt;&lt;fruit 2&gt;&gt;</span></span></span>
+<span class="r-in"><span><span class="co">#     etc.</span></span></span>
+<span class="r-in"><span><span class="co">#   The list should contain 5 unique items.</span></span></span>
 <span class="r-in"><span><span class="co">#   --- Receiving response from LLM provider: ---</span></span></span>
-<span class="r-in"><span><span class="co">#     Here's a list of delicious fruits:</span></span></span>
+<span class="r-in"><span><span class="co">#   Here's the list of delicious fruits:</span></span></span>
 <span class="r-in"><span><span class="co">#</span></span></span>
 <span class="r-in"><span><span class="co">#     -- Strawberries</span></span></span>
 <span class="r-in"><span><span class="co">#     -- Pineapples</span></span></span>
 <span class="r-in"><span><span class="co">#     -- Mangoes</span></span></span>
-<span class="r-in"><span><span class="co">#     -- Papayas</span></span></span>
-<span class="r-in"><span><span class="co">#     -- Kiwis</span></span></span>
-<span class="r-in"><span><span class="co"># [1] "Strawberries" "Pineapples"   "Mangoes"      "Papayas"      "Kiwis"</span></span></span>
+<span class="r-in"><span><span class="co">#     -- Blueberries</span></span></span>
+<span class="r-in"><span><span class="co">#     -- Pomegranates</span></span></span>
+<span class="r-in"><span><span class="co"># [[1]]</span></span></span>
+<span class="r-in"><span><span class="co"># [1] "Strawberries"</span></span></span>
+<span class="r-in"><span><span class="co">#</span></span></span>
+<span class="r-in"><span><span class="co"># [[2]]</span></span></span>
+<span class="r-in"><span><span class="co"># [1] "Pineapples"</span></span></span>
+<span class="r-in"><span><span class="co">#</span></span></span>
+<span class="r-in"><span><span class="co"># [[3]]</span></span></span>
+<span class="r-in"><span><span class="co"># [1] "Mangoes"</span></span></span>
+<span class="r-in"><span><span class="co">#</span></span></span>
+<span class="r-in"><span><span class="co"># [[4]]</span></span></span>
+<span class="r-in"><span><span class="co"># [1] "Blueberries"</span></span></span>
+<span class="r-in"><span><span class="co">#</span></span></span>
+<span class="r-in"><span><span class="co"># [[5]]</span></span></span>
+<span class="r-in"><span><span class="co"># [1] "Pomegranates"</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
