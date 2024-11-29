@@ -222,6 +222,7 @@ plot <- paste0(
   send_prompt(openai)
 plot
 ```
+![plot](figure/answer_as_code1-1.png)
 
 ```{r include=FALSE}
 openai$verbose <- TRUE; options(tidyprompt.verbose = TRUE)
