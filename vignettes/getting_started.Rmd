@@ -425,7 +425,7 @@ plot <- paste0(
   send_prompt(openai)
 plot
 ```
-```{r echo=FALSE, out.width=400}
+```{r echo=FALSE, out.width=504}
 knitr::include_graphics("figure/answer_as_code1-1.png")
 ```
 
