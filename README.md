@@ -476,10 +476,14 @@ plot <- paste0(
 plot
 ```
 
-<figure>
-<img src="figure/answer_as_code1-1.png" alt="plot" />
-<figcaption aria-hidden="true">plot</figcaption>
-</figure>
+<div class="figure">
+
+<img src="figure/answer_as_code1-1.png" alt="plot" width="100%" />
+<p class="caption">
+plot
+</p>
+
+</div>
 
 ### Creating your own prompt wraps
 

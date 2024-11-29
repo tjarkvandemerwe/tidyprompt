@@ -425,8 +425,9 @@ plot <- paste0(
   send_prompt(openai)
 plot
 ```
-![plot](figure/answer_as_code1-1.png)
-
+```{r echo=FALSE, fig.cap="plot"}
+knitr::include_graphics("figure/answer_as_code1-1.png")
+```
 
 
 ### Creating your own prompt wraps
