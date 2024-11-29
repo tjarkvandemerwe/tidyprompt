@@ -425,7 +425,7 @@ plot <- paste0(
   send_prompt(openai)
 plot
 ```
-![plot](figure/answer_as_code-1-1.png)
+![plot](figure/answer_as_code1-1.png)
 
 
 
