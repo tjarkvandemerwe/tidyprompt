@@ -477,7 +477,7 @@ plot
 ```
 
 <figure>
-<img src="figure/answer_as_code-1-1.png" alt="plot" />
+<img src="figure/answer_as_code1-1.png" alt="plot" />
 <figcaption aria-hidden="true">plot</figcaption>
 </figure>
 
