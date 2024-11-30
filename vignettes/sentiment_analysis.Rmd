@@ -96,4 +96,4 @@ ggplot(sentences_df, aes(x = sentiment_score, y = reorder(sentence, sentiment_sc
   )
 ```
 
-![plot of chunk plot_sentiment_analysis](../man/figures/plot_sentiment_analysis-1.png)
+![Plot of sentiment scores](../man/figures/plot_sentiment_analysis-1.png)
