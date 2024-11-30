@@ -132,9 +132,8 @@ answer_as_list <- function(
       items <- stringr::str_trim(stringr::str_remove_all(items, "--\\s*"))
     } else if (list_mode == "comma") {
       # Improved comma mode extraction
+      items <- stringr::str_match_all(response, "\\d+\\.\\s*([^,\\n]+)")[[1]][,2]
 
-      # Split the response by commas
-      items <- unlist(strsplit(response, ","))
       if (length(items) == 0) {
         return(llm_feedback(glue::glue(
           "Could not parse any listed items from your response.",
