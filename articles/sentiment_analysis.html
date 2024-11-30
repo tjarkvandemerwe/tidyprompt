@@ -115,16 +115,16 @@ integer from its response.</p>
 <span></span>
 <span><span class="va">sentences_df</span></span>
 <span><span class="co">#&gt;                                        sentence sentiment_score</span></span>
-<span><span class="co">#&gt; 1                          I love this product!              99</span></span>
-<span><span class="co">#&gt; 2                      This product is terrible               2</span></span>
+<span><span class="co">#&gt; 1                          I love this product!              95</span></span>
+<span><span class="co">#&gt; 2                      This product is terrible               3</span></span>
 <span><span class="co">#&gt; 3            The customer service was excellent              95</span></span>
-<span><span class="co">#&gt; 4      I am very disappointed with this product               4</span></span>
+<span><span class="co">#&gt; 4      I am very disappointed with this product              20</span></span>
 <span><span class="co">#&gt; 5           The delivery was fast and efficient              95</span></span>
 <span><span class="co">#&gt; 6  I would not recommend this product to anyone               3</span></span>
-<span><span class="co">#&gt; 7              It was not bad, not great either              50</span></span>
+<span><span class="co">#&gt; 7              It was not bad, not great either              46</span></span>
 <span><span class="co">#&gt; 8                                           Meh              50</span></span>
-<span><span class="co">#&gt; 9            It felt like walking up a mountain              42</span></span>
-<span><span class="co">#&gt; 10                                I am angry!!!              99</span></span></code></pre></div>
+<span><span class="co">#&gt; 9            It felt like walking up a mountain              25</span></span>
+<span><span class="co">#&gt; 10                                I am angry!!!              10</span></span></code></pre></div>
 <p>Let’s plot the results!</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
@@ -138,6 +138,9 @@ integer from its response.</p>
 <span>    x <span class="op">=</span> <span class="st">"Sentiment score"</span>,</span>
 <span>    y <span class="op">=</span> <span class="st">"Sentence"</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
+<div class="float">
+<img src="../reference/figures/plot_sentiment_analysis-1.png" alt="plot of chunk plot_sentiment_analysis"><div class="figcaption">plot of chunk plot_sentiment_analysis</div>
+</div>
   </main>
 </div>
 
