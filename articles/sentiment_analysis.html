@@ -93,8 +93,8 @@ Ollama)</p>
 <span><span class="va">ollama</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/llm_provider_ollama.html">llm_provider_ollama</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">ollama</span><span class="op">$</span><span class="va">parameters</span><span class="op">$</span><span class="va">model</span> <span class="op">&lt;-</span> <span class="st">"llama3.1:8b"</span></span></code></pre></div>
 <p>For every sentence, we will now prompt the LLM to provide a sentiment
-score. To do this, we will use purrr’s <code><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map()</a></code> function to
-iterate over each sentence and within each iteration use a
+score. To do this, we will use ‘purrr’ <code><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map()</a></code> to iterate
+over each sentence. Within each iteration, we use a
 <code><a href="../reference/tidyprompt.html">tidyprompt()</a></code> to prompt the LLM for the sentiment score. The
 latter will force the LLM to answer as an integer and extract the
 integer from its response.</p>
