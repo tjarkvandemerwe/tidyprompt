@@ -17,12 +17,15 @@
 
   # Prompt to value calculated with R
   avg_miles_per_gallon <- paste0(
-    "Using the built-in mtcars dataset,",
+    "Using the mtcars dataset,",
     " calculate the average miles per gallon (mpg) for cars with 6 cylinders."
   ) |>
     answer_as_integer() |>
     answer_as_code(
-      pkgs_to_use = c("dplyr"), output_as_tool = TRUE
+      pkgs_to_use = c("dplyr"),
+      objects_to_use = list("mtcars" = mtcars),
+      evaluate_code = TRUE,
+      output_as_tool = TRUE
     ) |>
     answer_by_chain_of_thought() |>
     send_prompt(llm_provider_ollama())
