@@ -57,8 +57,8 @@ remotes::install_github("tjarkvandemerwe/tidyprompt")
 
 ## Getting started
 
-See the [Getting
-Started](https://tjarkvandemerwe.github.io/tidyprompt/articles/getting_started.html)
+See the [‘Getting
+started’](https://tjarkvandemerwe.github.io/tidyprompt/articles/getting_started.html)
 vignette for an introduction to ‘tidyprompt’.
 
 ## More information and contributing
