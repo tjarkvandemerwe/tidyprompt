@@ -38,13 +38,6 @@ Key features of ‘tidyprompt’ are:
   Google Gemini. Or easily write your own hook for any other LLM
   provider.
 
-‘tidyprompt’ is primarily based on [‘text-based’
-(vs. ‘native’)](#a-note-on-text-based-versus-native-handling-of-llms)
-handling of LLMs. This offers a more general approach compared to
-‘native’ handling, the latter being more specific to certain LLM
-providers, models, and API structures. Features to support ‘native’
-handling may nonetheless be added in the future.
-
 ## Installation
 
 You can install the development version of tidyprompt from
