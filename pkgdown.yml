@@ -3,7 +3,8 @@ pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   getting_started: getting_started.html
-last_built: 2024-11-30T09:28Z
+  sentiment_analysis: sentiment_analysis.html
+last_built: 2024-11-30T10:27Z
 urls:
   reference: https://tjarkvandemerwe.github.io/tidyprompt/reference
   article: https://tjarkvandemerwe.github.io/tidyprompt/articles
