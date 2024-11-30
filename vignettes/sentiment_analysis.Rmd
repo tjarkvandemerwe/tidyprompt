@@ -45,8 +45,8 @@ ollama$parameters$model <- "llama3.1:8b"
 ```
 
 For every sentence, we will now prompt the LLM to provide a sentiment score.
-To do this, we will use purrr's `map()` function to iterate over each sentence
-and within each iteration use a `tidyprompt()` to prompt the LLM for the sentiment score.
+To do this, we will use 'purrr' `map()` to iterate over each sentence.
+Within each iteration, we use a `tidyprompt()` to prompt the LLM for the sentiment score.
 The latter will force the LLM to answer as an integer and extract the integer from its response.
 
 
