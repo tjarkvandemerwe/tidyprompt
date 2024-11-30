@@ -5,6 +5,8 @@ vignette: >
   %\VignetteIndexEntry{Sentiment analysis in R with a LLM and 'tidyprompt'}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+resource_files:
+  - man/figures/plot_sentiment_analysis-1.png
 ---
 
 

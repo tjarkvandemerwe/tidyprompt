@@ -5,6 +5,8 @@ vignette: >
   %\VignetteIndexEntry{Getting started}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+resource_files:
+  - man/figures/answer_as_code1-1.png
 ---
 
 
