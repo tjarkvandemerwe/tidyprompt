@@ -6,7 +6,7 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 resource_files:
-  - man/figures/plot_sentiment_analysis-1.png
+  - ../man/figures/plot_sentiment_analysis-1.png
 ---
 
 
@@ -17,7 +17,7 @@ in R with a LLM (large language model).
 We will first define a simple dataset of sentences that we will create sentiment scores for.
 
 
-```r
+``` r
 sentences_df <- data.frame(
   sentence = c(
     "I love this product!",
@@ -37,7 +37,7 @@ sentences_df <- data.frame(
 First we will create a connection to a locally running LLM (using Ollama)
 
 
-```r
+``` r
 library(tidyprompt)
 
 ollama <- llm_provider_ollama()
@@ -50,7 +50,7 @@ and within each iteration use a `tidyprompt()` to prompt the LLM for the sentime
 The latter will force the LLM to answer as an integer and extract the integer from its response.
 
 
-```r
+``` r
 library(purrr)
 
 sentences_df$sentiment_score <- map_int(
@@ -67,22 +67,22 @@ sentences_df$sentiment_score <- map_int(
 
 sentences_df
 #>                                        sentence sentiment_score
-#> 1                          I love this product!              99
-#> 2                      This product is terrible               2
+#> 1                          I love this product!              95
+#> 2                      This product is terrible               3
 #> 3            The customer service was excellent              95
-#> 4      I am very disappointed with this product               4
+#> 4      I am very disappointed with this product              20
 #> 5           The delivery was fast and efficient              95
 #> 6  I would not recommend this product to anyone               3
-#> 7              It was not bad, not great either              50
+#> 7              It was not bad, not great either              46
 #> 8                                           Meh              50
-#> 9            It felt like walking up a mountain              42
-#> 10                                I am angry!!!              99
+#> 9            It felt like walking up a mountain              25
+#> 10                                I am angry!!!              10
 ```
 
 Let's plot the results!
 
 
-```r
+``` r
 library(ggplot2)
 
 ggplot(sentences_df, aes(x = sentiment_score, y = reorder(sentence, sentiment_score))) +
@@ -95,30 +95,5 @@ ggplot(sentences_df, aes(x = sentiment_score, y = reorder(sentence, sentiment_sc
     y = "Sentence"
   )
 ```
-```{r echo=FALSE, out.width=504, fig.alt="Plot of sentiment scores for each sentence"}
-filename <- "man/figures/plot_sentiment_analysis-1.png"
 
-# Construct local paths
-local_paths <- c(
-  here::here(filename),
-  file.path(".", filename),
-  file.path("..", filename)
-)
-
-# Construct remote path
-base_remote_url <- "https://github.com/tjarkvandemerwe/tidyprompt/blob/main"
-remote_path <- file.path(base_remote_url, filename)
-
-# Check each path in order and include the first one that exists
-for (path in local_paths) {
-  if (file.exists(path)) {
-    knitr::include_graphics(path)
-    break
-  }
-}
-
-# If no local path exists, use the remote path
-if (!any(sapply(local_paths, file.exists))) {
-  knitr::include_graphics(remote_path)
-}
-```
+![plot of chunk plot_sentiment_analysis](../man/figures/plot_sentiment_analysis-1.png)
