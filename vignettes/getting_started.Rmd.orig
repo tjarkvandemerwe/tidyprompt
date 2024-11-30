@@ -9,9 +9,12 @@ vignette: >
 
 ```{r chunk_options, include = FALSE}
 
+here::i_am("vignettes/getting_started.Rmd")
+
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  fig.path = "man/figures/"
 )
 
 options(tidyprompt.verbose = TRUE)
