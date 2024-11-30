@@ -5,7 +5,7 @@
 \alias{tidyprompt-package}
 \title{tidyprompt: Prompt and empower your LLM, the tidy way}
 \description{
-The 'tidyprompt' package allows users to prompt and empower their large language models (LLMs) in a tidy way. It provides a framework to construct LLM prompts using 'tidyverse'-inspired piping syntax, with a library of pre-built prompt wrappers and the option to build custom ones. Additionally, it supports structured LLM output extraction and validation, with automatic feedback and retries if necessary. Moreover, it enables specific LLM reasoning modes, autonomous R function calling for LLMs, and compatibility with any LLM provider.
+The 'tidyprompt' package allows users to prompt and empower their large language models (LLMs) in a tidy way. It provides a framework to construct LLM prompts using 'tidyverse'-inspired piping syntax, with a library of pre-built prompt wrappers and the option to build custom ones. Additionally, it supports structured LLM output extraction and validation, with automatic feedback and retries if necessary. Moreover, it provides functionalities like LLM reasoning modes (e.g., chain of thought), autonomous R function calling, and R code generation and evaluation. 'tidyprompt' is furthermore compatible with any LLM provider that offers chat completions.
 }
 \seealso{
 Useful links:
@@ -22,6 +22,11 @@ Useful links:
 Authors:
 \itemize{
   \item Tjark Van de Merwe \email{t.vandemerwe@kennispunttwente.nl} [copyright holder]
+}
+
+Other contributors:
+\itemize{
+  \item Kennispunt Twente \email{info@kennispunttwente.nl} [funder]
 }
 
 }

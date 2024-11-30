@@ -13,6 +13,7 @@ answer_as_code(
   list_objects = TRUE,
   skim_dataframes = TRUE,
   evaluate_code = TRUE,
+  r_session_options = list(),
   output_as_tool = FALSE,
   return_mode = c("full", "code", "console", "object", "formatted_output", "llm_answer")
 )
@@ -20,7 +21,7 @@ answer_as_code(
 \arguments{
 \item{prompt}{A single string or a \code{\link[=tidyprompt]{tidyprompt()}} object}
 
-\item{add_text}{Character string which will be added to the current prompt text,
+\item{add_text}{Single string which will be added to the current prompt text,
 informing the LLM that they must code in R to answer the prompt}
 
 \item{pkgs_to_use}{A character vector of package names that may be used
@@ -47,7 +48,12 @@ This uses the function \code{\link[=skim_with_labels_and_levels]{skim_with_label
 
 \item{evaluate_code}{Logical indicating whether the R code should be
 evaluated. If TRUE, the R code will be evaluated in a separate R session
-(using the 'callr' package)}
+(using 'callr' to create an isolated R session via \link[callr]{r_session})}
+
+\item{r_session_options}{A list of options to pass to the \link[callr]{r_session}.
+This can be used to customize the R session. See \link[callr]{r_session_options}
+for the available options. If no options are provided, the default options
+will be used but with 'system_profile' and 'user_profile' set to FALSE}
 
 \item{output_as_tool}{Logical indicating whether the console output of the
 evaluated R code should be sent back to the LLM, meaning the LLM will use
@@ -58,7 +64,7 @@ this prompt wrap will end (it will continue for as long as the LLM provides R co
 When this option is enabled, the resulting \code{\link[=prompt_wrap]{prompt_wrap()}} will be of type 'tool'
 (meaning it will be applied first in the order of prompt wraps)}
 
-\item{return_mode}{Character string indicating the return mode. One of
+\item{return_mode}{Single string indicating the return mode. One of
 'full', 'code', 'console', 'object', 'formatted_output', or 'llm_answer'.
 If 'full', the function will return a list with the original LLM answer,
 the extracted R code, and (if evaluated) the output of the R code.
@@ -90,6 +96,7 @@ system; you must use this function with caution.
 }
 \examples{
 \dontrun{
+  # Prompt to plot object in R
   plot <- paste0(
     "Create a scatter plot of miles per gallon (mpg) versus",
     " horsepower (hp) for the cars in the mtcars dataset.",
@@ -104,6 +111,19 @@ system; you must use this function with caution.
     ) |>
     send_prompt(llm_provider_openai())
   plot
+
+  # Prompt to value calculated with R
+  avg_miles_per_gallon <- paste0(
+    "Using the built-in mtcars dataset,",
+    " calculate the average miles per gallon (mpg) for cars with 6 cylinders."
+  ) |>
+    answer_as_integer() |>
+    answer_as_code(
+      pkgs_to_use = c("dplyr"), output_as_tool = TRUE
+    ) |>
+    answer_by_chain_of_thought() |>
+    send_prompt(llm_provider_ollama())
+  avg_miles_per_gallon
 }
 }
 \seealso{

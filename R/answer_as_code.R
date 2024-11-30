@@ -11,7 +11,7 @@
 #' system; you must use this function with caution.
 #'
 #' @param prompt A single string or a [tidyprompt()] object
-#' @param add_text Character string which will be added to the current prompt text,
+#' @param add_text Single string which will be added to the current prompt text,
 #' informing the LLM that they must code in R to answer the prompt
 #' @param pkgs_to_use A character vector of package names that may be used
 #' in the R code that the LLM will generate. If evaluating the R code, these
@@ -32,7 +32,11 @@
 #' This uses the function [skim_with_labels_and_levels()]
 #' @param evaluate_code Logical indicating whether the R code should be
 #' evaluated. If TRUE, the R code will be evaluated in a separate R session
-#' (using the 'callr' package)
+#' (using 'callr' to create an isolated R session via \link[callr]{r_session})
+#' @param r_session_options A list of options to pass to the \link[callr]{r_session}.
+#' This can be used to customize the R session. See \link[callr]{r_session_options}
+#' for the available options. If no options are provided, the default options
+#' will be used but with 'system_profile' and 'user_profile' set to FALSE
 #' @param output_as_tool Logical indicating whether the console output of the
 #' evaluated R code should be sent back to the LLM, meaning the LLM will use
 #' R code as a tool to formulate an answer to the prompt. If TRUE, the LLM
@@ -41,7 +45,7 @@
 #' this prompt wrap will end (it will continue for as long as the LLM provides R code).
 #' When this option is enabled, the resulting [prompt_wrap()] will be of type 'tool'
 #' (meaning it will be applied first in the order of prompt wraps)
-#' @param return_mode Character string indicating the return mode. One of
+#' @param return_mode Single string indicating the return mode. One of
 #' 'full', 'code', 'console', 'object', 'formatted_output', or 'llm_answer'.
 #' If 'full', the function will return a list with the original LLM answer,
 #' the extracted R code, and (if evaluated) the output of the R code.
@@ -76,6 +80,7 @@ answer_as_code <- function(
     list_objects = TRUE,
     skim_dataframes = TRUE,
     evaluate_code = TRUE,
+    r_session_options = list(),
     output_as_tool = FALSE,
     return_mode = c("full", "code", "console", "object", "formatted_output", "llm_answer")
 ) {
@@ -92,7 +97,8 @@ answer_as_code <- function(
     is.logical(list_objects),
     is.logical(skim_dataframes),
     is.logical(evaluate_code),
-    is.logical(output_as_tool)
+    is.logical(output_as_tool),
+    is.list(r_session_options)
   )
 
   if (evaluate_code & !requireNamespace("callr", quietly = TRUE))
@@ -108,7 +114,12 @@ answer_as_code <- function(
   ## Validate evaluation_session & load packages
 
   if (evaluate_code) {
-    evaluation_session <- callr::r_session$new() # Make new r_session
+    if (length(r_session_options) == 0) {
+      r_session_options <- callr::r_session_options()
+      r_session_options$system_profile <- FALSE
+      r_session_options$user_profile <- FALSE
+    }
+    evaluation_session <- callr::r_session$new(options = r_session_options)
 
     # Check if packages are installed
     installed_pkgs <- evaluation_session$run(function(pkgs_to_use) {

@@ -9,13 +9,19 @@ Authors@R:
     person(given = "Tjark",
            family = "Van de Merwe",
            role = c("aut", "cph"),
-           email = "t.vandemerwe@kennispunttwente.nl"))
+           email = "t.vandemerwe@kennispunttwente.nl"),
+    person(given = "Kennispunt Twente",
+           role = "fnd",
+           email = "info@kennispunttwente.nl"))
 Description: 
   The 'tidyprompt' package allows users to prompt and empower their large language
-  models (LLMs) in a tidy way. It provides a framework to construct LLM prompts using 'tidyverse'-inspired piping syntax,
-  with a library of pre-built prompt wrappers and the option to build custom ones. Additionally, it supports structured LLM output extraction and validation,
-  with automatic feedback and retries if necessary. Moreover, it enables specific LLM reasoning modes, 
-  autonomous R function calling for LLMs, and compatibility with any LLM provider.
+  models (LLMs) in a tidy way. It provides a framework to construct LLM prompts using 
+  'tidyverse'-inspired piping syntax, with a library of pre-built prompt wrappers
+  and the option to build custom ones. Additionally, it supports structured LLM output 
+  extraction and validation, with automatic feedback and retries if necessary. 
+  Moreover, it provides functionalities like LLM reasoning modes (e.g., chain of thought), 
+  autonomous R function calling, and R code generation and evaluation. 'tidyprompt' 
+  is furthermore compatible with any LLM provider that offers chat completions.
 License: GPL (>= 3) | file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
