@@ -17,12 +17,30 @@ precompile_vignettes <- function() {
 precompile_vignettes()
 
 # Include below answer_as_code chunk *after* compilation (in .Rmd):
-# ```{r echo=FALSE, out.width=504, fig.alt="Plot of sentiment scores for each sentence"}
-# if (file.exists(here::here("man", "figures", "answer_as_code1-1.png"))) {
-#   knitr::include_graphics(here::here("man", "figures", "answer_as_code1-1.png"))
-# } else if (file.exists("./man/figures/answer_as_code1-1.png")) {
-#   knitr::include_graphics("./man/figures/answer_as_code1-1.png")
-# } else if (file.exists("../man/figures/answer_as_code1-1.png")) {
-#   knitr::include_graphics("../man/figures/answer_as_code1-1.png")
-# }
-# ```
+if (FALSE) {
+  filename <- "man/figures/answer_as_code1-1.png"
+
+  # Construct local paths
+  local_paths <- c(
+    here::here(filename),
+    file.path(".", filename),
+    file.path("..", filename)
+  )
+
+  # Construct remote path
+  base_remote_url <- "https://github.com/tjarkvandemerwe/tidyprompt/blob/main"
+  remote_path <- file.path(base_remote_url, filename)
+
+  # Check each path in order and include the first one that exists
+  for (path in local_paths) {
+    if (file.exists(path)) {
+      knitr::include_graphics(path)
+      break
+    }
+  }
+
+  # If no local path exists, use the remote path
+  if (!any(sapply(local_paths, file.exists))) {
+    knitr::include_graphics(remote_path)
+  }
+}
