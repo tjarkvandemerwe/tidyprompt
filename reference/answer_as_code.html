@@ -63,6 +63,7 @@ session, and if the console output that should be sent back to the LLM.</p>
 <span>  list_objects <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  skim_dataframes <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  evaluate_code <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  r_session_options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  output_as_tool <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  return_mode <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"full"</span>, <span class="st">"code"</span>, <span class="st">"console"</span>, <span class="st">"object"</span>, <span class="st">"formatted_output"</span>, <span class="st">"llm_answer"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -77,7 +78,7 @@ session, and if the console output that should be sent back to the LLM.</p>
 
 
 <dt id="arg-add-text">add_text<a class="anchor" aria-label="anchor" href="#arg-add-text"></a></dt>
-<dd><p>Character string which will be added to the current prompt text,
+<dd><p>Single string which will be added to the current prompt text,
 informing the LLM that they must code in R to answer the prompt</p></dd>
 
 
@@ -116,7 +117,14 @@ This uses the function <code><a href="skim_with_labels_and_levels.html">skim_wit
 <dt id="arg-evaluate-code">evaluate_code<a class="anchor" aria-label="anchor" href="#arg-evaluate-code"></a></dt>
 <dd><p>Logical indicating whether the R code should be
 evaluated. If TRUE, the R code will be evaluated in a separate R session
-(using the 'callr' package)</p></dd>
+(using 'callr' to create an isolated R session via <a href="https://callr.r-lib.org/reference/r_session.html" class="external-link">r_session</a>)</p></dd>
+
+
+<dt id="arg-r-session-options">r_session_options<a class="anchor" aria-label="anchor" href="#arg-r-session-options"></a></dt>
+<dd><p>A list of options to pass to the <a href="https://callr.r-lib.org/reference/r_session.html" class="external-link">r_session</a>.
+This can be used to customize the R session. See <a href="https://callr.r-lib.org/reference/r_session_options.html" class="external-link">r_session_options</a>
+for the available options. If no options are provided, the default options
+will be used but with 'system_profile' and 'user_profile' set to FALSE</p></dd>
 
 
 <dt id="arg-output-as-tool">output_as_tool<a class="anchor" aria-label="anchor" href="#arg-output-as-tool"></a></dt>
@@ -131,7 +139,7 @@ When this option is enabled, the resulting <code><a href="prompt_wrap.html">prom
 
 
 <dt id="arg-return-mode">return_mode<a class="anchor" aria-label="anchor" href="#arg-return-mode"></a></dt>
-<dd><p>Character string indicating the return mode. One of
+<dd><p>Single string indicating the return mode. One of
 'full', 'code', 'console', 'object', 'formatted_output', or 'llm_answer'.
 If 'full', the function will return a list with the original LLM answer,
 the extracted R code, and (if evaluated) the output of the R code.
@@ -186,6 +194,7 @@ system; you must use this function with caution.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span>  <span class="co"># Prompt to plot object in R</span></span></span>
 <span class="r-in"><span>  <span class="va">plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="st">"Create a scatter plot of miles per gallon (mpg) versus"</span>,</span></span>
 <span class="r-in"><span>    <span class="st">" horsepower (hp) for the cars in the mtcars dataset."</span>,</span></span>
@@ -200,6 +209,19 @@ system; you must use this function with caution.</p>
 <span class="r-in"><span>    <span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="fu"><a href="llm_provider_openai.html">llm_provider_openai</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="va">plot</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># Prompt to value calculated with R</span></span></span>
+<span class="r-in"><span>  <span class="va">avg_miles_per_gallon</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="st">"Using the built-in mtcars dataset,"</span>,</span></span>
+<span class="r-in"><span>    <span class="st">" calculate the average miles per gallon (mpg) for cars with 6 cylinders."</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="answer_as_integer.html">answer_as_integer</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>    <span class="fu">answer_as_code</span><span class="op">(</span></span></span>
+<span class="r-in"><span>      pkgs_to_use <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"dplyr"</span><span class="op">)</span>, output_as_tool <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="answer_by_chain_of_thought.html">answer_by_chain_of_thought</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="fu"><a href="llm_provider_ollama.html">llm_provider_ollama</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">avg_miles_per_gallon</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
@@ -208,7 +230,7 @@ system; you must use this function with caution.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Luka Koning, Tjark Van de Merwe.</p>
+  <p>Developed by Luka Koning, Tjark Van de Merwe, Kennispunt Twente.</p>
 </div>
 
 <div class="pkgdown-footer-right">
