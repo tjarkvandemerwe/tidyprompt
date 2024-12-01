@@ -237,7 +237,6 @@ add_tools_get_documentation <- function(func, name = NULL) {
     docs <- add_tools_get_documentation_from_helpfile(name)
   }
 
-
   for (name in names(docs)) {
     if (length(docs[[name]]) == 0) {
       docs[[name]] <- NULL

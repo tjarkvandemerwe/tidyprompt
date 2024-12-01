@@ -204,67 +204,100 @@ make_llm_provider_request <- function(
   role <- NULL
   message <- ""
 
-  if (!is.null(stream) && stream) {
-    # Stream response handling
-    response <- httr2::req_perform_stream(
-      req, buffer_kb = 0.001, round = "line",
-      callback = function(chunk) {
-        if (stream_api_type == "ollama") {
-          stream <- rawToChar(chunk) |> strsplit("\n") |> unlist()
+  if (!is.null(stream) && stream) { # Streaming:
+    response <- tryCatch(
+      httr2::req_perform_stream(
+        req, buffer_kb = 0.001, round = "line",
+        callback = function(chunk) {
+          if (stream_api_type == "ollama") {
+            stream <- rawToChar(chunk) |> strsplit("\n") |> unlist()
 
-          for (x in stream) {
-            content <- tryCatch(
-              jsonlite::fromJSON(x),
-              error = function(e) NULL
-            )
+            for (x in stream) {
+              content <- tryCatch(
+                jsonlite::fromJSON(x),
+                error = function(e) NULL
+              )
 
-            if (is.null(content$message$content))
-              next
+              if (is.null(content$message$content))
+                next
 
-            if (is.null(role))
-              role <<- content$message$role
+              if (is.null(role))
+                role <<- content$message$role
 
-            message <<- paste0(message, content$message$content)
+              message <<- paste0(message, content$message$content)
 
-            if (verbose)
-              cat(content$message$content)
-          }
-        }
-
-        if (stream_api_type == "openai") {
-          char <- rawToChar(chunk) |> strsplit(split = "\ndata: ") |> unlist()
-
-          parsed_data <- lapply(char, function(chunk) {
-            json_text <- sub("^data:\\s*", "", chunk)
-            tryCatch(
-              jsonlite::fromJSON(json_text),
-              error = function(e) NULL
-            )
-          })
-
-          if (is.null(role)) {
-            role <<- parsed_data[[1]]$choices$delta$role
-          }
-
-          for (data in parsed_data) {
-            addition <- data$choices$delta$content
-
-            if (!is.null(addition)) {
-              message <<- paste0(message, addition)
               if (verbose)
-                cat(addition)
+                cat(content$message$content)
             }
           }
-        }
 
-        return(TRUE)
+          if (stream_api_type == "openai") {
+            char <- rawToChar(chunk) |> strsplit(split = "\ndata: ") |> unlist()
+
+            parsed_data <- lapply(char, function(chunk) {
+              json_text <- sub("^data:\\s*", "", chunk)
+              tryCatch(
+                jsonlite::fromJSON(json_text),
+                error = function(e) NULL
+              )
+            })
+
+            if (is.null(role)) {
+              role <<- parsed_data[[1]]$choices$delta$role
+            }
+
+            for (data in parsed_data) {
+              addition <- data$choices$delta$content
+
+              if (!is.null(addition)) {
+                message <<- paste0(message, addition)
+                if (verbose)
+                  cat(addition)
+              }
+            }
+          }
+
+          return(TRUE)
+        }
+      ),
+      error = function(e) {
+        message("Error: ", e$message)
+        tryCatch(
+          e$resp |>
+            httr2::resp_body_string() |>
+            jsonlite::fromJSON() |>
+            print(),
+          error = function(e)
+            message("(Could not parse JSON body from response)")
+        )
+        NULL
       }
     )
 
+    if (is.null(response))
+      stop("Could not perform request to LLM provider")
+
     if (verbose) cat("\n")
-  } else {
-    # Non-streaming response
-    response <- httr2::req_perform(req)
+  } else { # Non-streaming:
+    response <- tryCatch(
+      httr2::req_perform(req),
+      error = function(e) {
+        message("Error: ", e$message)
+        tryCatch(
+          e$resp |>
+            httr2::resp_body_string() |>
+            jsonlite::fromJSON() |>
+            print(),
+          error = function(e)
+            message("(Could not parse JSON body from response)")
+        )
+        NULL
+      }
+    )
+
+    if (is.null(response))
+      stop("Could not perform request to LLM provider")
+
     content <- httr2::resp_body_json(response)
 
     if (stream_api_type == "ollama") {
@@ -274,11 +307,6 @@ make_llm_provider_request <- function(
       role <- content$choices[[1]]$message$role
       message <- content$choices[[1]]$message$content
     }
-  }
-
-  # Error handling
-  if (httr2::resp_status(response) != 200) {
-    stop("Error: ", httr2::resp_status(response), " - ", httr2::resp_body_string(response))
   }
 
   return(list(
