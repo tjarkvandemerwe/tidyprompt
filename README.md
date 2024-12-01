@@ -76,6 +76,7 @@ certain manner (for instance, the available tokens are restricted to
 match a specific output format). While the latter may be more efficient,
 it tends to be more specific to LLM providers, certain models, and API
 structures. With ‘text-based’ processing, ‘tidyprompt’ aims to be more
-general and suitable for a wider range of LLM providers and models.
-Nonetheless, ‘tidyprompt’ may also include support for ‘native’
-processing in the future.
+general and suitable for a wider range of LLM providers and models. For
+key functions, ‘tidyprompt’ may support native processing; currently,
+`answer_as_json()` offers support for the respective native options of
+the Ollama and OpenAI API (including supplying JSON schemas).

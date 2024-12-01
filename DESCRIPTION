@@ -38,7 +38,8 @@ Suggests:
     here,
     callr,
     skimr,
-    cli
+    cli,
+    jsonvalidate
 VignetteBuilder: knitr
 Imports: 
     glue,

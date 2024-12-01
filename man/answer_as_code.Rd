@@ -139,6 +139,7 @@ Other pre_built_prompt_wraps:
 \code{\link{add_tools}()},
 \code{\link{answer_as_boolean}()},
 \code{\link{answer_as_integer}()},
+\code{\link{answer_as_json}()},
 \code{\link{answer_as_list}()},
 \code{\link{answer_as_named_list}()},
 \code{\link{answer_as_regex}()},
@@ -151,6 +152,7 @@ Other pre_built_prompt_wraps:
 Other answer_as_prompt_wraps: 
 \code{\link{answer_as_boolean}()},
 \code{\link{answer_as_integer}()},
+\code{\link{answer_as_json}()},
 \code{\link{answer_as_list}()},
 \code{\link{answer_as_named_list}()},
 \code{\link{answer_as_regex}()}

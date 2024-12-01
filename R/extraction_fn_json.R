@@ -9,6 +9,8 @@
 #' @return A list of parsed JSON objects
 #'
 #' @export
+#'
+#' @family text_helpers
 extraction_fn_json <- function(llm_response) {
   positions <- gregexpr("[{}]", llm_response)[[1]]
   matches <- regmatches(llm_response, gregexpr("[{}]", llm_response))[[1]]

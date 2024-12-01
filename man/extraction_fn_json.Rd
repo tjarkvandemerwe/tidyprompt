@@ -17,3 +17,10 @@ This function extracts JSON blocks from a string and parses them using \code{jso
 This can be used to extract all JSONs from LLM responses, immediately converting
 them to R objects.
 }
+\seealso{
+Other text_helpers: 
+\code{\link{df_to_string}()},
+\code{\link{skim_with_labels_and_levels}()},
+\code{\link{vector_list_to_string}()}
+}
+\concept{text_helpers}

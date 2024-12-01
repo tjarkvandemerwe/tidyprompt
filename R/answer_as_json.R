@@ -5,8 +5,8 @@
 #' The function can work with all models and providers when using type "text-based",
 #' but also supports native settings for the OpenAI API and Ollama (the latter
 #' being more efficient and powerful, though specific certain providers and models).
-#' For 'text-based' processing and the 'ollama' type, the JSON schema will be validated
-#' within the extraction function using the 'jsonvalidate' package. For 'openai',
+#' For type "text-based" and "ollama", the JSON schema will be validated
+#' within the extraction function using the [jsonvalidate](https://cran.r-project.org/web/packages/jsonvalidate/index.html) package. For "openai",
 #' the schema will be added to the API request parameters and the API will ensure
 #' the response matches the schema.
 #'
@@ -45,7 +45,11 @@
 #'
 #' @export
 #'
-#' @examples
+#' @example inst/examples/answer_as_json.R
+#'
+#' @family pre_built_prompt_wraps
+#' @family answer_as_prompt_wraps
+#' @family answer_as_json
 answer_as_json <- function(
     prompt,
     type = c("text-based", "ollama", "openai"),
@@ -137,7 +141,7 @@ answer_as_json <- function(
 
       # Validate JSON with verbose error reporting
       validation_result <- jsonvalidate::json_validate(
-        answer_json, schema_json, strict = strict_schema, verbose = TRUE
+        answer_json, schema_json, strict = schema_strict, verbose = TRUE
       )
 
       if (!validation_result) {
@@ -175,6 +179,7 @@ answer_as_json <- function(
 #' @export
 #'
 #' @example inst/examples/answer_as_json.R
+#' @family answer_as_json
 generate_json_example_from_schema <- function(schema) {
   if ("schema" %in% names(schema)) {
     schema <- schema$schema
