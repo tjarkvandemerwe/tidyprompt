@@ -62,33 +62,32 @@ send_prompt <- function(
   ## 1 Validate arguments
 
   prompt <- tidyprompt(prompt)
-
-  if (!inherits(llm_provider, "llm_provider"))
-    stop("llm_provider must be an object of class 'llm_provider'")
-  llm_provider <- llm_provider$clone()
-
-  is_whole_number <- function(x) { x == floor(x) }
-  if (!is_whole_number(max_interactions))
-    stop("max_interactions should be a whole number.")
-
-  if (!is.null(verbose)) {
-    if (!is.logical(verbose))
-      stop("verbose should be a logical.")
-    llm_provider$verbose <- verbose
-  }
-
-  if (!is.null(stream)) {
-    if (!is.logical(stream))
-      stop("stream should be a logical.")
-    if (!is.null(llm_provider$parameters$stream)) # This means the provider supports streaming
-      llm_provider$parameters$stream <- stream
-  }
-
   return_mode <- match.arg(return_mode)
-  if (return_mode == "full")
+
+  stopifnot(
+    inherits(llm_provider, "llm_provider"),
+    max_interactions > 0, max_interactions == floor(max_interactions),
+    is.logical(clean_chat_history),
+    is.null(verbose) | is.logical(verbose),
+    is.null(stream) | is.logical(stream)
+  )
+
+  llm_provider <- llm_provider$clone()
+  if (!is.null(verbose))
+    llm_provider$verbose <- verbose
+  if (
+    !is.null(stream)
+    & !is.null(llm_provider$parameters$stream) # This means the provider supports streaming
+  )
+    llm_provider$parameters$stream <- stream
+  if (!is.null(prompt$parameters)) {
+    llm_provider$set_parameters(prompt$parameters)
+  }
+
+  if (return_mode == "full") {
     start_time <- Sys.time()
-  if (return_mode == "full")
     http_list <- list()
+  }
 
 
   ## 2 Chat_history & send_chat

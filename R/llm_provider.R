@@ -78,9 +78,11 @@ llm_provider <- R6::R6Class(
     #'
     #' @return The modified [llm_provider()] object
     set_parameters = function(new_parameters) {
-      if (length(new_parameters) > 0 && is.null(names(new_parameters))) {
-        stop("new_parameters must be a named list")
-      }
+      stopifnot(
+        is.list(new_parameters),
+        length(new_parameters) > 0,
+        !is.null(names(new_parameters))
+      )
       self$parameters <- utils::modifyList(self$parameters, new_parameters)
       return(self)
     },
