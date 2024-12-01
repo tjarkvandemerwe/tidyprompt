@@ -204,6 +204,20 @@ make_llm_provider_request <- function(
   role <- NULL
   message <- ""
 
+  handle_error <- function(e) {
+    message("Error: ", e$message)
+    tryCatch(
+      e$resp |>
+        httr2::resp_body_string() |>
+        jsonlite::fromJSON() |>
+        print(),
+      error = function(e)
+        message("(Could not parse JSON body from response)")
+    )
+    message("Use 'httr2::last_response()' and 'httr2::last_request()' for more information")
+    NULL
+  }
+
   if (!is.null(stream) && stream) { # Streaming:
     response <- tryCatch(
       httr2::req_perform_stream(
@@ -260,18 +274,7 @@ make_llm_provider_request <- function(
           return(TRUE)
         }
       ),
-      error = function(e) {
-        message("Error: ", e$message)
-        tryCatch(
-          e$resp |>
-            httr2::resp_body_string() |>
-            jsonlite::fromJSON() |>
-            print(),
-          error = function(e)
-            message("(Could not parse JSON body from response)")
-        )
-        NULL
-      }
+      error = function(e) handle_error(e)
     )
 
     if (is.null(response))
@@ -281,18 +284,7 @@ make_llm_provider_request <- function(
   } else { # Non-streaming:
     response <- tryCatch(
       httr2::req_perform(req),
-      error = function(e) {
-        message("Error: ", e$message)
-        tryCatch(
-          e$resp |>
-            httr2::resp_body_string() |>
-            jsonlite::fromJSON() |>
-            print(),
-          error = function(e)
-            message("(Could not parse JSON body from response)")
-        )
-        NULL
-      }
+      error = function(e) handle_error(e)
     )
 
     if (is.null(response))
