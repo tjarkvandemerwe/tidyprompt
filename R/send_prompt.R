@@ -248,11 +248,8 @@ send_prompt <- function(
     if (!any_prompt_wrap_not_done)
       success <- TRUE
 
-    if (llm_break) {
+    if (llm_break)
       break
-    }
-
-
   }
 
 
