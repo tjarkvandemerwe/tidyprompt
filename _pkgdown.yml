@@ -66,3 +66,4 @@ reference:
 - subtitle: Other helper functions
 - contents:
   - extract_from_return_list
+  - generate_json_example_from_schema
