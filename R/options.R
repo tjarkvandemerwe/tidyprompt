@@ -1,5 +1,3 @@
-options(tidyprompt.verbose = TRUE)
-
 print_welcome <- function() {
   if (!requireNamespace("cli", quietly = TRUE)) {
     cat("--- Thank you for using 'tidyprompt'!\n")
