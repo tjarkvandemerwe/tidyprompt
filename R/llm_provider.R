@@ -78,6 +78,9 @@ llm_provider <- R6::R6Class(
     #'
     #' @return The modified [llm_provider()] object
     set_parameters = function(new_parameters) {
+      if (length(new_parameters) == 0)
+        return(self)
+
       stopifnot(
         is.list(new_parameters),
         length(new_parameters) > 0,

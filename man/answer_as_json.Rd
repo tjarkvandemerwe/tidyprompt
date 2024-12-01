@@ -15,37 +15,49 @@ answer_as_json(
 \arguments{
 \item{prompt}{A single string or a \code{\link[=tidyprompt]{tidyprompt()}} object}
 
-\item{type}{The way in which the JSON response will be enforced.
-If using "text-based" (default), the JSON response will be extracted from the LLM response
+\item{type}{The way in which the JSON response will be enforced. Must be
+one of "text-based", "ollama", or "openai".
+\itemize{
+\item "text-based": The JSON response will be extracted from the LLM response
 and validated within an extraction function.
-If using "openai", relevant parameters will be added to the prompt through which
-the API will ensure the response is a valid JSON object. When not providing
-a schema, a request for a JSON object is added to the prompt as is required
-by the OpenAI API.
-If using "ollama", the parameter 'format' will be set to 'json' in the API request
+\item "openai": Relevant parameters will be added to the prompt through which
+the API will enforce that the response is a valid JSON object. When providing
+a schema, the 'response_format' parameter will be set to 'json_schema' and the
+schema will also be added (enforcing a JSON response according to the schema).
+When not providing a schema, the 'response_format' parameter will be set to 'json_object'
+which enforces a JSON object response (but not any specific schema). For the latter,
+a request for a JSON object is added to the prompt as is required by the OpenAI API.
+\item "ollama": The parameter 'format' will be set to 'json' in the API request
 (enforcing a JSON response). Besides that, the handling is the same as "text-based".
-As recommended by Ollama, an request for a JSON object is added to the prompt.
-Note that Ollama does not yet have native support for JSON schema validation, so the schema will be
-validated within the extraction function by the 'jsonvalidate' package.
+As recommended by Ollama, a request for a JSON object is added to the prompt.
+}
 "text-based" is more generally applicable, while "openai" may be more efficient but
 specific to the conditions of the API (note that APIs besides the OpenAI API
 may follow the same structure, in which case "openai" may also be used for those APIs)}
 
 \item{schema}{(optional) A list representing a JSON schema object that the response must match.
-If provided, when using "text-based", the schema will be added to the original prompt and
-the response will be validated against the schema with the 'jsonvalidate' package.
-If using "openai", the schema will be added to the API request parameters and
-the API will ensure the response matches the schema. See examples and/or the OpenAI API
-documentation for more information on defining JSON schemas}
+\itemize{
+\item When using type "text-based" or "ollama", the schema will be
+added to the original prompt (see argument: 'schema_in_prompt_as'),
+and the response will be validated against the schema with
+\code{\link[jsonvalidate:json_validate]{jsonvalidate::json_validate()}}.
+\item When using "openai", the schema will be added to the API request parameters
+and the API will ensure the response matches the schema.
+}
+See example and/or the OpenAI API documentation for more information on defining JSON schemas}
 
-\item{schema_strict}{(optional) If TRUE, the schema will be strictly enforced.
-This option is passed the the API when using 'openai' and to the 'jsonvalidate::json_validate()'
-function when using 'text-based'}
+\item{schema_strict}{If TRUE, the provided schema will be strictly enforced.
+This option is passed the the API when using type "openai" and to the \code{\link[jsonvalidate:json_validate]{jsonvalidate::json_validate()}}
+function when using "text-based" or "ollama". Default is FALSE (as it
+is in the OpenAI API)}
 
-\item{schema_in_prompt_as}{(optional) If providing a schema, and when using "text-based" or "ollama",
-this argument specifies how the schema should be included in the prompt. If "example" (default),
-the schema will be included as an example JSON object. If "schema", the schema will be included
-as a JSON schema. "example" typically appears to work better}
+\item{schema_in_prompt_as}{(optional) If providing a schema, and when using type
+"text-based" or "ollama", this argument specifies how the schema should be included in the prompt.
+\itemize{
+\item "example" (default): The schema will be included as an example JSON object.
+\item "schema": The schema will be included as a JSON schema.
+}
+"example" appears to work better in practice}
 }
 \value{
 A \code{\link[=tidyprompt]{tidyprompt()}} with an added \code{\link[=prompt_wrap]{prompt_wrap()}} which will ensure
@@ -54,13 +66,14 @@ that the LLM response is a valid JSON object
 \description{
 This functions wraps a prompt with settings that ensure the LLM response
 is a valid JSON object, optionally matching a given JSON schema.
+
 The function can work with all models and providers when using type "text-based",
-but also supports native settings for the OpenAI API and Ollama (the latter
-being more efficient and powerful, though specific certain providers and models).
-For type "text-based" and "ollama", the JSON schema will be validated
-within the extraction function using the \href{https://cran.r-project.org/web/packages/jsonvalidate/index.html}{jsonvalidate} package. For "openai",
-the schema will be added to the API request parameters and the API will ensure
-the response matches the schema.
+but also supports native settings for the OpenAI-type APIs and the Ollama API.
+
+When providing a schema, for type "text-based" and "ollama", the JSON schema will be validated
+within the extraction function using the \href{https://cran.r-project.org/web/packages/jsonvalidate/index.html}{jsonvalidate} package.
+For type "openai", the schema will be added to the API request parameters and the API will
+then ensure the response matches the schema.
 }
 \examples{
 base_prompt <- "How can I solve 8x + 7 = -23?"

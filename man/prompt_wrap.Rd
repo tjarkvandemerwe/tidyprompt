@@ -9,6 +9,8 @@ prompt_wrap(
   modify_fn = NULL,
   extraction_fn = NULL,
   validation_fn = NULL,
+  handler_fn = NULL,
+  parameter_fn = NULL,
   type = c("unspecified", "mode", "tool", "break")
 )
 }
@@ -30,6 +32,23 @@ extraction and validation loop}
 the function should return TRUE. If the validation fails, the function should
 return a \code{\link[=llm_feedback]{llm_feedback()}} message which will be sent back to the LLM. A special
 object \code{\link[=llm_break]{llm_break()}} can be returned to break the extraction and validation loop}
+
+\item{handler_fn}{A function that takes the LLM response (as first argument)
+and the 'http_list' (as second argument). Handler functions are applied
+every time a LLM response is received, before any extraction or validation functions
+are applied. This can be useful for logging, implementing native tool calling,
+or other side effects, like keeping track of tokens and exiting the process if required
+based on some specific criteria. Like extraction functions, handler functions may
+Like extraction functions, handler functions may return \code{\link[=llm_feedback]{llm_feedback()}}, \code{\link[=llm_break]{llm_break()}}.
+If the handler function does not return either of those, it must return a list of the LLM
+response ('$response') and the 'http_list' ('$http_list'). This list will be
+passed to the extraction and validation functions}
+
+\item{parameter_fn}{A function that takes the \code{\link[=llm_provider]{llm_provider()}} which is being
+used with \code{\link[=send_prompt]{send_prompt()}}. This function is called once, before any LLM responses
+are requested. It can be used to set specific parameters of the \code{\link[=llm_provider]{llm_provider()}}
+according to its characteristics, like the API type (e.g., \code{\link[=answer_as_json]{answer_as_json()}}
+may set different parameters for different APIs)}
 
 \item{type}{The type of prompt wrap; one of 'unspecified', 'mode', 'tool', or 'break'.
 Types are used to determine the order in which prompt wraps are applied.

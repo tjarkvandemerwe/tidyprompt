@@ -85,8 +85,12 @@ send_prompt <- function(
     & !is.null(llm_provider$parameters$stream) # This means the provider supports streaming
   )
     llm_provider$parameters$stream <- stream
-  if (!is.null(prompt$parameters)) {
-    llm_provider$set_parameters(prompt$parameters)
+  # Apply parameter_fn's to the llm_provider
+  for (prompt_wrap in get_prompt_wraps(prompt, order = "default")) {
+    if (!is.null(prompt_wrap$parameter_fn)) {
+      parameter_fn <- prompt_wrap$parameter_fn
+      llm_provider$set_parameters(parameter_fn(llm_provider))
+    }
   }
 
   if (return_mode == "full") {
