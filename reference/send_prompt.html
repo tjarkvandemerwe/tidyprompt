@@ -78,7 +78,12 @@ in the prompt wraps (see <code><a href="prompt_wrap.html">prompt_wrap()</a></cod
 
 
 <dt id="arg-llm-provider">llm_provider<a class="anchor" aria-label="anchor" href="#arg-llm-provider"></a></dt>
-<dd><p><code><a href="llm_provider.html">llm_provider()</a></code> object (default is <code><a href="llm_provider_ollama.html">llm_provider_ollama()</a></code>)</p></dd>
+<dd><p><code><a href="llm_provider.html">llm_provider()</a></code> object (default is <code><a href="llm_provider_ollama.html">llm_provider_ollama()</a></code>).
+This object and its settings will be used to evaluate the prompt. Note that
+the 'verbose' and 'stream' settings in the LLM provider will be overruled by
+the 'verbose' and 'stream' arguments in this function when those are not NULL.
+Furthermore, a <code><a href="tidyprompt.html">tidyprompt()</a></code> object may carry '$parameters' which will
+be set in the <code><a href="llm_provider.html">llm_provider()</a></code> using the 'llm_provider$set_parameters()' function</p></dd>
 
 
 <dt id="arg-max-interactions">max_interactions<a class="anchor" aria-label="anchor" href="#arg-max-interactions"></a></dt>
