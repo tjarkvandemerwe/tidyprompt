@@ -84,6 +84,12 @@ provider should be printed to the console</p></dd>
 provider API</p></dd>
 
 
+<dt><code>api_type</code></dt>
+<dd><p>The type of API to use (e.g., "openai", "ollama").
+This is used to determine certain specific behaviors for different APIs,
+for instance, as is done in the <code><a href="answer_as_json.html">answer_as_json()</a></code> function</p></dd>
+
+
 </dl><p></p></div>
     </div>
     <div class="section level2">
@@ -105,7 +111,8 @@ provider API</p></dd>
 <span>  parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  url <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  api_key <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  api_key <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  api_type <span class="op">=</span> <span class="st">"unspecified"</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
@@ -143,6 +150,12 @@ when creating a fake LLM provider)</p></dd>
 <dt><code>api_key</code></dt>
 <dd><p>The API key to use for authentication with the LLM
 provider API (optional, not required for, for instance, Ollama)</p></dd>
+
+
+<dt><code>api_type</code></dt>
+<dd><p>The type of API to use (e.g., "openai", "ollama").
+This is used to determine certain specific behaviors for different APIs
+(see for example the <code><a href="answer_as_json.html">answer_as_json()</a></code> function)</p></dd>
 
 
 </dl><p></p></div>

@@ -43,7 +43,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">construct_prompt_text</span><span class="op">(</span><span class="va">tidyprompt</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">construct_prompt_text</span><span class="op">(</span><span class="va">tidyprompt</span>, llm_provider <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -52,6 +52,14 @@
 
 <dl><dt id="arg-tidyprompt">tidyprompt<a class="anchor" aria-label="anchor" href="#arg-tidyprompt"></a></dt>
 <dd><p>A tidyprompt object</p></dd>
+
+
+<dt id="arg-llm-provider">llm_provider<a class="anchor" aria-label="anchor" href="#arg-llm-provider"></a></dt>
+<dd><p>An optional LLM provider object. In some cases
+this may affect how the prompt text is constructed (e.g.,
+the <code><a href="answer_as_json.html">answer_as_json()</a></code> prompt_wrap may not include a schema in the
+prompt text but an OpenAI API, but may include it for other types).
+The llm_provider will be passed to the modify_fn functions of the prompt wraps</p></dd>
 
 </dl></div>
     <div class="section level2">

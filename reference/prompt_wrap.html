@@ -63,6 +63,8 @@ specified criteria.</p>
 <span>  modify_fn <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  extraction_fn <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  validation_fn <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  handler_fn <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  parameter_fn <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"unspecified"</span>, <span class="st">"mode"</span>, <span class="st">"tool"</span>, <span class="st">"break"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -95,6 +97,29 @@ extraction and validation loop</p></dd>
 the function should return TRUE. If the validation fails, the function should
 return a <code><a href="llm_feedback.html">llm_feedback()</a></code> message which will be sent back to the LLM. A special
 object <code><a href="llm_break.html">llm_break()</a></code> can be returned to break the extraction and validation loop</p></dd>
+
+
+<dt id="arg-handler-fn">handler_fn<a class="anchor" aria-label="anchor" href="#arg-handler-fn"></a></dt>
+<dd><p>A function that takes the LLM response (as first argument),
+the 'llm_provider' (as second argument), and the 'http_list' (as third argument).
+Handler functions are applied every time a LLM response is received, before any
+extraction or validation functions are applied. This can be useful for logging, implementing native tool calling,
+or other side effects, like keeping track of tokens and exiting the process if required
+based on some specific criteria. Like extraction functions, handler functions may
+Like extraction functions, handler functions may return <code><a href="llm_feedback.html">llm_feedback()</a></code>, <code><a href="llm_break.html">llm_break()</a></code>.
+If the handler function does not return either of those, it must return a list of the LLM
+response ('$response') and the 'http_list' ('$http_list'). This list will be
+passed to the extraction and validation functions. Note: handler_fn is still pending
+implementation in the <code><a href="send_prompt.html">send_prompt()</a></code> function</p></dd>
+
+
+<dt id="arg-parameter-fn">parameter_fn<a class="anchor" aria-label="anchor" href="#arg-parameter-fn"></a></dt>
+<dd><p>A function that takes the <code><a href="llm_provider.html">llm_provider()</a></code> which is being
+used with <code><a href="send_prompt.html">send_prompt()</a></code> and returns a named list of parameters to be
+used in the <code><a href="llm_provider.html">llm_provider()</a></code> when sending the prompt. This function is called once,
+before any LLM responses are requested. It can be used to set specific parameters
+of the <code><a href="llm_provider.html">llm_provider()</a></code> according to its characteristics, like the API type
+(e.g., <code><a href="answer_as_json.html">answer_as_json()</a></code> may set different parameters for different APIs)</p></dd>
 
 
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
