@@ -155,10 +155,11 @@ Below is an example of a prompt which will initially fail, but will succeed afte
 ```
 
 'tidyprompt' offers various other 'answer_as' functions, such as `answer_as_boolean()`, `answer_as_regex()`,
-`answer_as_named_list()`, `answer_as_code()`, and `answer_as_json()`. For users of specific LLM providers,
-`answer_as_json()` may be especially powerful when their provider has native support for
-returning JSON objects (e.g., Ollama, OpenAI-type APIs); 
-text-based handling is however always possible, also for providers which do not 
+`answer_as_named_list()`, `answer_as_code()`, and `answer_as_json()`. 
+
+`answer_as_json()` may be especially powerful when your LLM provider has native support for
+returning JSON objects (e.g., Ollama, OpenAI). 
+Text-based handling is however always possible, also for providers which do not 
 natively support such functions. This means that you can always switch between
 providers while ensuring the results will be in the correct format.
 
