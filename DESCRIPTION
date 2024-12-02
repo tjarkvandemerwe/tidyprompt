@@ -39,7 +39,8 @@ Suggests:
     callr,
     skimr,
     cli,
-    jsonvalidate
+    jsonvalidate,
+    tidyjson
 VignetteBuilder: knitr
 Imports: 
     glue,

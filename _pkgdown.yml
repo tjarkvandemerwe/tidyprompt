@@ -62,7 +62,8 @@ reference:
   - df_to_string
   - vector_list_to_string
   - skim_with_labels_and_levels
-  - extraction_fn_json
+  - json_schema_to_example
+  - json_schema_from_example
 - subtitle: Other helper functions
 - contents:
   - extract_from_return_list

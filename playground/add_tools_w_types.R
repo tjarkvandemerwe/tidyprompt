@@ -15,8 +15,8 @@ add_tools_get_documentation_from_helpfile <- function(name) {
   if (package_name == "R_GlobalEnv") {
     stop(paste0(
       "No documentation found for function in global environment.",
-      " Use `add_tools_add_documentation()` to add documentation to function",
-      " (please note: you cannot pipe from function creation towards `add_tools_add_documentation()`)"
+      " Use add_tools_add_documentation() to add documentation to function",
+      " (please note: you cannot pipe from function creation towards add_tools_add_documentation())"
     ))
   }
 
@@ -32,7 +32,8 @@ add_tools_get_documentation_from_helpfile <- function(name) {
       arg_type <- infer_type_from_default(default_value)
       args[[arg_name]] <- list(
         description = "",
-        type = arg_type
+        type = arg_type,
+        default = get_default_value_as_string(default_value)
       )
     }
 
@@ -63,7 +64,7 @@ add_tools_get_documentation_from_helpfile <- function(name) {
 
     # Clean up and remove formatting artifacts from all lines
     clean_text <- remove_overstrike(help_text)
-    clean_text <- gsub("\\\\b", "", clean_text) # Remove remaining `\b` escape sequences
+    clean_text <- gsub("\\\\b", "", clean_text) # Remove remaining \b escape sequences
     clean_text <- trimws(clean_text) # Remove leading/trailing whitespace
 
     # Extract the first non-empty line as the title
@@ -151,70 +152,18 @@ add_tools_get_documentation_from_helpfile <- function(name) {
   args_formals <- formals(func)
   arg_names <- names(args_formals)
 
-  infer_type_from_default <- function(default_value) {
-    if (missing(default_value) || is.null(default_value)) {
-      return(list("character"))
-    } else if (is.symbol(default_value) && as.character(default_value) == "") {
-      return(list("character"))
-    } else if (is.numeric(default_value)) {
-      return(list("numeric"))
-    } else if (is.logical(default_value)) {
-      return(list("logical"))
-    } else if (is.character(default_value)) {
-      return(list("character"))
-    } else if (is.call(default_value)) {
-      # It's a call, check if it's c() or list()
-      func_name <- as.character(default_value[[1]])
-      if (func_name == "c") {
-        # Vector
-        elements <- default_value[-1]
-        element_types <- sapply(elements, function(x) {
-          if (is.numeric(x)) {
-            return("numeric")
-          } else if (is.character(x)) {
-            return("character")
-          } else if (is.logical(x)) {
-            return("logical")
-          } else {
-            return("unknown")
-          }
-        })
-        return(as.list(unique(element_types)))
-      } else if (func_name == "list") {
-        # List
-        elements <- default_value[-1]
-        element_types <- sapply(elements, function(x) {
-          if (is.numeric(x)) {
-            return("numeric")
-          } else if (is.character(x)) {
-            return("character")
-          } else if (is.logical(x)) {
-            return("logical")
-          } else if (is.call(x)) {
-            return("call")
-          } else {
-            return("unknown")
-          }
-        })
-        return(as.list(unique(element_types)))
-      } else {
-        return(list("call"))
-      }
-    } else {
-      return(list("unknown"))
-    }
-  }
-
-  # Build the arguments list with descriptions and types
+  # Build the arguments list with descriptions, types, and default values
   args <- list()
   for (arg_name in arg_names) {
     default_value <- args_formals[[arg_name]]
     arg_type <- infer_type_from_default(default_value)
     description <- parsed_help[["Arguments"]][[arg_name]]
     if (is.null(description)) description <- ""
+    default_value_str <- get_default_value_as_string(default_value)
     args[[arg_name]] <- list(
       description = description,
-      type = arg_type
+      type = arg_type,
+      default = default_value_str
     )
   }
 
@@ -226,4 +175,57 @@ add_tools_get_documentation_from_helpfile <- function(name) {
   ))
 }
 
-add_tools_get_documentation_from_helpfile("file.path")
+infer_type_from_default <- function(default_value) {
+  if (missing(default_value) || is.null(default_value)) {
+    return("character")
+  } else if (is.symbol(default_value) && as.character(default_value) == "") {
+    return("character")
+  } else if (is.numeric(default_value)) {
+    return("numeric")
+  } else if (is.logical(default_value)) {
+    return("logical")
+  } else if (is.character(default_value)) {
+    return("character")
+  } else if (is.call(default_value)) {
+    # It's a call, check if it's c() or list()
+    func_name <- as.character(default_value[[1]])
+    if (func_name == "c" || func_name == "list") {
+      # Check if the vector/list is empty
+      if (length(default_value) > 1) {
+        # Non-empty vector/list: take the first element
+        first_element <- default_value[[2]]
+        return(infer_type_from_default(first_element))
+      } else {
+        # Empty vector/list
+        return(func_name)
+      }
+    } else {
+      return("call")
+    }
+  } else {
+    return("unknown")
+  }
+}
+
+get_default_value_as_string <- function(default_value) {
+  if (missing(default_value) || is.null(default_value)) {
+    return("NULL")
+  }
+  if (identical(default_value, quote(expr=))) {
+    return(NULL)
+  } else if (is.call(default_value) && (as.character(default_value[[1]]) %in% c("c", "list"))) {
+    func_name <- as.character(default_value[[1]])
+    if (length(default_value) > 1) {
+      # Non-empty vector/list: take the first element
+      first_element <- default_value[[2]]
+      return(deparse(first_element))
+    } else {
+      # Empty vector/list: return 'c()' or 'list()'
+      return(paste0(func_name, "()"))
+    }
+  } else {
+    return(deparse(default_value))
+  }
+}
+
+add_tools_get_documentation_from_helpfile("prompt_wrap")
