@@ -29,17 +29,20 @@ Wrap a base prompt in prompt wraps to influence how the LLM handles the prompt. 
 also write your own prompt wraps.
 
 * **structured output**: Obtain structured output from a LLM, adhering to a specific type and/or format.
-Suitable for all chat-completing LLMs, including those that do not natively support structured output.
 
-* **feedback and retries**: Implement automatic retries with feedback to the LLM
-when the output is not as expected.
+* **feedback & retries**: Automatically provide feedback to the LLM when the output is not as expected,
+so that it can retry.
 
 * **reasoning modes**: Make your LLM answer a prompt in a specific mode, such as chain-of-thought or ReAct (Reasoning and Acting) modes.
 
 * **function calling**: Give your LLM the ability to autonomously call R functions ('tools'). With this, the LLM can retrieve information or take other actions.
 'tidyprompt' also supports R code generation and evaluation, allowing LLMs to run R code.
 
-* **compatible with all LLM providers**: Usable with any LLM provider that supports chat completion. Use included LLM providers such as Ollama (local PC/on your own server), OpenAI, OpenRouter (offering various providers, including Anthropic), Mistral, Groq, XAI (Grok), or Google Gemini. Or write a hook for any other LLM provider.
+* **compatible with all LLM providers**: All features of 'tidyprompt' are designed to be provider-agnostic,
+meaning that they can be used with any LLM provider that supports chat completion.
+'tidyprompt' includes various default LLM providers, including Ollama,
+OpenAI, OpenRouter (offering various providers, including Anthropic), Mistral, Groq, XAI (Grok),
+and Google Gemini. You can also write a hook for any other LLM provider.
 
 ## Installation
 
