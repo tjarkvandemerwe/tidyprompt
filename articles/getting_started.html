@@ -192,14 +192,16 @@ succeed after <code><a href="../reference/llm_feedback.html">llm_feedback()</a><
 <span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
 <span><span class="co">#&gt; 4</span></span>
 <span><span class="co">#&gt; [1] 4</span></span></code></pre></div>
-<p>‘tidyprompt’ offers various ‘answer_as’ functions, such as
+<p>‘tidyprompt’ offers various other ‘answer_as’ functions, such as
 <code><a href="../reference/answer_as_boolean.html">answer_as_boolean()</a></code>, <code><a href="../reference/answer_as_regex.html">answer_as_regex()</a></code>,
-<code><a href="../reference/answer_as_code.html">answer_as_code()</a></code>, and <code><a href="../reference/answer_as_json.html">answer_as_json()</a></code>. For
-users of specific LLM providers, <code><a href="../reference/answer_as_json.html">answer_as_json()</a></code> may be
-most powerful when their provider has native support for returning JSON
-objects (e.g., Ollama, OpenAI-type APIs); text-based handling is however
-always possible, also for providers which do not natively support such
-functions.</p>
+<code><a href="../reference/answer_as_named_list.html">answer_as_named_list()</a></code>, <code><a href="../reference/answer_as_code.html">answer_as_code()</a></code>, and
+<code><a href="../reference/answer_as_json.html">answer_as_json()</a></code>. For users of specific LLM providers,
+<code><a href="../reference/answer_as_json.html">answer_as_json()</a></code> may be especially powerful when their
+provider has native support for returning JSON objects (e.g., Ollama,
+OpenAI-type APIs); text-based handling is however always possible, also
+for providers which do not natively support such functions. This means
+that you can always switch between providers while ensuring the results
+will be in the correct format.</p>
 </div>
 <div class="section level3">
 <h3 id="adding-a-reasoning-mode-to-the-llm">Adding a reasoning mode to the LLM<a class="anchor" aria-label="anchor" href="#adding-a-reasoning-mode-to-the-llm"></a>
