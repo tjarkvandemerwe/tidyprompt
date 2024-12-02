@@ -20,8 +20,11 @@ Key features of ‘tidyprompt’ are:
   prompt wraps.
 
 - **structured output**: Obtain structured output from a LLM, adhering
-  to a specific type and/or format. Configure automatic retries with
-  feedback to the LLM when the output is not as expected.
+  to a specific type and/or format. Suitable for all chat-completing
+  LLMs, including those that do not natively support structured output.
+
+- **feedback and retries**: Implement automatic retries with feedback to
+  the LLM when the output is not as expected.
 
 - **reasoning modes**: Make your LLM answer a prompt in a specific mode,
   such as chain-of-thought or ReAct (Reasoning and Acting) modes.
@@ -81,7 +84,8 @@ In the first place, ‘tidyprompt’ aims to be suitable for all LLM
 providers and models that support chat completion. This means that
 prompt wraps can also enable advanced functionalities like structured
 output and function calling for LLMs that do not natively support it.
-Where appropriate, ‘tidyprompt’ may also support native processing.
+Where appropriate, ‘tidyprompt’ may also support native configuration of
+specific APIs.
 
 Currently, `answer_as_json()` supports both text-based handling and
 native configuration of Ollama and OpenAI-type APIs (including supplying
