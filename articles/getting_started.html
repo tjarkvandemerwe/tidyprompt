@@ -605,6 +605,41 @@ based on a specific final answer, and ‘unspecified’ prompt wraps are the
 most general type of prompt wraps which force a final answer to be in a
 specific format.</p>
 </div>
+<div class="section level4">
+<h4 id="configuring-a-llm-provider-with-a-prompt-wrap">Configuring a LLM provider with a prompt wrap<a class="anchor" aria-label="anchor" href="#configuring-a-llm-provider-with-a-prompt-wrap"></a>
+</h4>
+<p>Advanced prompt wraps may wish to configure certain settings of a LLM
+provider. For instance, <code><a href="../reference/answer_as_json.html">answer_as_json()</a></code> configures certain
+parameters of the LLM provider, based on which LLM provider is being
+used (Ollama and OpenAI have different API parameters available for JSON
+output). This is done by defining a <code>parameter_fn</code> within the
+prompt wrap; <code>parameter_fn</code> is a function which takes the LLM
+provider as input and returns a list of parameters, which will be set as
+the parameters of the LLM provider before sending the prompt. See
+<code><a href="../reference/prompt_wrap.html">prompt_wrap()</a></code> documentation and
+<code><a href="../reference/answer_as_json.html">answer_as_json()</a></code> for an example.</p>
+</div>
+<div class="section level4">
+<h4 id="configuring-a-prompt-wrap-based-on-the-llm-provider-or-http-responses">Configuring a prompt wrap based on the LLM provider or HTTP
+responses<a class="anchor" aria-label="anchor" href="#configuring-a-prompt-wrap-based-on-the-llm-provider-or-http-responses"></a>
+</h4>
+<p><code>modify_fn</code>, <code>extraction_fn</code>, and
+<code>validation_fn</code> may take the LLM provider as the second
+argument and the <code>http_list</code> (a list of all HTTP responses
+made during <code><a href="../reference/send_prompt.html">send_prompt()</a></code>) as the third argument. This
+allows for advanced configuration of the prompt and the extraction and
+validation logic based on the LLM provider and any data available the
+HTTP responses.</p>
+</div>
+<div class="section level4">
+<h4 id="handler-functions">‘Handler functions’<a class="anchor" aria-label="anchor" href="#handler-functions"></a>
+</h4>
+<p>Prompt wraps may also include ‘handler functions’. These are
+functions which are called upon every received chat completion during
+[send_prompt()]. This allows for advanced processing of the LLM’s
+responses, such as logging, tracking tokens, or other custom processing.
+See <code><a href="../reference/prompt_wrap.html">prompt_wrap()</a></code> documentation for more information.</p>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

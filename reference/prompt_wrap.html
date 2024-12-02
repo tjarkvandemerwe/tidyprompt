@@ -4,12 +4,14 @@ adds a new prompt wrap to it. A prompt wrap is a set of functions
 that modify the prompt text, extract a value from the LLM response,
 and validate the extracted value. The functions are used to ensure
 that the prompt and LLM response is in the correct format and meets the
-specified criteria."><meta property="og:description" content="This function takes a single string or a tidyprompt() object and
+specified criteria; they may also be used to provide the LLM with feedback
+or additional information, like the result of a tool call."><meta property="og:description" content="This function takes a single string or a tidyprompt() object and
 adds a new prompt wrap to it. A prompt wrap is a set of functions
 that modify the prompt text, extract a value from the LLM response,
 and validate the extracted value. The functions are used to ensure
 that the prompt and LLM response is in the correct format and meets the
-specified criteria."></head><body>
+specified criteria; they may also be used to provide the LLM with feedback
+or additional information, like the result of a tool call."></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -53,7 +55,8 @@ adds a new prompt wrap to it. A prompt wrap is a set of functions
 that modify the prompt text, extract a value from the LLM response,
 and validate the extracted value. The functions are used to ensure
 that the prompt and LLM response is in the correct format and meets the
-specified criteria.</p>
+specified criteria; they may also be used to provide the LLM with feedback
+or additional information, like the result of a tool call.</p>
     </div>
 
     <div class="section level2">
@@ -86,40 +89,37 @@ first argument) and returns the new prompt text</p></dd>
 <dd><p>A function that takes the LLM response (as first argument)
 and attempts to extract a value from it. Upon succesful extraction, the function
 should return the extracted value. If the extraction fails, the function should
-return a <code><a href="llm_feedback.html">llm_feedback()</a></code> message which will be sent back to the LLM to
-initiate a retry. A special object <code><a href="llm_break.html">llm_break()</a></code> can be returned to break the
-extraction and validation loop</p></dd>
+return a <code><a href="llm_feedback.html">llm_feedback()</a></code> message to initiate a retry. A <code><a href="llm_break.html">llm_break()</a></code> can be
+returned to break the extraction and validation loop, ending <code><a href="send_prompt.html">send_prompt()</a></code></p></dd>
 
 
 <dt id="arg-validation-fn">validation_fn<a class="anchor" aria-label="anchor" href="#arg-validation-fn"></a></dt>
 <dd><p>A function that takes the (extracted) LLM response
 (as first argument) and attempts to validate it. Upon succesful validation,
 the function should return TRUE. If the validation fails, the function should
-return a <code><a href="llm_feedback.html">llm_feedback()</a></code> message which will be sent back to the LLM. A special
+return a <code><a href="llm_feedback.html">llm_feedback()</a></code> message to initiate a retry. A <code><a href="llm_break.html">llm_break()</a></code> can be
+returned to break the extraction and validation loop, ending <code><a href="send_prompt.html">send_prompt()</a></code>
 object <code><a href="llm_break.html">llm_break()</a></code> can be returned to break the extraction and validation loop</p></dd>
 
 
 <dt id="arg-handler-fn">handler_fn<a class="anchor" aria-label="anchor" href="#arg-handler-fn"></a></dt>
-<dd><p>A function that takes the LLM response (as first argument),
-the 'llm_provider' (as second argument), and the 'http_list' (as third argument).
-Handler functions are applied every time a LLM response is received, before any
-extraction or validation functions are applied. This can be useful for logging, implementing native tool calling,
-or other side effects, like keeping track of tokens and exiting the process if required
-based on some specific criteria. Like extraction functions, handler functions may
-Like extraction functions, handler functions may return <code><a href="llm_feedback.html">llm_feedback()</a></code>, <code><a href="llm_break.html">llm_break()</a></code>.
-If the handler function does not return either of those, it must return a list of the LLM
-response ('$response') and the 'http_list' ('$http_list'). This list will be
-passed to the extraction and validation functions. Note: handler_fn is still pending
-implementation in the <code><a href="send_prompt.html">send_prompt()</a></code> function</p></dd>
+<dd><p>A function that takes a 'completion' object (as returned by
+<code>llm_provider$complete_chat()</code>) and a (potentially modified) completion object.
+This can be used for advanced side effects, like logging, native tool calling,
+or keeping track of token usage. All handler functions from all prompt wraps
+are applied every time a chat completion is received from the LLM during <code><a href="send_prompt.html">send_prompt()</a></code>.
+If a handler function returns a completion with '$break_process' set to TRUE,
+<code><a href="send_prompt.html">send_prompt()</a></code> will end with no further chat completions requested</p></dd>
 
 
 <dt id="arg-parameter-fn">parameter_fn<a class="anchor" aria-label="anchor" href="#arg-parameter-fn"></a></dt>
 <dd><p>A function that takes the <code><a href="llm_provider.html">llm_provider()</a></code> which is being
 used with <code><a href="send_prompt.html">send_prompt()</a></code> and returns a named list of parameters to be
-used in the <code><a href="llm_provider.html">llm_provider()</a></code> when sending the prompt. This function is called once,
-before any LLM responses are requested. It can be used to set specific parameters
-of the <code><a href="llm_provider.html">llm_provider()</a></code> according to its characteristics, like the API type
-(e.g., <code><a href="answer_as_json.html">answer_as_json()</a></code> may set different parameters for different APIs)</p></dd>
+set in the <code><a href="llm_provider.html">llm_provider()</a></code> via <code>llm_provider$set_parameters()</code>. This can be
+used to configure specific parameters of the <code><a href="llm_provider.html">llm_provider()</a></code> when evaluating
+the prompt. For example, <code><a href="answer_as_json.html">answer_as_json()</a></code> may set different parameters for different APIs
+related to JSON output. This function is typically only used with advanced
+prompt wraps that require specific settings in the <code><a href="llm_provider.html">llm_provider()</a></code></p></dd>
 
 
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
@@ -138,6 +138,14 @@ like <code><a href="answer_as_regex.html">answer_as_regex()</a></code> or <code>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A <code><a href="tidyprompt.html">tidyprompt()</a></code> object with the <code>prompt_wrap()</code> appended to it</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>For advanced use, modify_fn, extraction_fn, and validation_fn
+may take 'llm_provider' (as used with <code><a href="send_prompt.html">send_prompt()</a></code>) as second argument, and the
+http_list (a list of all HTTP requests made during send_prompt()) as third argument.
+This is not required, but can be useful for more complex prompt wraps which
+require additional information about the LLM provider or the HTTP requests made.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
