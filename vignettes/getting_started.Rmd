@@ -572,3 +572,28 @@ the final answer, 'mode' prompt wraps alter how a LLM forms a final answer,
 'break' prompt wraps quit evaluation early based on a specific final answer, and 'unspecified'
 prompt wraps are the most general type of prompt wraps which force a final answer
 to be in a specific format.
+
+#### Configuring a LLM provider with a prompt wrap
+
+Advanced prompt wraps may wish to configure certain settings of a LLM provider.
+For instance, `answer_as_json()` configures certain parameters of the LLM provider,
+based on which LLM provider is being used (Ollama and OpenAI have different API parameters
+available for JSON output). This is done by defining a `parameter_fn` within the prompt wrap;
+`parameter_fn` is a function which takes the LLM provider as input and returns a list of parameters,
+which will be set as the parameters of the LLM provider before sending the prompt. See
+`prompt_wrap()` documentation and `answer_as_json()` for an example.
+
+#### Configuring a prompt wrap based on the LLM provider or HTTP responses
+
+`modify_fn`, `extraction_fn`, and `validation_fn` may take the 
+LLM provider as the second argument and the `http_list` (a list of all 
+HTTP responses made during `send_prompt()`) as the third argument. This allows for 
+advanced configuration of the prompt and the extraction and validation logic 
+based on the LLM provider and any data available the HTTP responses. 
+
+#### 'Handler functions'
+
+Prompt wraps may also include 'handler functions'. These are functions which are called
+upon every received chat completion during [send_prompt()]. This allows for advanced
+processing of the LLM's responses, such as logging, tracking tokens, or other
+custom processing. See `prompt_wrap()` documentation for more information.
