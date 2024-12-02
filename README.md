@@ -66,7 +66,7 @@ You are welcome to contribute to the package by opening a pull request.
 If you have any questions or suggestions, you can also reach us via
 e-mail.
 
-### A note on ‘text-based’ versus ‘native’ handling of LLMs
+### Philosophy of ‘tidyprompt’: text-based versus native handling of LLMs
 
 ‘tidyprompt’ is primarily focused on ‘text-based’ handling of LLMs,
 where textual output is parsed to achieve structured output and other
@@ -79,17 +79,18 @@ structures.
 
 In the first place, ‘tidyprompt’ aims to be suitable for all LLM
 providers and models that support chat completion. This means that
-prompt wraps can also enable advanced functionalities like prompt
-wrapping and structured output for LLMs that do not natively support it.
-Where appropriate, ‘tidyprompt’ may also support native processing;
-currently, `answer_as_json()` also offers support for the respective
-native options of the Ollama and OpenAI-type APIs (including supplying
-JSON schemas). Users that use a provider whose API does not have this
-functions, can still use `answer_as_json()` with text-based handling
-(and it is easy to switch between providers with different levels of
-JSON support). For `add_tools()`, ‘tidyprompt’ currently supports
-text-based handling, but will soon also support native processing for
-key API types (Ollama, OpenAI).
+prompt wraps can also enable advanced functionalities like structured
+output and function calling for LLMs that do not natively support it.
+Where appropriate, ‘tidyprompt’ may also support native processing.
+
+Currently, `answer_as_json()` supports both text-based handling and
+native configuration of Ollama and OpenAI-type APIs (including supplying
+JSON schemas). This means that it is possible to switch between
+providers with different levels of JSON support, ensuring the results
+will remain in the correct format. For `add_tools()`, ‘tidyprompt’
+currently only supports text-based handling of R functions, but will
+soon also support native tool handling for common API types (Ollama,
+OpenAI).
 
 The philosophy behind ‘tidyprompt’ is furthermore that it aims to be
 flexible enough that users can implement advanced features, potentially
