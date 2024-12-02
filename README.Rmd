@@ -69,8 +69,19 @@ This is in contrast to 'native' handling, where the LLM is directly controlled
 by the LLM provider to provide output in a certain manner (for instance, the 
 available tokens are restricted to match a specific output format). While the 
 latter may be more efficient, it tends to be more specific to LLM providers,
-certain models, and API structures. With 'text-based' processing, 'tidyprompt'
-aims to be more general and suitable for a wider range of LLM providers and models.
-For key functions, 'tidyprompt' may support native processing; currently,
-`answer_as_json()` offers support for the respective native options of the 
-Ollama and OpenAI API (including supplying JSON schemas). 
+certain models, and API structures.
+
+In the first place, 'tidyprompt' aims to be suitable for all LLM providers and models that support
+chat completion. This means that prompt wraps can also enable advanced functionalities
+like prompt wrapping and structured output for LLMs that do not natively support it.
+Where appropriate, 'tidyprompt' may also support native processing; currently,
+`answer_as_json()` also offers support for the respective native options of the
+Ollama and OpenAI-type APIs (including supplying JSON schemas). Users that use
+a provider whose API does not have this functions, can still use `answer_as_json()`
+with text-based handling (and it is easy to switch between providers with different
+levels of JSON support). For `add_tools()`, 'tidyprompt' currently supports text-based
+handling, but will soon also support native processing for key API types (Ollama, OpenAI).
+
+The philosophy behind 'tidyprompt' is furthermore that it aims to be flexible enough
+that users can implement advanced features, potentially specific to certain LLM providers,
+within the options of their custom prompt wraps.

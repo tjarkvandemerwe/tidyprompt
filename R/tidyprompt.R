@@ -208,13 +208,18 @@ get_prompt_wraps <- function(
 #' Construct prompt text from a tidyprompt object
 #'
 #' @param tidyprompt A tidyprompt object
+#' @param llm_provider An optional LLM provider object. In some cases
+#' this may affect how the prompt text is constructed (e.g.,
+#' the [answer_as_json()] prompt_wrap may not include a schema in the
+#' prompt text but an OpenAI API, but may include it for other types).
+#' The llm_provider will be passed to the modify_fn functions of the prompt wraps
 #'
 #' @return The prompt text constructed from the tidyprompt object
 #'
 #' @export
 #'
 #' @family tidyprompt
-construct_prompt_text <- function(tidyprompt) {
+construct_prompt_text <- function(tidyprompt, llm_provider = NULL) {
   tidyprompt <- tidyprompt(tidyprompt)
 
   prompt_text <- get_base_prompt(tidyprompt)
@@ -224,7 +229,7 @@ construct_prompt_text <- function(tidyprompt) {
     for (i in 1:length(prompt_wraps)) {
       if (is.null(prompt_wraps[[i]]$modify_fn))
         next
-      prompt_text <- prompt_wraps[[i]]$modify_fn(prompt_text)
+      prompt_text <- prompt_wraps[[i]]$modify_fn(prompt_text, llm_provider)
     }
   }
   return(prompt_text)
