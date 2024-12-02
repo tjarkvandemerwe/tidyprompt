@@ -139,9 +139,9 @@ prompt_wrap_internal <- function(
     ) {
       stop(paste0(
         "Modify_fn should be a function that takes one argument,",
-        " which is the previous prompt text.",
-        "(Other arguments will be taken from the parent environment and do not need",
-        " to be passed as arguments to the function)."
+        " which is the prompt text.",
+        " Other variables may be accessed from the parent environment and ",
+        " do not need to be passed as arguments to the function"
       ))
     }
   }
@@ -158,7 +158,7 @@ prompt_wrap_internal <- function(
   ), is.null)))
     stop(paste0(
       "At least one of modify_fn, extraction_fn, validation_fn, handler_fn, or parameter_fn",
-      " must be provided."
+      " must be provided"
     ))
 
   ensure_three_arguments <- function(func) {
@@ -171,7 +171,9 @@ prompt_wrap_internal <- function(
     if (length(original_args) > 3) {
       stop(paste0(
         "Function should take at most 3 arguments:",
-        " (1) the LLM response, (2) the http_list, and (3) the llm_provider."
+        " (1) the LLM response, (2) the http_list, and (3) the llm_provider.",
+        " Other variables may be accessed from the parent environment and ",
+        " do not need to be passed as arguments to the function"
       ))
     }
 

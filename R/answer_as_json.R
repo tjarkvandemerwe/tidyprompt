@@ -194,7 +194,9 @@ answer_as_json <- function(
     jsons
   }
 
-  prompt_wrap(prompt, modify_fn, extraction_fn)
+  prompt_wrap(
+    prompt, modify_fn, extraction_fn, NULL, parameter_fn
+  )
 }
 
 

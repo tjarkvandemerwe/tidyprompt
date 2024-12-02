@@ -23,6 +23,10 @@ llm_provider <- R6::R6Class(
     #' @field api_key The API key to use for authentication with the LLM
     #' provider API
     api_key = NULL,
+    #' @field api_type The type of API to use (e.g., "openai", "ollama").
+    #' This is used to determine certain specific behaviors for different APIs,
+    #' for instance, as is done in the [answer_as_json()] function
+    api_type = NULL,
 
     #' @description
     #' Create a new [llm_provider()] object
@@ -51,13 +55,18 @@ llm_provider <- R6::R6Class(
     #' @param api_key The API key to use for authentication with the LLM
     #' provider API (optional, not required for, for instance, Ollama)
     #'
+    #' @param api_type The type of API to use (e.g., "openai", "ollama").
+    #' This is used to determine certain specific behaviors for different APIs
+    #' (see for example the [answer_as_json()] function)
+    #'
     #' @return A new [llm_provider()] R6 object
     initialize = function(
       complete_chat_function,
       parameters = list(),
       verbose = TRUE,
       url = NULL,
-      api_key = NULL
+      api_key = NULL,
+      api_type = NULL
     ) {
       if (length(parameters) > 0 && is.null(names(parameters)))
         stop("parameters must be a named list")
@@ -67,6 +76,7 @@ llm_provider <- R6::R6Class(
       self$verbose <- verbose
       self$url <- url
       self$api_key <- api_key
+      self$api_type <- api_type
     },
 
     #' @description Helper function to set the parameters of the [llm_provider()]
@@ -146,14 +156,6 @@ llm_provider <- R6::R6Class(
           " character."
         ))
       }
-      # Check that there are no other fields in the response
-      #   (only allowed: 'role', 'content', and 'response')
-      if (length(setdiff(names(response), c("role", "content", "http"))) > 0) {
-        stop(paste0(
-          "The response from the LLM provider must contain only 'role',",
-          " 'content', and 'http' fields."
-        ))
-      }
 
       if (
         self$verbose
@@ -161,7 +163,6 @@ llm_provider <- R6::R6Class(
       ) {
         message(response$content)
       }
-
 
       if (self$verbose)
         return(invisible(response))
@@ -195,7 +196,9 @@ llm_provider <- R6::R6Class(
 #'
 #' @export
 make_llm_provider_request <- function(
-    url, headers = NULL, body, stream = NULL, verbose = getOption("tidyprompt.verbose", TRUE),
+    url,
+    headers = NULL, body,
+    stream = NULL, verbose = getOption("tidyprompt.verbose", TRUE),
     stream_api_type = c("openai", "ollama")
 ) {
   stream_api_type <- match.arg(stream_api_type)
@@ -361,7 +364,7 @@ llm_provider_ollama <- function(
       body = body,
       stream = self$parameters$stream,
       verbose = self$verbose,
-      stream_api_type = "ollama"
+      stream_api_type = self$api_type
     ))
   }
 
@@ -372,7 +375,8 @@ llm_provider_ollama <- function(
     complete_chat_function = complete_chat,
     parameters = parameters,
     verbose = verbose,
-    url = url
+    url = url,
+    api_type = "ollama"
   )
 
   return(ollama)
@@ -438,7 +442,7 @@ llm_provider_openai <- function(
       body = body,
       stream = self$parameters$stream,
       verbose = self$verbose,
-      stream_api_type = "openai"
+      stream_api_type = self$api_type
     )
   }
 
@@ -447,7 +451,8 @@ llm_provider_openai <- function(
     parameters = parameters,
     verbose = verbose,
     url = url,
-    api_key = api_key
+    api_key = api_key,
+    api_type = "openai"
   ))
 }
 
@@ -694,7 +699,8 @@ llm_provider_google_gemini <- function(
     parameters = parameters,
     verbose = verbose,
     url = url,
-    api_key = api_key
+    api_key = api_key,
+    api_type = "gemini"
   )
 }
 
@@ -855,6 +861,7 @@ llm_provider_fake <- function(verbose = getOption("tidyprompt.verbose", TRUE)) {
     verbose = verbose,
     parameters = list(
       model = 'llama3.1:8b'
-    )
+    ),
+    api_type = "fake"
   )
 }
