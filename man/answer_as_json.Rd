@@ -2,11 +2,10 @@
 % Please edit documentation in R/answer_as_json.R
 \name{answer_as_json}
 \alias{answer_as_json}
-\title{Make LLM answer as JSON}
+\title{Make LLM answer as JSON (with optional schema)}
 \usage{
 answer_as_json(
   prompt,
-  type = c("text-based", "ollama", "openai"),
   schema = NULL,
   schema_strict = FALSE,
   schema_in_prompt_as = c("example", "schema")
@@ -15,49 +14,27 @@ answer_as_json(
 \arguments{
 \item{prompt}{A single string or a \code{\link[=tidyprompt]{tidyprompt()}} object}
 
-\item{type}{The way in which the JSON response will be enforced. Must be
-one of "text-based", "ollama", or "openai".
-\itemize{
-\item "text-based": The JSON response will be extracted from the LLM response
-and validated within an extraction function.
-\item "openai": Relevant parameters will be added to the prompt through which
-the API will enforce that the response is a valid JSON object. When providing
-a schema, the 'response_format' parameter will be set to 'json_schema' and the
-schema will also be added (enforcing a JSON response according to the schema).
-When not providing a schema, the 'response_format' parameter will be set to 'json_object'
-which enforces a JSON object response (but not any specific schema). For the latter,
-a request for a JSON object is added to the prompt as is required by the OpenAI API.
-\item "ollama": The parameter 'format' will be set to 'json' in the API request
-(enforcing a JSON response). Besides that, the handling is the same as "text-based".
-As recommended by Ollama, a request for a JSON object is added to the prompt.
-}
-"text-based" is more generally applicable, while "openai" may be more efficient but
-specific to the conditions of the API (note that APIs besides the OpenAI API
-may follow the same structure, in which case "openai" may also be used for those APIs)}
-
 \item{schema}{(optional) A list representing a JSON schema object that the response must match.
 \itemize{
-\item When using type "text-based" or "ollama", the schema will be
+\item When not using the OpenAI API, the schema will be
 added to the original prompt (see argument: 'schema_in_prompt_as'),
 and the response will be validated against the schema with
 \code{\link[jsonvalidate:json_validate]{jsonvalidate::json_validate()}}.
-\item When using "openai", the schema will be added to the API request parameters
+\item When using an OpenAI API, the schema will be added to the API request parameters
 and the API will ensure the response matches the schema.
 }
 See example and/or the OpenAI API documentation for more information on defining JSON schemas}
 
 \item{schema_strict}{If TRUE, the provided schema will be strictly enforced.
-This option is passed the the API when using type "openai" and to the \code{\link[jsonvalidate:json_validate]{jsonvalidate::json_validate()}}
-function when using "text-based" or "ollama". Default is FALSE (as it
-is in the OpenAI API)}
+This option is passed the the API when using an OpenAI API and otherwise to
+\code{\link[jsonvalidate:json_validate]{jsonvalidate::json_validate()}}}
 
-\item{schema_in_prompt_as}{(optional) If providing a schema, and when using type
-"text-based" or "ollama", this argument specifies how the schema should be included in the prompt.
+\item{schema_in_prompt_as}{(optional) If providing a schema and when not using
+an OpenAI API, this argument specifies how the schema should be included in the prompt.
 \itemize{
 \item "example" (default): The schema will be included as an example JSON object.
 \item "schema": The schema will be included as a JSON schema.
-}
-"example" appears to work better in practice}
+}}
 }
 \value{
 A \code{\link[=tidyprompt]{tidyprompt()}} with an added \code{\link[=prompt_wrap]{prompt_wrap()}} which will ensure
@@ -67,40 +44,127 @@ that the LLM response is a valid JSON object
 This functions wraps a prompt with settings that ensure the LLM response
 is a valid JSON object, optionally matching a given JSON schema.
 
-The function can work with all models and providers when using type "text-based",
-but also supports native settings for the OpenAI-type APIs and the Ollama API.
+The function can work with all models and providers through text-based
+handling, but also supports native settings for the OpenAI-type APIs
+(llm_provider$api_type == "openai") and the Ollama API (llm_provider$api_type == "ollama").
+The 'llm_provider$api_type' is taken from the provider used in \code{\link[=send_prompt]{send_prompt()}};
+based on the provider, the function will automatically determine the appropriate
+way to reach the desired JSON outcome.
 
-When providing a schema, for type "text-based" and "ollama", the JSON schema will be validated
-within the extraction function using the \href{https://cran.r-project.org/web/packages/jsonvalidate/index.html}{jsonvalidate} package.
-For type "openai", the schema will be added to the API request parameters and the API will
-then ensure the response matches the schema.
+This means that it is possible
+to easily switch between providers with different levels of JSON support,
+while ensuring the results will be in the correct format.
 }
 \examples{
 base_prompt <- "How can I solve 8x + 7 = -23?"
 
+# This example will show how to enforce JSON format in the response,
+#   with and without a schema, using the 'answer_as_json()' prompt wrap.
+#   Based on which LLM provider you are using, the JSON format enforcement
+#   will automatically be handled in the best way. This also means that
+#   you can easily swap between different LLM providers while still
+#   achieving the same results
+
 #### Enforcing JSON without a schema: ####
 
 \dontrun{
-  # Text-based (works with any model and all providers):
-  #   Adds request for JSON object to the prompt
-  #   Extracts the JSON objects from the LLM response
+  # Ollama:
+  #   Sets 'format' parameter to 'json', enforcing JSON
+  #   Adds request to prompt for a JSON object, as is recommended by the docs
+  #   Parses JSON to R object
   json1 <- base_prompt |>
     answer_as_json() |>
     send_prompt(llm_provider_ollama())
+  # --- Sending request to LLM provider (llama3.1:8b): ---
+  # How can I solve 8x + 7 = -23?
+  #
+  # Your must format your response as a JSON object.
+  # --- Receiving response from LLM provider: ---
+  # {"steps": [
+  #   "Subtract 7 from both sides to get 8x = -30",
+  #   "Simplify the right side of the equation to get 8x = -30",
+  #   "Divide both sides by 8 to solve for x, resulting in x = -30/8",
+  #   "Simplify the fraction to find the value of x"
+  # ],
+  # "value_of_x": "-3.75"}
 
-  # Ollama-type without schema
-  #   Sets Ollama's 'format' parameter to 'json', enforcing JSON
-  #   Adds request to prompt for a JSON object, as is recommended in documentation
-  json2 <- base_prompt |>
-    answer_as_json(type = "ollama") |>
-    send_prompt(llm_provider_ollama())
-
-  # OpenAI-type without schema
-  #   Sets OpenAI's 'response_format' parameter to 'json_object', enforcing JSON
+  # OpenAI-type API without schema
+  #   Sets 'response_format' parameter to 'json_object', enforcing JSON
   #   Adds request to prompt for a JSON object, as is required by the API
-  json3 <- base_prompt |>
-    answer_as_json(type = "openai") |>
+  #   Parses JSON to R object
+  json2 <- base_prompt |>
+    answer_as_json() |>
     send_prompt(llm_provider_openai())
+  # --- Sending request to LLM provider (gpt-4o-mini): ---
+  # How can I solve 8x + 7 = -23?
+  #
+  # Your must format your response as a JSON object.
+  # --- Receiving response from LLM provider: ---
+  # {
+  #   "solution_steps": [
+  #     {
+  #       "step": 1,
+  #       "operation": "Subtract 7 from both sides",
+  #       "equation": "8x + 7 - 7 = -23 - 7",
+  #       "result": "8x = -30"
+  #     },
+  #     {
+  #       "step": 2,
+  #       "operation": "Divide both sides by 8",
+  #       "equation": "8x / 8 = -30 / 8",
+  #       "result": "x = -3.75"
+  #     }
+  #   ],
+  #   "solution": {
+  #     "x": -3.75
+  #   }
+  # }
+
+  # ... (Creating fake provider based on Ollama for demonstration purposes) ...
+  fake_provider_without_json_support <- llm_provider_ollama()
+  fake_provider_without_json_support$api_type <- "fake"
+  fake_provider_without_json_support$parameters$stream <- FALSE
+
+  # Text-based without schema (works for any provider/model)
+  #   Adds request to prompt for a JSON object
+  #   Extracts JSON from textual response (feedback for retry if no JSON received)
+  #   Parses JSON to R object
+  json3 <- base_prompt |>
+    answer_as_json() |>
+    send_prompt(fake_provider_without_json_support)
+  # --- Sending request to LLM provider (llama3.1:8b): ---
+  # How can I solve 8x + 7 = -23?
+  #
+  # Your must format your response as a JSON object.
+  # --- Receiving response from LLM provider: ---
+  # Here is the solution to the equation formatted as a JSON object:
+  #
+  # ```
+  # {
+  #   "equation": "8x + 7 = -23",
+  #   "steps": [
+  #     {
+  #       "step": "Subtract 7 from both sides of the equation",
+  #       "expression": "-23 - 7"
+  #     },
+  #     {
+  #       "step": "Simplify the expression on the left side",
+  #       "result": "-30"
+  #     },
+  #     {
+  #       "step": "Divide both sides by -8 to solve for x",
+  #       "expression": "-30 / -8"
+  #     },
+  #     {
+  #       "step": "Simplify the expression on the right side",
+  #       "result": "3.75"
+  #     }
+  #   ],
+  #   "solution": {
+  #     "x": 3.75
+  #   }
+  # }
+  # ```
 }
 
 
@@ -134,35 +198,137 @@ json_schema <- list(
   )
   # 'strict' parameter is set as argument 'answer_as_json()'
 )
+# Note: when you are not using an OpenAI API, you can also pass just the
+#   internal 'schema' list object to 'answer_as_json()' instead of the full
+#   'json_schema' list object
 
 # Generate example R object based on schema:
 generate_json_example_from_schema(json_schema)
 
 \dontrun{
-  # Text-based with schema
-  #   Adds request for JSON & example based on schema to the prompt;
-  #   extracts JSON and validates against the schema with
-  #   the 'jsonvalidate' package
-  json4 <- base_prompt |>
-    answer_as_json(schema = json_schema) |>
-    send_prompt(llm_provider_ollama())
-
   # Ollama with schema
-  #   Sets Ollama's 'format' parameter to 'json', enforcing JSON
-  #   Adds example based on schema to the prompt;
-  #   extracts JSON and validates against the schema with
-  #   the 'jsonvalidate' package
-  json5 <- base_prompt |>
-    answer_as_json(type = "ollama", schema = json_schema) |>
+  #   Sets 'format' parameter to 'json', enforcing JSON
+  #   Adds request to prompt for a JSON object, as is recommended by the docs
+  #   Adds schema to prompt
+  #   Validates JSON against schema with 'jsonvalidate' package (feedback for retry if invalid)
+  json4 <- base_prompt |>
+    answer_as_json(json_schema) |>
     send_prompt(llm_provider_ollama())
+  # --- Sending request to LLM provider (llama3.1:8b): ---
+  # How can I solve 8x + 7 = -23?
+  #
+  # Your must format your response as a JSON object.
+  #
+  # Your JSON object should match this example JSON object:
+  # {
+  #   "steps": [
+  #     {
+  #       "explanation": "...",
+  #       "output": "..."
+  #     }
+  #   ],
+  #   "final_answer": "..."
+  # }
+  # --- Receiving response from LLM provider: ---
+  # {
+  #   "steps": [
+  #     {
+  #       "explanation": "First, subtract 7 from both sides of the equation to
+  #       isolate the term with x.",
+  #       "output": "8x = -23 - 7"
+  #     },
+  #     {
+  #       "explanation": "Simplify the right-hand side of the equation.",
+  #       "output": "8x = -30"
+  #     },
+  #     {
+  #       "explanation": "Next, divide both sides of the equation by 8 to solve for x.",
+  #       "output": "x = -30 / 8"
+  #     },
+  #     {
+  #       "explanation": "Simplify the right-hand side of the equation.",
+  #       "output": "x = -3.75"
+  #     }
+  #   ],
+  #   "final_answer": "-3.75"
+  # }
 
   # OpenAI with schema
-  #   Sets OpenAI's 'response_format' parameter to 'json_schema',
-  #   and adds the json_schema to the API request;
-  #   as such, the API will natively enforce the schema
-  json6 <- base_prompt |>
-    answer_as_json(type = "openai", schema = json_schema) |>
+  #   Sets 'response_format' parameter to 'json_object', enforcing JSON
+  #   Adds json_schema to the API request, API enforces JSON adhering schema
+  #   Parses JSON to R object
+  json5 <- base_prompt |>
+    answer_as_json(json_schema) |>
     send_prompt(llm_provider_openai())
+  # --- Sending request to LLM provider (gpt-4o-mini): ---
+  # How can I solve 8x + 7 = -23?
+  # --- Receiving response from LLM provider: ---
+  # {"steps":[
+  # {"explanation":"Start with the original equation.",
+  # "output":"8x + 7 = -23"},
+  # {"explanation":"Subtract 7 from both sides to isolate the term with x.",
+  # "output":"8x + 7 - 7 = -23 - 7"},
+  # {"explanation":"Simplify the left side and the right side of the equation.",
+  # "output":"8x = -30"},
+  # {"explanation":"Now, divide both sides by 8 to solve for x.",
+  # "output":"x = -30 / 8"},
+  # {"explanation":"Simplify the fraction by dividing both the numerator and the
+  # denominator by 2.",
+  # "output":"x = -15 / 4"}
+  # ], "final_answer":"x = -15/4"}
+
+  # Text-based with schema (works for any provider/model)
+  #   Adds request to prompt for a JSON object
+  #   Adds schema to prompt
+  #   Extracts JSON from textual response (feedback for retry if no JSON received)
+  #   Validates JSON against schema with 'jsonvalidate' package (feedback for retry if invalid)
+  #   Parses JSON to R object
+  json6 <- base_prompt |>
+    answer_as_json(schema = json_schema) |>
+    send_prompt(fake_provider_without_json_support)
+  # --- Sending request to LLM provider (llama3.1:8b): ---
+  # How can I solve 8x + 7 = -23?
+  #
+  # Your must format your response as a JSON object.
+  #
+  # Your JSON object should match this example JSON object:
+  #   {
+  #     "steps": [
+  #       {
+  #         "explanation": "...",
+  #         "output": "..."
+  #       }
+  #     ],
+  #     "final_answer": "..."
+  #   }
+  # --- Receiving response from LLM provider: ---
+  # Here is the solution to the equation:
+  #
+  # ```
+  # {
+  #   "steps": [
+  #     {
+  #       "explanation": "First, we want to isolate the term with 'x' by
+  #       subtracting 7 from both sides of the equation.",
+  #       "output": "8x + 7 - 7 = -23 - 7"
+  #     },
+  #     {
+  #       "explanation": "This simplifies to: 8x = -30",
+  #       "output": "8x = -30"
+  #     },
+  #     {
+  #       "explanation": "Next, we want to get rid of the coefficient '8' by
+  #       dividing both sides of the equation by 8.",
+  #       "output": "(8x) / 8 = (-30) / 8"
+  #     },
+  #     {
+  #       "explanation": "This simplifies to: x = -3.75",
+  #       "output": "x = -3.75"
+  #     }
+  #   ],
+  #   "final_answer": "-3.75"
+  # }
+  # ```
 }
 }
 \seealso{

@@ -26,7 +26,7 @@ llm_provider <- R6::R6Class(
     #' @field api_type The type of API to use (e.g., "openai", "ollama").
     #' This is used to determine certain specific behaviors for different APIs,
     #' for instance, as is done in the [answer_as_json()] function
-    api_type = NULL,
+    api_type = "unspecified",
 
     #' @description
     #' Create a new [llm_provider()] object
@@ -66,7 +66,7 @@ llm_provider <- R6::R6Class(
       verbose = TRUE,
       url = NULL,
       api_key = NULL,
-      api_type = NULL
+      api_type = "unspecified"
     ) {
       if (length(parameters) > 0 && is.null(names(parameters)))
         stop("parameters must be a named list")
@@ -188,9 +188,8 @@ llm_provider <- R6::R6Class(
 #' @param stream A logical indicating whether the API should stream responses
 #' @param verbose A logical indicating whether the interaction with the LLM provider
 #' should be printed to the console. Default is TRUE.
-#' @param stream_api_type The type of API to use; specifically required to handle streaming.
-#' Currently, "openai" and "ollama" have been implemented. "openai" should also work
-#' with other similar APIs for chat completion
+#' @param api_type The type of API to use. Currently, "openai" and "ollama" have been implemented
+#' in this function. "openai" should also work with other similar APIs for chat completion
 #'
 #' @return A list with the role and content of the response from the LLM provider
 #'
@@ -199,9 +198,15 @@ make_llm_provider_request <- function(
     url,
     headers = NULL, body,
     stream = NULL, verbose = getOption("tidyprompt.verbose", TRUE),
-    stream_api_type = c("openai", "ollama")
+    api_type = c("openai", "ollama")
 ) {
-  stream_api_type <- match.arg(stream_api_type)
+  if (!api_type %in% c("openai", "ollama")) {
+    warning(paste0(
+      "api_type must be 'openai' or 'ollama'",
+      " defaulting to ollama as this is used for development purposes"
+    ))
+    api_type <- "ollama"
+  }
 
   req <- httr2::request(url) |>
     httr2::req_body_json(body) |>
@@ -229,7 +234,7 @@ make_llm_provider_request <- function(
       httr2::req_perform_stream(
         req, buffer_kb = 0.001, round = "line",
         callback = function(chunk) {
-          if (stream_api_type == "ollama") {
+          if (api_type == "ollama") {
             stream <- rawToChar(chunk) |> strsplit("\n") |> unlist()
 
             for (x in stream) {
@@ -251,7 +256,7 @@ make_llm_provider_request <- function(
             }
           }
 
-          if (stream_api_type == "openai") {
+          if (api_type == "openai") {
             char <- rawToChar(chunk) |> strsplit(split = "\ndata: ") |> unlist()
 
             parsed_data <- lapply(char, function(chunk) {
@@ -298,7 +303,7 @@ make_llm_provider_request <- function(
 
     content <- httr2::resp_body_json(response)
 
-    if (stream_api_type == "ollama") {
+    if (api_type == "ollama") {
       role <- content$message$role
       message <- content$message$content
     } else { # OpenAI type API
@@ -364,7 +369,7 @@ llm_provider_ollama <- function(
       body = body,
       stream = self$parameters$stream,
       verbose = self$verbose,
-      stream_api_type = self$api_type
+      api_type = self$api_type
     ))
   }
 
@@ -442,7 +447,7 @@ llm_provider_openai <- function(
       body = body,
       stream = self$parameters$stream,
       verbose = self$verbose,
-      stream_api_type = self$api_type
+      api_type = self$api_type
     )
   }
 

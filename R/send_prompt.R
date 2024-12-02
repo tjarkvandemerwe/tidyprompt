@@ -95,8 +95,9 @@ send_prompt <- function(
 
   if (return_mode == "full") {
     start_time <- Sys.time()
-    http_list <- list()
   }
+
+  http_list <- list()
 
 
   ## 2 Chat_history & send_chat
@@ -132,8 +133,7 @@ send_prompt <- function(
       completion$role, completion$content, FALSE
     ))
 
-    if (return_mode == "full")
-      http_list[[length(http_list) + 1]] <<- completion$http
+    http_list[[length(http_list) + 1]] <<- completion$http
 
     return(invisible(completion$content))
   }
@@ -166,7 +166,9 @@ send_prompt <- function(
 
   ## 3 Retrieve initial response
 
-  response <- prompt |> construct_prompt_text() |> send_chat()
+  response <- prompt |>
+    construct_prompt_text(llm_provider) |>
+    send_chat()
 
 
   ## 4 Apply extractions and validations
@@ -197,7 +199,8 @@ send_prompt <- function(
           environment <- attr(extraction_function, "environment")
           environment(extraction_function) <- environment
         }
-        extraction_result <- extraction_function(response)
+        extraction_result <-
+          extraction_function(response, llm_provider, http_list)
 
         # If it inherits llm_feedback,
         #   send the feedback to the LLM & get new response
@@ -232,7 +235,8 @@ send_prompt <- function(
 
       # Apply validation function
       if (!is.null(prompt_wrap$validation_fn)) {
-        validation_result <- prompt_wrap$validation_fn(response)
+        validation_result <-
+          prompt_wrap$validation_fn(response, llm_provider, http_list)
 
         # If it inherits llm_feedback, send the feedback to the LLM & get new response
         if (inherits(validation_result, "llm_feedback")) {

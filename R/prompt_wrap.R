@@ -21,16 +21,17 @@
 #' the function should return TRUE. If the validation fails, the function should
 #' return a [llm_feedback()] message which will be sent back to the LLM. A special
 #' object [llm_break()] can be returned to break the extraction and validation loop
-#' @param handler_fn A function that takes the LLM response (as first argument)
-#' and the 'http_list' (as second argument). Handler functions are applied
-#' every time a LLM response is received, before any extraction or validation functions
-#' are applied. This can be useful for logging, implementing native tool calling,
+#' @param handler_fn A function that takes the LLM response (as first argument),
+#' the 'llm_provider' (as second argument), and the 'http_list' (as third argument).
+#' Handler functions are applied every time a LLM response is received, before any
+#' extraction or validation functions are applied. This can be useful for logging, implementing native tool calling,
 #' or other side effects, like keeping track of tokens and exiting the process if required
 #' based on some specific criteria. Like extraction functions, handler functions may
 #' Like extraction functions, handler functions may return [llm_feedback()], [llm_break()].
 #' If the handler function does not return either of those, it must return a list of the LLM
 #' response ('$response') and the 'http_list' ('$http_list'). This list will be
-#' passed to the extraction and validation functions
+#' passed to the extraction and validation functions. Note: handler_fn is still pending
+#' implementation in the [send_prompt()] function
 #' @param parameter_fn A function that takes the [llm_provider()] which is being
 #' used with [send_prompt()] and returns a named list of parameters to be
 #' used in the [llm_provider()] when sending the prompt. This function is called once,
@@ -132,21 +133,8 @@ prompt_wrap_internal <- function(
     parameter_fn = NULL,
     type = c("unspecified", "mode", "tool", "break")
 ) {
-  if (!is.null(modify_fn)) {
-    if (
-      !is.function(modify_fn)
-      || length(formals(modify_fn)) != 1
-    ) {
-      stop(paste0(
-        "Modify_fn should be a function that takes one argument,",
-        " which is the prompt text.",
-        " Other variables may be accessed from the parent environment and ",
-        " do not need to be passed as arguments to the function"
-      ))
-    }
-  }
-
   stopifnot(
+    is.null(modify_fn) || is.function(modify_fn),
     is.null(validation_fn) || is.function(validation_fn),
     is.null(extraction_fn) || is.function(extraction_fn),
     is.null(handler_fn) || is.function(handler_fn),
@@ -178,7 +166,7 @@ prompt_wrap_internal <- function(
     }
 
     # Define the required arguments in the desired order
-    required_args <- c("llm_response", "http_list", "llm_provider")
+    required_args <- c("llm_response", "llm_provider", "http_list")
 
     # Find missing arguments from required_args
     missing_args <- setdiff(required_args, names(original_args))
@@ -186,7 +174,7 @@ prompt_wrap_internal <- function(
     # Combine original arguments with missing arguments
     combined_args <- c(
       original_args,
-      setNames(rep(list(quote(expr = )), length(missing_args)), missing_args)
+      structure(rep(list(quote(expr = NULL)), length(missing_args)), names = missing_args)
     )
 
     # Ensure the required arguments are in order, keeping original names first
@@ -202,6 +190,7 @@ prompt_wrap_internal <- function(
     formals(func) <- final_args
     func
   }
+  modify_fn <- ensure_three_arguments(modify_fn)
   validation_fn <- ensure_three_arguments(validation_fn)
   extraction_fn <- ensure_three_arguments(extraction_fn)
   handler_fn <- ensure_three_arguments(handler_fn)
