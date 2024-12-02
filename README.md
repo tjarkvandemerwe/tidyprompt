@@ -56,7 +56,9 @@ remotes::install_github("tjarkvandemerwe/tidyprompt")
 
 See the [‘Getting
 started’](https://tjarkvandemerwe.github.io/tidyprompt/articles/getting_started.html)
-vignette for an introduction to ‘tidyprompt’.
+vignette for an introduction to ‘tidyprompt’. This vignette will guide
+you through the basic functionalities of ‘tidyprompt’, including how to
+construct prompts, use prompt wraps, and send prompts to LLMs.
 
 ## More information and contributing
 
