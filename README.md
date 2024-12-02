@@ -13,10 +13,11 @@
 
 Key features of ‘tidyprompt’ are:
 
-- **tidy prompting**: Efficiently construct prompts for LLMs, using
-  piping syntax (inspired by the ‘tidyverse’). Wrap a base prompt in
-  prompt wraps to influence how the LLM handles the prompt. A library of
-  pre-built prompt wraps is included, but you can also write your own
+- **tidy prompting**: Easily construct prompts for LLMs, using piping
+  syntax (inspired by the ‘tidyverse’). Prompt wraps are building blocks
+  with which you can quickly create advanced prompts, simultaneously
+  applying extraction and validation to the LLM output. A library of
+  pre-built prompt wraps is included, but you can also write custom
   prompt wraps.
 
 - **structured output**: Obtain structured output from a LLM, adhering
