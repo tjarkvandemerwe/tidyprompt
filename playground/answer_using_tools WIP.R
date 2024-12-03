@@ -130,9 +130,9 @@ answer_using_tools <- function(prompt, tools = list()) {
           }
         }
       }
-      if (length(docs$return_value) > 0)
+      if (length(docs$return$description) > 0)
         tool_llm_text <- glue::glue(
-          "{tool_llm_text}\n  return value: {docs$return_value}", .trim = FALSE
+          "{tool_llm_text}\n  return value: {docs$return$description}", .trim = FALSE
         )
 
       new_prompt <- glue::glue(
@@ -249,7 +249,10 @@ answer_using_tools <- function(prompt, tools = list()) {
 #' to provide the default value, which will be added to the prompt introducing the
 #' function
 #' }
-#' \item 'return_value': A description of the return value or the side effects of the function
+#' \item 'return': A list with the following elements:
+#' \itemize{
+#' \item 'description': A description of the return value or the side effects of the function
+#' }
 #' }
 #' @return The function object with the documentation added as an attribute
 #' ('tidyprompt_tool_docs')
@@ -270,7 +273,7 @@ tools_add_docs <- function(
     is.character(docs$description) & length(docs$description) == 1,
     is.list(docs$arguments),
     length(docs$arguments) == 0 | !is.null(names(docs$arguments)),
-    is.null(docs$return_value) | is.character(docs$return_value) & length(docs$return_value) == 1
+    is.null(docs$return$description) | is.character(docs$return$description) & length(docs$return$description) == 1
   )
 
   if (is.null(docs$name))
@@ -324,7 +327,9 @@ tools_add_docs <- function(
 #' value is NULL (and not missing). When the 'type' is 'match.arg', the default value
 #' is a vector of possible values
 #' }
-#' \item 'return_value': A description of the return value or the side effects of the function
+#' \item 'return': A list with the following elements:
+#' \itemize{
+#' \item 'description': A description of the return value or the side effects of the function
 #' }
 #' }
 #'
@@ -354,7 +359,7 @@ tools_get_docs <- function(func, name = NULL) {
       is.character(docs$description) & length(docs$description) == 1,
       is.list(docs$arguments),
       !is.null(names(docs$arguments)),
-      is.null(docs$return_value) || (is.character(docs$return_value) & length(docs$return_value) == 1)
+      is.null(docs$return$description) || (is.character(docs$return$description) & length(docs$return$description) == 1)
     )
   } else {
     docs <- tools_generate_docs(name)
@@ -446,8 +451,10 @@ tools_get_docs <- function(func, name = NULL) {
 #' other than 'c()' or 'list()'. 'unknown' is used for arguments with a default
 #' value that is not one of the above types, or when the default value is missing
 #' }
-#' - return_value: A description of the return value or the side effects of the function,
-#' as obtained from the help file
+#' - return: A list with the following elements:
+#' \itemize{
+#' \item 'description': A description of the return value or the side effects of the function
+#' }
 #'
 #' @noRd
 #' @keywords internal
@@ -502,7 +509,7 @@ tools_generate_docs <- function(name) {
     name = name,
     description = paste0(parsed_help$Title, ": ", parsed_help$Description),
     arguments = args,
-    return_value = parsed_help$Value
+    return = list(description = parsed_help$Value)
   ))
 }
 

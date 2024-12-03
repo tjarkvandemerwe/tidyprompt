@@ -20,22 +20,19 @@ temperature_in_location <- function(
   }
 }
 
-# Get documentation for a function (based on formals & help file):
+# Generate documentation for a function (based on formals, & help file if available)
 docs <- tools_get_docs(temperature_in_location)
 docs
 
-# Since the help file is missing, we may still want to add descriptions
-#   manually to the documentation object:
+# Since the help file is missing, we may still want to add some descriptions:
 docs$description <- "Get the temperature in a location"
 docs$arguments$unit$description <- "Unit in which to return the temperature"
 docs$arguments$location$description <- "Location for which to return the temperature"
-docs$return_value <- "The temperature in the specified location and unit"
-
+docs$return$description <- "The temperature in the specified location and unit"
 # (See `?tools_add_docs` for more details on the structure of the documentation object)
 
 # When we are satisfied with the documentation, we can add it to the function:
 temperature_in_location <- tools_add_docs(temperature_in_location, docs)
-
 # (`tools_get_docs()` will now return the documentation we added)
 
 # Now we can use the function in a prompt:
