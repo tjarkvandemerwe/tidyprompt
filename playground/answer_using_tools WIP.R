@@ -430,17 +430,18 @@ tools_get_docs <- function(func, name = NULL) {
 #'
 #' @param name (string) A name of a function (e.g., 'list.files')
 #'
-#' @return A list with the following elements:
-#' - name: The name of the function
-#' - description: A description of the function
-#' - arguments: A named list of arguments with descriptions. Each argument is a list
-#' which may contain: \itemize{
-#' #' \item 'description': A description of the argument and its purpose, as
+#' @return A list with the following elements: \itemize{
+#'  \item 'name': The name of the function
+#'  \item 'description': A description of the function
+#'  \item 'arguments': A named list of arguments with descriptions. Each argument is a list
+#' which may contain:
+#'  \itemize{
+#'    \item 'description': A description of the argument and its purpose, as
 #' obtained from the help file
-#' #' \item 'default_value': The default value of the argument. This is not
+#'    \item 'default_value': The default value of the argument. This is not
 #' included if there is no default value. Note that when the default value
 #' is included and is NULL, the default value is NULL (and not missing)
-#' \item 'type': The inferred type of the argument, based on the default value.
+#'    \item 'type': The inferred type of the argument, based on the default value.
 #' This is one of: 'numeric', 'logical', 'character', 'match.arg', 'vector', 'list', 'call',
 #' or 'unknown'. 'match.arg' is used for arguments with a default value
 #' that is a call to 'c()' with multiple values (default_value then
@@ -450,10 +451,11 @@ tools_get_docs <- function(func, name = NULL) {
 #' 'call' is used for arguments with a default value that is a call to a function
 #' other than 'c()' or 'list()'. 'unknown' is used for arguments with a default
 #' value that is not one of the above types, or when the default value is missing
-#' }
-#' - return: A list with the following elements:
-#' \itemize{
-#' \item 'description': A description of the return value or the side effects of the function
+#'  }
+#'  \item 'return': A list with the following elements:
+#'    \itemize{
+#'      \item 'description': A description of the return value or the side effects of the function
+#'    }
 #' }
 #'
 #' @noRd
