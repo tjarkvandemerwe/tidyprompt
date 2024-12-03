@@ -1,3 +1,212 @@
+#' Enable R function calling for prompt evaluation by a LLM
+#'
+#' This function adds the ability for the a LLM to call R functions.
+#' Users can specify a list of functions that the LLM can call, and the
+#' prompt will be modified to include information, as well as an
+#' accompanying extraction function to call the functions (handled by
+#' [send_prompt()]). Documentation for the functions is extracted from
+#' the help file (if available), or from documentation added by
+#' [tools_add_docs()]
+#'
+#' @details Note that this method of function calling is purely text-based.
+#' This makes it suitable for any LLM and any LLM provider. However,
+#' 'native' function calling (where the LLM model provider restricts the
+#' model to special tokens that can be used to call functions) may perform
+#' better in terms of accuracy and efficiency. 'tidyprompt' may support
+#' 'native' function calling in the future
+#'
+#' @param prompt A single string or a [tidyprompt()] object
+#' @param tools An R function or a list of R functions that the LLM can call.
+#' If the function has been documented in a help file (e.g., because it is part of a
+#' package), the documentation will be parsed from the help file. If it is a custom
+#' function, documentation should be added with [tools_add_docs()]
+#'
+#' @return A [tidyprompt()] with an added [prompt_wrap()] which
+#' will allow the LLM to call R functions
+#'
+#' @export
+#'
+#' @example inst/examples/add_tools.R
+#'
+#' @seealso [answer_as_code()] [tools_get_docs()]
+#'
+#' @family pre_built_prompt_wraps
+#' @family llm_tools
+#' @family add_tools
+answer_using_tools <- function(prompt, tools = list()) {
+  prompt <- tidyprompt(prompt)
+
+  # Check if tools is single function, if so, convert to list
+  if (length(tools) == 1 && is.function(tools)) {
+    name <- deparse(substitute(tools))
+    tools <- list(tools)
+    names(tools) <- name
+  } else {
+    stopifnot(
+      is.list(tools),
+      length(tools) > 0,
+      all(sapply(tools, is.function))
+    )
+    # Convert tools to named list
+    tool_names <- sapply(substitute(tools)[-1], deparse)
+    # Ensure the names of tools match the captured names
+    names(tools) <- tool_names
+  }
+
+  modify_fn <- function(original_prompt_text) {
+    new_prompt <- glue::glue(
+      "{original_prompt_text}
+
+    If you need more information, you can call functions to help you.
+    To call a function, output a JSON object with the following format:
+
+    {{
+      \"function\": \"<function name>\",
+      \"arguments\": {{
+        \"<argument_name>\": <argument_value>,
+        ...
+      }}
+    }}
+
+    (Note: you may not provide function calls as function arguments.)
+
+    The following functions are available:"
+    )
+
+    for (tool_name in names(tools)) {
+      tool <- tools[[tool_name]]
+      docs <- tools_get_docs(tool, tool_name)
+
+      tool_llm_text <- glue::glue(
+        "  function name: {tool_name}", .trim = FALSE
+      )
+      if (length(docs$description) > 0)
+        tool_llm_text <- glue::glue(
+          "{tool_llm_text}\n  description: {docs$description}", .trim = FALSE
+        )
+      if (length(docs$arguments) > 0) {
+        tool_llm_text <- glue::glue(
+          "{tool_llm_text}\n  arguments:", .trim = FALSE
+        )
+
+        for (arg in names(docs$arguments)) {
+          tool_llm_text <- glue::glue(
+            "{tool_llm_text}\n    - {arg}:", .trim = FALSE
+          )
+
+          arg_description <- docs$arguments[[arg]]$description
+          if (!is.null(arg_description)) {
+            tool_llm_text <- glue::glue(
+              "{tool_llm_text} {arg_description}", .trim = FALSE
+            )
+          }
+
+          arg_type <- docs$arguments[[arg]]$type
+          if (arg_type == "match.arg") {
+            arg_options <- paste(
+              paste0(
+                '"',
+                docs$arguments[[arg]]$default_value[
+                  2:length(docs$arguments[[arg]]$default_value)
+                ],
+                '"'
+              ),
+              collapse = ", "
+            )
+
+
+            tool_llm_text <- glue::glue(
+              "{tool_llm_text} [Type: string (one of: {arg_options})]", .trim = FALSE
+            )
+          } else if (arg_type == "unknown") {
+            # Default to string if type is unknown
+            arg_type <- "string"
+          }
+
+          if (!is.null(arg_type) && arg_type != "match.arg") {
+            tool_llm_text <- glue::glue(
+              "{tool_llm_text} [Type: {arg_type}]", .trim = FALSE
+            )
+          }
+        }
+      }
+      if (length(docs$return_value) > 0)
+        tool_llm_text <- glue::glue(
+          "{tool_llm_text}\n  return value: {docs$return_value}", .trim = FALSE
+        )
+
+      new_prompt <- glue::glue(
+        "{new_prompt}\n\n{tool_llm_text}", .trim = FALSE
+      )
+    }
+
+    new_prompt <- glue::glue(
+      "{new_prompt}\n\n",
+      "After you call a function, wait until you receive more information.\n",
+      "Use the information to decide your next steps or provide a final response.",
+      .trim = FALSE
+    )
+
+    return(new_prompt)
+  }
+
+  extraction_fn <- function(llm_response) {
+    jsons <- extraction_fn_json(llm_response)
+
+    fn_results <- lapply(jsons, function(json) {
+      if (is.null(json[["function"]]))
+        return(NULL)
+
+      if (json[["function"]] %in% names(tools)) {
+        tool_function <- tools[[json[["function"]]]]
+        arguments <- json[["arguments"]]
+
+        result <- tryCatch({
+          do.call(tool_function, arguments)
+        }, error = function(e) {
+          glue::glue("Error in {e$message}")
+        })
+
+        if (length(result) > 0)
+          result <- paste(result, collapse = ", ")
+
+        # Create some context around the result
+        string_of_named_arguments <-
+          paste(names(arguments), arguments, sep = " = ") |>
+          paste(collapse = ", ")
+
+        result_string <- glue::glue(
+          "function called: {json[[\"function\"]]}
+          arguments used: {string_of_named_arguments}
+          result: {result}"
+        )
+
+        return(result_string)
+      } else {
+        return(glue::glue("Error: Function '{json[[\"function\"]]}' not found."))
+      }
+    })
+    fn_results <- fn_results[!sapply(fn_results, is.null)]
+
+    if (length(fn_results) == 0)
+      return(llm_response)
+
+    return(llm_feedback(
+      paste(fn_results, collapse = "\n\n"),
+      tool_result = TRUE
+    ))
+  }
+
+  # Add environment with tool functions as an attribute to the extraction function
+  environment_with_tools <- new.env()
+  environment_with_tools$tools <- tools
+  attr(extraction_fn, "environment") <- environment_with_tools
+
+  prompt_wrap(prompt, modify_fn, extraction_fn, type = "tool")
+}
+
+
+
 #' Add tidyprompt function documentation to a function
 #'
 #' @description This function adds documentation to a custom function. This documentation
@@ -14,65 +223,60 @@
 #' modify it, and then call [tools_add_docs()] to add the modified documentation.
 #'
 #' @param func A function object
-#' @param description A description of the function and its purpose.
-#' For native function calling (e.g., with OpenAI), this will be added to the
-#' description which is added to the system prompt. For text-based function
-#' calling, this will be added to prompt which introduces the function
-#' @param arguments A named list of arguments (arguments). Each argument
-#' should be a list, which may contain:
+#' @param docs A list with the following elements:
 #' \itemize{
-#'  \item '$description': A description of the argument and its purpose.
-#'  Not required for native function calling (e.g., with OpenAI), but
-#'  recommended for text-based function calling
-#'  \item '$type': The type of the argument. This should be one conforming
-#'  to a JSON schema type (e.g., "string", "number", "boolean", "object", "array").
-#'  It may also be set to 'match.arg', equivalent to R functions having a
-#'  vector of possible values (e.g., c("yes", "no")) on which 'match.arg()'
-#'  will be called. The possible values should then be passed as a vector
-#'  under 'default_value'
-#'  \item '$default_value': The default value of the argument. This is only
-#'  required when 'type' is set to 'match.arg'. It should be a vector of
-#'  possible values for the argument
+#' \item 'name': (optional) The name of the function. If not provided, the function
+#' name will be extracted from the function object. Use this parameter to override
+#' the function name if necessary
+#' \item 'description': A description of the function and its purpose
+#' \item 'arguments': A named list of arguments with descriptions. Each argument is a list
+#' which may contain: \itemize{
+#' \item 'description': A description of the argument and its purpose. Not
+#' required or used for native function calling (e.g., with OpenAI), but recommended
+#' for text-based function calling
+#' \item 'type': The type of the argument. This should be one of:
+#' 'numeric', 'logical', 'character', 'match.arg', 'vector', 'list'.
+#' 'match.arg' is used for arguments with a default value that is a call to 'c()',
+#' on which in R the 'match.arg()' function will be called. The possible values
+#' should then be passed as a vector under 'default_value'. Type is required
+#' for native function calling (with, e.g., OpenAI) but may also be useful
+#' to provide for text-based function calling, in which it will be added to the
+#' prompt introducing the function
+#' \item 'default_value': The default value of the argument. This is only required
+#' when 'type' is set to 'match.arg'. It should then be a vector of possible values
+#' for the argument. In other cases, it is not required; for native function calling,
+#' it is not used in other cases; for text-based function calling, it may be useful
+#' to provide the default value, which will be added to the prompt introducing the
+#' function
 #' }
-#' @param return_value A description what the function returns or
-#' of its possible side-effects. Not required for native function calling
-#' (e.g., with OpenAI), but recommended for text-based function calling.
-#' For native function-calling, this will be added to the description
-#' which is added to the system prompt
-#' @param name The name of the function (optional). If not provided, the function
-#' name will be extracted from the function object. Use this parameter
-#' to override the function name if necessary
-#'
+#' \item 'return_value': A description of the return value or the side effects of the function
+#' }
 #' @return The function object with the documentation added as an attribute
+#' ('tidyprompt_tool_docs')
 #'
 #' @export
 #'
 #' @example inst/examples/add_tools.R
 tools_add_docs <- function(
     func,
-    description,
-    arguments = list(),
-    return_value,
-    name = NULL
+    docs
 ) {
   stopifnot(
     is.function(func),
-    (is.null(name) | is.character(name) & length(name) == 1),
-    is.character(description) & length(description) == 1,
-    is.list(arguments),
-    length(arguments == 0) | !is.null(names(arguments)),
-    is.null(return_value) | is.character(return_value) & length(return_value) == 1
+    is.list(docs),
+    length(docs) > 0,
+    !is.null(names(docs)),
+    (is.null(docs$name) | is.character(docs$name) & length(docs$name) == 1),
+    is.character(docs$description) & length(docs$description) == 1,
+    is.list(docs$arguments),
+    length(docs$arguments) == 0 | !is.null(names(docs$arguments)),
+    is.null(docs$return_value) | is.character(docs$return_value) & length(docs$return_value) == 1
   )
 
-  if (is.null(name))
-    name <- deparse(substitute(func))
+  if (is.null(docs$name))
+    docs$name <- deparse(substitute(func))
 
-  attr(func, "tidyprompt_fn_docs") <- list(
-    name = name,
-    description = description,
-    arguments = arguments,
-    return_value = return_value
-  )
+  attr(func, "tidyprompt_tool_docs") <- docs
 
   return(func)
 }
@@ -83,19 +287,19 @@ tools_add_docs <- function(
 #'
 #' This function extracts documentation from a help file (if available,
 #' i.e., when the function is part of a package) or from documentation added
-#' by [add_tools_add_documentation()]. The extracted documentation includes
+#' by [tools_add_docs()]. The extracted documentation includes
 #' the function's name, description, arguments, and return value.
 #' This information is used to provide an LLM with information about the functions,
 #' so that the LLM can call R functions.
 #'
 #' @details This function will prioritize documentation added by
-#' [add_tools_add_documentation()] over documentation from a help file.
+#' [tools_add_docs()] over documentation from a help file.
 #' Thus, it is possible to override the help file documentation by adding
 #' custom documentation
 #'
 #' @param func A function object. The function should belong to a package
 #' and have documentation available in a help file, or it should
-#' have documentation added by [add_tools_add_documentation()]
+#' have documentation added by [tools_add_docs()]
 #' @param name The name of the function if already known (optional).
 #' If not provided it will be extracted from the documentation or the
 #' function object's name
@@ -139,8 +343,8 @@ tools_get_docs <- function(func, name = NULL) {
   if (is.null(name))
     name <- deparse(substitute(func))
 
-  if (!is.null(attr(func, "tidyprompt_fn_docs"))) {
-    docs <- attr(func, "tidyprompt_fn_docs")
+  if (!is.null(attr(func, "tidyprompt_tool_docs"))) {
+    docs <- attr(func, "tidyprompt_tool_docs")
 
     stopifnot(
       is.list(docs),
@@ -153,7 +357,7 @@ tools_get_docs <- function(func, name = NULL) {
       is.null(docs$return_value) || (is.character(docs$return_value) & length(docs$return_value) == 1)
     )
   } else {
-    docs <- tools_generate_docs(func, name)
+    docs <- tools_generate_docs(name)
   }
 
   # Check that all formal arguments have documentation
@@ -261,25 +465,20 @@ tools_generate_docs <- function(name) {
     package_name <- environmentName(package_env)
   }
 
-  if (package_name == "R_GlobalEnv") {
-    stop(paste0(
-      "No documentation found for function in global environment.",
-      " Use `add_tools_add_documentation()` to add documentation to function",
-      " (please note: you cannot pipe from function creation towards `add_tools_add_documentation()`)"
-    ))
-  }
-
   # Get arguments, defaults, and likely types based on formals
   args <- get_args_defaults_types(func)
 
-  # Get the function's help file
-  help_file <- utils::help(name, package = as.character(package_name))
-
+  if (package_name == "R_GlobalEnv") {
+    help_file <- NULL
+  } else {
+    # Get the function's help file
+    help_file <- utils::help(name, package = as.character(package_name))
+  }
   if (length(help_file) == 0) { # No help file found
     # Return without function description, arg descriptions, or return description
     return(list(
       name = name,
-      arguments = args,
+      arguments = args
     ))
   }
 
@@ -377,7 +576,7 @@ infer_type_from_default <- function(default_value) {
   } else if (is.logical(default_value)) {
     return("logical")
   } else if (is.character(default_value)) {
-    return("character")
+    return("string")
   } else if (is.call(default_value)) {
     func_name <- as.character(default_value[[1]])
     if (func_name == "c") {
