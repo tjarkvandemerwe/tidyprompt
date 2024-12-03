@@ -1,17 +1,17 @@
 #' Add tidyprompt function documentation to a function
 #'
-#' This function adds documentation to a custom function. This documentation
+#' @description This function adds documentation to a custom function. This documentation
 #' is used to extract information about the function's name, description, arguments,
 #' and return value. This information is used to provide an LLM with information
 #' about the functions, so that the LLM can call R functions. The intended
 #' use of this function is to add documentation to custom functions that do not
-#' have help files; [add_tools_get_documentation()] will extract the documentation
-#' from help files when available.
+#' have help files; [tools_get_docs()] may generate documentation from a
+#' help file when the function is part of base R or a package.
 #'
-#' @details If the function already has documentation, it will be overwritten
-#' by the documentation provided in this function (in terms of extraction
-#' by [add_tools_get_documentation()]). Thus, it is possible to override
-#' the help file documentation by adding custom documentation
+#' If a function already has documentation, the documentation added by this
+#' function may overwrite it. If you wish to modify existing documentation,
+#' you may make a call to [tools_get_docs()] to extract the existing documentation,
+#' modify it, and then call [tools_add_docs()] to add the modified documentation.
 #'
 #' @param func A function object
 #' @param description A description of the function and its purpose.
@@ -101,10 +101,28 @@ tools_add_docs <- function(
 #' function object's name
 #'
 #' @return A list with the following elements:
-#'  - name: The name of the function
-#'  - description: A description of the function
-#'  - arguments: A named list of arguments with descriptions
-#'  - return_value: A description of the return value
+#' \itemize{
+#' \item 'name': The name of the function
+#' \item 'description': A description of the function
+#' \item 'arguments': A named list of arguments with descriptions. Each argument is a list
+#' which may contain: \itemize{
+#' \item 'description': A description of the argument and its purpose
+#' \item 'type': The type of the argument. This is one of: 'numeric', 'logical', 'character',
+#' 'match.arg', 'vector', 'list', 'call', or 'unknown'. 'match.arg' is used for arguments
+#' with a default value that is a call to 'c()' with multiple values. 'vector' is used for
+#' arguments with a default value that is a call to 'c()' with no values or a single value.
+#' 'list' is used for arguments with a default value that is a call to 'list()'.
+#' 'call' is used for arguments with a default value that is a call to a function other
+#' than 'c()' or 'list()'. 'unknown' is used for arguments with a default value that is
+#' not one of the above types, or when the default value is missing
+#' \item 'default_value': The default value of the argument. This is not included if there is
+#' no default value. Note that when the default value is included and is NULL, the default
+#' value is NULL (and not missing). When the 'type' is 'match.arg', the default value
+#' is a vector of possible values
+#' }
+#' \item 'return_value': A description of the return value or the side effects of the function
+#' }
+#' }
 #'
 #' @export
 #'
@@ -138,6 +156,43 @@ tools_get_docs <- function(func, name = NULL) {
     docs <- tools_generate_docs(func, name)
   }
 
+  # Check that all formal arguments have documentation
+  if (!all(names(formals(func)) %in% names(docs$aguments))) {
+    # If not, modify args with what is known from formals
+    args <- docs$arguments
+    true_args <- get_args_defaults_types(func)
+
+    # Add true_args to args only where not present
+    for (arg_name in names(true_args)) {
+      if (!arg_name %in% names(args)) {
+        args[[arg_name]] <- true_args[[arg_name]]
+      }
+    }
+
+    # Add type, default value where not present
+    for (arg_name in names(args)) {
+      if (!"type" %in% names(args[[arg_name]])) {
+        args[[arg_name]]$type <- true_args[[arg_name]]$type
+      }
+      if (!"default_value" %in% names(args[[arg_name]])) {
+        args[[arg_name]]$default_value <- true_args[[arg_name]]$default_value
+      }
+    }
+
+    docs$arguments <- args
+  }
+
+  # Remove args not present in formals
+  for (arg_name in names(docs$arguments)) {
+    if (!arg_name %in% names(formals(func))) {
+      docs$arguments[[arg_name]] <- NULL
+      warning(paste0(
+        "Argument '", arg_name, "' not found in function formals. Removing from documentation"
+      ))
+    }
+  }
+
+  # Remove empty elements from documentation so those won't be printed somewhere
   remove_empty <- function(x) {
     if (is.list(x)) {
       # Recursively apply to each element
@@ -147,11 +202,51 @@ tools_get_docs <- function(func, name = NULL) {
     }
     return(x)
   }
-
   remove_empty(docs)
 }
 
-# Attempts to generate docs using formals & helpfile (if available)
+
+
+#' Generate function documentation from formals and help file
+#'
+#' This function generates documentation for a function based on its formals
+#' and help file (if available). The documentation includes the function's
+#' name, description, arguments, and return value. This function is called internally
+#' when there is no documentation, but may also be called by a user to generate
+#' a template for adding documentation to a function.
+#'
+#' @details See [tools_add_docs()] for more information on how to add
+#' documentation to a function, for which the documentation generated by this
+#' function can be used as a template.
+#'
+#' @param name (string) A name of a function (e.g., 'list.files')
+#'
+#' @return A list with the following elements:
+#' - name: The name of the function
+#' - description: A description of the function
+#' - arguments: A named list of arguments with descriptions. Each argument is a list
+#' which may contain: \itemize{
+#' #' \item 'description': A description of the argument and its purpose, as
+#' obtained from the help file
+#' #' \item 'default_value': The default value of the argument. This is not
+#' included if there is no default value. Note that when the default value
+#' is included and is NULL, the default value is NULL (and not missing)
+#' \item 'type': The inferred type of the argument, based on the default value.
+#' This is one of: 'numeric', 'logical', 'character', 'match.arg', 'vector', 'list', 'call',
+#' or 'unknown'. 'match.arg' is used for arguments with a default value
+#' that is a call to 'c()' with multiple values (default_value then
+#' contains the possible values). 'vector' is used for arguments with a default value
+#' that is a call to 'c()' (with no values or a single value).
+#' 'list' is used for arguments with a default value that is a call to 'list()'.
+#' 'call' is used for arguments with a default value that is a call to a function
+#' other than 'c()' or 'list()'. 'unknown' is used for arguments with a default
+#' value that is not one of the above types, or when the default value is missing
+#' }
+#' - return_value: A description of the return value or the side effects of the function,
+#' as obtained from the help file
+#'
+#' @noRd
+#' @keywords internal
 tools_generate_docs <- function(name) {
   # Get the package name and function
   if (grepl("::", name)) {
@@ -212,7 +307,24 @@ tools_generate_docs <- function(name) {
   ))
 }
 
-# Get default argument & types from function formals
+
+
+#' Get argument names, default values, and types from a function's formals
+#'
+#' This function extracts the argument names, default values, and types from
+#' a function's formals. The types are inferred from the default values.
+#' Is called internally to generate function documentation when there is none.
+#'
+#' @param func A function object
+#'
+#' @return A named list of arguments, where each argument is a list containing:
+#' - 'default_value': The default value of the argument. This is not
+#'  included if there is no default value. Note that when the default value
+#'  is included and is NULL, the default value is NULL (and not missing)
+#'  - 'type': see 'infer_type_from_default()'. If there is no default value,
+#'  the type is set to 'unknown'
+#'  @noRd
+#'  @keywords internal
 get_args_defaults_types <- function(func) {
   args_formals <- formals(func)
   arg_names <- names(args_formals)
@@ -239,6 +351,26 @@ get_args_defaults_types <- function(func) {
   return(arguments)
 }
 
+
+
+#' Infer the type of an argument from its default value
+#'
+#' This function infers the type of an argument from its default value.
+#'
+#' @param default_value The default value of the argument
+#'
+#' @return A string indicating the type of the argument. The possible types are:
+#' - 'numeric': The argument is a numeric value
+#' - 'logical': The argument is a logical value
+#' - 'character': The argument is a character value
+#' - 'match.arg': The argument is a match.arg-type argument
+#' - 'vector': The argument is a vector
+#' - 'list': The argument is a list
+#' - 'call': The argument is a call to a function
+#' - 'unknown': The type of the argument is unknown
+#'
+#' @noRd
+#' @keywords internal
 infer_type_from_default <- function(default_value) {
   if (is.numeric(default_value)) {
     return("numeric")
@@ -264,7 +396,18 @@ infer_type_from_default <- function(default_value) {
   }
 }
 
-# Function to dynamically parse help text from help file
+#' Function to parse help text from a function's help file
+#'
+#' @param help_text The text extracted from a function's help file
+#'
+#' @return A list with the following elements:
+#' - 'Title': The title of the help file
+#' - 'Description': The description of the function
+#' - 'Arguments': A named list of arguments with descriptions
+#' - 'Value': The return value or side effects of the function
+#'
+#' @noRd
+#' @keywords internal
 parse_help_text <- function(help_text) {
   # Helper function to remove overstruck sequences
   remove_overstrike <- function(text) {
@@ -361,15 +504,28 @@ parse_help_text <- function(help_text) {
   return(parsed_result)
 }
 
-fn_meta <- add_tools_get_documentation_from_helpfile("prompt_wrap")
 
-convert_fn_meta_to_r_json_schema <- function(fn_meta) {
+
+#' Convert function documentation to a JSON schema
+#'
+#' This function converts function documentation to an R list that represents
+#' a JSON schema. The JSON schema can be used as input LLM providers
+#' which support native function calling and require a JSON schema to
+#' describe function and its arguments.
+#'
+#' @param docs Function documentation as returned by [tools_get_docs()]
+#'
+#' @return A list (R object) representing a JSON schema for the function
+#' @export
+#'
+#' @examples inst/examples/add_tools.R
+tools_convert_docs_to_r_json_schema <- function(docs) {
   # Initialize the schema
   schema <- list(
     type = "function",
     "function" = list(
-      name = fn_meta$name,
-      # description = fn_meta$description,
+      name = docs$name,
+      # description = docs$description,
       parameters = list(
         type = "object",
         properties = list(),
@@ -380,7 +536,7 @@ convert_fn_meta_to_r_json_schema <- function(fn_meta) {
   )
 
   # Process arguments
-  args <- fn_meta$arguments
+  args <- docs$arguments
   properties <- list()
   required_args <- character(0)
 
