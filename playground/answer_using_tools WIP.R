@@ -64,7 +64,7 @@ answer_using_tools <- function(prompt, tools = list()) {
       \"function\": \"<function name>\",
       \"arguments\": {{
         \"<argument_name>\": <argument_value>,
-        ...
+        # ...
       }}
     }}
 
