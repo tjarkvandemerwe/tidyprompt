@@ -30,6 +30,7 @@ cars |>
 }
 \seealso{
 Other text_helpers: 
+\code{\link{extraction_fn_json}()},
 \code{\link{skim_with_labels_and_levels}()},
 \code{\link{vector_list_to_string}()}
 }

@@ -30,6 +30,7 @@ mtcars |>
 \seealso{
 Other text_helpers: 
 \code{\link{df_to_string}()},
+\code{\link{extraction_fn_json}()},
 \code{\link{vector_list_to_string}()}
 }
 \concept{text_helpers}

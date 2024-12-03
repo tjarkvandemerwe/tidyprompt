@@ -33,6 +33,7 @@ vector_list_to_string(named_vector, how = "expanded") |>
 \seealso{
 Other text_helpers: 
 \code{\link{df_to_string}()},
+\code{\link{extraction_fn_json}()},
 \code{\link{skim_with_labels_and_levels}()}
 }
 \concept{text_helpers}

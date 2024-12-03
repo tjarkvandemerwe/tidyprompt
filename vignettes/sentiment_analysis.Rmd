@@ -1,0 +1,99 @@
+---
+title: "Sentiment analysis in R with a LLM and 'tidyprompt'"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Sentiment analysis in R with a LLM and 'tidyprompt'}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+resource_files:
+  - ../man/figures/plot_sentiment_analysis-1.png
+---
+
+
+
+This vignette will show you how to use the `tidyprompt` package to perform a sentiment analysis
+in R with a LLM (large language model).
+
+We will first define a simple dataset of sentences that we will create sentiment scores for.
+
+
+``` r
+sentences_df <- data.frame(
+  sentence = c(
+    "I love this product!",
+    "This product is terrible",
+    "The customer service was excellent",
+    "I am very disappointed with this product",
+    "The delivery was fast and efficient",
+    "I would not recommend this product to anyone",
+    "It was not bad, not great either",
+    "Meh",
+    "It felt like walking up a mountain",
+    "I am angry!!!"
+  )
+)
+```
+
+First we will create a connection to a locally running LLM (using Ollama)
+
+
+``` r
+library(tidyprompt)
+
+ollama <- llm_provider_ollama()
+ollama$parameters$model <- "llama3.1:8b"
+```
+
+For every sentence, we will now prompt the LLM to provide a sentiment score.
+To do this, we will use 'purrr' `map()` to iterate over each sentence.
+Within each iteration, we use a `tidyprompt()` to prompt the LLM for the sentiment score.
+The latter will force the LLM to answer as an integer and extract the integer from its response.
+
+
+``` r
+library(purrr)
+
+sentences_df$sentiment_score <- map_int(
+  sentences_df$sentence,
+  function(sentence) {
+    paste0(
+      "Please provide a sentiment score for the following sentence:\n\n",
+      sentence
+    ) |>
+      answer_as_integer(min = 1, max = 100) |>
+      send_prompt(ollama, verbose = FALSE)
+  }
+)
+
+sentences_df
+#>                                        sentence sentiment_score
+#> 1                          I love this product!              95
+#> 2                      This product is terrible               3
+#> 3            The customer service was excellent              95
+#> 4      I am very disappointed with this product              20
+#> 5           The delivery was fast and efficient              95
+#> 6  I would not recommend this product to anyone               3
+#> 7              It was not bad, not great either              46
+#> 8                                           Meh              50
+#> 9            It felt like walking up a mountain              25
+#> 10                                I am angry!!!              10
+```
+
+Let's plot the results!
+
+
+``` r
+library(ggplot2)
+
+ggplot(sentences_df, aes(x = sentiment_score, y = reorder(sentence, sentiment_score))) +
+  geom_col(aes(fill = sentiment_score)) +
+  scale_fill_gradient(low = "red", high = "green") +
+  theme_minimal() +
+  labs(
+    title = "Sentiment scores for each sentence",
+    x = "Sentiment score",
+    y = "Sentence"
+  )
+```
+
+![Plot of sentiment scores](../man/figures/plot_sentiment_analysis-1.png)

@@ -11,14 +11,15 @@ paste0(
   send_prompt(llm_provider_openai())
 
 paste0(
-  "Using the built-in mtcars dataset, calculate the average miles per gallon (mpg) for cars with 6 cylinders."
+  "Using the built-in mtcars dataset,",
+  " calculate the average miles per gallon (mpg) for cars with 6 cylinders."
 ) |>
   answer_as_integer() |>
   answer_as_code(
     pkgs_to_use = c("dplyr"), output_as_tool = TRUE
   ) |>
   answer_by_chain_of_thought() |>
-  send_prompt()
+  send_prompt(llm_provider_ollama())
 
 plot <- paste0(
   "Create a scatter plot of miles per gallon (mpg) versus",

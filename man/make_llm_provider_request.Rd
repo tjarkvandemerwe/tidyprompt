@@ -10,7 +10,7 @@ make_llm_provider_request(
   body,
   stream = NULL,
   verbose = getOption("tidyprompt.verbose", TRUE),
-  stream_api_type = c("openai", "ollama")
+  api_type = c("openai", "ollama")
 )
 }
 \arguments{
@@ -25,9 +25,8 @@ make_llm_provider_request(
 \item{verbose}{A logical indicating whether the interaction with the LLM provider
 should be printed to the console. Default is TRUE.}
 
-\item{stream_api_type}{The type of API to use; specifically required to handle streaming.
-Currently, "openai" and "ollama" have been implemented. "openai" should also work
-with other similar APIs for chat completion}
+\item{api_type}{The type of API to use. Currently, "openai" and "ollama" have been implemented
+in this function. "openai" should also work with other similar APIs for chat completion}
 }
 \value{
 A list with the role and content of the response from the LLM provider

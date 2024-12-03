@@ -4,10 +4,16 @@
 \alias{construct_prompt_text}
 \title{Construct prompt text from a tidyprompt object}
 \usage{
-construct_prompt_text(tidyprompt)
+construct_prompt_text(tidyprompt, llm_provider = NULL)
 }
 \arguments{
 \item{tidyprompt}{A tidyprompt object}
+
+\item{llm_provider}{An optional LLM provider object. In some cases
+this may affect how the prompt text is constructed (e.g.,
+the \code{\link[=answer_as_json]{answer_as_json()}} prompt_wrap may not include a schema in the
+prompt text but an OpenAI API, but may include it for other types).
+The llm_provider will be passed to the modify_fn functions of the prompt wraps}
 }
 \value{
 The prompt text constructed from the tidyprompt object

@@ -34,6 +34,10 @@ provider should be printed to the console}
 
 \item{\code{api_key}}{The API key to use for authentication with the LLM
 provider API}
+
+\item{\code{api_type}}{The type of API to use (e.g., "openai", "ollama").
+This is used to determine certain specific behaviors for different APIs,
+for instance, as is done in the \code{\link[=answer_as_json]{answer_as_json()}} function}
 }
 \if{html}{\out{</div>}}
 }
@@ -57,7 +61,8 @@ Create a new \code{\link[=llm_provider]{llm_provider()}} object
   parameters = list(),
   verbose = TRUE,
   url = NULL,
-  api_key = NULL
+  api_key = NULL,
+  api_type = "unspecified"
 )}\if{html}{\out{</div>}}
 }
 
@@ -87,6 +92,10 @@ when creating a fake LLM provider)}
 
 \item{\code{api_key}}{The API key to use for authentication with the LLM
 provider API (optional, not required for, for instance, Ollama)}
+
+\item{\code{api_type}}{The type of API to use (e.g., "openai", "ollama").
+This is used to determine certain specific behaviors for different APIs
+(see for example the \code{\link[=answer_as_json]{answer_as_json()}} function)}
 }
 \if{html}{\out{</div>}}
 }

@@ -9,6 +9,8 @@ prompt_wrap(
   modify_fn = NULL,
   extraction_fn = NULL,
   validation_fn = NULL,
+  handler_fn = NULL,
+  parameter_fn = NULL,
   type = c("unspecified", "mode", "tool", "break")
 )
 }
@@ -21,15 +23,31 @@ first argument) and returns the new prompt text}
 \item{extraction_fn}{A function that takes the LLM response (as first argument)
 and attempts to extract a value from it. Upon succesful extraction, the function
 should return the extracted value. If the extraction fails, the function should
-return a \code{\link[=llm_feedback]{llm_feedback()}} message which will be sent back to the LLM to
-initiate a retry. A special object \code{\link[=llm_break]{llm_break()}} can be returned to break the
-extraction and validation loop}
+return a \code{\link[=llm_feedback]{llm_feedback()}} message to initiate a retry. A \code{\link[=llm_break]{llm_break()}} can be
+returned to break the extraction and validation loop, ending \code{\link[=send_prompt]{send_prompt()}}}
 
 \item{validation_fn}{A function that takes the (extracted) LLM response
 (as first argument) and attempts to validate it. Upon succesful validation,
 the function should return TRUE. If the validation fails, the function should
-return a \code{\link[=llm_feedback]{llm_feedback()}} message which will be sent back to the LLM. A special
+return a \code{\link[=llm_feedback]{llm_feedback()}} message to initiate a retry. A \code{\link[=llm_break]{llm_break()}} can be
+returned to break the extraction and validation loop, ending \code{\link[=send_prompt]{send_prompt()}}
 object \code{\link[=llm_break]{llm_break()}} can be returned to break the extraction and validation loop}
+
+\item{handler_fn}{A function that takes a 'completion' object (as returned by
+\code{llm_provider$complete_chat()}) and a (potentially modified) completion object.
+This can be used for advanced side effects, like logging, native tool calling,
+or keeping track of token usage. All handler functions from all prompt wraps
+are applied every time a chat completion is received from the LLM during \code{\link[=send_prompt]{send_prompt()}}.
+If a handler function returns a completion with '$break_process' set to TRUE,
+\code{\link[=send_prompt]{send_prompt()}} will end with no further chat completions requested}
+
+\item{parameter_fn}{A function that takes the \code{\link[=llm_provider]{llm_provider()}} which is being
+used with \code{\link[=send_prompt]{send_prompt()}} and returns a named list of parameters to be
+set in the \code{\link[=llm_provider]{llm_provider()}} via \code{llm_provider$set_parameters()}. This can be
+used to configure specific parameters of the \code{\link[=llm_provider]{llm_provider()}} when evaluating
+the prompt. For example, \code{\link[=answer_as_json]{answer_as_json()}} may set different parameters for different APIs
+related to JSON output. This function is typically only used with advanced
+prompt wraps that require specific settings in the \code{\link[=llm_provider]{llm_provider()}}}
 
 \item{type}{The type of prompt wrap; one of 'unspecified', 'mode', 'tool', or 'break'.
 Types are used to determine the order in which prompt wraps are applied.
@@ -51,7 +69,15 @@ adds a new prompt wrap to it. A prompt wrap is a set of functions
 that modify the prompt text, extract a value from the LLM response,
 and validate the extracted value. The functions are used to ensure
 that the prompt and LLM response is in the correct format and meets the
-specified criteria.
+specified criteria; they may also be used to provide the LLM with feedback
+or additional information, like the result of a tool call.
+}
+\details{
+For advanced use, modify_fn, extraction_fn, and validation_fn
+may take 'llm_provider' (as used with \code{\link[=send_prompt]{send_prompt()}}) as second argument, and the
+http_list (a list of all HTTP requests made during send_prompt()) as third argument.
+This is not required, but can be useful for more complex prompt wraps which
+require additional information about the LLM provider or the HTTP requests made.
 }
 \examples{
 # A custom prompt_wrap may be created during piping
@@ -175,6 +201,7 @@ Other pre_built_prompt_wraps:
 \code{\link{answer_as_boolean}()},
 \code{\link{answer_as_code}()},
 \code{\link{answer_as_integer}()},
+\code{\link{answer_as_json}()},
 \code{\link{answer_as_list}()},
 \code{\link{answer_as_named_list}()},
 \code{\link{answer_as_regex}()},
