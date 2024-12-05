@@ -86,49 +86,10 @@ answer_using_tools <- function(prompt, tools = list()) {
         )
       if (length(docs$arguments) > 0) {
         tool_llm_text <- glue::glue(
-          "{tool_llm_text}\n  arguments:", .trim = FALSE
+          "{tool_llm_text}\n  arguments:",
+          "\n", tools_docs_arguments_to_text(docs, line_prefix = "    "),
+          .trim = FALSE
         )
-
-        for (arg in names(docs$arguments)) {
-          tool_llm_text <- glue::glue(
-            "{tool_llm_text}\n    - {arg}:", .trim = FALSE
-          )
-
-          arg_description <- docs$arguments[[arg]]$description
-          if (!is.null(arg_description)) {
-            tool_llm_text <- glue::glue(
-              "{tool_llm_text} {arg_description}", .trim = FALSE
-            )
-          }
-
-          arg_type <- docs$arguments[[arg]]$type
-          if (arg_type == "match.arg") {
-            arg_options <- paste(
-              paste0(
-                '"',
-                docs$arguments[[arg]]$default_value[
-                  2:length(docs$arguments[[arg]]$default_value)
-                ],
-                '"'
-              ),
-              collapse = ", "
-            )
-
-
-            tool_llm_text <- glue::glue(
-              "{tool_llm_text} [Type: string (one of: {arg_options})]", .trim = FALSE
-            )
-          } else if (arg_type == "unknown") {
-            # Default to string if type is unknown
-            arg_type <- "string"
-          }
-
-          if (!is.null(arg_type) && arg_type != "match.arg") {
-            tool_llm_text <- glue::glue(
-              "{tool_llm_text} [Type: {arg_type}]", .trim = FALSE
-            )
-          }
-        }
       }
       if (length(docs$return$description) > 0)
         tool_llm_text <- glue::glue(
@@ -235,13 +196,14 @@ answer_using_tools <- function(prompt, tools = list()) {
 #' required or used for native function calling (e.g., with OpenAI), but recommended
 #' for text-based function calling
 #' \item 'type': The type of the argument. This should be one of:
-#' 'numeric', 'logical', 'character', 'match.arg', 'vector', 'list'.
-#' 'match.arg' is used for arguments with a default value that is a call to 'c()',
-#' on which in R the 'match.arg()' function will be called. The possible values
-#' should then be passed as a vector under 'default_value'. Type is required
-#' for native function calling (with, e.g., OpenAI) but may also be useful
-#' to provide for text-based function calling, in which it will be added to the
-#' prompt introducing the function
+#' 'integer', 'numeric', 'logical', 'string', 'match.arg',
+#' 'vector integer', 'vector numeric', 'vector logical', 'vector string'.
+#'  For arguments which are named lists, 'type' should be a named list
+#'  which contains the types of the elements. For type 'match.arg', the
+#'  possible values should be passed as a vector under 'default_value'.
+#'  'type' is required for native function calling (with, e.g., OpenAI) but may
+#'  also be useful to provide for text-based function calling, in which it will
+#'  be added to the prompt introducing the function
 #' \item 'default_value': The default value of the argument. This is only required
 #' when 'type' is set to 'match.arg'. It should then be a vector of possible values
 #' for the argument. In other cases, it is not required; for native function calling,
@@ -307,31 +269,8 @@ tools_add_docs <- function(
 #' If not provided it will be extracted from the documentation or the
 #' function object's name
 #'
-#' @return A list with the following elements:
-#' \itemize{
-#' \item 'name': The name of the function
-#' \item 'description': A description of the function
-#' \item 'arguments': A named list of arguments with descriptions. Each argument is a list
-#' which may contain: \itemize{
-#' \item 'description': A description of the argument and its purpose
-#' \item 'type': The type of the argument. This is one of: 'numeric', 'logical', 'character',
-#' 'match.arg', 'vector', 'list', 'call', or 'unknown'. 'match.arg' is used for arguments
-#' with a default value that is a call to 'c()' with multiple values. 'vector' is used for
-#' arguments with a default value that is a call to 'c()' with no values or a single value.
-#' 'list' is used for arguments with a default value that is a call to 'list()'.
-#' 'call' is used for arguments with a default value that is a call to a function other
-#' than 'c()' or 'list()'. 'unknown' is used for arguments with a default value that is
-#' not one of the above types, or when the default value is missing
-#' \item 'default_value': The default value of the argument. This is not included if there is
-#' no default value. Note that when the default value is included and is NULL, the default
-#' value is NULL (and not missing). When the 'type' is 'match.arg', the default value
-#' is a vector of possible values
-#' }
-#' \item 'return': A list with the following elements:
-#' \itemize{
-#' \item 'description': A description of the return value or the side effects of the function
-#' }
-#' }
+#' @return A list with documentation for the function. See [tools_add_docs()]
+#' for more information on the contents
 #'
 #' @export
 #'
@@ -366,7 +305,7 @@ tools_get_docs <- function(func, name = NULL) {
   }
 
   # Check that all formal arguments have documentation
-  if (!all(names(formals(func)) %in% names(docs$aguments))) {
+  if (!all(names(formals(func)) %in% names(docs$arguments))) {
     # If not, modify args with what is known from formals
     args <- docs$arguments
     true_args <- get_args_defaults_types(func)
@@ -401,17 +340,7 @@ tools_get_docs <- function(func, name = NULL) {
     }
   }
 
-  # Remove empty elements from documentation so those won't be printed somewhere
-  remove_empty <- function(x) {
-    if (is.list(x)) {
-      # Recursively apply to each element
-      x <- lapply(x, remove_empty)
-      # Remove elements with zero length
-      x <- x[lengths(x) > 0]
-    }
-    return(x)
-  }
-  remove_empty(docs)
+  docs
 }
 
 
@@ -421,42 +350,11 @@ tools_get_docs <- function(func, name = NULL) {
 #' This function generates documentation for a function based on its formals
 #' and help file (if available). The documentation includes the function's
 #' name, description, arguments, and return value. This function is called internally
-#' when there is no documentation, but may also be called by a user to generate
-#' a template for adding documentation to a function.
-#'
-#' @details See [tools_add_docs()] for more information on how to add
-#' documentation to a function, for which the documentation generated by this
-#' function can be used as a template.
+#' when there is no documentation.#'
 #'
 #' @param name (string) A name of a function (e.g., 'list.files')
 #'
-#' @return A list with the following elements: \itemize{
-#'  \item 'name': The name of the function
-#'  \item 'description': A description of the function
-#'  \item 'arguments': A named list of arguments with descriptions. Each argument is a list
-#' which may contain:
-#'  \itemize{
-#'    \item 'description': A description of the argument and its purpose, as
-#' obtained from the help file
-#'    \item 'default_value': The default value of the argument. This is not
-#' included if there is no default value. Note that when the default value
-#' is included and is NULL, the default value is NULL (and not missing)
-#'    \item 'type': The inferred type of the argument, based on the default value.
-#' This is one of: 'numeric', 'logical', 'character', 'match.arg', 'vector', 'list', 'call',
-#' or 'unknown'. 'match.arg' is used for arguments with a default value
-#' that is a call to 'c()' with multiple values (default_value then
-#' contains the possible values). 'vector' is used for arguments with a default value
-#' that is a call to 'c()' (with no values or a single value).
-#' 'list' is used for arguments with a default value that is a call to 'list()'.
-#' 'call' is used for arguments with a default value that is a call to a function
-#' other than 'c()' or 'list()'. 'unknown' is used for arguments with a default
-#' value that is not one of the above types, or when the default value is missing
-#'  }
-#'  \item 'return': A list with the following elements:
-#'    \itemize{
-#'      \item 'description': A description of the return value or the side effects of the function
-#'    }
-#' }
+#' @return A list with documentation for the function
 #'
 #' @noRd
 #' @keywords internal
@@ -568,11 +466,13 @@ get_args_defaults_types <- function(func) {
 #' @param default_value The default value of the argument
 #'
 #' @return A string indicating the type of the argument. The possible types are:
+#' - 'integer': The argument is an integer value
 #' - 'numeric': The argument is a numeric value
 #' - 'logical': The argument is a logical value
-#' - 'character': The argument is a character value
+#' - 'string': The argument is a character value
 #' - 'match.arg': The argument is a match.arg-type argument
-#' - 'vector': The argument is a vector
+#' - 'vector [integer/numeric/logical/string/unknown] ': The argument is a vector
+#'  of the specified type
 #' - 'list': The argument is a list
 #' - 'call': The argument is a call to a function
 #' - 'unknown': The type of the argument is unknown
@@ -580,29 +480,78 @@ get_args_defaults_types <- function(func) {
 #' @noRd
 #' @keywords internal
 infer_type_from_default <- function(default_value) {
-  if (is.numeric(default_value)) {
+  is_whole_number <- function(x)
+    tryCatch(
+      x %% 1 == 0,
+      error = function(e) FALSE
+    )
+
+  infer_list_types <- function(lst) {
+    # Recursively infer types for each element in a named list
+    sapply(lst, infer_type_from_default, simplify = FALSE)
+  }
+
+  if (is.null(default_value)) {
+    return("unknown")
+  }
+  if (is.numeric(default_value) & length(default_value) == 1) {
+    if (is_whole_number(default_value)) {
+      return("integer")
+    }
     return("numeric")
-  } else if (is.logical(default_value)) {
+  } else if (is.logical(default_value) & length(default_value) == 1) {
     return("logical")
-  } else if (is.character(default_value)) {
+  } else if (is.character(default_value) & length(default_value) == 1) {
     return("string")
   } else if (is.call(default_value)) {
     func_name <- as.character(default_value[[1]])
-    if (func_name == "c") {
-      if (length(default_value) > 1) { # Assuming it a match.arg-type vector
+    if (func_name == "c" || (func_name == "list" && is.null(names(default_value[-1])))) {
+      # Treat list like c only if it has no names
+      values <- default_value[-1]
+
+      if (length(values) == 0)
+        return("vector unknown")
+
+      if (length(values) > 1 && all(sapply(values, is.character))) {
+        # Assuming it's a match.arg-type vector
         return("match.arg")
       } else {
-        return("vector")
+        if (all(sapply(values, is.numeric))) {
+          if (all(sapply(values, is_whole_number))) {
+            return("vector integer")
+          }
+          return("vector numeric")
+        } else if (all(sapply(values, is.logical))) {
+          return("vector logical")
+        } else if (all(sapply(values, is.character))) {
+          return("vector string")
+        }
+
+        return("vector unknown")
       }
     } else if (func_name == "list") {
+      # Handle named lists
+      if (!is.null(names(default_value[-1]))) {
+        return(infer_list_types(as.list(default_value[-1])))
+      } else {
         return("list")
+      }
     } else {
       return("call")
+    }
+  } else if (is.list(default_value)) {
+    if (!is.null(names(default_value))) {
+      # Named list
+      return(infer_list_types(default_value))
+    } else {
+      # Unnamed list
+      return("list")
     }
   } else {
     return("unknown")
   }
 }
+
 
 #' Function to parse help text from a function's help file
 #'
@@ -728,12 +677,103 @@ parse_help_text <- function(help_text) {
 #'
 #' @examples inst/examples/add_tools.R
 tools_convert_docs_to_r_json_schema <- function(docs) {
+  # Helper function to process each argument recursively
+  process_arg <- function(arg) {
+    prop <- list()
+    r_type <- arg$type
+
+    if (is.list(r_type)) {
+      # Handle named lists (objects)
+      prop$type <- "object"
+      prop$additionalProperties <- FALSE  # Set additionalProperties to FALSE
+      prop$properties <- list()
+      for (name in names(r_type)) {
+        sub_arg <- list(
+          type = r_type[[name]],
+          default_value = if (!is.null(arg$default_value[[name]])) arg$default_value[[name]] else NULL
+        )
+        prop$properties[[name]] <- process_arg(sub_arg)
+      }
+    } else if (is.null(r_type) || r_type == "unknown") {
+      prop$type <- "string"
+    } else if (r_type == "character") {
+      prop$type <- "string"
+    } else if (r_type == "integer") {
+      prop$type <- "integer"
+    } else if (r_type == "numeric") {
+      prop$type <- "number"
+    } else if (r_type == "logical") {
+      prop$type <- "boolean"
+    } else if (r_type == "match.arg") {
+      prop$type <- "string"
+      prop$enum <- arg$default_value
+    } else if (grepl("^vector ", r_type)) {
+      # Handle vector types
+      item_type <- sub("^vector ", "", r_type)
+      prop$type <- "array"
+      if (item_type == "integer") {
+        prop$items <- list(type = "integer")
+      } else if (item_type == "numeric") {
+        prop$items <- list(type = "number")
+      } else if (item_type %in% c("string", "character")) {
+        prop$items <- list(type = "string")
+      } else if (item_type == "logical") {
+        prop$items <- list(type = "boolean")
+      } else {
+        prop$items <- list()
+      }
+    } else if (r_type == "list") {
+      # Handle unnamed lists
+      default_value <- arg$default_value
+      if (is.null(default_value)) {
+        prop$type <- "array"
+        prop$items <- list()
+      } else if (is.list(default_value)) {
+        if (is.null(names(default_value))) {
+          # Unnamed list (array)
+          prop$type <- "array"
+          if (length(default_value) > 0) {
+            # Assume homogeneous items
+            sub_arg <- list(
+              type = arg$type,
+              default_value = default_value[[1]]
+            )
+            prop$items <- process_arg(sub_arg)
+          } else {
+            prop$items <- list()
+          }
+        } else {
+          # Named list (object)
+          prop$type <- "object"
+          prop$additionalProperties <- FALSE  # Set additionalProperties to FALSE
+          prop$properties <- list()
+          for (name in names(default_value)) {
+            sub_arg <- list(
+              type = arg$type[[name]],
+              default_value = default_value[[name]]
+            )
+            prop$properties[[name]] <- process_arg(sub_arg)
+          }
+        }
+      } else {
+        prop$type <- "array"
+        prop$items <- list()
+      }
+    } else if (r_type == "call") {
+      warning("Function calls are not supported in JSON schema; defaulting to 'string'")
+      prop$type <- "string"
+    } else {
+      warning("Unknown type; defaulting to 'string' in JSON schema")
+      prop$type <- "string"
+    }
+    return(prop)
+  }
+
   # Initialize the schema
   schema <- list(
     type = "function",
     "function" = list(
       name = docs$name,
-      # description = docs$description,
       parameters = list(
         type = "object",
         properties = list(),
@@ -750,36 +790,7 @@ tools_convert_docs_to_r_json_schema <- function(docs) {
 
   for (arg_name in names(args)) {
     arg <- args[[arg_name]]
-
-    # Initialize property
-    prop <- list(
-      # description = arg$description
-    )
-
-    # Map R types to JSON types
-    r_type <- arg$type
-    if (is.null(r_type) || r_type == "unknown") {
-      # Default to "string" if type is unknown
-      prop$type <- "string"
-    } else if (r_type == "character") {
-      prop$type <- "string"
-    } else if (r_type == "integer") {
-      prop$type <- "integer"
-    } else if (r_type == "numeric") {
-      prop$type <- "number"
-    } else if (r_type == "logical") {
-      prop$type <- "boolean"
-    } else if (r_type == "match.arg") {
-      prop$type <- "string"
-      prop$enum <- arg$default_value
-    }
-    else if (r_type %in% c("list", "vector")) {
-      prop$type <- "array"
-    } else if (r_type == "call") {
-      prop$type <- "object"
-    } else {
-      prop$type <- "string"
-    }
+    prop <- process_arg(arg)
 
     # Add to required arguments if there's no default value
     if (!"default_value" %in% names(arg)) {
@@ -797,4 +808,122 @@ tools_convert_docs_to_r_json_schema <- function(docs) {
   }
 
   return(schema)
+}
+
+
+
+#' Create arguments text from docs
+#'
+#' @param docs
+#' @param line_prefix
+#'
+#' @return A string with the arguments formatted as text
+#'
+#' @noRd
+#' @keywords internal
+tools_docs_arguments_to_text <- function(docs, line_prefix = "  ") {
+  tool_llm_text <- ""
+
+  process_argument <- function(arg_name, arg_info, prefix = "") {
+    # Warning for unknown type
+    if (arg_info$type == "unknown") {
+      warning(glue::glue("Argument '{prefix}{arg_name}' has an unknown type. Defaulting to 'string'."))
+      arg_info$type <- "string"
+    }
+
+    # Start argument text
+    arg_text <- glue::glue("{prefix}- {arg_name}:", .trim = FALSE)
+
+    # Add description if available
+    if (!is.null(arg_info$description)) {
+      arg_text <- glue::glue("{arg_text} {arg_info$description}", .trim = FALSE)
+    }
+
+    # Handle match.arg type
+    if (arg_info$type == "match.arg") {
+      arg_options <- paste(
+        paste0('"', arg_info$default_value, '"'),
+        collapse = ", "
+      )
+      arg_text <- glue::glue(
+        "{arg_text} [Type: string (one of: {arg_options})]", .trim = FALSE
+      )
+    } else {
+      arg_text <- glue::glue("{arg_text} [Type: {arg_info$type}]", .trim = FALSE)
+    }
+
+    return(arg_text)
+  }
+
+  process_nested_list <- function(arg_list, prefix = "") {
+    nested_text <- ""
+    for (arg_name in names(arg_list)) {
+      arg_info <- arg_list[[arg_name]]
+
+      # If arg_info is not a list, assume it represents the type
+      if (!is.list(arg_info)) {
+        arg_info <- list(type = arg_info)
+      }
+
+      # Check if we have a nested structure
+      if (is.list(arg_info$type) || is.null(arg_info$type)) {
+        # Include description if available
+        if (!is.null(arg_info$description)) {
+          nested_line <- glue::glue(
+            "{prefix}- {arg_name}: {arg_info$description} [Type: named list]",
+            .trim = FALSE
+          )
+        } else {
+          nested_line <- glue::glue(
+            "{prefix}- {arg_name}: [Type: named list]",
+            .trim = FALSE
+          )
+        }
+
+        # Use arg_info$type if it's a list, else use arg_info
+        next_level <- if (is.list(arg_info$type)) arg_info$type else arg_info
+        nested_subtext <- process_nested_list(next_level, paste0(prefix, "  "))
+        nested_text <- paste(
+          nested_text,
+          nested_line,
+          nested_subtext,
+          sep = "\n"
+        )
+      } else {
+        # For simple arguments, handle normally
+        arg_line <- process_argument(arg_name, arg_info, prefix)
+        nested_text <- paste(
+          nested_text,
+          arg_line,
+          sep = "\n"
+        )
+      }
+    }
+    return(nested_text)
+  }
+
+  tool_llm_text <- process_nested_list(docs$arguments)
+
+  remove_empty_lines <- function(text) {
+    # Split into individual lines
+    lines <- unlist(strsplit(text, "\n", fixed = TRUE))
+
+    # Keep only lines that are not empty (after trimming whitespace)
+    non_empty_lines <- lines[!grepl("^\\s*$", lines)]
+
+    # Rejoin the cleaned lines into a single string
+    cleaned_text <- paste(non_empty_lines, collapse = "\n")
+
+    return(cleaned_text)
+  }
+
+  # Apply line prefix to each line after cleaning
+  cleaned_result <- remove_empty_lines(tool_llm_text)
+  if (nzchar(line_prefix)) {
+    lines <- strsplit(cleaned_result, "\n")[[1]]
+    lines <- paste0(line_prefix, lines)
+    cleaned_result <- paste(lines, collapse = "\n")
+  }
+
+  cleaned_result
 }
