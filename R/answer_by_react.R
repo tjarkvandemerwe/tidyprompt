@@ -75,5 +75,9 @@ answer_by_react <- function(
     extraction_fn_finish(llm_response, extraction_lenience)
   }
 
-  prompt_wrap(prompt, modify_fn, extraction_fn, type = "mode")
+  prompt_wrap(
+    prompt,
+    modify_fn, extraction_fn,
+    type = "mode", name = "answer_by_react"
+  )
 }

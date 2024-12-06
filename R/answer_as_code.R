@@ -397,7 +397,10 @@ answer_as_code <- function(
 
   ## Finally, wrap the prompt with the new prompt wrap
 
-  prompt_wrap(prompt, modify_fn, extraction_fn, type = type)
+  prompt_wrap(
+    prompt, modify_fn, extraction_fn,
+    type = type, name = "answer_as_code"
+  )
 }
 
 

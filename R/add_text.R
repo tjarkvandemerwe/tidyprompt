@@ -31,5 +31,5 @@ add_text <- function(
     }
   }
 
-  prompt_wrap(prompt, modify_fn)
+  prompt_wrap(prompt, modify_fn, name = "add_text")
 }

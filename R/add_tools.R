@@ -173,7 +173,11 @@ add_tools <- function(prompt, tool_functions = list()) {
   environment_with_tool_functions$tool_functions <- tool_functions
   attr(extraction_fn, "environment") <- environment_with_tool_functions
 
-  prompt_wrap(prompt, modify_fn, extraction_fn, type = "tool")
+  prompt_wrap(
+    prompt,
+    modify_fn, extraction_fn,
+    type = "tool", name = "add_tools"
+  )
 }
 
 

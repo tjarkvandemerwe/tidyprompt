@@ -5,7 +5,7 @@ pw <- function(prompt) {
       text, "\n\nlook at the system prompt btw!"
     )
 
-    # browser()
+    browser()
 
     self$system_prompt <- paste0(
       self$system_prompt, "\n\nfdsafdsaf!"

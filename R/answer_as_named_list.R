@@ -146,5 +146,8 @@ answer_as_named_list <- function(
     return(TRUE)
   }
 
-  prompt_wrap(prompt, modify_fn, extraction_fn, validation_fn)
+  prompt_wrap(
+    prompt, modify_fn, extraction_fn, validation_fn,
+    name = "answer_as_named_list"
+  )
 }

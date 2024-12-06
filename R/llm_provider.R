@@ -219,10 +219,12 @@ make_llm_provider_request <- function(
         message("(Could not parse JSON body from response)")
     )
     message("Use 'httr2::last_response()' and 'httr2::last_request()' for more information")
-    NULL
+    stop("Could not perform request to LLM provider")
   }
 
   if (!is.null(stream) && stream) { # Streaming:
+    tool_calls <- list()
+
     response <- tryCatch(
       httr2::req_perform_stream(
         req, buffer_kb = 0.001, round = "line",
@@ -264,6 +266,51 @@ make_llm_provider_request <- function(
               role <<- parsed_data[[1]]$choices$delta$role
             }
 
+            if (length(parsed_data[[1]]$choices$delta$tool_calls) > 0) {
+              tool_call <- parsed_data[[1]]$choices$delta$tool_calls[[1]]
+              id <- tool_call$id
+
+              last_id <- NULL
+              if (length(tool_calls) > 0) {
+                last_id <- tool_calls[[length(tool_calls)]]$id
+              }
+
+              if (!is.null(id) & (is.null(last_id) || (id != last_id))) {
+                if (verbose & !is.null(last_id)) cat("\n\n")
+
+                tool_calls <<- append(tool_calls, list(list(
+                  id = tool_call$id,
+                  type = tool_call$type,
+                  `function` = list(
+                    name = tool_call$`function`$name,
+                    args = tool_call$`function`$arguments
+                  )
+                )))
+
+                if (verbose) {
+                  cat(glue::glue(
+                    "Calling tool '{tool_call$`function`$name}', with arguments:"
+                  ))
+                  cat("\n")
+
+                  if (verbose & length(tool_call$`function`$arguments) > 0)
+                    cat(tool_call$`function`$arguments)
+                }
+              } else {
+                arguments_current <- tool_calls[[length(tool_calls)]]$`function`$arguments
+                arguments_new <- tool_call$`function`$arguments
+                if (length(arguments_new) > 0) {
+                  tool_calls[[length(tool_calls)]]$`function`$arguments <<-
+                    paste0(arguments_current, arguments_new)
+
+                  if (verbose)
+                    cat(arguments_new)
+                }
+              }
+
+              return(TRUE)
+            }
+
             for (data in parsed_data) {
               addition <- data$choices$delta$content
 
@@ -281,18 +328,17 @@ make_llm_provider_request <- function(
       error = function(e) handle_error(e)
     )
 
-    if (is.null(response))
-      stop("Could not perform request to LLM provider")
+    if (!is.list(response$body))
+      response$body <- list()
+    response$body$tool_calls <- tool_calls
 
     if (verbose) cat("\n")
+
   } else { # Non-streaming:
     response <- tryCatch(
       httr2::req_perform(req),
       error = function(e) handle_error(e)
     )
-
-    if (is.null(response))
-      stop("Could not perform request to LLM provider")
 
     content <- httr2::resp_body_json(response)
 
@@ -308,7 +354,8 @@ make_llm_provider_request <- function(
   return(list(
     role = role,
     content = message,
-    http = response
+    http_request = req,
+    http_response = response
   ))
 }
 

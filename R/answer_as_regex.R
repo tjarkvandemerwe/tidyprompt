@@ -65,5 +65,5 @@ answer_as_regex <- function(
     }
   }
 
-  prompt_wrap(prompt, modify_fn, extraction_fn)
+  prompt_wrap(prompt, modify_fn, extraction_fn, name = "answer_as_regex")
 }

@@ -69,20 +69,12 @@
     #' Add a `prompt_wrap` object to the Tidyprompt.
     #'
     #' @param prompt_wrap A `prompt_wrap` object.
-    #' @param name A name for the prompt wrap
     #' @return The updated Tidyprompt object (invisible).
-    add_prompt_wrap = function(prompt_wrap, name = NULL) {
+    add_prompt_wrap = function(prompt_wrap) {
       if (!inherits(prompt_wrap, "prompt_wrap")) {
         stop("`prompt_wrap` must be of class `prompt_wrap`.", call. = FALSE)
       }
-
-      # If name is not provided, generate a default name
-      if (is.null(name)) {
-        name <- paste0("prompt_", length(private$prompt_wraps) + 1)
-      }
-
-      # Add to private$prompt_wraps using standard R syntax
-      private$prompt_wraps[[name]] <- prompt_wrap
+      private$prompt_wraps <- c(private$prompt_wraps, list(prompt_wrap))
       private$validate_tidyprompt()
       invisible(self)
     },

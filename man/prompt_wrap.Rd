@@ -11,11 +11,12 @@ prompt_wrap(
   validation_fn = NULL,
   handler_fn = NULL,
   parameter_fn = NULL,
-  type = c("unspecified", "mode", "tool", "break")
+  type = c("unspecified", "mode", "tool", "break"),
+  name = NULL
 )
 }
 \arguments{
-\item{prompt}{A single string or a \code{\link[=tidyprompt]{tidyprompt()}} object}
+\item{prompt}{A single string or a \link{tidyprompt-class} object}
 
 \item{modify_fn}{A function that takes the previous prompt text (as
 first argument) and returns the new prompt text}
@@ -58,12 +59,15 @@ Order among the same type is preserved in the order they were added to the promp
 Example of a tool is \code{\link[=add_tools]{add_tools()}}; example of a mode is \code{\link[=answer_by_react]{answer_by_react()}}.
 Example of a break is \code{\link[=quit_if]{quit_if()}}. Most other prompt wraps will be 'unspecified',
 like \code{\link[=answer_as_regex]{answer_as_regex()}} or \code{\link[=add_text]{add_text()}}}
+
+\item{name}{An optional name for the prompt wrap. This can be used to identify
+the prompt wrap in the \link{tidyprompt-class} object}
 }
 \value{
-A \code{\link[=tidyprompt]{tidyprompt()}} object with the \code{\link[=prompt_wrap]{prompt_wrap()}} appended to it
+A \link{tidyprompt-class} object with the \code{\link[=prompt_wrap]{prompt_wrap()}} appended to it
 }
 \description{
-This function takes a single string or a \code{\link[=tidyprompt]{tidyprompt()}} object and
+This function takes a single string or a \link{tidyprompt-class} object and
 adds a new prompt wrap to it. A prompt wrap is a set of functions
 that modify the prompt text, extract a value from the LLM response,
 and validate the extracted value. The functions are used to ensure
@@ -77,6 +81,12 @@ may take 'llm_provider' (as used with \code{\link[=send_prompt]{send_prompt()}})
 http_list (a list of all HTTP requests made during send_prompt()) as third argument.
 This is not required, but can be useful for more complex prompt wraps which
 require additional information about the LLM provider or the HTTP requests made.
+}
+\details{
+'modify_fn', 'extraction_fn', 'validation_fn', 'handler_fn', and 'parameter_fn'
+may also access the \link{tidyprompt-class} object that they are a part of
+through 'self$...' which is attached to their environment. For instance,
+other prompt wraps can be accessed through 'self$get_prompt_wraps()'
 }
 \examples{
 # A custom prompt_wrap may be created during piping
@@ -184,11 +194,15 @@ answer_as_integer <- function(
     return(TRUE)
   }
 
-  prompt_wrap(prompt, modify_fn, extraction_fn, validation_fn)
+  prompt_wrap(
+    prompt,
+    modify_fn, extraction_fn, validation_fn,
+    name = "answer_as_integer"
+  )
 }
 }
 \seealso{
-\code{\link[=tidyprompt]{tidyprompt()}} \code{\link[=send_prompt]{send_prompt()}}
+\link{tidyprompt-class} \code{\link[=send_prompt]{send_prompt()}}
 
 Other prompt_wrap:
 \code{\link{llm_break}()},

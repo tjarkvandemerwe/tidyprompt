@@ -47,5 +47,8 @@ answer_as_boolean <- function(
     return(llm_feedback(instruction))
   }
 
-  prompt_wrap(prompt, modify_fn, extraction_fn)
+  prompt_wrap(
+    prompt, modify_fn, extraction_fn,
+    name = "answer_as_boolean"
+  )
 }

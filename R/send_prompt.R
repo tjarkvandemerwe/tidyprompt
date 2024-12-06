@@ -105,7 +105,7 @@ send_prompt <- function(
   http_list <- list()
 
 
-  ## 2 Chat_history & send_chat
+  ## 2 Chat_history, send_chat, handler_fns
 
   # Create internal chat_history
   chat_history <- create_chat_df()
@@ -137,7 +137,13 @@ send_prompt <- function(
     for (prompt_wrap in get_prompt_wraps(prompt, order = "default")) {
       if (!is.null(prompt_wrap$handler_fn)) {
         handler_fn <- prompt_wrap$handler_fn
-        completion <- handler_fn(completion)
+        # Add environment
+        if (!is.null(attr(handler_fn, "environment"))) {
+          environment <- attr(handler_fn, "environment")
+          environment(handler_fn) <- environment
+        }
+
+        completion <- handler_fn(completion, llm_provider, http_list)
 
         if (isTRUE(completion$break_process)) {
           handler_break <<- TRUE

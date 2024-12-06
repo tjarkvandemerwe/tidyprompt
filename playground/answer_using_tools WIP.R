@@ -55,8 +55,113 @@ answer_using_tools <- function(prompt, tools = list()) {
 
   parameter_fn <- function(llm_provider) {
     if (llm_provider$api_type == "openai") {
-      return(list(response_format = list(type = "json_object")))
+      tools_openai <- list()
+
+      for (tool_name in names(tools)) {
+        tool_openai <- list()
+
+        tool <- tools[[tool_name]]
+        docs <- tools_get_docs(tool, tool_name)
+
+        tool_openai$type <- "function"
+
+        tool_openai[["function"]]$name <- tool_name
+        if (!is.null(docs$description)) {
+          tool_openai[["function"]]$description <- docs$description
+        }
+
+        tool_openai[["function"]]$parameters <- tools_docs_to_r_json_schema(docs)
+
+        tool_openai[["function"]]$strict <- TRUE
+
+        tools_openai[[length(tools_openai) + 1]] <- tool_openai
+      }
+
+      return(list(tools = tools_openai))
     }
+  }
+
+  handler_fn <- function(response, llm_provider, http_list) {
+    if (!isTRUE(llm_provider$api_type == "openai")) {
+      return(response)
+    }
+
+    while (TRUE) {
+      if ("tool_calls" %in% names(response$http_response$body)) {
+        tool_calls <- response$http_response$body$tool_calls
+      } else {
+        body <- tryCatch(
+          response$http_response$body |> rawToChar() |> jsonlite::fromJSON(),
+          error = function(e) {
+            NULL
+          }
+        )
+
+        if (is.null(body))
+          break
+        if (length(body$choices$message$tool_calls) == 0)
+          break
+
+        tool_calls <- list()
+        for (tool_call in body$choices$message$tool_calls) {
+          tool_calls[[length(tool_calls) + 1]] <- list(
+            id = tool_call$id,
+            type = tool_call$type,
+            "function" = as.list(tool_call[["function"]])
+          )
+        }
+      }
+
+      if (length(tool_calls) == 0)
+        break
+
+      messages <- response$http_request$body$data$messages
+      messages[[length(messages) + 1]] <- list(
+        role = "assistant",
+        tool_calls = tool_calls
+      )
+
+      for (tool_call in tool_calls) {
+        tool_name <- tool_call[["function"]]$name
+        tool <- tools[[tool_name]]
+        arguments <- tool_call[["function"]]$arguments |> jsonlite::fromJSON()
+
+        result <- tryCatch({
+          do.call(tool, arguments)
+        }, error = function(e) {
+          glue::glue("Error: {e$message}")
+        })
+
+        if (length(result) > 0)
+          result <- paste(result, collapse = ", ")
+
+        result <- as.character(result)
+
+        messages[[length(messages) + 1]] <- list(
+          role = "tool",
+          content = result,
+          tool_call_id = tool_call$id
+        )
+      }
+
+      new_request <- response$http_request
+      new_request$body$data$messages <- messages
+
+      if (!llm_provider$parameters$stream) {
+        new_response <- httr2::req_perform(new_request)
+
+        response$http_request <- new_request
+        response$http_response <- new_response
+      } else {
+        # Stream next...
+        response <- make_llm_provider_request(
+          new_request$url, new_request$headers, new_request$body$data,
+          stream = TRUE, api_type = "openai"
+        )
+      }
+    }
+
+    return(response)
   }
 
   modify_fn <- function(original_prompt_text, llm_provider) {
@@ -161,8 +266,13 @@ answer_using_tools <- function(prompt, tools = list()) {
   environment_with_tools <- new.env()
   environment_with_tools$tools <- tools
   attr(extraction_fn, "environment") <- environment_with_tools
+  attr(handler_fn, "environment") <- environment_with_tools
 
-  prompt_wrap(prompt, modify_fn, extraction_fn, type = "tool")
+  prompt_wrap(
+    prompt,
+    modify_fn, extraction_fn, NULL, handler_fn, parameter_fn,
+    type = "tool", name = "answer_using_tools"
+  )
 }
 
 
@@ -675,7 +785,11 @@ gd_parse_help_text <- function(help_text) {
 #' @export
 #'
 #' @examples inst/examples/add_tools.R
-tools_docs_to_r_json_schema <- function(docs) {
+tools_docs_to_r_json_schema <- function(
+    docs,
+    all_required = TRUE,
+    additional_properties = FALSE
+) {
   # Helper function to process each argument recursively
   process_argument <- function(arg) {
     prop <- list()
@@ -705,7 +819,13 @@ tools_docs_to_r_json_schema <- function(docs) {
       prop$type <- "boolean"
     } else if (r_type == "match.arg") {
       prop$type <- "string"
-      prop$enum <- arg$default_value
+      # Check if default_value is a call, e.g. c("Val1", "Val2", ...)
+      if (is.call(arg$default_value) && identical(arg$default_value[[1]], as.name("c"))) {
+        # Evaluate the call to get a standard R vector
+        prop$enum <- eval(arg$default_value)
+      } else {
+        prop$enum <- arg$default_value
+      }
     } else if (grepl("^vector ", r_type)) {
       # Handle vector types
       item_type <- sub("^vector ", "", r_type)
@@ -768,20 +888,6 @@ tools_docs_to_r_json_schema <- function(docs) {
     return(prop)
   }
 
-  # Initialize the schema
-  schema <- list(
-    type = "function",
-    "function" = list(
-      name = docs$name,
-      parameters = list(
-        type = "object",
-        properties = list(),
-        required = character(0),
-        additionalProperties = FALSE
-      )
-    )
-  )
-
   # Process arguments
   args <- docs$arguments
   properties <- list()
@@ -800,13 +906,15 @@ tools_docs_to_r_json_schema <- function(docs) {
     properties[[arg_name]] <- prop
   }
 
-  # Set properties and required fields
-  schema[["function"]]$parameters$properties <- properties
-  if (length(required_args) > 0) {
-    schema[["function"]]$parameters$required <- required_args
-  }
+  if (all_required)
+    required_args <- names(args)
 
-  return(schema)
+  list(
+    type = "object",
+    properties = properties,
+    required = required_args,
+    additionalProperties = additional_properties
+  )
 }
 
 

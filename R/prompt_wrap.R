@@ -14,6 +14,11 @@
 #' This is not required, but can be useful for more complex prompt wraps which
 #' require additional information about the LLM provider or the HTTP requests made.
 #'
+#' @details 'modify_fn', 'extraction_fn', 'validation_fn', 'handler_fn', and 'parameter_fn'
+#' may also access the \link{tidyprompt-class} object that they are a part of
+#' through 'self$...' which is attached to their environment. For instance,
+#' other prompt wraps can be accessed through 'self$get_prompt_wraps()'
+#'
 #' @param prompt A single string or a \link{tidyprompt-class} object
 #' @param modify_fn A function that takes the previous prompt text (as
 #' first argument) and returns the new prompt text
@@ -202,18 +207,12 @@ prompt_wrap_internal <- function(
   modify_fn <- ensure_three_arguments(modify_fn)
   validation_fn <- ensure_three_arguments(validation_fn)
   extraction_fn <- ensure_three_arguments(extraction_fn)
+  handler_fn <- ensure_three_arguments(handler_fn)
 
   if (!is.null(parameter_fn) && length(formals(parameter_fn)) != 1) {
     stop(paste0(
       "Parameter_fn should be a function that takes one argument,",
       " which is the llm_provider"
-    ))
-  }
-
-  if (!is.null(handler_fn) && length(formals(handler_fn)) != 1) {
-    stop(paste0(
-      "Handler_fn should be a function that takes one argument,",
-      " which is the completion (as returned by `llm_provider$complete_chat()`)"
     ))
   }
 
@@ -227,13 +226,14 @@ prompt_wrap_internal <- function(
       extraction_fn = extraction_fn,
       validation_fn = validation_fn,
       handler_fn = handler_fn,
-      parameter_fn = parameter_fn
+      parameter_fn = parameter_fn,
+      name = name
     ),
     class = "prompt_wrap"
   )
 
   # Append to prompt
-  prompt$add_prompt_wrap(prompt_wrap, name)
+  prompt$add_prompt_wrap(prompt_wrap)
 
   return(prompt)
 }

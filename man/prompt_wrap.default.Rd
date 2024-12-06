@@ -7,15 +7,15 @@
 \method{prompt_wrap}{default}(prompt, ...)
 }
 \arguments{
-\item{prompt}{A single string or a \code{\link[=tidyprompt]{tidyprompt()}} object}
+\item{prompt}{A single string or a \link{tidyprompt-class} object}
 
 \item{...}{Additional arguments}
 }
 \value{
-A \code{\link[=tidyprompt]{tidyprompt()}} object with the \code{\link[=prompt_wrap]{prompt_wrap()}} appended to it
+A \link{tidyprompt-class} object with the \code{\link[=prompt_wrap]{prompt_wrap()}} appended to it
 }
 \description{
-Attempts to create a \code{\link[=tidyprompt]{tidyprompt()}} object from whatever is passed as 'prompt';
+Attempts to create a \link{tidyprompt-class} object from whatever is passed as 'prompt';
 then calls the internal function to append the \code{\link[=prompt_wrap]{prompt_wrap()}}.
 }
 \keyword{internal}
