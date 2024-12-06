@@ -5,7 +5,14 @@
 #' that modify the prompt text, extract a value from the LLM response,
 #' and validate the extracted value. The functions are used to ensure
 #' that the prompt and LLM response is in the correct format and meets the
-#' specified criteria.
+#' specified criteria; they may also be used to provide the LLM with feedback
+#' or additional information, like the result of a tool call.
+#'
+#' @details For advanced use, modify_fn, extraction_fn, and validation_fn
+#' may take 'llm_provider' (as used with [send_prompt()]) as second argument, and the
+#' http_list (a list of all HTTP requests made during send_prompt()) as third argument.
+#' This is not required, but can be useful for more complex prompt wraps which
+#' require additional information about the LLM provider or the HTTP requests made.
 #'
 #' @param prompt A single string or a \link{tidyprompt-class} object
 #' @param modify_fn A function that takes the previous prompt text (as
@@ -13,31 +20,28 @@
 #' @param extraction_fn A function that takes the LLM response (as first argument)
 #' and attempts to extract a value from it. Upon succesful extraction, the function
 #' should return the extracted value. If the extraction fails, the function should
-#' return a [llm_feedback()] message which will be sent back to the LLM to
-#' initiate a retry. A special object [llm_break()] can be returned to break the
-#' extraction and validation loop
+#' return a [llm_feedback()] message to initiate a retry. A [llm_break()] can be
+#' returned to break the extraction and validation loop, ending [send_prompt()]
 #' @param validation_fn A function that takes the (extracted) LLM response
 #' (as first argument) and attempts to validate it. Upon succesful validation,
 #' the function should return TRUE. If the validation fails, the function should
-#' return a [llm_feedback()] message which will be sent back to the LLM. A special
+#' return a [llm_feedback()] message to initiate a retry. A [llm_break()] can be
+#' returned to break the extraction and validation loop, ending [send_prompt()]
 #' object [llm_break()] can be returned to break the extraction and validation loop
-#' @param handler_fn A function that takes the LLM response (as first argument),
-#' the 'llm_provider' (as second argument), and the 'http_list' (as third argument).
-#' Handler functions are applied every time a LLM response is received, before any
-#' extraction or validation functions are applied. This can be useful for logging, implementing native tool calling,
-#' or other side effects, like keeping track of tokens and exiting the process if required
-#' based on some specific criteria. Like extraction functions, handler functions may
-#' Like extraction functions, handler functions may return [llm_feedback()], [llm_break()].
-#' If the handler function does not return either of those, it must return a list of the LLM
-#' response ('$response') and the 'http_list' ('$http_list'). This list will be
-#' passed to the extraction and validation functions. Note: handler_fn is still pending
-#' implementation in the [send_prompt()] function
-#' @param parameter_fn A function that takes the \link{llm_provider-class} object which is being
+#' @param handler_fn A function that takes a 'completion' object (as returned by
+#' `llm_provider$complete_chat()`) and a (potentially modified) completion object.
+#' This can be used for advanced side effects, like logging, native tool calling,
+#' or keeping track of token usage. All handler functions from all prompt wraps
+#' are applied every time a chat completion is received from the LLM during [send_prompt()].
+#' If a handler function returns a completion with '$break_process' set to TRUE,
+#' [send_prompt()] will end with no further chat completions requested
+#' @param parameter_fn A function that takes the [llm_provider()] which is being
 #' used with [send_prompt()] and returns a named list of parameters to be
-#' used in the \link{llm_provider-class} object when sending the prompt. This function is called once,
-#' before any LLM responses are requested. It can be used to set specific parameters
-#' of the \link{llm_provider-class} object according to its characteristics, like the API type
-#' (e.g., [answer_as_json()] may set different parameters for different APIs)
+#' set in the [llm_provider()] via `llm_provider$set_parameters()`. This can be
+#' used to configure specific parameters of the [llm_provider()] when evaluating
+#' the prompt. For example, [answer_as_json()] may set different parameters for different APIs
+#' related to JSON output. This function is typically only used with advanced
+#' prompt wraps that require specific settings in the [llm_provider()]
 #' @param type The type of prompt wrap; one of 'unspecified', 'mode', 'tool', or 'break'.
 #' Types are used to determine the order in which prompt wraps are applied.
 #' When constructing the prompt text, prompt wraps are applied to the base prompt
@@ -198,15 +202,19 @@ prompt_wrap_internal <- function(
   modify_fn <- ensure_three_arguments(modify_fn)
   validation_fn <- ensure_three_arguments(validation_fn)
   extraction_fn <- ensure_three_arguments(extraction_fn)
-  handler_fn <- ensure_three_arguments(handler_fn)
 
-  if (!is.null(parameter_fn)) {
-    if (length(formals(parameter_fn)) != 1) {
-      stop(paste0(
-        "Parameter_fn should be a function that takes one argument,",
-        " which is the llm_provider."
-      ))
-    }
+  if (!is.null(parameter_fn) && length(formals(parameter_fn)) != 1) {
+    stop(paste0(
+      "Parameter_fn should be a function that takes one argument,",
+      " which is the llm_provider"
+    ))
+  }
+
+  if (!is.null(handler_fn) && length(formals(handler_fn)) != 1) {
+    stop(paste0(
+      "Handler_fn should be a function that takes one argument,",
+      " which is the completion (as returned by `llm_provider$complete_chat()`)"
+    ))
   }
 
   type <- match.arg(type)

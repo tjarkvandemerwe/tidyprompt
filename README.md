@@ -13,15 +13,18 @@
 
 Key features of ‘tidyprompt’ are:
 
-- **tidy prompting**: Efficiently construct prompts for LLMs, using
-  piping syntax (inspired by the ‘tidyverse’). Wrap a base prompt in
-  prompt wraps to influence how the LLM handles the prompt. A library of
-  pre-built prompt wraps is included, but you can also write your own
-  prompt wraps.
+- **tidy prompting**: Easily construct prompts for LLMs, using piping
+  syntax (inspired by the ‘tidyverse’). Prompt wraps are building blocks
+  with which you can quickly create advanced prompts, simultaneously
+  adding extraction and validation functions for processing the LLM
+  output. A library of pre-built prompt wraps is included, but you can
+  also write custom prompt wraps.
 
 - **structured output**: Obtain structured output from a LLM, adhering
-  to a specific type and/or format. Configure automatic retries with
-  feedback to the LLM when the output is not as expected.
+  to a specific type and/or format.
+
+- **feedback & retries**: Automatically provide feedback to the LLM when
+  the output is not as expected, so that it can retry.
 
 - **reasoning modes**: Make your LLM answer a prompt in a specific mode,
   such as chain-of-thought or ReAct (Reasoning and Acting) modes.
@@ -31,11 +34,13 @@ Key features of ‘tidyprompt’ are:
   take other actions. ‘tidyprompt’ also supports R code generation and
   evaluation, allowing LLMs to run R code.
 
-- **compatible with all LLM providers**: Usable with any LLM provider
-  that supports chat completion. Use included LLM providers such as
-  Ollama (local PC/on your own server), OpenAI, OpenRouter (offering
-  various providers, including Anthropic), Mistral, Groq, XAI (Grok), or
-  Google Gemini. Or write a hook for any other LLM provider.
+- **compatible with all LLM providers**: All features of ‘tidyprompt’
+  are designed to be provider-agnostic, meaning that they can be used
+  with any LLM provider that supports chat completion. ‘tidyprompt’
+  includes various default LLM providers, including Ollama, OpenAI,
+  OpenRouter (offering various providers, including Anthropic), Mistral,
+  Groq, XAI (Grok), and Google Gemini. You can also write a hook for any
+  other LLM provider.
 
 ## Installation
 
@@ -53,6 +58,10 @@ See the [‘Getting
 started’](https://tjarkvandemerwe.github.io/tidyprompt/articles/getting_started.html)
 vignette for an introduction to ‘tidyprompt’.
 
+This vignette shows example usage and guides you through the basic
+functionalities of ‘tidyprompt’, demonstrating how to use and create
+prompt wraps and send prompts to LLMs.
+
 ## More information and contributing
 
 ‘tidyprompt’ is under active development by Luka Koning
@@ -66,7 +75,7 @@ You are welcome to contribute to the package by opening a pull request.
 If you have any questions or suggestions, you can also reach us via
 e-mail.
 
-### A note on ‘text-based’ versus ‘native’ handling of LLMs
+### Philosophy of ‘tidyprompt’: text-based versus native handling of LLMs
 
 ‘tidyprompt’ is primarily focused on ‘text-based’ handling of LLMs,
 where textual output is parsed to achieve structured output and other
@@ -79,17 +88,19 @@ structures.
 
 In the first place, ‘tidyprompt’ aims to be suitable for all LLM
 providers and models that support chat completion. This means that
-prompt wraps can also enable advanced functionalities like prompt
-wrapping and structured output for LLMs that do not natively support it.
-Where appropriate, ‘tidyprompt’ may also support native processing;
-currently, `answer_as_json()` also offers support for the respective
-native options of the Ollama and OpenAI-type APIs (including supplying
-JSON schemas). Users that use a provider whose API does not have this
-functions, can still use `answer_as_json()` with text-based handling
-(and it is easy to switch between providers with different levels of
-JSON support). For `add_tools()`, ‘tidyprompt’ currently supports
-text-based handling, but will soon also support native processing for
-key API types (Ollama, OpenAI).
+prompt wraps can also enable advanced functionalities like structured
+output and function calling for LLMs that do not natively support it.
+Where appropriate, ‘tidyprompt’ may also support native configuration of
+specific APIs.
+
+Currently, `answer_as_json()` supports both text-based handling and
+native configuration of Ollama and OpenAI-type APIs (including supplying
+JSON schemas). This means that it is possible to switch between
+providers with different levels of JSON support, ensuring the results
+will remain in the correct format. For `add_tools()`, ‘tidyprompt’
+currently only supports text-based handling of R functions, but will
+soon also support native tool handling for common API types (Ollama,
+OpenAI).
 
 The philosophy behind ‘tidyprompt’ is furthermore that it aims to be
 flexible enough that users can implement advanced features, potentially

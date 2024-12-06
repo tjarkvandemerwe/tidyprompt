@@ -23,27 +23,23 @@ first argument) and returns the new prompt text}
 \item{extraction_fn}{A function that takes the LLM response (as first argument)
 and attempts to extract a value from it. Upon succesful extraction, the function
 should return the extracted value. If the extraction fails, the function should
-return a \code{\link[=llm_feedback]{llm_feedback()}} message which will be sent back to the LLM to
-initiate a retry. A special object \code{\link[=llm_break]{llm_break()}} can be returned to break the
-extraction and validation loop}
+return a \code{\link[=llm_feedback]{llm_feedback()}} message to initiate a retry. A \code{\link[=llm_break]{llm_break()}} can be
+returned to break the extraction and validation loop, ending \code{\link[=send_prompt]{send_prompt()}}}
 
 \item{validation_fn}{A function that takes the (extracted) LLM response
 (as first argument) and attempts to validate it. Upon succesful validation,
 the function should return TRUE. If the validation fails, the function should
-return a \code{\link[=llm_feedback]{llm_feedback()}} message which will be sent back to the LLM. A special
+return a \code{\link[=llm_feedback]{llm_feedback()}} message to initiate a retry. A \code{\link[=llm_break]{llm_break()}} can be
+returned to break the extraction and validation loop, ending \code{\link[=send_prompt]{send_prompt()}}
 object \code{\link[=llm_break]{llm_break()}} can be returned to break the extraction and validation loop}
 
-\item{handler_fn}{A function that takes the LLM response (as first argument),
-the 'llm_provider' (as second argument), and the 'http_list' (as third argument).
-Handler functions are applied every time a LLM response is received, before any
-extraction or validation functions are applied. This can be useful for logging, implementing native tool calling,
-or other side effects, like keeping track of tokens and exiting the process if required
-based on some specific criteria. Like extraction functions, handler functions may
-Like extraction functions, handler functions may return \code{\link[=llm_feedback]{llm_feedback()}}, \code{\link[=llm_break]{llm_break()}}.
-If the handler function does not return either of those, it must return a list of the LLM
-response ('$response') and the 'http_list' ('$http_list'). This list will be
-passed to the extraction and validation functions. Note: handler_fn is still pending
-implementation in the \code{\link[=send_prompt]{send_prompt()}} function}
+\item{handler_fn}{A function that takes a 'completion' object (as returned by
+\code{llm_provider$complete_chat()}) and a (potentially modified) completion object.
+This can be used for advanced side effects, like logging, native tool calling,
+or keeping track of token usage. All handler functions from all prompt wraps
+are applied every time a chat completion is received from the LLM during \code{\link[=send_prompt]{send_prompt()}}.
+If a handler function returns a completion with '$break_process' set to TRUE,
+\code{\link[=send_prompt]{send_prompt()}} will end with no further chat completions requested}
 
 \item{parameter_fn}{A function that takes the \link{llm_provider-class} object which is being
 used with \code{\link[=send_prompt]{send_prompt()}} and returns a named list of parameters to be
@@ -72,7 +68,15 @@ adds a new prompt wrap to it. A prompt wrap is a set of functions
 that modify the prompt text, extract a value from the LLM response,
 and validate the extracted value. The functions are used to ensure
 that the prompt and LLM response is in the correct format and meets the
-specified criteria.
+specified criteria; they may also be used to provide the LLM with feedback
+or additional information, like the result of a tool call.
+}
+\details{
+For advanced use, modify_fn, extraction_fn, and validation_fn
+may take 'llm_provider' (as used with \code{\link[=send_prompt]{send_prompt()}}) as second argument, and the
+http_list (a list of all HTTP requests made during send_prompt()) as third argument.
+This is not required, but can be useful for more complex prompt wraps which
+require additional information about the LLM provider or the HTTP requests made.
 }
 \examples{
 # A custom prompt_wrap may be created during piping
@@ -186,11 +190,11 @@ answer_as_integer <- function(
 \seealso{
 \code{\link[=tidyprompt]{tidyprompt()}} \code{\link[=send_prompt]{send_prompt()}}
 
-Other prompt_wrap: 
+Other prompt_wrap:
 \code{\link{llm_break}()},
 \code{\link{llm_feedback}()}
 
-Other pre_built_prompt_wraps: 
+Other pre_built_prompt_wraps:
 \code{\link{add_text}()},
 \code{\link{add_tools}()},
 \code{\link{answer_as_boolean}()},

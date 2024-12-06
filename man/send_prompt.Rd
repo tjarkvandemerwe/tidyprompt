@@ -27,41 +27,47 @@ be set in the \link{llm_provider-class} object using the '$set_parameters()' fun
 \item{max_interactions}{Maximum number of interactions allowed with the
 LLM provider. Default is 10. If the maximum number of interactions is reached
 without a successful response, 'NULL' is returned as the response (see return
-value)}
+value). The first interaction is the initial chat completion}
 
 \item{clean_chat_history}{If the chat history should be cleaned after each
 interaction. Cleaning the chat history means that only the
 first and last message from the user, the last message from the assistant,
-and all messages from the system are used when requesting a new answer from
-the LLM; keeping the context window clean may increase the LLM's performance}
+all messages from the system, and all tool results are kept in a 'clean'
+chat history. This clean chat history is used when requesting a new chat completion.
+(i.e., if a LLM repeatedly fails to provide a correct response, only its last failed response
+will included in the context window). This may increase the LLM performance
+on the next interaction}
 
 \item{verbose}{If the interaction with the LLM provider should be printed
 to the console. This will overrule the 'verbose' setting in the LLM provider}
 
 \item{stream}{If the interaction with the LLM provider should be streamed.
 This setting will only be used if the LLM provider already has a
-'stream' parameter (which indicates there is support for streaming). This
-setting will overrule the 'stream' setting in the LLM provider}
+'stream' parameter (which indicates there is support for streaming). Note
+that when 'verbose' is set to FALSE, the 'stream' setting will be ignored}
 
 \item{return_mode}{One of 'full' or 'only_response'. See return value}
 }
 \value{
-If return mode 'only_response', the function will return only the LLM response
+\itemize{
+\item If return mode 'only_response', the function will return only the LLM response
 after extraction and validation functions have been applied (NULL is returned
-when unsucessful after the maximum number of interactions).
-If return mode 'full', the function will return a list with the following elements:
-'response' (the LLM response after extraction and validation functions have been applied;
-NULL is returned when unsucessful after the maximum number of interactions),
-'chat_history' (a dataframe with the full chat history which led to the final response),
-'chat_history_clean' (a dataframe with the cleaned chat history which led to
+when unsuccessful after the maximum number of interactions).
+\item If return mode 'full', the function will return a list with the following elements:
+\itemize{
+\item 'response' (the LLM response after extraction and validation functions have been applied;
+NULL is returned when unsuccessful after the maximum number of interactions),
+\item 'chat_history' (a dataframe with the full chat history which led to the final response),
+\item 'chat_history_clean' (a dataframe with the cleaned chat history which led to
 the final response; here, only the first and last message from the user, the
 last message from the assistant, and all messages from the system are kept),
-'start_time' (the time when the function was called),
-'end_time' (the time when the function ended),
-'duration_seconds' (the duration of the function in seconds), and
-'http_list' (a list with all HTTP requests and full responses made for chat completions).
-When using 'full' and you want to access a specific element during (base R) piping,
-you can use the '\code{\link[=extract_from_return_list]{extract_from_return_list()}}' function to assist in this
+\item 'start_time' (the time when the function was called),
+\item 'end_time' (the time when the function ended),
+\item 'duration_seconds' (the duration of the function in seconds), and
+\item 'http_list' (a list with all HTTP responses made during the interactions;
+as returned by \code{llm_provider$complete_chat()}).
+}
+}
 }
 \description{
 This function is responsible for sending strings or \code{\link[=tidyprompt]{tidyprompt()}} objects,
@@ -124,7 +130,7 @@ in the prompt wraps (see \code{\link[=prompt_wrap]{prompt_wrap()}}). If the maxi
 \code{\link[=tidyprompt]{tidyprompt()}}, \code{\link[=prompt_wrap]{prompt_wrap()}}, \link{llm_provider-class}, \code{\link[=llm_provider_ollama]{llm_provider_ollama()}},
 \code{\link[=llm_provider_openai]{llm_provider_openai()}}
 
-Other prompt_evaluation: 
+Other prompt_evaluation:
 \code{\link{llm_break}()},
 \code{\link{llm_feedback}()}
 }
