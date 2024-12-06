@@ -1,18 +1,17 @@
-#' Send a prompt or [tidyprompt()] to a LLM provider
+#' Send a prompt to a LLM provider
 #'
-#' This function is responsible for sending strings or [tidyprompt()] objects,
-#' including their prompt wraps, to a LLM provider for evaluation.
+#' This function is responsible for sending prompts to a LLM provider for evaluation.
 #' The function will interact with the LLM provider until a successful response
 #' is received or the maximum number of interactions is reached. The function will
 #' apply extraction and validation functions to the LLM response, as specified
 #' in the prompt wraps (see [prompt_wrap()]). If the maximum number of interactions
 #'
-#' @param prompt A string or a [tidyprompt()] object
+#' @param prompt A string or a \link{tidyprompt-class} object
 #' @param llm_provider \link{llm_provider-class} object (default is [llm_provider_ollama()]).
 #' This object and its settings will be used to evaluate the prompt. Note that
 #' the 'verbose' and 'stream' settings in the LLM provider will be overruled by
 #' the 'verbose' and 'stream' arguments in this function when those are not NULL.
-#' Furthermore, advanced [tidyprompt()] objects may carry '$parameter_fn' functions
+#' Furthermore, advanced \link{tidyprompt-class} objects may carry '$parameter_fn' functions
 #' which can set parameters in the llm_provider object (see [prompt_wrap()] for more information)
 #' @param max_interactions Maximum number of interactions allowed with the
 #' LLM provider. Default is 10. If the maximum number of interactions is reached
@@ -57,7 +56,7 @@
 #'
 #' @example inst/examples/send_prompt.R
 #'
-#' @seealso [tidyprompt()], [prompt_wrap()], \link{llm_provider-class}, [llm_provider_ollama()],
+#' @seealso \link{tidyprompt-class}, [prompt_wrap()], \link{llm_provider-class}, [llm_provider_ollama()],
 #' [llm_provider_openai()]
 #'
 #' @family prompt_evaluation

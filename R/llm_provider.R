@@ -149,13 +149,6 @@
           " 'content' fields."
         ))
       }
-      # Check that 'role' and 'content' are character
-      if (!all(sapply(response[c("role", "content")], is.character))) {
-        stop(paste0(
-          "The 'role' and 'content' fields in the response must be of type",
-          " character."
-        ))
-      }
 
       if (
         self$verbose
