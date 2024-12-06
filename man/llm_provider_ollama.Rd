@@ -2,7 +2,7 @@
 % Please edit documentation in R/llm_provider.R
 \name{llm_provider_ollama}
 \alias{llm_provider_ollama}
-\title{Create a new Ollama \code{\link[=llm_provider]{llm_provider()}} instance}
+\title{Create a new Ollama LLM provider}
 \usage{
 llm_provider_ollama(
   parameters = list(model = "llama3.1:8b", stream = getOption("tidyprompt.stream", TRUE)),
@@ -29,10 +29,10 @@ should be printed to the console}
 (typically: "http://localhost:11434/api/chat")}
 }
 \value{
-A new \code{\link[=llm_provider]{llm_provider()}} object for use of the Ollama API
+A new \link{llm_provider-class} object for use of the Ollama API
 }
 \description{
-Create a new Ollama \code{\link[=llm_provider]{llm_provider()}} instance
+This function creates a new \link{llm_provider-class} object that interacts with the Ollama API
 }
 \examples{
 # Various providers:
@@ -86,7 +86,7 @@ ollama$parameters$model <- "llama3.1:8b"
 }
 \seealso{
 Other llm_provider: 
-\code{\link{llm_provider}},
+\code{\link{llm_provider-class}},
 \code{\link{llm_provider_google_gemini}()},
 \code{\link{llm_provider_groq}()},
 \code{\link{llm_provider_mistral}()},

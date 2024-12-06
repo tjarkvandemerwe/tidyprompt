@@ -14,7 +14,8 @@ answer_as_json(
 \arguments{
 \item{prompt}{A single string or a \code{\link[=tidyprompt]{tidyprompt()}} object}
 
-\item{schema}{(optional) A list representing a JSON schema object that the response must match.
+\item{schema}{(optional) A list (R object) which represents
+a JSON schema that the response should match
 \itemize{
 \item When not using the OpenAI API, the schema will be
 added to the original prompt (see argument: 'schema_in_prompt_as'),
@@ -203,7 +204,7 @@ json_schema <- list(
 #   'json_schema' list object
 
 # Generate example R object based on schema:
-generate_json_example_from_schema(json_schema)
+r_json_schema_to_example(json_schema)
 
 \dontrun{
   # Ollama with schema
@@ -356,13 +357,13 @@ Other answer_as_prompt_wraps:
 \code{\link{answer_as_regex}()}
 
 Other answer_as_json: 
-\code{\link{json_schema_from_example}()},
-\code{\link{json_schema_to_example}()}
+\code{\link{r_json_schema_from_example}()},
+\code{\link{r_json_schema_to_example}()}
 
 Other text_helpers: 
 \code{\link{df_to_string}()},
 \code{\link{extraction_fn_json}()},
-\code{\link{json_schema_to_example}()},
+\code{\link{r_json_schema_to_example}()},
 \code{\link{skim_with_labels_and_levels}()},
 \code{\link{vector_list_to_string}()}
 }

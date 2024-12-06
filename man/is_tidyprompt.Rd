@@ -2,25 +2,24 @@
 % Please edit documentation in R/tidyprompt.R
 \name{is_tidyprompt}
 \alias{is_tidyprompt}
-\title{Validate tidyprompt: returns TRUE if a valid tidyprompt object, otherwise FALSE}
+\title{Check if object is a Tidyprompt}
 \usage{
-is_tidyprompt(tidyprompt)
+is_tidyprompt(x)
 }
 \arguments{
-\item{tidyprompt}{A tidyprompt object}
+\item{x}{An object to check.}
 }
 \value{
-Logical indicating whether the input is a valid tidyprompt object
+TRUE if the object is a Tidyprompt, otherwise FALSE.
 }
 \description{
-Validate tidyprompt: returns TRUE if a valid tidyprompt object, otherwise FALSE
+Check if object is a Tidyprompt
 }
 \seealso{
 Other tidyprompt: 
 \code{\link{construct_prompt_text}()},
-\code{\link{get_base_prompt}()},
 \code{\link{get_prompt_wraps}()},
-\code{\link{print.tidyprompt}()},
-\code{\link{tidyprompt}()}
+\code{\link{tidyprompt}()},
+\code{\link{tidyprompt-class}}
 }
 \concept{tidyprompt}

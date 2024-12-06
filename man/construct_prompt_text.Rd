@@ -2,31 +2,26 @@
 % Please edit documentation in R/tidyprompt.R
 \name{construct_prompt_text}
 \alias{construct_prompt_text}
-\title{Construct prompt text from a tidyprompt object}
+\title{Construct prompt text from a Tidyprompt object}
 \usage{
-construct_prompt_text(tidyprompt, llm_provider = NULL)
+construct_prompt_text(x, llm_provider = NULL)
 }
 \arguments{
-\item{tidyprompt}{A tidyprompt object}
+\item{x}{A Tidyprompt object.}
 
-\item{llm_provider}{An optional LLM provider object. In some cases
-this may affect how the prompt text is constructed (e.g.,
-the \code{\link[=answer_as_json]{answer_as_json()}} prompt_wrap may not include a schema in the
-prompt text but an OpenAI API, but may include it for other types).
-The llm_provider will be passed to the modify_fn functions of the prompt wraps}
+\item{llm_provider}{An optional LLM provider object.}
 }
 \value{
-The prompt text constructed from the tidyprompt object
+The constructed prompt text.
 }
 \description{
-Construct prompt text from a tidyprompt object
+Construct prompt text from a Tidyprompt object
 }
 \seealso{
 Other tidyprompt: 
-\code{\link{get_base_prompt}()},
 \code{\link{get_prompt_wraps}()},
 \code{\link{is_tidyprompt}()},
-\code{\link{print.tidyprompt}()},
-\code{\link{tidyprompt}()}
+\code{\link{tidyprompt}()},
+\code{\link{tidyprompt-class}}
 }
 \concept{tidyprompt}

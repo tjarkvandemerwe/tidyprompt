@@ -32,11 +32,11 @@
 #' response ('$response') and the 'http_list' ('$http_list'). This list will be
 #' passed to the extraction and validation functions. Note: handler_fn is still pending
 #' implementation in the [send_prompt()] function
-#' @param parameter_fn A function that takes the [llm_provider()] which is being
+#' @param parameter_fn A function that takes the \link{llm_provider-class} object which is being
 #' used with [send_prompt()] and returns a named list of parameters to be
-#' used in the [llm_provider()] when sending the prompt. This function is called once,
+#' used in the \link{llm_provider-class} object when sending the prompt. This function is called once,
 #' before any LLM responses are requested. It can be used to set specific parameters
-#' of the [llm_provider()] according to its characteristics, like the API type
+#' of the \link{llm_provider-class} object according to its characteristics, like the API type
 #' (e.g., [answer_as_json()] may set different parameters for different APIs)
 #' @param type The type of prompt wrap; one of 'unspecified', 'mode', 'tool', or 'break'.
 #' Types are used to determine the order in which prompt wraps are applied.
@@ -220,7 +220,7 @@ prompt_wrap_internal <- function(
   )
 
   # Append to prompt
-  prompt$prompt_wraps[[length(prompt$prompt_wraps) + 1]] <- prompt_wrap
+  prompt$add_prompt_wrap(prompt_wrap)
 
   return(prompt)
 }

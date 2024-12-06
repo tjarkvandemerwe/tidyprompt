@@ -2,7 +2,7 @@
 % Please edit documentation in R/tidyprompt.R
 \name{tidyprompt}
 \alias{tidyprompt}
-\title{Methods to create, construct, and empower prompt objects}
+\title{Create a Tidyprompt object}
 \usage{
 tidyprompt(input)
 }
@@ -11,27 +11,18 @@ tidyprompt(input)
 a new prompt object will be created with that character string as the base prompt.}
 }
 \value{
-A prompt object (or an error if an unsuitable input is provided)
+A Tidyprompt object
 }
 \description{
-A tidyprompt is an object which contains an initial prompt text
-and a list of \code{\link[=prompt_wrap]{prompt_wrap()}}. The prompt wraps contain functions
-which modify the prompt text in some way, and, once the LLM response
-to the prompt is given, apply extraction and validation to the response.
-Using a \code{\link[=tidyprompt]{tidyprompt()}} and \code{\link[=prompt_wrap]{prompt_wrap()}} objects allows for easy
-chaining of modifications and empowerements to a prompt, ensuring
-that the LLM output will meet the desired criteria. The \code{\link[=tidyprompt]{tidyprompt()}}
-object offers many possibilities, such as structured and validated output,
-LLM function calling, and LLM code generation and evaluation.
+Create a Tidyprompt object
 }
 \seealso{
-\code{\link[=prompt_wrap]{prompt_wrap()}} \code{\link[=send_prompt]{send_prompt()}}
+\code{\link[=prompt_wrap]{prompt_wrap()}}
 
 Other tidyprompt: 
 \code{\link{construct_prompt_text}()},
-\code{\link{get_base_prompt}()},
 \code{\link{get_prompt_wraps}()},
 \code{\link{is_tidyprompt}()},
-\code{\link{print.tidyprompt}()}
+\code{\link{tidyprompt-class}}
 }
 \concept{tidyprompt}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/llm_provider.R
 \name{llm_provider_google_gemini}
 \alias{llm_provider_google_gemini}
-\title{Create a new Google Gemini \code{\link[=llm_provider]{llm_provider()}} instance}
+\title{Create a new Google Gemini LLM provider}
 \usage{
 llm_provider_google_gemini(
   parameters = list(model = "gemini-1.5-flash"),
@@ -30,12 +30,12 @@ should be printed to the console}
 (see: https://aistudio.google.com/app/apikey)}
 }
 \value{
-A new \code{\link[=llm_provider]{llm_provider()}} object for use of the Google Gemini API
+A new \link{llm_provider-class} object for use of the Google Gemini API
 
-A new \code{\link[=llm_provider]{llm_provider()}} object for use of the Google Gemini API
+A new \link{llm_provider-class} object for use of the Google Gemini API
 }
 \description{
-Creates an \code{\link[=llm_provider]{llm_provider()}} object that interacts with the Google Gemini API.
+Creates an \link{llm_provider-class} object that interacts with the Google Gemini API.
 Streaming is not yet supported in this implementation.
 }
 \examples{
@@ -138,7 +138,7 @@ ollama$parameters$model <- "llama3.1:8b"
 }
 \seealso{
 Other llm_provider: 
-\code{\link{llm_provider}},
+\code{\link{llm_provider-class}},
 \code{\link{llm_provider_groq}()},
 \code{\link{llm_provider_mistral}()},
 \code{\link{llm_provider_ollama}()},
@@ -148,7 +148,7 @@ Other llm_provider:
 }
 \concept{llm_provider}
 \concept{llm_provider
-Create a new Google Gemini \code{\link[=llm_provider]{llm_provider()}} instance
+Create a new Google Gemini LLM provider
 
-Creates an \code{\link[=llm_provider]{llm_provider()}} object that interacts with the Google Gemini API.
+Creates an \link{llm_provider-class} object that interacts with the Google Gemini API.
 Streaming is not yet supported in this implementation.}

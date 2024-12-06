@@ -2,7 +2,7 @@
 % Please edit documentation in R/llm_provider.R
 \name{llm_provider_openrouter}
 \alias{llm_provider_openrouter}
-\title{Create a new OpenRouter \code{\link[=llm_provider]{llm_provider()}} instance}
+\title{Create a new OpenRouter LLM provider}
 \usage{
 llm_provider_openrouter(
   parameters = list(model = "qwen/qwen-2.5-7b-instruct", stream =
@@ -30,10 +30,10 @@ should be printed to the console.}
 \item{api_key}{The API key to use for authentication with the OpenRouter API}
 }
 \value{
-A new \code{\link[=llm_provider]{llm_provider()}} object for use of the OpenRouter API
+A new \link{llm_provider-class} object for use of the OpenRouter API
 }
 \description{
-Create a new OpenRouter \code{\link[=llm_provider]{llm_provider()}} instance
+Create a new OpenRouter LLM provider
 }
 \examples{
 # Various providers:
@@ -87,7 +87,7 @@ ollama$parameters$model <- "llama3.1:8b"
 }
 \seealso{
 Other llm_provider: 
-\code{\link{llm_provider}},
+\code{\link{llm_provider-class}},
 \code{\link{llm_provider_google_gemini}()},
 \code{\link{llm_provider_groq}()},
 \code{\link{llm_provider_mistral}()},

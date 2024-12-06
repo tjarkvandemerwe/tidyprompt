@@ -145,7 +145,7 @@ json_schema <- list(
 #   'json_schema' list object
 
 # Generate example R object based on schema:
-generate_json_example_from_schema(json_schema)
+r_json_schema_to_example(json_schema)
 
 \dontrun{
   # Ollama with schema

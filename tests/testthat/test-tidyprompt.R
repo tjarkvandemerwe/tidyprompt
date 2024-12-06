@@ -1,6 +1,6 @@
 test_that("create prompt", {
   prompt <- "Hi" |> tidyprompt()
-  expect_s3_class(prompt, "tidyprompt")
+  expect_s3_class(prompt, "Tidyprompt")
 })
 
 test_that("construct simple prompt text", {

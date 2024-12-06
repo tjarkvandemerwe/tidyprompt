@@ -2,7 +2,7 @@
 % Please edit documentation in R/llm_provider.R
 \name{llm_provider_mistral}
 \alias{llm_provider_mistral}
-\title{Create a new Mistral \code{\link[=llm_provider]{llm_provider()}} instance}
+\title{Create a new Mistral LLM provider}
 \usage{
 llm_provider_mistral(
   parameters = list(model = "ministral-3b-latest", stream =
@@ -30,10 +30,10 @@ should be printed to the consol}
 \item{api_key}{The API key to use for authentication with the Mistral API}
 }
 \value{
-A new \code{\link[=llm_provider]{llm_provider()}} object for use of the Mistral API
+A new \link{llm_provider-class} object for use of the Mistral API
 }
 \description{
-This function creates a new \code{\link[=llm_provider]{llm_provider()}} that interacts with the Mistral API.
+This function creates a new \link{llm_provider-class} object that interacts with the Mistral API.
 }
 \examples{
 # Various providers:
@@ -87,7 +87,7 @@ ollama$parameters$model <- "llama3.1:8b"
 }
 \seealso{
 Other llm_provider: 
-\code{\link{llm_provider}},
+\code{\link{llm_provider-class}},
 \code{\link{llm_provider_google_gemini}()},
 \code{\link{llm_provider_groq}()},
 \code{\link{llm_provider_ollama}()},

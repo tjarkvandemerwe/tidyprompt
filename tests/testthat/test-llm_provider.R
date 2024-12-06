@@ -1,16 +1,16 @@
 # Test: Initialization of llm_provider with basic parameters
 test_that("llm_provider initializes with parameters", {
   parameters <- list(model = "my-llm-model", api_key = "my-api-key")
-  provider <- llm_provider$new(complete_chat_function = function(chat_history) list(role = "assistant", content = "Hello"), parameters = parameters)
+  provider <- `llm_provider-class`$new(complete_chat_function = function(chat_history) list(role = "assistant", content = "Hello"), parameters = parameters)
 
-  expect_s3_class(provider, "llm_provider")
+  expect_s3_class(provider, "Llm_provider")
   expect_equal(provider$parameters, parameters)
 })
 
 # Test: Setting and updating parameters
 test_that("llm_provider updates parameters correctly", {
   parameters <- list(model = "my-llm-model", api_key = "my-api-key")
-  provider <- llm_provider$new(complete_chat_function = function(chat_history) list(role = "assistant", content = "Hello"), parameters = parameters)
+  provider <- `llm_provider-class`$new(complete_chat_function = function(chat_history) list(role = "assistant", content = "Hello"), parameters = parameters)
 
   # Update parameters
   new_parameters <- list(api_key = "new-api-key", timeout = 10)
@@ -28,7 +28,7 @@ test_that("llm_provider complete_chat prints message when verbose is TRUE", {
     return(list(role = "assistant", content = "Hello!"))
   }
 
-  provider <- llm_provider$new(complete_chat_function = test_chat_function, verbose = TRUE)
+  provider <- `llm_provider-class`$new(complete_chat_function = test_chat_function, verbose = TRUE)
 
   # Test interaction with chat history
   chat_history <- data.frame(role = "user", content = "Hello")
@@ -53,5 +53,5 @@ test_that("llm_provider_fake returns expected response for known prompt", {
 
 # Test: Invalid parameters handling
 test_that("llm_provider errors on invalid parameters", {
-  expect_error(llm_provider$new(complete_chat_function = function(chat_history) list(role = "assistant", content = "Hello"), parameters = list("unnamed")), "parameters must be a named list")
+  expect_error(`llm_provider-class`$new(complete_chat_function = function(chat_history) list(role = "assistant", content = "Hello"), parameters = list("unnamed")), "parameters must be a named list")
 })

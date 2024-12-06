@@ -45,11 +45,11 @@ response ('$response') and the 'http_list' ('$http_list'). This list will be
 passed to the extraction and validation functions. Note: handler_fn is still pending
 implementation in the \code{\link[=send_prompt]{send_prompt()}} function}
 
-\item{parameter_fn}{A function that takes the \code{\link[=llm_provider]{llm_provider()}} which is being
+\item{parameter_fn}{A function that takes the \link{llm_provider-class} object which is being
 used with \code{\link[=send_prompt]{send_prompt()}} and returns a named list of parameters to be
-used in the \code{\link[=llm_provider]{llm_provider()}} when sending the prompt. This function is called once,
+used in the \link{llm_provider-class} object when sending the prompt. This function is called once,
 before any LLM responses are requested. It can be used to set specific parameters
-of the \code{\link[=llm_provider]{llm_provider()}} according to its characteristics, like the API type
+of the \link{llm_provider-class} object according to its characteristics, like the API type
 (e.g., \code{\link[=answer_as_json]{answer_as_json()}} may set different parameters for different APIs)}
 
 \item{type}{The type of prompt wrap; one of 'unspecified', 'mode', 'tool', or 'break'.

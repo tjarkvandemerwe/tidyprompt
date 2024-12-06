@@ -1,19 +1,19 @@
 #' Send a prompt or [tidyprompt()] to a LLM provider
 #'
 #' This function is responsible for sending strings or [tidyprompt()] objects,
-#' including their prompt wraps, to a LLM provider (see [llm_provider()]) for evaluation.
+#' including their prompt wraps, to a LLM provider for evaluation.
 #' The function will interact with the LLM provider until a successful response
 #' is received or the maximum number of interactions is reached. The function will
 #' apply extraction and validation functions to the LLM response, as specified
 #' in the prompt wraps (see [prompt_wrap()]). If the maximum number of interactions
 #'
 #' @param prompt A string or a [tidyprompt()] object
-#' @param llm_provider [llm_provider()] object (default is [llm_provider_ollama()]).
+#' @param llm_provider \link{llm_provider-class} object (default is [llm_provider_ollama()]).
 #' This object and its settings will be used to evaluate the prompt. Note that
 #' the 'verbose' and 'stream' settings in the LLM provider will be overruled by
 #' the 'verbose' and 'stream' arguments in this function when those are not NULL.
 #' Furthermore, a [tidyprompt()] object may carry '$parameters' which will
-#' be set in the [llm_provider()] using the 'llm_provider$set_parameters()' function
+#' be set in the \link{llm_provider-class} object using the '$set_parameters()' function
 #' @param max_interactions Maximum number of interactions allowed with the
 #' LLM provider. Default is 10. If the maximum number of interactions is reached
 #' without a successful response, 'NULL' is returned as the response (see return
@@ -51,8 +51,8 @@
 #' @export
 #' @example inst/examples/send_prompt.R
 #'
-#' @seealso [tidyprompt()], [prompt_wrap()], [llm_provider()], [llm_provider_ollama()],
-#' [llm_provider_openai()], [llm_provider_openrouter()]
+#' @seealso [tidyprompt()], [prompt_wrap()], \link{llm_provider-class}, [llm_provider_ollama()],
+#' [llm_provider_openai()]
 #'
 #' @family prompt_evaluation
 send_prompt <- function(
@@ -70,7 +70,7 @@ send_prompt <- function(
   return_mode <- match.arg(return_mode)
 
   stopifnot(
-    inherits(llm_provider, "llm_provider"),
+    inherits(llm_provider, "Llm_provider"),
     max_interactions > 0, max_interactions == floor(max_interactions),
     is.logical(clean_chat_history),
     is.null(verbose) | is.logical(verbose),

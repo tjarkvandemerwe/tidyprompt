@@ -248,7 +248,7 @@ r_json_schema_from_example <- function(example) {
     ))
 
   # Convert the list to JSON
-  json_data <- jsonlite::toJSON(data, auto_unbox = TRUE) |> as.character()
+  json_data <- jsonlite::toJSON(example, auto_unbox = TRUE) |> as.character()
 
   # Generate the JSON schema
   schema <- json_data |> tidyjson::json_schema()

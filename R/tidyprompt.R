@@ -1,236 +1,207 @@
-#' Methods to create, construct, and empower prompt objects
+#' @title Tidyprompt R6 Class
 #'
-#' A tidyprompt is an object which contains an initial prompt text
-#' and a list of [prompt_wrap()]. The prompt wraps contain functions
-#' which modify the prompt text in some way, and, once the LLM response
-#' to the prompt is given, apply extraction and validation to the response.
-#' Using a [tidyprompt()] and [prompt_wrap()] objects allows for easy
-#' chaining of modifications and empowerements to a prompt, ensuring
-#' that the LLM output will meet the desired criteria. The [tidyprompt()]
-#' object offers many possibilities, such as structured and validated output,
-#' LLM function calling, and LLM code generation and evaluation.
+#' @description
+#' A `Tidyprompt` is an object containing a base prompt string and a list
+#' of `prompt_wrap` objects. It provides structured methods to modify the prompt,
+#' validate responses, and chain modifications, ensuring robust interaction with
+#' LLMs.
+#'
+#' @details
+#' This class includes methods for adding prompt wraps, constructing prompt text,
+#' and validating the object. It allows chaining modifications to the prompt
+#' and validating responses, ensuring a seamless flow in prompt design.
+#'
+#' @export
+#' @family tidyprompt
+`tidyprompt-class` <- R6::R6Class(
+  "Tidyprompt",
+  private = list(
+    # Internal validator
+    validate_tidyprompt = function() {
+      if (!is.character(self$base_prompt) || length(self$base_prompt) != 1) {
+        stop("The base prompt must be a single string.", call. = FALSE)
+      }
+      if (!is.list(self$prompt_wraps)) {
+        stop("$prompt_wraps must be a list.", call. = FALSE)
+      }
+      if (length(self$prompt_wraps) > 0 &&
+          !all(sapply(self$prompt_wraps, function(x) inherits(x, "prompt_wrap")))) {
+        stop("All elements of $prompt_wraps must be of class `prompt_wrap`.", call. = FALSE)
+      }
+    }
+  ),
+  public = list(
+    #' @field base_prompt The base prompt string
+    base_prompt = NULL,
+    #' @field prompt_wraps A list of prompt_wrap objects
+    prompt_wraps = list(),
+    #' @field system_prompt A system prompt string
+    system_prompt = NULL,
+
+    #' @description
+    #' Initialize a Tidyprompt object.
+    #'
+    #' @param input A character string representing the base prompt.
+    #' @return A `Tidyprompt` object.
+    initialize = function(input) {
+      if (!is.character(input) || length(input) != 1) {
+        stop("Input must be a single character string.", call. = FALSE)
+      }
+      self$base_prompt <- input
+      self$prompt_wraps <- list()
+      private$validate_tidyprompt()
+      invisible(self)
+    },
+
+    #' @description
+    #' Check if the Tidyprompt object is valid.
+    #'
+    #' @return `TRUE` if valid, otherwise `FALSE`.
+    is_valid = function() {
+      tryCatch({
+        private$validate_tidyprompt()
+        TRUE
+      }, error = function(e) FALSE)
+    },
+
+    #' @description
+    #' Add a `prompt_wrap` object to the Tidyprompt.
+    #'
+    #' @param prompt_wrap A `prompt_wrap` object.
+    #' @return The updated Tidyprompt object (invisible).
+    add_prompt_wrap = function(prompt_wrap) {
+      if (!inherits(prompt_wrap, "prompt_wrap")) {
+        stop("`prompt_wrap` must be of class `prompt_wrap`.", call. = FALSE)
+      }
+
+      # Update the environment of functions in the prompt_wrap to include `self`.
+      functions_to_update <- c("modify_fn", "extraction_fn", "validation_fn",
+                               "handler_fn", "parameter_fn")
+      for (fn_name in functions_to_update) {
+        if (!is.null(prompt_wrap[[fn_name]]) && is.function(prompt_wrap[[fn_name]])) {
+          original_env <- environment(prompt_wrap[[fn_name]])
+          new_env <- list2env(list(self = self), parent = original_env)
+          environment(prompt_wrap[[fn_name]]) <- new_env
+        }
+      }
+
+      self$prompt_wraps <- c(self$prompt_wraps, list(prompt_wrap))
+      private$validate_tidyprompt()
+      invisible(self)
+    },
+
+    #' @description
+    #' Get the list of prompt wraps.
+    #'
+    #' @param order The order to return the wraps. Options are:
+    #'   - "default": as added.
+    #'   - "modification": ordered by modification stages.
+    #'   - "evaluation": ordered by evaluation stages.
+    #'
+    #' @return A list of `prompt_wrap` objects.
+    get_prompt_wraps = function(order = c("default", "modification", "evaluation")) {
+      private$validate_tidyprompt()
+      order <- match.arg(order)
+      wraps <- self$prompt_wraps
+
+      if (length(wraps) == 0) return(list())
+      if (order == "default") return(wraps)
+
+      # Categorize wraps
+      t_unspecified <- wraps[sapply(wraps, function(x) x$type == "unspecified")]
+      t_mode       <- wraps[sapply(wraps, function(x) x$type == "mode")]
+      t_tool       <- wraps[sapply(wraps, function(x) x$type == "tool")]
+      t_break      <- wraps[sapply(wraps, function(x) x$type == "break")]
+
+      if (order == "modification") {
+        return(c(t_unspecified, t_break, t_mode, t_tool))
+      }
+      if (order == "evaluation") {
+        return(c(t_tool, t_mode, t_break, t_unspecified))
+      }
+    },
+
+    #' @description
+    #' Construct the complete prompt text.
+    #'
+    #' @param llm_provider Optional LLM provider for context.
+    #' @return A character string representing the constructed prompt text.
+    construct_prompt_text = function(llm_provider = NULL) {
+      private$validate_tidyprompt()
+      prompt_text <- self$base_prompt
+      wraps <- self$get_prompt_wraps(order = "modification")
+
+      for (wrap in wraps) {
+        if (!is.null(wrap$modify_fn)) {
+          prompt_text <- wrap$modify_fn(prompt_text, llm_provider)
+        }
+      }
+      prompt_text
+    }
+  )
+)
+
+#' Create a Tidyprompt object
 #'
 #' @param input Input to prompt. If a character string is passed,
 #' a new prompt object will be created with that character string as the base prompt.
 #'
-#' @return A prompt object (or an error if an unsuitable input is provided)
-#'
+#' @return A Tidyprompt object
 #' @export
-#'
-#' @seealso [prompt_wrap()] [send_prompt()]
+#' @seealso [prompt_wrap()]
 #' @family tidyprompt
 tidyprompt <- function(input) {
-  UseMethod("tidyprompt")
-}
-
-
-
-#' Default method to create a tidyprompt object
-#'
-#' Is called when the input is not a character string or a tidyprompt object.
-#'
-#' @param input Input to create_tidyprompt
-#'
-#' @return An error message stating that input type is not suitable
-#'
-#' @exportS3Method tidyprompt default
-#' @keywords internal
-tidyprompt.default <- function(input) {
-  stop(paste0(
-    "Input (the base prompt) to tidyprompt() must be a character string"
-  ))
-}
-
-
-
-#' Method to create a tidyprompt object from a character string
-#'
-#' @param input Input to create_tidyprompt; the base prompt
-#'
-#' @return A tidyprompt object
-#'
-#' @exportS3Method tidyprompt character
-#' @keywords internal
-tidyprompt.character <- function(input) {
-  if (length(input) != 1)
-    stop("Input (the base prompt) must be length 1")
-
-  tidyprompt <- structure(
-    list(
-      base_prompt = input,
-      prompt_wraps = list()
-    ),
-    class = "tidyprompt"
-  )
-
-  return(tidyprompt)
-}
-
-
-
-#' Validate tidyprompt
-#'
-#' @param input A tidyprompt object
-#'
-#' @return the input object if the tidyprompt is valid,
-#'  otherwise an error is thrown
-#'
-#' @exportS3Method tidyprompt tidyprompt
-#'
-#' @keywords internal
-tidyprompt.tidyprompt <- function(input) {
-  if (!is.list(input))
-    stop("The tidyprompt object must be a list")
-
-  if (is.null(names(input)))
-    stop("The tidyprompt object must have names")
-
-  if (!"base_prompt" %in% names(input))
-    stop("The tidyprompt object must have $base_prompt")
-
-  if (
-    !is.character(input$base_prompt) |
-    input$base_prompt |> length() != 1
-  )
-    stop("$base_prompt must be a single string")
-
-  if ("prompt_wraps" %in% names(input)) {
-    if (!is.list(input$prompt_wraps))
-      stop("$prompt_wraps must be a list")
-
-    if (!all(sapply(input$prompt_wraps, function(x) inherits(x, "prompt_wrap"))))
-      stop(paste0(
-        "All elements of $prompt_wraps must be of class `prompt_wrap`.",
-        " Create a `prompt_wrap` object with the prompt_wrap() function"
-      ))
-  }
-
-  return(input)
-}
-
-
-
-#' Validate tidyprompt: returns TRUE if a valid tidyprompt object, otherwise FALSE
-#'
-#' @param tidyprompt A tidyprompt object
-#'
-#' @return Logical indicating whether the input is a valid tidyprompt object
-#'
-#' @export
-#'
-#' @family tidyprompt
-is_tidyprompt <- function(tidyprompt) {
-  if (!inherits(tidyprompt, "tidyprompt"))
-    return(FALSE)
-
-  tryCatch({
-    invisible(tidyprompt(tidyprompt))
-    TRUE
-  }, error = function(e) {
-    FALSE
-  })
-}
-
-
-
-#' Get base prompt from tidyprompt
-#'
-#' @param tidyprompt A tidyprompt object
-#'
-#' @return The base prompt from the tidyprompt
-#'
-#' @export
-#'
-#' @family tidyprompt
-get_base_prompt <- function(tidyprompt) {
-  tidyprompt <- tidyprompt(tidyprompt)
-
-  base_prompt <- tidyprompt$base_prompt
-
-  return(base_prompt)
-}
-
-
-
-#' Get prompt wraps from tidyprompt
-#'
-#' @param tidyprompt A tidyprompt object
-#' @param order The order in which to return the prompt wraps. Options are "default",
-#' "modification", and "evaluation".
-#'  "default" returns the prompt wraps in the order they were added.
-#'  "modification" returns the prompt wraps in the order of "unspecified", "break", "mode", "tool";
-#' this is the order in which the prompt wraps are applied to the base prompt when constructing the prompt text.
-#'  "evaluation" returns the prompt wraps in the order of "tool", "mode", "break", "unspecified";
-#'  this is the order in which the prompt wraps are applied to the LLM response when extracting and validating.
-#'
-#' @return A list of prompt wraps from the tidyprompt
-#'
-#' @export
-#'
-#' @family tidyprompt
-get_prompt_wraps <- function(
-    tidyprompt,
-    order = c(
-      "default",
-      "modification",
-      "evaluation"
-    )
-) {
-  tidyprompt <- tidyprompt(tidyprompt)
-  order <- match.arg(order)
-
-  prompt_wraps <- tidyprompt$prompt_wraps
-
-  if (order == "default")
-    return(prompt_wraps)
-
-  if (length(prompt_wraps) == 0)
-    return(list())
-
-  t_unspecified <-
-    prompt_wraps[sapply(prompt_wraps, function(x) x$type == "unspecified")]
-  t_mode <-
-    prompt_wraps[sapply(prompt_wraps, function(x) x$type == "mode")]
-  t_tool <-
-    prompt_wraps[sapply(prompt_wraps, function(x) x$type == "tool")]
-  t_break <-
-    prompt_wraps[sapply(prompt_wraps, function(x) x$type == "break")]
-
-  if (order == "modification")
-    return(c(t_unspecified, t_break, t_mode, t_tool))
-
-  if (order == "evaluation")
-    return(c(t_tool, t_mode, t_break, t_unspecified))
-}
-
-
-
-#' Construct prompt text from a tidyprompt object
-#'
-#' @param tidyprompt A tidyprompt object
-#' @param llm_provider An optional LLM provider object. In some cases
-#' this may affect how the prompt text is constructed (e.g.,
-#' the [answer_as_json()] prompt_wrap may not include a schema in the
-#' prompt text but an OpenAI API, but may include it for other types).
-#' The llm_provider will be passed to the modify_fn functions of the prompt wraps
-#'
-#' @return The prompt text constructed from the tidyprompt object
-#'
-#' @export
-#'
-#' @family tidyprompt
-construct_prompt_text <- function(tidyprompt, llm_provider = NULL) {
-  tidyprompt <- tidyprompt(tidyprompt)
-
-  prompt_text <- get_base_prompt(tidyprompt)
-  prompt_wraps <- get_prompt_wraps(tidyprompt, order = "modification")
-
-  if (length(prompt_wraps) > 0) {
-    for (i in 1:length(prompt_wraps)) {
-      if (is.null(prompt_wraps[[i]]$modify_fn))
-        next
-      prompt_text <- prompt_wraps[[i]]$modify_fn(prompt_text, llm_provider)
+  if (inherits(input, "Tidyprompt")) {
+    if (!input$is_valid()) {
+      stop("The provided Tidyprompt object is not valid.", call. = FALSE)
     }
+    return(input)
+  } else if (is.character(input) && length(input) == 1) {
+    return(`tidyprompt-class`$new(input))
+  } else {
+    stop("Input must be a single character string or a Tidyprompt object.", call. = FALSE)
   }
-  return(prompt_text)
+}
+
+#' Check if object is a Tidyprompt
+#'
+#' @param x An object to check.
+#'
+#' @return TRUE if the object is a Tidyprompt, otherwise FALSE.
+#' @export
+#' @family tidyprompt
+is_tidyprompt <- function(x) {
+  inherits(x, "Tidyprompt") && x$is_valid()
+}
+
+
+
+#' Get prompt wraps from a Tidyprompt
+#'
+#' @param x A Tidyprompt object.
+#' @param order The order in which to return the prompt wraps. Options: "default", "modification", "evaluation".
+#'
+#' @return A list of prompt wraps.
+#' @export
+#' @family tidyprompt
+get_prompt_wraps <- function(x, order = c("default", "modification", "evaluation")) {
+  if (!is_tidyprompt(x)) {
+    stop("x must be a valid Tidyprompt object.", call. = FALSE)
+  }
+  x$get_prompt_wraps(order = order)
+}
+
+#' Construct prompt text from a Tidyprompt object
+#'
+#' @param x A Tidyprompt object.
+#' @param llm_provider An optional LLM provider object.
+#'
+#' @return The constructed prompt text.
+#' @export
+#' @family tidyprompt
+construct_prompt_text <- function(x, llm_provider = NULL) {
+  if (!is_tidyprompt(x)) {
+    stop("x must be a valid Tidyprompt object.", call. = FALSE)
+  }
+  x$construct_prompt_text(llm_provider)
 }

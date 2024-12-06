@@ -2,7 +2,7 @@
 % Please edit documentation in R/llm_provider.R
 \name{llm_provider_xai}
 \alias{llm_provider_xai}
-\title{Create a new XAI (Grok) \code{\link[=llm_provider]{llm_provider()}} instance}
+\title{Create a new XAI (Grok) LLM provider}
 \usage{
 llm_provider_xai(
   parameters = list(model = "grok-beta", stream = getOption("tidyprompt.stream", TRUE)),
@@ -29,10 +29,10 @@ should be printed to the console. Default is TRUE.}
 \item{api_key}{The API key to use for authentication with the XAI API}
 }
 \value{
-A new \code{\link[=llm_provider]{llm_provider()}} object for use of the XAI API
+A new \link{llm_provider-class} object for use of the XAI API
 }
 \description{
-Create a new XAI (Grok) \code{\link[=llm_provider]{llm_provider()}} instance
+Create a new XAI (Grok) LLM provider
 }
 \examples{
 # Various providers:
@@ -86,7 +86,7 @@ ollama$parameters$model <- "llama3.1:8b"
 }
 \seealso{
 Other llm_provider: 
-\code{\link{llm_provider}},
+\code{\link{llm_provider-class}},
 \code{\link{llm_provider_google_gemini}()},
 \code{\link{llm_provider_groq}()},
 \code{\link{llm_provider_mistral}()},
