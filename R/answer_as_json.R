@@ -15,7 +15,8 @@
 #' while ensuring the results will be in the correct format.
 #'
 #' @param prompt A single string or a [tidyprompt()] object
-#' @param schema (optional) A list representing a JSON schema object that the response must match.
+#' @param schema (optional) A list (R object) which represents
+#' a JSON schema that the response should match
 #' \itemize{
 #'  \item When not using the OpenAI API, the schema will be
 #'  added to the original prompt (see argument: 'schema_in_prompt_as'),
@@ -104,7 +105,7 @@ answer_as_json <- function(
       if (schema_in_prompt_as == "example") {
         schema_instruction <- paste0(
           "Your JSON object should match this example JSON object:\n",
-          jsonlite::toJSON(json_schema_to_example(schema), auto_unbox = TRUE, pretty = TRUE)
+          jsonlite::toJSON(r_json_schema_to_example(schema), auto_unbox = TRUE, pretty = TRUE)
         )
       } else if (schema_in_prompt_as == "schema") {
         schema_instruction <- paste0(
@@ -182,7 +183,7 @@ answer_as_json <- function(
 #' @example inst/examples/answer_as_json.R
 #' @family answer_as_json
 #' @family text_helpers
-json_schema_to_example <- function(schema) {
+r_json_schema_to_example <- function(schema) {
   if ("schema" %in% names(schema)) {
     schema <- schema$schema
   }
@@ -197,14 +198,14 @@ json_schema_to_example <- function(schema) {
       result <- list()
       if (!is.null(schema$properties)) {
         for (name in names(schema$properties)) {
-          result[[name]] <- json_schema_to_example(schema$properties[[name]])
+          result[[name]] <- r_json_schema_to_example(schema$properties[[name]])
         }
       }
       return(result)
     },
     array = {
       # Generate an array with one example item
-      example_item <- json_schema_to_example(schema$items)
+      example_item <- r_json_schema_to_example(schema$items)
       return(list(example_item))
     },
     string = {
@@ -229,16 +230,17 @@ json_schema_to_example <- function(schema) {
 #'
 #' This function generates a JSON schema from an example R object.
 #'
-#' @param example A list (R object) that represents an example JSON object
+#' @param example A list (R object) that represents an example object
 #'
-#' @return A list (R object) representing a JSON schema
+#' @return A list (R object) representing a JSON schema matching
+#' the example object
 #' @export
 #'
 #' @example inst/examples/answer_as_json.R
 #'
 #' @family answer_as_json
 #' @family json_schema
-json_schema_from_example <- function(example) {
+r_json_schema_from_example <- function(example) {
   if (!requireNamespace("tidyjson", quietly = TRUE))
     stop(paste0(
       "The 'tidyjson' package is required to generate a JSON schema",

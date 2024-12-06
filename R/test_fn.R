@@ -37,7 +37,7 @@ test_fn <- function(
     list_arg = list(1, 2, 3),
     named_list_arg = list(a = 1, b = 2, c = 3),
     nested_list_arg = list(list(1, 2), list(3, 4)),
-    nested_named_list_arg = list(a = list(1, 2), b = list(3, 4))
+    nested_named_list_arg = list(a = list(a1 = 1, a2 = 2), b = list(b1 = 3, b2 = 4))
 ) {
   return(invisible(NULL))
 }

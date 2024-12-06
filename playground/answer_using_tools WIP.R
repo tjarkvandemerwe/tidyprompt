@@ -53,48 +53,47 @@ answer_using_tools <- function(prompt, tools = list()) {
     names(tools) <- tool_names
   }
 
-  modify_fn <- function(original_prompt_text) {
+  parameter_fn <- function(llm_provider) {
+    if (llm_provider$api_type == "openai") {
+      return(list(response_format = list(type = "json_object")))
+    }
+  }
+
+  modify_fn <- function(original_prompt_text, llm_provider) {
     new_prompt <- glue::glue(
-      "{original_prompt_text}
+      "{original_prompt_text}\n\n",
+      "If you need more information, you can call functions to help you."
+    )
 
-    If you need more information, you can call functions to help you.
-    To call a function, output a JSON object with the following format:
+    if (!isTRUE(llm_provider$api_type == "openai")) {
+      new_prompt <- glue::glue(
+        "{new_prompt}\n\n",
+        "To call a function, output a JSON object with the following format:\n",
+        "  {{\n",
+        "    \"function\": \"<function name>\",\n",
+        "    \"arguments\": {{\n",
+        "      \"<argument_name>\": <argument_value>,\n",
+        "      # ...\n",
+        "    }}\n",
+        "  }}\n",
+        "  (Note: you may not provide function calls as function arguments.)"
+      )
+    }
 
-    {{
-      \"function\": \"<function name>\",
-      \"arguments\": {{
-        \"<argument_name>\": <argument_value>,
-        # ...
-      }}
-    }}
-
-    (Note: you may not provide function calls as function arguments.)
-
-    The following functions are available:"
+    new_prompt <- glue::glue(
+      "{new_prompt}\n\n",
+      "The following functions are available:"
     )
 
     for (tool_name in names(tools)) {
       tool <- tools[[tool_name]]
       docs <- tools_get_docs(tool, tool_name)
 
-      tool_llm_text <- glue::glue(
-        "  function name: {tool_name}", .trim = FALSE
-      )
-      if (length(docs$description) > 0)
-        tool_llm_text <- glue::glue(
-          "{tool_llm_text}\n  description: {docs$description}", .trim = FALSE
-        )
-      if (length(docs$arguments) > 0) {
-        tool_llm_text <- glue::glue(
-          "{tool_llm_text}\n  arguments:",
-          "\n", tools_docs_arguments_to_text(docs, line_prefix = "    "),
-          .trim = FALSE
-        )
-      }
-      if (length(docs$return$description) > 0)
-        tool_llm_text <- glue::glue(
-          "{tool_llm_text}\n  return value: {docs$return$description}", .trim = FALSE
-        )
+      with_arguments <- TRUE
+      if (isTRUE(llm_provider$api_type == "openai"))
+        with_arguments <- FALSE
+
+      tool_llm_text <- tools_docs_to_text(docs, with_arguments)
 
       new_prompt <- glue::glue(
         "{new_prompt}\n\n{tool_llm_text}", .trim = FALSE
@@ -308,7 +307,7 @@ tools_get_docs <- function(func, name = NULL) {
   if (!all(names(formals(func)) %in% names(docs$arguments))) {
     # If not, modify args with what is known from formals
     args <- docs$arguments
-    true_args <- get_args_defaults_types(func)
+    true_args <- gd_get_args_defaults_types(func)
 
     # Add true_args to args only where not present
     for (arg_name in names(true_args)) {
@@ -373,7 +372,7 @@ tools_generate_docs <- function(name) {
   }
 
   # Get arguments, defaults, and likely types based on formals
-  args <- get_args_defaults_types(func)
+  args <- gd_get_args_defaults_types(func)
 
   if (package_name == "R_GlobalEnv") {
     help_file <- NULL
@@ -394,7 +393,7 @@ tools_generate_docs <- function(name) {
     utils::capture.output()
 
   # Parse the help text
-  parsed_help <- parse_help_text(help_text)
+  parsed_help <- gd_parse_help_text(help_text)
 
   # Add descriptions to arguments
   for (arg_name in names(args)) {
@@ -427,11 +426,11 @@ tools_generate_docs <- function(name) {
 #' - 'default_value': The default value of the argument. This is not
 #'  included if there is no default value. Note that when the default value
 #'  is included and is NULL, the default value is NULL (and not missing)
-#'  - 'type': see 'infer_type_from_default()'. If there is no default value,
+#'  - 'type': see 'gd_infer_type_from_default()'. If there is no default value,
 #'  the type is set to 'unknown'
 #'  @noRd
 #'  @keywords internal
-get_args_defaults_types <- function(func) {
+gd_get_args_defaults_types <- function(func) {
   args_formals <- formals(func)
   arg_names <- names(args_formals)
 
@@ -450,7 +449,7 @@ get_args_defaults_types <- function(func) {
 
     arguments[[arg_name]] <- list(
       default_value = default_value,
-      type = infer_type_from_default(default_value)
+      type = gd_infer_type_from_default(default_value)
     )
   }
 
@@ -479,7 +478,7 @@ get_args_defaults_types <- function(func) {
 #'
 #' @noRd
 #' @keywords internal
-infer_type_from_default <- function(default_value) {
+gd_infer_type_from_default <- function(default_value) {
   is_whole_number <- function(x)
     tryCatch(
       x %% 1 == 0,
@@ -488,7 +487,7 @@ infer_type_from_default <- function(default_value) {
 
   infer_list_types <- function(lst) {
     # Recursively infer types for each element in a named list
-    sapply(lst, infer_type_from_default, simplify = FALSE)
+    sapply(lst, gd_infer_type_from_default, simplify = FALSE)
   }
 
   if (is.null(default_value)) {
@@ -565,7 +564,7 @@ infer_type_from_default <- function(default_value) {
 #'
 #' @noRd
 #' @keywords internal
-parse_help_text <- function(help_text) {
+gd_parse_help_text <- function(help_text) {
   # Helper function to remove overstruck sequences
   remove_overstrike <- function(text) {
     repeat {
@@ -676,9 +675,9 @@ parse_help_text <- function(help_text) {
 #' @export
 #'
 #' @examples inst/examples/add_tools.R
-tools_convert_docs_to_r_json_schema <- function(docs) {
+tools_docs_to_r_json_schema <- function(docs) {
   # Helper function to process each argument recursively
-  process_arg <- function(arg) {
+  process_argument <- function(arg) {
     prop <- list()
     r_type <- arg$type
 
@@ -692,7 +691,7 @@ tools_convert_docs_to_r_json_schema <- function(docs) {
           type = r_type[[name]],
           default_value = if (!is.null(arg$default_value[[name]])) arg$default_value[[name]] else NULL
         )
-        prop$properties[[name]] <- process_arg(sub_arg)
+        prop$properties[[name]] <- process_argument(sub_arg)
       }
     } else if (is.null(r_type) || r_type == "unknown") {
       prop$type <- "string"
@@ -738,7 +737,7 @@ tools_convert_docs_to_r_json_schema <- function(docs) {
               type = arg$type,
               default_value = default_value[[1]]
             )
-            prop$items <- process_arg(sub_arg)
+            prop$items <- process_argument(sub_arg)
           } else {
             prop$items <- list()
           }
@@ -752,7 +751,7 @@ tools_convert_docs_to_r_json_schema <- function(docs) {
               type = arg$type[[name]],
               default_value = default_value[[name]]
             )
-            prop$properties[[name]] <- process_arg(sub_arg)
+            prop$properties[[name]] <- process_argument(sub_arg)
           }
         }
       } else {
@@ -790,7 +789,7 @@ tools_convert_docs_to_r_json_schema <- function(docs) {
 
   for (arg_name in names(args)) {
     arg <- args[[arg_name]]
-    prop <- process_arg(arg)
+    prop <- process_argument(arg)
 
     # Add to required arguments if there's no default value
     if (!"default_value" %in% names(arg)) {
@@ -821,109 +820,133 @@ tools_convert_docs_to_r_json_schema <- function(docs) {
 #'
 #' @noRd
 #' @keywords internal
-tools_docs_arguments_to_text <- function(docs, line_prefix = "  ") {
-  tool_llm_text <- ""
+tools_docs_to_text <- function(docs, with_arguments = TRUE) {
 
-  process_argument <- function(arg_name, arg_info, prefix = "") {
-    # Warning for unknown type
-    if (arg_info$type == "unknown") {
-      warning(glue::glue("Argument '{prefix}{arg_name}' has an unknown type. Defaulting to 'string'."))
-      arg_info$type <- "string"
-    }
-
-    # Start argument text
-    arg_text <- glue::glue("{prefix}- {arg_name}:", .trim = FALSE)
-
-    # Add description if available
-    if (!is.null(arg_info$description)) {
-      arg_text <- glue::glue("{arg_text} {arg_info$description}", .trim = FALSE)
-    }
-
-    # Handle match.arg type
-    if (arg_info$type == "match.arg") {
-      arg_options <- paste(
-        paste0('"', arg_info$default_value, '"'),
-        collapse = ", "
-      )
-      arg_text <- glue::glue(
-        "{arg_text} [Type: string (one of: {arg_options})]", .trim = FALSE
-      )
-    } else {
-      arg_text <- glue::glue("{arg_text} [Type: {arg_info$type}]", .trim = FALSE)
-    }
-
-    return(arg_text)
-  }
-
-  process_nested_list <- function(arg_list, prefix = "") {
-    nested_text <- ""
-    for (arg_name in names(arg_list)) {
-      arg_info <- arg_list[[arg_name]]
-
-      # If arg_info is not a list, assume it represents the type
-      if (!is.list(arg_info)) {
-        arg_info <- list(type = arg_info)
+  # Internal helper function to process arguments
+  tools_docs_to_text_arguments <- function(docs, line_prefix = "  ") {
+    process_argument <- function(arg_name, arg_info, prefix = "  ") {
+      # Warning for unknown type
+      if (arg_info$type == "unknown") {
+        warning(glue::glue("Argument '{prefix}{arg_name}' has an unknown type. Defaulting to 'string'."))
+        arg_info$type <- "string"
       }
 
-      # Check if we have a nested structure
-      if (is.list(arg_info$type) || is.null(arg_info$type)) {
-        # Include description if available
-        if (!is.null(arg_info$description)) {
-          nested_line <- glue::glue(
-            "{prefix}- {arg_name}: {arg_info$description} [Type: named list]",
-            .trim = FALSE
-          )
-        } else {
-          nested_line <- glue::glue(
-            "{prefix}- {arg_name}: [Type: named list]",
-            .trim = FALSE
-          )
-        }
+      # Start argument text
+      arg_text <- glue::glue("{prefix}- {arg_name}:", .trim = FALSE)
 
-        # Use arg_info$type if it's a list, else use arg_info
-        next_level <- if (is.list(arg_info$type)) arg_info$type else arg_info
-        nested_subtext <- process_nested_list(next_level, paste0(prefix, "  "))
-        nested_text <- paste(
-          nested_text,
-          nested_line,
-          nested_subtext,
-          sep = "\n"
+      # Add description if available
+      if (!is.null(arg_info$description)) {
+        arg_text <- glue::glue("{arg_text} {arg_info$description}", .trim = FALSE)
+      }
+
+      # Handle match.arg type
+      if (arg_info$type == "match.arg") {
+        arg_options <- paste(
+          paste0('"', arg_info$default_value, '"'),
+          collapse = ", "
+        )
+        arg_text <- glue::glue(
+          "{arg_text} [Type: string (one of: {arg_options})]", .trim = FALSE
         )
       } else {
-        # For simple arguments, handle normally
-        arg_line <- process_argument(arg_name, arg_info, prefix)
-        nested_text <- paste(
-          nested_text,
-          arg_line,
-          sep = "\n"
-        )
+        arg_text <- glue::glue("{arg_text} [Type: {arg_info$type}]", .trim = FALSE)
       }
+
+      return(arg_text)
     }
-    return(nested_text)
+
+    process_nested_list <- function(arg_list, prefix = "") {
+      nested_text <- ""
+      for (arg_name in names(arg_list)) {
+        arg_info <- arg_list[[arg_name]]
+
+        # If arg_info is not a list, assume it represents the type
+        if (!is.list(arg_info)) {
+          arg_info <- list(type = arg_info)
+        }
+
+        # Check if we have a nested structure
+        if (is.list(arg_info$type) || is.null(arg_info$type)) {
+          # Include description if available
+          if (!is.null(arg_info$description)) {
+            nested_line <- glue::glue(
+              "{prefix}- {arg_name}: {arg_info$description} [Type: named list]",
+              .trim = FALSE
+            )
+          } else {
+            nested_line <- glue::glue(
+              "{prefix}- {arg_name}: [Type: named list]",
+              .trim = FALSE
+            )
+          }
+
+          # Use arg_info$type if it's a list, else use arg_info
+          next_level <- if (is.list(arg_info$type)) arg_info$type else arg_info
+          nested_subtext <- process_nested_list(next_level, paste0(prefix, "  "))
+          nested_text <- paste(
+            nested_text,
+            nested_line,
+            nested_subtext,
+            sep = "\n"
+          )
+        } else {
+          # For simple arguments, handle normally
+          arg_line <- process_argument(arg_name, arg_info, prefix)
+          nested_text <- paste(
+            nested_text,
+            arg_line,
+            sep = "\n"
+          )
+        }
+      }
+      return(nested_text)
+    }
+
+    tool_llm_text <- process_nested_list(docs$arguments)
+
+    remove_empty_lines <- function(text) {
+      # Split into individual lines
+      lines <- unlist(strsplit(text, "\n", fixed = TRUE))
+
+      # Keep only lines that are not empty (after trimming whitespace)
+      non_empty_lines <- lines[!grepl("^\\s*$", lines)]
+
+      # Rejoin the cleaned lines into a single string
+      cleaned_text <- paste(non_empty_lines, collapse = "\n")
+
+      return(cleaned_text)
+    }
+
+    # Apply line prefix to each line after cleaning
+    cleaned_result <- remove_empty_lines(tool_llm_text)
+    if (nzchar(line_prefix)) {
+      lines <- strsplit(cleaned_result, "\n")[[1]]
+      lines <- paste0(line_prefix, lines)
+      cleaned_result <- paste(lines, collapse = "\n")
+    }
+
+    cleaned_result
   }
 
-  tool_llm_text <- process_nested_list(docs$arguments)
-
-  remove_empty_lines <- function(text) {
-    # Split into individual lines
-    lines <- unlist(strsplit(text, "\n", fixed = TRUE))
-
-    # Keep only lines that are not empty (after trimming whitespace)
-    non_empty_lines <- lines[!grepl("^\\s*$", lines)]
-
-    # Rejoin the cleaned lines into a single string
-    cleaned_text <- paste(non_empty_lines, collapse = "\n")
-
-    return(cleaned_text)
+  # Define text
+  tool_llm_text <- glue::glue(
+    "  function name: {docs$name}", .trim = FALSE
+  )
+  if (length(docs$description) > 0)
+    tool_llm_text <- glue::glue(
+      "{tool_llm_text}\n  description: {docs$description}", .trim = FALSE
+    )
+  if (length(docs$arguments) > 0 & with_arguments) {
+    tool_llm_text <- glue::glue(
+      "{tool_llm_text}\n  arguments:",
+      "\n", tools_docs_to_text_arguments(docs, line_prefix = "    "),
+      .trim = FALSE
+    )
   }
+  if (length(docs$return$description) > 0)
+    tool_llm_text <- glue::glue(
+      "{tool_llm_text}\n  return value: {docs$return$description}", .trim = FALSE
+    )
 
-  # Apply line prefix to each line after cleaning
-  cleaned_result <- remove_empty_lines(tool_llm_text)
-  if (nzchar(line_prefix)) {
-    lines <- strsplit(cleaned_result, "\n")[[1]]
-    lines <- paste0(line_prefix, lines)
-    cleaned_result <- paste(lines, collapse = "\n")
-  }
-
-  cleaned_result
+  return(tool_llm_text)
 }
