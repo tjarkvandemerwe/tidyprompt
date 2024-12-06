@@ -40,11 +40,13 @@ print.Tidyprompt <- function(x, ...) {
     full_text <- x$construct_prompt_text()
     formatted_text <- format_with_prefix(full_text, line_prefix)
     cat(formatted_text, "\n")
-    cat(col_silver("Use 'x$prompt_wraps' to show the prompt wraps.\n"))
   }
 
   cat(col_silver("Use 'x$base_prompt' to show the base prompt text.\n"))
   cat(col_silver("Use 'x$construct_prompt_text()' to get the full prompt text.\n"))
+  if (n_wraps > 0) {
+    cat(col_silver("Use 'get_prompt_wraps(x)' to show the prompt wraps.\n"))
+  }
 
   return(invisible(x))
 }

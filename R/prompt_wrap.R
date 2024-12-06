@@ -1,13 +1,13 @@
 #' Wrap a prompt with empowering functions
 #'
-#' This function takes a single string or a [tidyprompt()] object and
+#' This function takes a single string or a \link{tidyprompt-class} object and
 #' adds a new prompt wrap to it. A prompt wrap is a set of functions
 #' that modify the prompt text, extract a value from the LLM response,
 #' and validate the extracted value. The functions are used to ensure
 #' that the prompt and LLM response is in the correct format and meets the
 #' specified criteria.
 #'
-#' @param prompt A single string or a [tidyprompt()] object
+#' @param prompt A single string or a \link{tidyprompt-class} object
 #' @param modify_fn A function that takes the previous prompt text (as
 #' first argument) and returns the new prompt text
 #' @param extraction_fn A function that takes the LLM response (as first argument)
@@ -48,8 +48,10 @@
 #' Example of a tool is [add_tools()]; example of a mode is [answer_by_react()].
 #' Example of a break is [quit_if()]. Most other prompt wraps will be 'unspecified',
 #' like [answer_as_regex()] or [add_text()]
+#' @param name An optional name for the prompt wrap. This can be used to identify
+#' the prompt wrap in the \link{tidyprompt-class} object
 #'
-#' @return A [tidyprompt()] object with the [prompt_wrap()] appended to it
+#' @return A \link{tidyprompt-class} object with the [prompt_wrap()] appended to it
 #'
 #' @export
 #'
@@ -59,7 +61,7 @@
 #' @family prompt_wrap
 #' @family pre_built_prompt_wraps
 #'
-#' @seealso [tidyprompt()] [send_prompt()]
+#' @seealso \link{tidyprompt-class} [send_prompt()]
 prompt_wrap <- function(
     prompt,
     modify_fn = NULL,
@@ -67,21 +69,22 @@ prompt_wrap <- function(
     validation_fn = NULL,
     handler_fn = NULL,
     parameter_fn = NULL,
-    type = c("unspecified", "mode", "tool", "break")
+    type = c("unspecified", "mode", "tool", "break"),
+    name = NULL
 ) {
   UseMethod("prompt_wrap")
 }
 
 
 
-#' [prompt_wrap()] method for when a [tidyprompt()] object is supplied
+#' [prompt_wrap()] method for when a \link{tidyprompt-class} object is supplied
 #'
 #' Calls the internal function to append the prompt wrap.
 #'
-#' @param prompt A single string or a [tidyprompt()] object
+#' @param prompt A single string or a \link{tidyprompt-class} object
 #' @param ... Additional arguments
 #'
-#' @return A [tidyprompt()] object with the [prompt_wrap()] appended to it
+#' @return A \link{tidyprompt-class} object with the [prompt_wrap()] appended to it
 #'
 #' @exportS3Method prompt_wrap tidyprompt
 #' @keywords internal
@@ -93,13 +96,13 @@ prompt_wrap.tidyprompt <- function(prompt, ...) {
 
 #' Default method for [prompt_wrap()]
 #'
-#' Attempts to create a [tidyprompt()] object from whatever is passed as 'prompt';
+#' Attempts to create a \link{tidyprompt-class} object from whatever is passed as 'prompt';
 #' then calls the internal function to append the [prompt_wrap()].
 #'
-#' @param prompt A single string or a [tidyprompt()] object
+#' @param prompt A single string or a \link{tidyprompt-class} object
 #' @param ... Additional arguments
 #'
-#' @return A [tidyprompt()] object with the [prompt_wrap()] appended to it
+#' @return A \link{tidyprompt-class} object with the [prompt_wrap()] appended to it
 #'
 #' @exportS3Method prompt_wrap default
 #' @keywords internal
@@ -110,7 +113,7 @@ prompt_wrap.default <- function(prompt, ...) {
 
 
 
-#' Internal function to append a [prompt_wrap()] to a [tidyprompt()] object
+#' Internal function to append a [prompt_wrap()] to a \link{tidyprompt-class} object
 #'
 #' @param prompt See [prompt_wrap()]
 #' @param modify_fn See [prompt_wrap()]
@@ -119,8 +122,9 @@ prompt_wrap.default <- function(prompt, ...) {
 #' @param handler_fn See [prompt_wrap()]
 #' @param parameter_fn See [prompt_wrap()]
 #' @param type See [prompt_wrap()]
+#' @param name See [prompt_wrap()]
 #'
-#' @return A [tidyprompt()] object with the [prompt_wrap()] appended to it
+#' @return A \link{tidyprompt-class} object with the [prompt_wrap()] appended to it
 #'
 #' @noRd
 #' @keywords internal
@@ -131,7 +135,8 @@ prompt_wrap_internal <- function(
     validation_fn = NULL,
     handler_fn = NULL,
     parameter_fn = NULL,
-    type = c("unspecified", "mode", "tool", "break")
+    type = c("unspecified", "mode", "tool", "break"),
+    name = NULL
 ) {
   stopifnot(
     is.null(modify_fn) || is.function(modify_fn),
@@ -220,7 +225,7 @@ prompt_wrap_internal <- function(
   )
 
   # Append to prompt
-  prompt$add_prompt_wrap(prompt_wrap)
+  prompt$add_prompt_wrap(prompt_wrap, name)
 
   return(prompt)
 }

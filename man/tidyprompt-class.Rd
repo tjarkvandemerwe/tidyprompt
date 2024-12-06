@@ -27,8 +27,6 @@ Other tidyprompt:
 \describe{
 \item{\code{base_prompt}}{The base prompt string}
 
-\item{\code{prompt_wraps}}{A list of prompt_wrap objects}
-
 \item{\code{system_prompt}}{A system prompt string}
 }
 \if{html}{\out{</div>}}

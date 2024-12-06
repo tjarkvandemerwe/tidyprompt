@@ -21,20 +21,21 @@
       if (!is.character(self$base_prompt) || length(self$base_prompt) != 1) {
         stop("The base prompt must be a single string.", call. = FALSE)
       }
-      if (!is.list(self$prompt_wraps)) {
+      if (!is.list(private$prompt_wraps)) {
         stop("$prompt_wraps must be a list.", call. = FALSE)
       }
-      if (length(self$prompt_wraps) > 0 &&
-          !all(sapply(self$prompt_wraps, function(x) inherits(x, "prompt_wrap")))) {
+      if (length(private$prompt_wraps) > 0 &&
+          !all(sapply(private$prompt_wraps, function(x) inherits(x, "prompt_wrap")))) {
         stop("All elements of $prompt_wraps must be of class `prompt_wrap`.", call. = FALSE)
       }
-    }
+    },
+
+    # A list of prompt_wrap objects
+    prompt_wraps = list()
   ),
   public = list(
     #' @field base_prompt The base prompt string
     base_prompt = NULL,
-    #' @field prompt_wraps A list of prompt_wrap objects
-    prompt_wraps = list(),
     #' @field system_prompt A system prompt string
     system_prompt = NULL,
 
@@ -48,7 +49,7 @@
         stop("Input must be a single character string.", call. = FALSE)
       }
       self$base_prompt <- input
-      self$prompt_wraps <- list()
+      private$prompt_wraps <- list()
       private$validate_tidyprompt()
       invisible(self)
     },
@@ -68,24 +69,20 @@
     #' Add a `prompt_wrap` object to the Tidyprompt.
     #'
     #' @param prompt_wrap A `prompt_wrap` object.
+    #' @param name A name for the prompt wrap
     #' @return The updated Tidyprompt object (invisible).
-    add_prompt_wrap = function(prompt_wrap) {
+    add_prompt_wrap = function(prompt_wrap, name = NULL) {
       if (!inherits(prompt_wrap, "prompt_wrap")) {
         stop("`prompt_wrap` must be of class `prompt_wrap`.", call. = FALSE)
       }
 
-      # Update the environment of functions in the prompt_wrap to include `self`.
-      functions_to_update <- c("modify_fn", "extraction_fn", "validation_fn",
-                               "handler_fn", "parameter_fn")
-      for (fn_name in functions_to_update) {
-        if (!is.null(prompt_wrap[[fn_name]]) && is.function(prompt_wrap[[fn_name]])) {
-          original_env <- environment(prompt_wrap[[fn_name]])
-          new_env <- list2env(list(self = self), parent = original_env)
-          environment(prompt_wrap[[fn_name]]) <- new_env
-        }
+      # If name is not provided, generate a default name
+      if (is.null(name)) {
+        name <- paste0("prompt_", length(private$prompt_wraps) + 1)
       }
 
-      self$prompt_wraps <- c(self$prompt_wraps, list(prompt_wrap))
+      # Add to private$prompt_wraps using standard R syntax
+      private$prompt_wraps[[name]] <- prompt_wrap
       private$validate_tidyprompt()
       invisible(self)
     },
@@ -102,7 +99,25 @@
     get_prompt_wraps = function(order = c("default", "modification", "evaluation")) {
       private$validate_tidyprompt()
       order <- match.arg(order)
-      wraps <- self$prompt_wraps
+      wraps <- private$prompt_wraps
+
+      # Update the environment of functions in the prompt_wrap to include `self`.
+      functions_to_update <- c(
+        "modify_fn", "extraction_fn", "validation_fn", "handler_fn", "parameter_fn"
+      )
+      i <- 0
+      for (wrap in wraps) {
+        i <- i + 1
+        for (fn_name in functions_to_update) {
+          if (!is.null(wrap[[fn_name]]) && is.function(wrap[[fn_name]])) {
+            original_env <- environment(wrap[[fn_name]])
+            new_env <- list2env(list(self = self), parent = original_env)
+            fn <- wrap[[fn_name]]
+            environment(fn) <- new_env
+            wraps[[i]][[fn_name]] <- fn
+          }
+        }
+      }; rm(i)
 
       if (length(wraps) == 0) return(list())
       if (order == "default") return(wraps)
