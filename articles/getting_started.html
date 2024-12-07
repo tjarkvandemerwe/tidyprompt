@@ -548,7 +548,7 @@ the parameters of the LLM provider before sending the prompt. See
 responses<a class="anchor" aria-label="anchor" href="#configuring-a-prompt-wrap-based-on-the-llm-provider-or-http-responses"></a>
 </h4>
 <p><code>modify_fn</code>, <code>extraction_fn</code>, and
-<code>validation_fn</code> may take the LLM provider as the second
+<code>validation_fn</code> may all take the LLM provider as the second
 argument and the <code>http_list</code> (a list of all HTTP responses
 made during <code><a href="../reference/send_prompt.html">send_prompt()</a></code>) as the third argument. This
 allows for advanced configuration of the prompt and the extraction and
@@ -556,13 +556,24 @@ validation logic based on the LLM provider and any data available the
 HTTP responses.</p>
 </div>
 <div class="section level4">
+<h4 id="configuring-a-prompt-wrap-based-on-other-prompt-wraps">Configuring a prompt wrap based on other prompt wraps<a class="anchor" aria-label="anchor" href="#configuring-a-prompt-wrap-based-on-other-prompt-wraps"></a>
+</h4>
+<p><code>modify_fn</code>, <code>extraction_fn</code>, and
+<code>validation_fn</code> all have access to the <code>self</code>
+object, which represents the tidyprompt object that they are a part of.
+This allows for advanced configuration of the prompt and the extraction
+and validation logic based on other prompt wraps.</p>
+</div>
+<div class="section level4">
 <h4 id="handler-functions">‘Handler functions’<a class="anchor" aria-label="anchor" href="#handler-functions"></a>
 </h4>
 <p>Prompt wraps may also include ‘handler functions’. These are
-functions which are called upon every received chat completion during
-[send_prompt()]. This allows for advanced processing of the LLM’s
-responses, such as logging, tracking tokens, or other custom processing.
-See <code><a href="../reference/prompt_wrap.html">prompt_wrap()</a></code> documentation for more information.</p>
+functions which are called upon every received chat completion. This
+allows for advanced processing of the LLM’s responses, such as logging,
+tracking tokens, or other custom processing. See the
+<code><a href="../reference/prompt_wrap.html">prompt_wrap()</a></code> documentation for more information; see the
+source code of <code><a href="../reference/answer_using_tools.html">answer_using_tools()</a></code> for an example of a
+handler function.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
