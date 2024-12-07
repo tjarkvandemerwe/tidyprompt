@@ -196,19 +196,23 @@ succeed after <code><a href="../reference/llm_feedback.html">llm_feedback()</a><
 <code><a href="../reference/answer_as_boolean.html">answer_as_boolean()</a></code>, <code><a href="../reference/answer_as_regex.html">answer_as_regex()</a></code>,
 <code><a href="../reference/answer_as_named_list.html">answer_as_named_list()</a></code>, <code><a href="../reference/answer_as_code.html">answer_as_code()</a></code>, and
 <code><a href="../reference/answer_as_json.html">answer_as_json()</a></code>.</p>
+<div class="section level5">
+<h5 id="json-output">JSON output<a class="anchor" aria-label="anchor" href="#json-output"></a>
+</h5>
 <p><code><a href="../reference/answer_as_json.html">answer_as_json()</a></code> may be especially powerful when your
 LLM provider and model have native support for returning JSON objects
 and adhering to JSON schemas (e.g., OpenAI, Ollama). Text-based handling
 is however always possible, also for providers which do not natively
 support such functions. This means that you can always switch between
-providers while ensuring the results will be in the correct format. It
-should also be noted that native JSON enforcement may also restrict the
-model too much, so it is always good to test and see what works best for
-your use case. In our experience, text-based handling is often more
-flexible and robust, especially when combining multiple prompt wraps.
-Note also that JSON schemas may not enforce all qualities you are
-looking for in the output, so you may still need to add additional
-prompt wraps to ensure the output is in the desired format.</p>
+providers while ensuring the results will be in the correct format.</p>
+<p>It should also be noted that native JSON enforcement may also
+restrict the model too much, so it is always good to test and see what
+works best for your use case. In our experience, text-based handling is
+often more flexible and robust, especially when combining multiple
+prompt wraps. Note also that JSON schemas may not enforce all qualities
+you are looking for in the output, so you may still need to add
+additional prompt wraps to ensure the output is as desired.</p>
+</div>
 </div>
 <div class="section level3">
 <h3 id="adding-a-reasoning-mode-to-the-llm">Adding a reasoning mode to the LLM<a class="anchor" aria-label="anchor" href="#adding-a-reasoning-mode-to-the-llm"></a>
@@ -267,125 +271,126 @@ the final answer is returned.</final></p>
 <p>With <code><a href="../reference/answer_using_tools.html">answer_using_tools()</a></code>, you can enable your LLM to
 call R functions. This enables the LLM to autonomously retrieve
 additional information or take other actions.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>  <span class="st">"What are the files in my current directory?"</span> <span class="sc">|&gt;</span></span>
-<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>    <span class="fu">answer_using_tools</span>(list.files) <span class="sc">|&gt;</span></span>
-<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>    <span class="fu">send_prompt</span>(ollama)</span>
-<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="co">#&gt; ! `answer_using_tools()`, `tools_docs_to_text()`:</span></span>
-<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="co">#&gt; * Argument 'pattern' has an unknown type. Defaulting to 'string'</span></span>
-<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="co">#&gt; --- Sending request to LLM provider (llama3.1:8b): ---</span></span>
-<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="co">#&gt; What are the files in my current directory?</span></span>
-<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a><span class="co">#&gt; If you need more information, you can call functions to help you.</span></span>
-<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a><span class="co">#&gt; To call a function, output a JSON object with the following format:</span></span>
-<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a><span class="co">#&gt;   {</span></span>
-<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a><span class="co">#&gt;     "function": "&lt;function name&gt;",</span></span>
-<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a><span class="co">#&gt;     "arguments": {</span></span>
-<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a><span class="co">#&gt;       "&lt;argument_name&gt;": &lt;argument_value&gt;,</span></span>
-<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a><span class="co">#&gt;       # ...</span></span>
-<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a><span class="co">#&gt;     }</span></span>
-<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a><span class="co">#&gt;   }</span></span>
-<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a><span class="co">#&gt;   (Note: you may not provide function calls as function arguments.)</span></span>
-<span id="cb9-20"><a href="#cb9-20" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb9-21"><a href="#cb9-21" tabindex="-1"></a><span class="co">#&gt; The following functions are available:</span></span>
-<span id="cb9-22"><a href="#cb9-22" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb9-23"><a href="#cb9-23" tabindex="-1"></a><span class="co">#&gt;   function name: list.files</span></span>
-<span id="cb9-24"><a href="#cb9-24" tabindex="-1"></a><span class="co">#&gt;   description: List the Files in a Directory/Folder: These functions produce a character vector of the names of files</span></span>
-<span id="cb9-25"><a href="#cb9-25" tabindex="-1"></a><span class="co">#&gt; or directories in the named directory.</span></span>
-<span id="cb9-26"><a href="#cb9-26" tabindex="-1"></a><span class="co">#&gt;   arguments:</span></span>
-<span id="cb9-27"><a href="#cb9-27" tabindex="-1"></a><span class="co">#&gt;     - path: a character vector of full path names; the default corresponds to the working directory, 'getwd()'.  Tilde expansion (see 'path.expand') is performed.  Missing values will be ignored.  Elements with a marked encoding will be converted to the native encoding (and if that fails, considered non-existent). [Type: string]</span></span>
-<span id="cb9-28"><a href="#cb9-28" tabindex="-1"></a><span class="co">#&gt;     - pattern: an optional regular expression.  Only file names which match the regular expression will be returned. [Type: unknown]</span></span>
-<span id="cb9-29"><a href="#cb9-29" tabindex="-1"></a><span class="co">#&gt;     - all.files: a logical value.  If 'FALSE', only the names of visible files are returned (following Unix-style visibility, that is files whose name does not start with a dot).  If 'TRUE', all file names will be returned. [Type: logical]</span></span>
-<span id="cb9-30"><a href="#cb9-30" tabindex="-1"></a><span class="co">#&gt;     - full.names: a logical value.  If 'TRUE', the directory path is prepended to the file names to give a relative file path.  If 'FALSE', the file names (rather than paths) are returned. [Type: logical]</span></span>
-<span id="cb9-31"><a href="#cb9-31" tabindex="-1"></a><span class="co">#&gt;     - recursive: logical.  Should the listing recurse into directories? [Type: logical]</span></span>
-<span id="cb9-32"><a href="#cb9-32" tabindex="-1"></a><span class="co">#&gt;     - ignore.case: logical.  Should pattern-matching be case-insensitive? [Type: logical]</span></span>
-<span id="cb9-33"><a href="#cb9-33" tabindex="-1"></a><span class="co">#&gt;     - include.dirs: logical.  Should subdirectory names be included in recursive listings?  (They always are in non-recursive ones). [Type: logical]</span></span>
-<span id="cb9-34"><a href="#cb9-34" tabindex="-1"></a><span class="co">#&gt;     - no..: logical.  Should both '"."' and '".."' be excluded also from non-recursive listings? [Type: logical]</span></span>
-<span id="cb9-35"><a href="#cb9-35" tabindex="-1"></a><span class="co">#&gt;   return value: A character vector containing the names of the files in the</span></span>
-<span id="cb9-36"><a href="#cb9-36" tabindex="-1"></a><span class="co">#&gt; specified directories (empty if there were no files).  If a path</span></span>
-<span id="cb9-37"><a href="#cb9-37" tabindex="-1"></a><span class="co">#&gt; does not exist or is not a directory or is unreadable it is</span></span>
-<span id="cb9-38"><a href="#cb9-38" tabindex="-1"></a><span class="co">#&gt; skipped.</span></span>
-<span id="cb9-39"><a href="#cb9-39" tabindex="-1"></a><span class="co">#&gt; The files are sorted in alphabetical order, on the full path if</span></span>
-<span id="cb9-40"><a href="#cb9-40" tabindex="-1"></a><span class="co">#&gt; 'full.names = TRUE'.</span></span>
-<span id="cb9-41"><a href="#cb9-41" tabindex="-1"></a><span class="co">#&gt; 'list.dirs' implicitly has 'all.files = TRUE', and if 'recursive =</span></span>
-<span id="cb9-42"><a href="#cb9-42" tabindex="-1"></a><span class="co">#&gt; TRUE', the answer includes 'path' itself (provided it is a</span></span>
-<span id="cb9-43"><a href="#cb9-43" tabindex="-1"></a><span class="co">#&gt; readable directory).</span></span>
-<span id="cb9-44"><a href="#cb9-44" tabindex="-1"></a><span class="co">#&gt; 'dir' is an alias for 'list.files'.</span></span>
-<span id="cb9-45"><a href="#cb9-45" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb9-46"><a href="#cb9-46" tabindex="-1"></a><span class="co">#&gt; After you call a function, wait until you receive more information.</span></span>
-<span id="cb9-47"><a href="#cb9-47" tabindex="-1"></a><span class="co">#&gt; Use the information to decide your next steps or provide a final response.</span></span>
-<span id="cb9-48"><a href="#cb9-48" tabindex="-1"></a><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
-<span id="cb9-49"><a href="#cb9-49" tabindex="-1"></a><span class="co">#&gt; To get the files in my current directory, I will call the `list.files` function with the necessary arguments.</span></span>
-<span id="cb9-50"><a href="#cb9-50" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb9-51"><a href="#cb9-51" tabindex="-1"></a><span class="co">#&gt; Here's the JSON object:</span></span>
-<span id="cb9-52"><a href="#cb9-52" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb9-53"><a href="#cb9-53" tabindex="-1"></a><span class="co">#&gt; ```</span></span>
-<span id="cb9-54"><a href="#cb9-54" tabindex="-1"></a><span class="co">#&gt; {</span></span>
-<span id="cb9-55"><a href="#cb9-55" tabindex="-1"></a><span class="co">#&gt;   "function": "list.files",</span></span>
-<span id="cb9-56"><a href="#cb9-56" tabindex="-1"></a><span class="co">#&gt;   "arguments": {</span></span>
-<span id="cb9-57"><a href="#cb9-57" tabindex="-1"></a><span class="co">#&gt;     "path": "."</span></span>
-<span id="cb9-58"><a href="#cb9-58" tabindex="-1"></a><span class="co">#&gt;   }</span></span>
-<span id="cb9-59"><a href="#cb9-59" tabindex="-1"></a><span class="co">#&gt; }</span></span>
-<span id="cb9-60"><a href="#cb9-60" tabindex="-1"></a><span class="co">#&gt; ```</span></span>
-<span id="cb9-61"><a href="#cb9-61" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb9-62"><a href="#cb9-62" tabindex="-1"></a><span class="co">#&gt; This will list the files in the current working directory. The argument `path` is set to `"."`, which corresponds to the current working directory, and I'm not providing any pattern or other arguments as they are optional.</span></span>
-<span id="cb9-63"><a href="#cb9-63" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb9-64"><a href="#cb9-64" tabindex="-1"></a><span class="co">#&gt; Let's see what happens next...</span></span>
-<span id="cb9-65"><a href="#cb9-65" tabindex="-1"></a><span class="co">#&gt; --- Sending request to LLM provider (llama3.1:8b): ---</span></span>
-<span id="cb9-66"><a href="#cb9-66" tabindex="-1"></a><span class="co">#&gt; function called: list.files</span></span>
-<span id="cb9-67"><a href="#cb9-67" tabindex="-1"></a><span class="co">#&gt; arguments used: path = .</span></span>
-<span id="cb9-68"><a href="#cb9-68" tabindex="-1"></a><span class="co">#&gt; result: getting_started.Rmd, getting_started.Rmd.orig, man, precompile vignettes.R, sentiment_analysis.Rmd, sentiment_analysis.Rmd.orig</span></span>
-<span id="cb9-69"><a href="#cb9-69" tabindex="-1"></a><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
-<span id="cb9-70"><a href="#cb9-70" tabindex="-1"></a><span class="co">#&gt; It looks like I have a mix of files in my current directory.</span></span>
-<span id="cb9-71"><a href="#cb9-71" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb9-72"><a href="#cb9-72" tabindex="-1"></a><span class="co">#&gt; The `list.files` function returned a list of file names, which are:</span></span>
-<span id="cb9-73"><a href="#cb9-73" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb9-74"><a href="#cb9-74" tabindex="-1"></a><span class="co">#&gt; * `getting_started.Rmd`</span></span>
-<span id="cb9-75"><a href="#cb9-75" tabindex="-1"></a><span class="co">#&gt; * `getting_started.Rmd.orig`</span></span>
-<span id="cb9-76"><a href="#cb9-76" tabindex="-1"></a><span class="co">#&gt; * `man`</span></span>
-<span id="cb9-77"><a href="#cb9-77" tabindex="-1"></a><span class="co">#&gt; * `precompile vignettes.R`</span></span>
-<span id="cb9-78"><a href="#cb9-78" tabindex="-1"></a><span class="co">#&gt; * `sentiment_analysis.Rmd`</span></span>
-<span id="cb9-79"><a href="#cb9-79" tabindex="-1"></a><span class="co">#&gt; * `sentiment_analysis.Rmd.orig`</span></span>
-<span id="cb9-80"><a href="#cb9-80" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb9-81"><a href="#cb9-81" tabindex="-1"></a><span class="co">#&gt; These files seem to be related to some kind of project or documentation.</span></span>
-<span id="cb9-82"><a href="#cb9-82" tabindex="-1"></a></span>
-<span id="cb9-83"><a href="#cb9-83" tabindex="-1"></a><span class="st">`</span><span class="at">answer_using_tools()</span><span class="st">`</span> automatically extracts documentation when it is available</span>
-<span id="cb9-84"><a href="#cb9-84" tabindex="-1"></a><span class="cf">for</span> base R functions and functions from packages. Types are inferred from the</span>
-<span id="cb9-85"><a href="#cb9-85" tabindex="-1"></a>default arguments of the function.</span>
-<span id="cb9-86"><a href="#cb9-86" tabindex="-1"></a></span>
-<span id="cb9-87"><a href="#cb9-87" tabindex="-1"></a>If you want to define a custom <span class="cf">function</span> and<span class="sc">/</span>or override the default documentation,</span>
-<span id="cb9-88"><a href="#cb9-88" tabindex="-1"></a>you can use <span class="st">`</span><span class="at">tools_add_docs()</span><span class="st">`</span>. See the example usage of <span class="cf">in</span> the documentation</span>
-<span id="cb9-89"><a href="#cb9-89" tabindex="-1"></a>of <span class="st">`</span><span class="at">answer_using_tools()</span><span class="st">`</span>.</span>
-<span id="cb9-90"><a href="#cb9-90" tabindex="-1"></a></span>
-<span id="cb9-91"><a href="#cb9-91" tabindex="-1"></a><span class="st">`</span><span class="at">answer_using_tools()</span><span class="st">`</span> supports both text<span class="sc">-</span>based <span class="cf">function</span> calling and native <span class="cf">function</span> <span class="fu">calling</span> (via API</span>
-<span id="cb9-92"><a href="#cb9-92" tabindex="-1"></a>parameters, currently implemented <span class="cf">for</span> OpenAI and Ollama API structures).</span>
-<span id="cb9-93"><a href="#cb9-93" tabindex="-1"></a></span>
-<span id="cb9-94"><a href="#cb9-94" tabindex="-1"></a><span class="do">### Code generation and evaluation</span></span>
-<span id="cb9-95"><a href="#cb9-95" tabindex="-1"></a></span>
-<span id="cb9-96"><a href="#cb9-96" tabindex="-1"></a><span class="st">`</span><span class="at">answer_as_code()</span><span class="st">`</span> provides a more advanced prompt wrap, which has various options</span>
-<span id="cb9-97"><a href="#cb9-97" tabindex="-1"></a>to enable LLM code generation. R code can be extracted, parsed</span>
-<span id="cb9-98"><a href="#cb9-98" tabindex="-1"></a><span class="cf">for</span> validity, and optionally be evaluated <span class="cf">in</span> a dedicated R <span class="fu">session</span> (using the</span>
-<span id="cb9-99"><a href="#cb9-99" tabindex="-1"></a><span class="st">'callr'</span> package). The prompt wrap can also be set to <span class="st">'tool mode'</span> (with <span class="st">`</span><span class="at">output_as_tool = TRUE</span><span class="st">`</span>),</span>
-<span id="cb9-100"><a href="#cb9-100" tabindex="-1"></a>where the output of R code is returned to the LLM, so that it can be used to formulate</span>
-<span id="cb9-101"><a href="#cb9-101" tabindex="-1"></a>a final answer.</span>
-<span id="cb9-102"><a href="#cb9-102" tabindex="-1"></a></span>
-<span id="cb9-103"><a href="#cb9-103" tabindex="-1"></a></span>
-<span id="cb9-104"><a href="#cb9-104" tabindex="-1"></a><span class="st">```</span><span class="at"> r</span></span>
-<span id="cb9-105"><a href="#cb9-105" tabindex="-1"></a><span class="at"># From prompt to ggplot</span></span>
-<span id="cb9-106"><a href="#cb9-106" tabindex="-1"></a><span class="at">plot &lt;- paste0(</span></span>
-<span id="cb9-107"><a href="#cb9-107" tabindex="-1"></a><span class="at">  "Create a scatter plot of miles per gallon (mpg) versus",</span></span>
-<span id="cb9-108"><a href="#cb9-108" tabindex="-1"></a><span class="at">  " horsepower (hp) for the cars in the mtcars dataset.",</span></span>
-<span id="cb9-109"><a href="#cb9-109" tabindex="-1"></a><span class="at">  " Use different colors to represent the number of cylinders (cyl).",</span></span>
-<span id="cb9-110"><a href="#cb9-110" tabindex="-1"></a><span class="at">  " Make the plot nice and readable,",</span></span>
-<span id="cb9-111"><a href="#cb9-111" tabindex="-1"></a><span class="at">  " but also be creative, a little crazy, and have humour!"</span></span>
-<span id="cb9-112"><a href="#cb9-112" tabindex="-1"></a><span class="at">) |&gt;</span></span>
-<span id="cb9-113"><a href="#cb9-113" tabindex="-1"></a><span class="at">  answer_as_code(</span></span>
-<span id="cb9-114"><a href="#cb9-114" tabindex="-1"></a><span class="at">    pkgs_to_use = c("ggplot2"),</span></span>
-<span id="cb9-115"><a href="#cb9-115" tabindex="-1"></a><span class="at">    evaluate_code = TRUE,</span></span>
-<span id="cb9-116"><a href="#cb9-116" tabindex="-1"></a><span class="at">    return_mode = "object"</span></span>
-<span id="cb9-117"><a href="#cb9-117" tabindex="-1"></a><span class="at">  ) |&gt;</span></span>
-<span id="cb9-118"><a href="#cb9-118" tabindex="-1"></a><span class="at">  send_prompt(openai)</span></span>
-<span id="cb9-119"><a href="#cb9-119" tabindex="-1"></a><span class="at">plot</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span>  <span class="st">"What are the files in my current directory?"</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="../reference/answer_using_tools.html">answer_using_tools</a></span><span class="op">(</span><span class="va">list.files</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="../reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="va">ollama</span><span class="op">)</span></span>
+<span><span class="co">#&gt; ! `answer_using_tools()`, `tools_docs_to_text()`:</span></span>
+<span><span class="co">#&gt; * Argument 'pattern' has an unknown type. Defaulting to 'string'</span></span>
+<span><span class="co">#&gt; --- Sending request to LLM provider (llama3.1:8b): ---</span></span>
+<span><span class="co">#&gt; What are the files in my current directory?</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; If you need more information, you can call functions to help you.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; To call a function, output a JSON object with the following format:</span></span>
+<span><span class="co">#&gt;   {</span></span>
+<span><span class="co">#&gt;     "function": "&lt;function name&gt;",</span></span>
+<span><span class="co">#&gt;     "arguments": {</span></span>
+<span><span class="co">#&gt;       "&lt;argument_name&gt;": &lt;argument_value&gt;,</span></span>
+<span><span class="co">#&gt;       # ...</span></span>
+<span><span class="co">#&gt;     }</span></span>
+<span><span class="co">#&gt;   }</span></span>
+<span><span class="co">#&gt;   (Note: you may not provide function calls as function arguments.)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; The following functions are available:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;   function name: list.files</span></span>
+<span><span class="co">#&gt;   description: List the Files in a Directory/Folder: These functions produce a character vector of the names of files</span></span>
+<span><span class="co">#&gt; or directories in the named directory.</span></span>
+<span><span class="co">#&gt;   arguments:</span></span>
+<span><span class="co">#&gt;     - path: a character vector of full path names; the default corresponds to the working directory, 'getwd()'.  Tilde expansion (see 'path.expand') is performed.  Missing values will be ignored.  Elements with a marked encoding will be converted to the native encoding (and if that fails, considered non-existent). [Type: string]</span></span>
+<span><span class="co">#&gt;     - pattern: an optional regular expression.  Only file names which match the regular expression will be returned. [Type: unknown]</span></span>
+<span><span class="co">#&gt;     - all.files: a logical value.  If 'FALSE', only the names of visible files are returned (following Unix-style visibility, that is files whose name does not start with a dot).  If 'TRUE', all file names will be returned. [Type: logical]</span></span>
+<span><span class="co">#&gt;     - full.names: a logical value.  If 'TRUE', the directory path is prepended to the file names to give a relative file path.  If 'FALSE', the file names (rather than paths) are returned. [Type: logical]</span></span>
+<span><span class="co">#&gt;     - recursive: logical.  Should the listing recurse into directories? [Type: logical]</span></span>
+<span><span class="co">#&gt;     - ignore.case: logical.  Should pattern-matching be case-insensitive? [Type: logical]</span></span>
+<span><span class="co">#&gt;     - include.dirs: logical.  Should subdirectory names be included in recursive listings?  (They always are in non-recursive ones). [Type: logical]</span></span>
+<span><span class="co">#&gt;     - no..: logical.  Should both '"."' and '".."' be excluded also from non-recursive listings? [Type: logical]</span></span>
+<span><span class="co">#&gt;   return value: A character vector containing the names of the files in the</span></span>
+<span><span class="co">#&gt; specified directories (empty if there were no files).  If a path</span></span>
+<span><span class="co">#&gt; does not exist or is not a directory or is unreadable it is</span></span>
+<span><span class="co">#&gt; skipped.</span></span>
+<span><span class="co">#&gt; The files are sorted in alphabetical order, on the full path if</span></span>
+<span><span class="co">#&gt; 'full.names = TRUE'.</span></span>
+<span><span class="co">#&gt; 'list.dirs' implicitly has 'all.files = TRUE', and if 'recursive =</span></span>
+<span><span class="co">#&gt; TRUE', the answer includes 'path' itself (provided it is a</span></span>
+<span><span class="co">#&gt; readable directory).</span></span>
+<span><span class="co">#&gt; 'dir' is an alias for 'list.files'.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; After you call a function, wait until you receive more information.</span></span>
+<span><span class="co">#&gt; Use the information to decide your next steps or provide a final response.</span></span>
+<span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
+<span><span class="co">#&gt; To get the files in my current directory, I will call the `list.files` function with the necessary arguments.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Here's the JSON object:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ```</span></span>
+<span><span class="co">#&gt; {</span></span>
+<span><span class="co">#&gt;   "function": "list.files",</span></span>
+<span><span class="co">#&gt;   "arguments": {</span></span>
+<span><span class="co">#&gt;     "path": "."</span></span>
+<span><span class="co">#&gt;   }</span></span>
+<span><span class="co">#&gt; }</span></span>
+<span><span class="co">#&gt; ```</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; This will list the files in the current working directory. The argument `path` is set to `"."`, which corresponds to the current working directory, and I'm not providing any pattern or other arguments as they are optional.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Let's see what happens next...</span></span>
+<span><span class="co">#&gt; --- Sending request to LLM provider (llama3.1:8b): ---</span></span>
+<span><span class="co">#&gt; function called: list.files</span></span>
+<span><span class="co">#&gt; arguments used: path = .</span></span>
+<span><span class="co">#&gt; result: getting_started.Rmd, getting_started.Rmd.orig, man, precompile vignettes.R, sentiment_analysis.Rmd, sentiment_analysis.Rmd.orig</span></span>
+<span><span class="co">#&gt; --- Receiving response from LLM provider: ---</span></span>
+<span><span class="co">#&gt; It looks like I have a mix of files in my current directory.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; The `list.files` function returned a list of file names, which are:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; * `getting_started.Rmd`</span></span>
+<span><span class="co">#&gt; * `getting_started.Rmd.orig`</span></span>
+<span><span class="co">#&gt; * `man`</span></span>
+<span><span class="co">#&gt; * `precompile vignettes.R`</span></span>
+<span><span class="co">#&gt; * `sentiment_analysis.Rmd`</span></span>
+<span><span class="co">#&gt; * `sentiment_analysis.Rmd.orig`</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; These files seem to be related to some kind of project or documentation.</span></span></code></pre></div>
+<p><code><a href="../reference/answer_using_tools.html">answer_using_tools()</a></code> automatically extracts
+documentation when it is available for base R functions and functions
+from packages. Types are inferred from the default arguments of the
+function.</p>
+<p>If you want to define a custom function and/or override the default
+documentation, you can use <code><a href="../reference/tools_add_docs.html">tools_add_docs()</a></code>. See the
+example usage of in the documentation of
+<code><a href="../reference/answer_using_tools.html">answer_using_tools()</a></code>.</p>
+<p><code><a href="../reference/answer_using_tools.html">answer_using_tools()</a></code> supports both text-based function
+calling and native function calling (via API parameters, currently
+implemented for OpenAI and Ollama API structures).</p>
+</div>
+<div class="section level3">
+<h3 id="code-generation-and-evaluation">Code generation and evaluation<a class="anchor" aria-label="anchor" href="#code-generation-and-evaluation"></a>
+</h3>
+<p><code><a href="../reference/answer_as_code.html">answer_as_code()</a></code> provides a more advanced prompt wrap,
+which has various options to enable LLM code generation. R code can be
+extracted, parsed for validity, and optionally be evaluated in a
+dedicated R session (using the ‘callr’ package). The prompt wrap can
+also be set to ‘tool mode’ (with <code>output_as_tool = TRUE</code>),
+where the output of R code is returned to the LLM, so that it can be
+used to formulate a final answer.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># From prompt to ggplot</span></span>
+<span><span class="va">plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span>
+<span>  <span class="st">"Create a scatter plot of miles per gallon (mpg) versus"</span>,</span>
+<span>  <span class="st">" horsepower (hp) for the cars in the mtcars dataset."</span>,</span>
+<span>  <span class="st">" Use different colors to represent the number of cylinders (cyl)."</span>,</span>
+<span>  <span class="st">" Make the plot nice and readable,"</span>,</span>
+<span>  <span class="st">" but also be creative, a little crazy, and have humour!"</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/answer_as_code.html">answer_as_code</a></span><span class="op">(</span></span>
+<span>    pkgs_to_use <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ggplot2"</span><span class="op">)</span>,</span>
+<span>    evaluate_code <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    return_mode <span class="op">=</span> <span class="st">"object"</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="va">openai</span><span class="op">)</span></span>
+<span><span class="va">plot</span></span></code></pre></div>
 <div class="float">
 <img src="man%2Ffigures%2Fanswer_as_code1-1.png" alt="plot"><div class="figcaption">plot</div>
 </div>
@@ -418,7 +423,7 @@ returned. (<code><a href="../reference/send_prompt.html">send_prompt()</a></code
 process.)</p>
 <p>Below is a simple example of a prompt wrap, which just adds some text
 to the base prompt:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">prompt</span> <span class="op">&lt;-</span> <span class="st">"Hi there!"</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/prompt_wrap.html">prompt_wrap</a></span><span class="op">(</span></span>
 <span>    modify_fn <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">base_prompt</span><span class="op">)</span> <span class="op">{</span></span>
@@ -426,12 +431,12 @@ to the base prompt:</p>
 <span>    <span class="op">}</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
 <p>Shorter notation of the above would be:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">prompt</span> <span class="op">&lt;-</span> <span class="st">"Hi there!"</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/prompt_wrap.html">prompt_wrap</a></span><span class="op">(</span>\<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"How are you?"</span>, sep <span class="op">=</span> <span class="st">"\n\n"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Often times, it may be preferred to make a function which takes a
 prompt and returns a wrapped prompt:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">my_prompt_wrap</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">prompt</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">modify_fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">base_prompt</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">base_prompt</span>, <span class="st">"How are you?"</span>, sep <span class="op">=</span> <span class="st">"\n\n"</span><span class="op">)</span></span>
@@ -443,7 +448,7 @@ prompt and returns a wrapped prompt:</p>
 <span>  <span class="fu">my_prompt_wrap</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>Take look at the source code of <code><a href="../reference/answer_as_boolean.html">answer_as_boolean()</a></code>,
 which also uses extraction:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">answer_as_boolean</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span></span>
 <span>    <span class="va">prompt</span>,</span>
 <span>    <span class="va">true_definition</span> <span class="op">=</span> <span class="cn">NULL</span>,</span>
