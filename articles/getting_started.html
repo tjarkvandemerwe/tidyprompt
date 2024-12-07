@@ -75,12 +75,12 @@ a chat.</p>
 <p>At the moment, ‘tidyprompt’ includes pre-built functions to connect
 with various LLM providers, such as Ollama, OpenAI, OpenRouter, Mistral,
 Groq, XAI (Grok), and Google Gemini.</p>
-<p>With <code>llm_provider()</code>, you can easily write a hook for any
-other LLM provider. You could make API calls using the ‘httr’ package or
-use another R package that already has a hook for the LLM provider you
-want to use. If your API of choice follows the structure of the OpenAI
-API, you can call <code><a href="../reference/llm_provider_openai.html">llm_provider_openai()</a></code> and change the
-relevant parameters (like the URL and the API key).</p>
+<p>With the <code>llm_provider-class</code>, you can easily write a hook
+for any other LLM provider. You could make API calls using the ‘httr2’
+package or use another R package that already has a hook for the LLM
+provider you want to use. If your API of choice follows the structure of
+the OpenAI API, you can call <code><a href="../reference/llm_provider_openai.html">llm_provider_openai()</a></code> and
+change the relevant parameters (like the URL and the API key).</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Ollama running on local PC</span></span>
 <span><span class="va">ollama</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/llm_provider_ollama.html">llm_provider_ollama</a></span><span class="op">(</span></span>
@@ -100,10 +100,9 @@ relevant parameters (like the URL and the API key).</p>
 <span><span class="co"># ... functions also included for Mistral, Groq, XAI (Grok), and Google Gemini</span></span>
 <span></span>
 <span><span class="co"># ... or easily create your own hook for any other LLM provider;</span></span>
-<span><span class="co">#   see ?llm_provider for more information; also take a look at the source code of</span></span>
+<span><span class="co">#   see ?llm_provider-class for more information; also take a look at the source code of</span></span>
 <span><span class="co">#   llm_provider_ollama() and llm_provider_openai(). For APIs that follow the structure</span></span>
-<span><span class="co">#   of the OpenAI API for chat completion, you can use llm_provider_openai() and change</span></span>
-<span><span class="co">#   the relevant parameters (like the url and the API key).</span></span></code></pre></div>
+<span><span class="co">#   of the OpenAI API for chat completion, you can use llm_provider_openai()</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="basic-prompting">Basic prompting<a class="anchor" aria-label="anchor" href="#basic-prompting"></a>
@@ -271,6 +270,16 @@ the final answer is returned.</final></p>
 <p>With <code><a href="../reference/answer_using_tools.html">answer_using_tools()</a></code>, you can enable your LLM to
 call R functions. This enables the LLM to autonomously retrieve
 additional information or take other actions.</p>
+<p><code><a href="../reference/answer_using_tools.html">answer_using_tools()</a></code> automatically extracts
+documentation when it is available for base R functions and functions
+from packages. Types are inferred from the default arguments of the
+function. If you want to define a custom function and/or override the
+default documentation, you can use <code><a href="../reference/tools_add_docs.html">tools_add_docs()</a></code>. See
+example usage in the documentation of
+<code><a href="../reference/answer_using_tools.html">answer_using_tools()</a></code>.</p>
+<p><code><a href="../reference/answer_using_tools.html">answer_using_tools()</a></code> supports both text-based function
+calling and native function calling (via API parameters, currently
+implemented for OpenAI and Ollama API structures).</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  <span class="st">"What are the files in my current directory?"</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/answer_using_tools.html">answer_using_tools</a></span><span class="op">(</span><span class="va">list.files</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -298,24 +307,13 @@ additional information or take other actions.</p>
 <span><span class="co">#&gt;   description: List the Files in a Directory/Folder: These functions produce a character vector of the names of files</span></span>
 <span><span class="co">#&gt; or directories in the named directory.</span></span>
 <span><span class="co">#&gt;   arguments:</span></span>
-<span><span class="co">#&gt;     - path: a character vector of full path names; the default corresponds to the working directory, 'getwd()'.  Tilde expansion (see 'path.expand') is performed.  Missing values will be ignored.  Elements with a marked encoding will be converted to the native encoding (and if that fails, considered non-existent). [Type: string]</span></span>
+<span><span class="co">#&gt;     - path: a character vector of full path names; the default corresponds to the working directory, 'getwd()'. (...) [Type: string]</span></span>
 <span><span class="co">#&gt;     - pattern: an optional regular expression.  Only file names which match the regular expression will be returned. [Type: unknown]</span></span>
 <span><span class="co">#&gt;     - all.files: a logical value.  If 'FALSE', only the names of visible files are returned (following Unix-style visibility, that is files whose name does not start with a dot).  If 'TRUE', all file names will be returned. [Type: logical]</span></span>
 <span><span class="co">#&gt;     - full.names: a logical value.  If 'TRUE', the directory path is prepended to the file names to give a relative file path.  If 'FALSE', the file names (rather than paths) are returned. [Type: logical]</span></span>
 <span><span class="co">#&gt;     - recursive: logical.  Should the listing recurse into directories? [Type: logical]</span></span>
 <span><span class="co">#&gt;     - ignore.case: logical.  Should pattern-matching be case-insensitive? [Type: logical]</span></span>
-<span><span class="co">#&gt;     - include.dirs: logical.  Should subdirectory names be included in recursive listings?  (They always are in non-recursive ones). [Type: logical]</span></span>
-<span><span class="co">#&gt;     - no..: logical.  Should both '"."' and '".."' be excluded also from non-recursive listings? [Type: logical]</span></span>
-<span><span class="co">#&gt;   return value: A character vector containing the names of the files in the</span></span>
-<span><span class="co">#&gt; specified directories (empty if there were no files).  If a path</span></span>
-<span><span class="co">#&gt; does not exist or is not a directory or is unreadable it is</span></span>
-<span><span class="co">#&gt; skipped.</span></span>
-<span><span class="co">#&gt; The files are sorted in alphabetical order, on the full path if</span></span>
-<span><span class="co">#&gt; 'full.names = TRUE'.</span></span>
-<span><span class="co">#&gt; 'list.dirs' implicitly has 'all.files = TRUE', and if 'recursive =</span></span>
-<span><span class="co">#&gt; TRUE', the answer includes 'path' itself (provided it is a</span></span>
-<span><span class="co">#&gt; readable directory).</span></span>
-<span><span class="co">#&gt; 'dir' is an alias for 'list.files'.</span></span>
+<span><span class="co">#&gt;     - (...)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; After you call a function, wait until you receive more information.</span></span>
 <span><span class="co">#&gt; Use the information to decide your next steps or provide a final response.</span></span>
@@ -353,17 +351,6 @@ additional information or take other actions.</p>
 <span><span class="co">#&gt; * `sentiment_analysis.Rmd.orig`</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; These files seem to be related to some kind of project or documentation.</span></span></code></pre></div>
-<p><code><a href="../reference/answer_using_tools.html">answer_using_tools()</a></code> automatically extracts
-documentation when it is available for base R functions and functions
-from packages. Types are inferred from the default arguments of the
-function.</p>
-<p>If you want to define a custom function and/or override the default
-documentation, you can use <code><a href="../reference/tools_add_docs.html">tools_add_docs()</a></code>. See the
-example usage of in the documentation of
-<code><a href="../reference/answer_using_tools.html">answer_using_tools()</a></code>.</p>
-<p><code><a href="../reference/answer_using_tools.html">answer_using_tools()</a></code> supports both text-based function
-calling and native function calling (via API parameters, currently
-implemented for OpenAI and Ollama API structures).</p>
 </div>
 <div class="section level3">
 <h3 id="code-generation-and-evaluation">Code generation and evaluation<a class="anchor" aria-label="anchor" href="#code-generation-and-evaluation"></a>
