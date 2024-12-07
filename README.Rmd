@@ -31,6 +31,7 @@ A library of pre-built prompt wraps is included, but you can
 also write custom prompt wraps. 
 
 * **structured output**: Obtain structured output from a LLM, adhering to a specific type and/or format.
+Use pre-built prompt wraps or your own R code to validate.
 
 * **feedback & retries**: Automatically provide feedback to the LLM when the output is not as expected,
 so that it can retry.
