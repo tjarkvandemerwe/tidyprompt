@@ -35,8 +35,8 @@ library(tidyprompt)
 At the moment, 'tidyprompt' includes pre-built functions to connect with various
 LLM providers, such as Ollama, OpenAI, OpenRouter, Mistral, Groq, XAI (Grok), and Google Gemini.
 
-With `llm_provider()`, you can easily write a hook for any other LLM provider.
-You could make API calls using the 'httr' package or use another R package that already has
+With the `llm_provider-class`, you can easily write a hook for any other LLM provider.
+You could make API calls using the 'httr2' package or use another R package that already has
 a hook for the LLM provider you want to use. If your API of choice follows the structure
 of the OpenAI API, you can call `llm_provider_openai()` and change
 the relevant parameters (like the URL and the API key).
@@ -60,10 +60,9 @@ openrouter <- llm_provider_openrouter(
 # ... functions also included for Mistral, Groq, XAI (Grok), and Google Gemini
 
 # ... or easily create your own hook for any other LLM provider;
-#   see ?llm_provider for more information; also take a look at the source code of
+#   see ?llm_provider-class for more information; also take a look at the source code of
 #   llm_provider_ollama() and llm_provider_openai(). For APIs that follow the structure
-#   of the OpenAI API for chat completion, you can use llm_provider_openai() and change
-#   the relevant parameters (like the url and the API key).
+#   of the OpenAI API for chat completion, you can use llm_provider_openai()
 ```
 
 ### Basic prompting
@@ -162,22 +161,20 @@ function then ensures only the final answer is returned.
 With `answer_using_tools()`, you can enable your LLM to call R functions.
 This enables the LLM to autonomously retrieve additional information or take other actions.
 
+`answer_using_tools()` automatically extracts documentation when it is available
+for base R functions and functions from packages. Types are inferred from the
+default arguments of the function. If you want to define a custom function and/or override the default documentation,
+you can use `tools_add_docs()`. See example usage in the documentation
+of `answer_using_tools()`.
+
+`answer_using_tools()` supports both text-based function calling and native function calling (via API
+parameters, currently implemented for OpenAI and Ollama API structures).
+
 ```{r tool_example2, cache=FALSE}
   "What are the files in my current directory?" |>
     answer_using_tools(list.files) |>
     send_prompt(ollama)
 ```
-
-`answer_using_tools()` automatically extracts documentation when it is available
-for base R functions and functions from packages. Types are inferred from the
-default arguments of the function.
-
-If you want to define a custom function and/or override the default documentation,
-you can use `tools_add_docs()`. See the example usage of in the documentation
-of `answer_using_tools()`.
-
-`answer_using_tools()` supports both text-based function calling and native function calling (via API
-parameters, currently implemented for OpenAI and Ollama API structures).
 
 ### Code generation and evaluation
 

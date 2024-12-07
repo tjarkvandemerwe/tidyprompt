@@ -23,8 +23,8 @@ library(tidyprompt)
 At the moment, 'tidyprompt' includes pre-built functions to connect with various
 LLM providers, such as Ollama, OpenAI, OpenRouter, Mistral, Groq, XAI (Grok), and Google Gemini.
 
-With `llm_provider()`, you can easily write a hook for any other LLM provider.
-You could make API calls using the 'httr' package or use another R package that already has
+With the `llm_provider-class`, you can easily write a hook for any other LLM provider.
+You could make API calls using the 'httr2' package or use another R package that already has
 a hook for the LLM provider you want to use. If your API of choice follows the structure
 of the OpenAI API, you can call `llm_provider_openai()` and change
 the relevant parameters (like the URL and the API key).
@@ -49,10 +49,9 @@ openrouter <- llm_provider_openrouter(
 # ... functions also included for Mistral, Groq, XAI (Grok), and Google Gemini
 
 # ... or easily create your own hook for any other LLM provider;
-#   see ?llm_provider for more information; also take a look at the source code of
+#   see ?llm_provider-class for more information; also take a look at the source code of
 #   llm_provider_ollama() and llm_provider_openai(). For APIs that follow the structure
-#   of the OpenAI API for chat completion, you can use llm_provider_openai() and change
-#   the relevant parameters (like the url and the API key).
+#   of the OpenAI API for chat completion, you can use llm_provider_openai()
 ```
 
 ### Basic prompting
@@ -228,6 +227,14 @@ function then ensures only the final answer is returned.
 With `answer_using_tools()`, you can enable your LLM to call R functions.
 This enables the LLM to autonomously retrieve additional information or take other actions.
 
+`answer_using_tools()` automatically extracts documentation when it is available
+for base R functions and functions from packages. Types are inferred from the
+default arguments of the function. If you want to define a custom function and/or override the default documentation,
+you can use `tools_add_docs()`. See example usage in the documentation
+of `answer_using_tools()`.
+
+`answer_using_tools()` supports both text-based function calling and native function calling (via API
+parameters, currently implemented for OpenAI and Ollama API structures).
 
 ``` r
   "What are the files in my current directory?" |>
@@ -256,24 +263,13 @@ This enables the LLM to autonomously retrieve additional information or take oth
 #>   description: List the Files in a Directory/Folder: These functions produce a character vector of the names of files
 #> or directories in the named directory.
 #>   arguments:
-#>     - path: a character vector of full path names; the default corresponds to the working directory, 'getwd()'.  Tilde expansion (see 'path.expand') is performed.  Missing values will be ignored.  Elements with a marked encoding will be converted to the native encoding (and if that fails, considered non-existent). [Type: string]
+#>     - path: a character vector of full path names; the default corresponds to the working directory, 'getwd()'. (...) [Type: string]
 #>     - pattern: an optional regular expression.  Only file names which match the regular expression will be returned. [Type: unknown]
 #>     - all.files: a logical value.  If 'FALSE', only the names of visible files are returned (following Unix-style visibility, that is files whose name does not start with a dot).  If 'TRUE', all file names will be returned. [Type: logical]
 #>     - full.names: a logical value.  If 'TRUE', the directory path is prepended to the file names to give a relative file path.  If 'FALSE', the file names (rather than paths) are returned. [Type: logical]
 #>     - recursive: logical.  Should the listing recurse into directories? [Type: logical]
 #>     - ignore.case: logical.  Should pattern-matching be case-insensitive? [Type: logical]
-#>     - include.dirs: logical.  Should subdirectory names be included in recursive listings?  (They always are in non-recursive ones). [Type: logical]
-#>     - no..: logical.  Should both '"."' and '".."' be excluded also from non-recursive listings? [Type: logical]
-#>   return value: A character vector containing the names of the files in the
-#> specified directories (empty if there were no files).  If a path
-#> does not exist or is not a directory or is unreadable it is
-#> skipped.
-#> The files are sorted in alphabetical order, on the full path if
-#> 'full.names = TRUE'.
-#> 'list.dirs' implicitly has 'all.files = TRUE', and if 'recursive =
-#> TRUE', the answer includes 'path' itself (provided it is a
-#> readable directory).
-#> 'dir' is an alias for 'list.files'.
+#>     - (...)
 #> 
 #> After you call a function, wait until you receive more information.
 #> Use the information to decide your next steps or provide a final response.
@@ -312,17 +308,6 @@ This enables the LLM to autonomously retrieve additional information or take oth
 #> 
 #> These files seem to be related to some kind of project or documentation.
 ```
-
-`answer_using_tools()` automatically extracts documentation when it is available
-for base R functions and functions from packages. Types are inferred from the
-default arguments of the function.
-
-If you want to define a custom function and/or override the default documentation,
-you can use `tools_add_docs()`. See the example usage of in the documentation
-of `answer_using_tools()`.
-
-`answer_using_tools()` supports both text-based function calling and native function calling (via API
-parameters, currently implemented for OpenAI and Ollama API structures).
 
 ### Code generation and evaluation
 
