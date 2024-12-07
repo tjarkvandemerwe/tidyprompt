@@ -1,0 +1,68 @@
+```{r include=FALSE}
+library(tidyprompt)
+
+here::i_am("vignettes/readme_example.Rmd")
+
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+options(tidyprompt.verbose = FALSE)
+options(tidyprompt.stream = FALSE)
+```
+
+```{r}
+  "What is 5+5?" |>
+    answer_as_integer() |>
+    send_prompt(llm_provider_ollama())
+```
+
+```{r}
+"Are you a large language model?" |>
+  answer_as_boolean() |>
+  send_prompt(llm_provider_ollama())
+```
+
+```{r}
+"What animal is the biggest?" |>
+  answer_as_regex("^(cat|dog|elephant)$") |>
+  send_prompt(llm_provider_ollama())
+```
+
+```{r}
+"What are some delicious fruits?" |>
+  answer_as_list(n_unique_items = 3) |>
+  send_prompt(llm_provider_ollama())
+```
+
+```{r}
+# Make LLM use a function from an R package to search Wikipedia for the answer
+"What is something fun that happened in November 2024?" |>
+  add_text("Summarize in one sentence.") |>
+  answer_by_chain_of_thought() |>
+  answer_using_tools(getwiki::search_wiki) |>
+  send_prompt(llm_provider_openai())
+```
+
+```{r}
+# From prompt to linear model object in R
+model <- paste0(
+  "Using my data, create a statistical model",
+  " investigating the relationship between two variables."
+) |>
+  answer_as_code(
+    objects_to_use = list(data = cars),
+    evaluate_code = TRUE,
+    return_mode = "object"
+  ) |>
+  prompt_wrap(
+    validation_fn = function(x) {
+      if (!inherits(x, "lm"))
+        return(llm_feedback("The output should be a linear model object."))
+      return(x)
+    }
+  ) |>
+  send_prompt(llm_provider_ollama())
+summary(model)
+```

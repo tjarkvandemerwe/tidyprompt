@@ -92,7 +92,7 @@ answer_as_code <- function(
 
   stopifnot(
     is.character(add_text), length(add_text) == 1,
-    is.character(pkgs_to_use), length(pkgs_to_use) > 0,
+    length(pkgs_to_use) == 0 || is.vector(pkgs_to_use) & all(sapply(pkgs_to_use, is.character)),
     is.list(objects_to_use),
     length(objects_to_use) == 0 || !is.null(names(objects_to_use)),
     is.logical(list_packages),

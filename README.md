@@ -56,11 +56,80 @@ remotes::install_github("tjarkvandemerwe/tidyprompt")
 
 See the [‘Getting
 started’](https://tjarkvandemerwe.github.io/tidyprompt/articles/getting_started.html)
-vignette for an introduction to ‘tidyprompt’.
+vignette for a detailed introduction to using ‘tidyprompt’.
 
-This vignette shows example usage and guides you through the basic
-functionalities of ‘tidyprompt’, demonstrating how to use and create
-prompt wraps and send prompts to LLMs.
+Below are some quick examples of what is possible with ‘tidyprompt’:
+
+``` r
+  "What is 5+5?" |>
+    answer_as_integer() |>
+    send_prompt(llm_provider_ollama())
+#> [1] 10
+```
+
+``` r
+"Are you a large language model?" |>
+  answer_as_boolean() |>
+  send_prompt(llm_provider_ollama())
+#> [1] TRUE
+```
+
+``` r
+"What animal is the biggest?" |>
+  answer_as_regex("^(cat|dog|elephant)$") |>
+  send_prompt(llm_provider_ollama())
+#> [1] "elephant"
+```
+
+``` r
+# Make LLM use a function from an R package to search Wikipedia for the answer
+"What is something fun that happened in November 2024?" |>
+  add_text("Summarize in one sentence.") |>
+  answer_by_chain_of_thought() |>
+  answer_using_tools(getwiki::search_wiki) |>
+  send_prompt(llm_provider_openai())
+#> [1] "The 2024 ARIA Music Awards ceremony, a vibrant celebration of Australian music,
+#> took place on November 20, 2024."
+```
+
+``` r
+# From prompt to linear model object in R
+model <- paste0(
+  "Using my data, create a statistical model",
+  " investigating the relationship between two variables."
+) |>
+  answer_as_code(
+    objects_to_use = list(data = cars),
+    evaluate_code = TRUE,
+    return_mode = "object"
+  ) |>
+  prompt_wrap(
+    validation_fn = function(x) {
+      if (!inherits(x, "lm"))
+        return(llm_feedback("The output should be a linear model object."))
+      return(x)
+    }
+  ) |>
+  send_prompt(llm_provider_ollama())
+summary(model)
+#> Call:
+#> lm(formula = speed ~ dist, data = data)
+#> 
+#> Residuals:
+#>     Min      1Q  Median      3Q     Max 
+#> -7.5293 -2.1550  0.3615  2.4377  6.4179 
+#> 
+#> Coefficients:
+#>             Estimate Std. Error t value Pr(>|t|)    
+#> (Intercept)  8.28391    0.87438   9.474 1.44e-12 ***
+#> dist         0.16557    0.01749   9.464 1.49e-12 ***
+#> ---
+#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#> 
+#> Residual standard error: 3.156 on 48 degrees of freedom
+#> Multiple R-squared:  0.6511, Adjusted R-squared:  0.6438 
+#> F-statistic: 89.57 on 1 and 48 DF,  p-value: 1.49e-12
+```
 
 ## More information and contributing
 
