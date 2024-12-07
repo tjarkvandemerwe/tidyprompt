@@ -33,8 +33,13 @@
 #' @family pre_built_prompt_wraps
 #' @family llm_tools
 #' @family add_tools
-answer_using_tools <- function(prompt, tools = list()) {
+answer_using_tools <- function(
+    prompt,
+    tools = list(),
+    type = c("auto", "openai", "text-based") # TODO: implement Ollama based on openai
+) {
   prompt <- tidyprompt(prompt)
+  type <- match.arg(type)
 
   # Check if tools is single function, if so, convert to list
   if (length(tools) == 1 && is.function(tools)) {
@@ -53,25 +58,32 @@ answer_using_tools <- function(prompt, tools = list()) {
     names(tools) <- tool_names
   }
 
+  determine_type <- function(llm_provider = NULL) {
+    if (type != "auto")
+      return(type)
+    if (isTRUE(llm_provider$api_type == "openai"))
+      return("openai")
+    return("text-based")
+  }
+
   parameter_fn <- function(llm_provider) {
-    if (llm_provider$api_type == "openai") {
+    type <- determine_type(llm_provider)
+
+    if (type == "openai") {
       tools_openai <- list()
 
       for (tool_name in names(tools)) {
         tool_openai <- list()
-
         tool <- tools[[tool_name]]
         docs <- tools_get_docs(tool, tool_name)
 
         tool_openai$type <- "function"
-
         tool_openai[["function"]]$name <- tool_name
         if (!is.null(docs$description)) {
           tool_openai[["function"]]$description <- docs$description
         }
-
-        tool_openai[["function"]]$parameters <- tools_docs_to_r_json_schema(docs)
-
+        tool_openai[["function"]]$parameters <-
+          tools_docs_to_r_json_schema(docs)
         tool_openai[["function"]]$strict <- TRUE
 
         tools_openai[[length(tools_openai) + 1]] <- tool_openai
@@ -79,12 +91,13 @@ answer_using_tools <- function(prompt, tools = list()) {
 
       return(list(tools = tools_openai))
     }
+
+    return(list())
   }
 
-  handler_fn <- function(response, self) {
-    if (!isTRUE(self$api_type == "openai")) {
-      return(response)
-    }
+  handler_fn <- function(response, llm_provider) {
+    type <- determine_type(llm_provider)
+    if (type != "openai") return(response)
 
     while (TRUE) {
       body <- response$http$response$body
@@ -163,8 +176,8 @@ answer_using_tools <- function(prompt, tools = list()) {
       response <- request_llm_provider(
         chat_history,
         new_request,
-        self$parameters$stream,
-        api_type = self$api_type
+        llm_provider$parameters$stream,
+        api_type = llm_provider$api_type
       )
     }
 
@@ -172,37 +185,38 @@ answer_using_tools <- function(prompt, tools = list()) {
   }
 
   modify_fn <- function(original_prompt_text, llm_provider) {
+    type <- determine_type(llm_provider)
+    if (type == "openai") return(original_prompt_text)
+
     new_prompt <- glue::glue(
       "{original_prompt_text}\n\n",
       "If you need more information, you can call functions to help you."
     )
 
-    if (!isTRUE(llm_provider$api_type == "openai")) {
-      new_prompt <- glue::glue(
-        "{new_prompt}\n\n",
-        "To call a function, output a JSON object with the following format:\n",
-        "  {{\n",
-        "    \"function\": \"<function name>\",\n",
-        "    \"arguments\": {{\n",
-        "      \"<argument_name>\": <argument_value>,\n",
-        "      # ...\n",
-        "    }}\n",
-        "  }}\n",
-        "  (Note: you may not provide function calls as function arguments.)"
-      )
+    new_prompt <- glue::glue(
+      "{new_prompt}\n\n",
+      "To call a function, output a JSON object with the following format:\n",
+      "  {{\n",
+      "    \"function\": \"<function name>\",\n",
+      "    \"arguments\": {{\n",
+      "      \"<argument_name>\": <argument_value>,\n",
+      "      # ...\n",
+      "    }}\n",
+      "  }}\n",
+      "  (Note: you may not provide function calls as function arguments.)"
+    )
 
-      new_prompt <- glue::glue(
-        "{new_prompt}\n\n",
-        "The following functions are available:"
-      )
-    }
+    new_prompt <- glue::glue(
+      "{new_prompt}\n\n",
+      "The following functions are available:"
+    )
 
     for (tool_name in names(tools)) {
       tool <- tools[[tool_name]]
       docs <- tools_get_docs(tool, tool_name)
 
       with_arguments <- TRUE
-      if (isTRUE(llm_provider$api_type == "openai"))
+      if (type == "openai")
         with_arguments <- FALSE
 
       tool_llm_text <- tools_docs_to_text(docs, with_arguments)
@@ -222,7 +236,10 @@ answer_using_tools <- function(prompt, tools = list()) {
     return(new_prompt)
   }
 
-  extraction_fn <- function(llm_response) {
+  extraction_fn <- function(llm_response, llm_provider) {
+    type <- determine_type(llm_provider)
+    if (type == "openai") return(llm_response)
+
     jsons <- extraction_fn_json(llm_response)
 
     fn_results <- lapply(jsons, function(json) {

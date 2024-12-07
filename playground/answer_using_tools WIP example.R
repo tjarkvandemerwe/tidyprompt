@@ -37,7 +37,7 @@ temperature_in_location <- tools_add_docs(temperature_in_location, docs)
 
 # Now we can use the function in a prompt:
 prompt <- "Hi, what is the weather in Enschede? Give me Celcius degrees" |>
-  answer_using_tools(temperature_in_location)
+  answer_using_tools(temperature_in_location, type = "text-based")
 prompt
 
 prompt |>
