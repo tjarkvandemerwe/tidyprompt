@@ -33,7 +33,8 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/getting_started.html">Getting started</a></li>
+<li><a class="dropdown-item" href="../articles/creating_prompt_wraps.html">Creating prompt wraps</a></li>
+    <li><a class="dropdown-item" href="../articles/getting_started.html">Getting started</a></li>
     <li><a class="dropdown-item" href="../articles/sentiment_analysis.html">Sentiment analysis in R with a LLM and 'tidyprompt'</a></li>
   </ul>
 </li>
@@ -379,189 +380,14 @@ used to formulate a final answer.</p>
 <span>  <span class="fu"><a href="../reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="va">openai</span><span class="op">)</span></span>
 <span><span class="va">plot</span></span></code></pre></div>
 <div class="float">
-<img src="man%2Ffigures%2Fanswer_as_code1-1.png" alt="plot"><div class="figcaption">plot</div>
+<img src="../reference/figures/answer_as_code1-1.png" alt="plot"><div class="figcaption">plot</div>
 </div>
 </div>
 <div class="section level3">
 <h3 id="creating-your-own-prompt-wraps">Creating your own prompt wraps<a class="anchor" aria-label="anchor" href="#creating-your-own-prompt-wraps"></a>
 </h3>
-<p>Using <code><a href="../reference/prompt_wrap.html">prompt_wrap()</a></code>, you can create your own prompt
-wraps. An input for <code><a href="../reference/prompt_wrap.html">prompt_wrap()</a></code> wrap may be string or a
-tidyprompt object. If you pass a string, it will be automatically turned
-into a tidyprompt object.</p>
-<p>Under the hood, a tidyprompt object is just a list with a base prompt
-(a string) and a series of prompt wraps. <code><a href="../reference/prompt_wrap.html">prompt_wrap()</a></code> adds
-a new prompt wrap to the list of prompt wraps. Each prompt wrap is a
-list with a modification function, an extraction function, and/or a
-validation function (at least one of these functions must be present).
-The modification function alters the prompt text, the extraction
-function applies a transformation to the LLM’s response, and the
-validation function checks if the (transformed) LLM’s response is
-valid.</p>
-<p>Both extraction and validation functions can return feedback to the
-LLM, using <code><a href="../reference/llm_feedback.html">llm_feedback()</a></code>. When an extraction or validation
-function returns this, a message is sent back to the LLM, and the LLM
-can retry answering the prompt according to the feedback. Feedback
-messages may be a reiteration of instruction or a specific error message
-which occured during extraction or validation. When all extractions and
-validations have been applied without resulting in feedback, the LLM’s
-response (after transformations by the extraction functions) will be
-returned. (<code><a href="../reference/send_prompt.html">send_prompt()</a></code> is responsible for executing this
-process.)</p>
-<p>Below is a simple example of a prompt wrap, which just adds some text
-to the base prompt:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">prompt</span> <span class="op">&lt;-</span> <span class="st">"Hi there!"</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/prompt_wrap.html">prompt_wrap</a></span><span class="op">(</span></span>
-<span>    modify_fn <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">base_prompt</span><span class="op">)</span> <span class="op">{</span></span>
-<span>      <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">base_prompt</span>, <span class="st">"How are you?"</span>, sep <span class="op">=</span> <span class="st">"\n\n"</span><span class="op">)</span></span>
-<span>    <span class="op">}</span></span>
-<span>  <span class="op">)</span></span></code></pre></div>
-<p>Shorter notation of the above would be:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">prompt</span> <span class="op">&lt;-</span> <span class="st">"Hi there!"</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/prompt_wrap.html">prompt_wrap</a></span><span class="op">(</span>\<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"How are you?"</span>, sep <span class="op">=</span> <span class="st">"\n\n"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>Often times, it may be preferred to make a function which takes a
-prompt and returns a wrapped prompt:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">my_prompt_wrap</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">prompt</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">modify_fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">base_prompt</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">base_prompt</span>, <span class="st">"How are you?"</span>, sep <span class="op">=</span> <span class="st">"\n\n"</span><span class="op">)</span></span>
-<span>  <span class="op">}</span></span>
-<span></span>
-<span>  <span class="fu"><a href="../reference/prompt_wrap.html">prompt_wrap</a></span><span class="op">(</span><span class="va">prompt</span>, <span class="va">modify_fn</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span><span class="va">prompt</span> <span class="op">&lt;-</span> <span class="st">"Hi there!"</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">my_prompt_wrap</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p>Take look at the source code of <code><a href="../reference/answer_as_boolean.html">answer_as_boolean()</a></code>,
-which also uses extraction:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">answer_as_boolean</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span></span>
-<span>    <span class="va">prompt</span>,</span>
-<span>    <span class="va">true_definition</span> <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>    <span class="va">false_definition</span> <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>    <span class="va">add_instruction_to_prompt</span> <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">instruction</span> <span class="op">&lt;-</span> <span class="st">"You must answer with only TRUE or FALSE (use no other characters)."</span></span>
-<span>  <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">true_definition</span><span class="op">)</span><span class="op">)</span></span>
-<span>    <span class="va">instruction</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">instruction</span>, <span class="fu">glue</span><span class="fu">::</span><span class="fu"><a href="https://glue.tidyverse.org/reference/glue.html" class="external-link">glue</a></span><span class="op">(</span><span class="st">"TRUE means: {true_definition}."</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">false_definition</span><span class="op">)</span><span class="op">)</span></span>
-<span>    <span class="va">instruction</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">instruction</span>, <span class="fu">glue</span><span class="fu">::</span><span class="fu"><a href="https://glue.tidyverse.org/reference/glue.html" class="external-link">glue</a></span><span class="op">(</span><span class="st">"FALSE means: {false_definition}."</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span>  <span class="va">modify_fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">original_prompt_text</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="va">add_instruction_to_prompt</span><span class="op">)</span> <span class="op">{</span></span>
-<span>      <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">original_prompt_text</span><span class="op">)</span></span>
-<span>    <span class="op">}</span></span>
-<span></span>
-<span>    <span class="fu">glue</span><span class="fu">::</span><span class="fu"><a href="https://glue.tidyverse.org/reference/glue.html" class="external-link">glue</a></span><span class="op">(</span><span class="st">"{original_prompt_text}\n\n{instruction}"</span><span class="op">)</span></span>
-<span>  <span class="op">}</span></span>
-<span></span>
-<span>  <span class="va">extraction_fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="va">normalized</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/chartr.html" class="external-link">tolower</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/trimws.html" class="external-link">trimws</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span></span>
-<span>    <span class="kw">if</span> <span class="op">(</span><span class="va">normalized</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"true"</span>, <span class="st">"false"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>      <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/logical.html" class="external-link">as.logical</a></span><span class="op">(</span><span class="va">normalized</span><span class="op">)</span><span class="op">)</span></span>
-<span>    <span class="op">}</span></span>
-<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fu"><a href="../reference/llm_feedback.html">llm_feedback</a></span><span class="op">(</span><span class="va">instruction</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="op">}</span></span>
-<span></span>
-<span>  <span class="fu"><a href="../reference/prompt_wrap.html">prompt_wrap</a></span><span class="op">(</span><span class="va">prompt</span>, <span class="va">modify_fn</span>, <span class="va">extraction_fn</span><span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
-<p>Take a look at the source code of, for instance,
-<code><a href="../reference/answer_as_integer.html">answer_as_integer()</a></code>,
-<code><a href="../reference/answer_by_chain_of_thought.html">answer_by_chain_of_thought()</a></code>, and
-<code><a href="../reference/answer_using_tools.html">answer_using_tools()</a></code> for more advanced examples of prompt
-wraps.</p>
-<div class="section level4">
-<h4 id="breaking-out-of-the-evaluation-loop">Breaking out of the evaluation loop<a class="anchor" aria-label="anchor" href="#breaking-out-of-the-evaluation-loop"></a>
-</h4>
-<p>In some cases, you may want to exit the extraction or validation
-process early. For instance, your LLM may indicate that it is unable to
-answer the prompt. In such cases, you can have your extraction or
-validation function return <code><a href="../reference/llm_break.html">llm_break()</a></code>. This will cause the
-evaluation loop to break, forwarding to the return statement of
-<code><a href="../reference/send_prompt.html">send_prompt()</a></code>. See <code><a href="../reference/quit_if.html">quit_if()</a></code> for an example of
-this.</p>
-</div>
-<div class="section level4">
-<h4 id="extraction-versus-validation-functions">Extraction versus validation functions<a class="anchor" aria-label="anchor" href="#extraction-versus-validation-functions"></a>
-</h4>
-<p>Both extraction and validation functions can return
-<code><a href="../reference/llm_break.html">llm_break()</a></code> or <code><a href="../reference/llm_feedback.html">llm_feedback()</a></code>. The difference
-between extraction and validation functions is only that an extraction
-may transform the LLM response and pass it on to the next extraction
-and/or validation functions, while a validation function only checks if
-the LLM response passes a logical test (without altering the response).
-Thus, if you wish, you can perform validations in an extraction
-function.</p>
-</div>
-<div class="section level4">
-<h4 id="prompt-wrap-types-and-order-of-application">Prompt wrap types and order of application<a class="anchor" aria-label="anchor" href="#prompt-wrap-types-and-order-of-application"></a>
-</h4>
-<p>When constructing the prompt text and when evaluating a prompt,
-prompt wraps are applied prompt wrap after prompt wrap (e.g., first the
-extraction and validation functions of one wrap, then of the other).</p>
-<p>The order in which prompt wraps are applied is important. Currently,
-four types of prompt wraps are distinguished: ‘unspecified’, ‘break’,
-‘mode’, and ‘tool’.</p>
-<p>When constructing the prompt text, prompt wraps are applied in the
-order of these types. Prompt wraps will be automatically reordered if
-necesarry (keeping intact the order of prompt wraps of the same
-type).</p>
-<p>When evaluating the prompt, prompt wraps are applied in the reverse
-order of types (i.e., first ‘tool’, then ‘mode’, then ‘break’, and
-finally ‘unspecified’). This is because ‘tool’ prompt wraps may return a
-value to be used in the final answer, ‘mode’ prompt wraps alter how a
-LLM forms a final answer, ‘break’ prompt wraps quit evaluation early
-based on a specific final answer, and ‘unspecified’ prompt wraps are the
-most general type of prompt wraps which force a final answer to be in a
-specific format.</p>
-</div>
-<div class="section level4">
-<h4 id="configuring-a-llm-provider-with-a-prompt-wrap">Configuring a LLM provider with a prompt wrap<a class="anchor" aria-label="anchor" href="#configuring-a-llm-provider-with-a-prompt-wrap"></a>
-</h4>
-<p>Advanced prompt wraps may wish to configure certain settings of a LLM
-provider. For instance, <code><a href="../reference/answer_as_json.html">answer_as_json()</a></code> configures certain
-parameters of the LLM provider, based on which LLM provider is being
-used (Ollama and OpenAI have different API parameters available for JSON
-output). This is done by defining a <code>parameter_fn</code> within the
-prompt wrap; <code>parameter_fn</code> is a function which takes the LLM
-provider as input and returns a list of parameters, which will be set as
-the parameters of the LLM provider before sending the prompt. See
-<code><a href="../reference/prompt_wrap.html">prompt_wrap()</a></code> documentation and
-<code><a href="../reference/answer_as_json.html">answer_as_json()</a></code> for an example.</p>
-</div>
-<div class="section level4">
-<h4 id="configuring-a-prompt-wrap-based-on-the-llm-provider-or-http-responses">Configuring a prompt wrap based on the LLM provider or HTTP
-responses<a class="anchor" aria-label="anchor" href="#configuring-a-prompt-wrap-based-on-the-llm-provider-or-http-responses"></a>
-</h4>
-<p><code>modify_fn</code>, <code>extraction_fn</code>, and
-<code>validation_fn</code> may all take the LLM provider as the second
-argument and the <code>http_list</code> (a list of all HTTP responses
-made during <code><a href="../reference/send_prompt.html">send_prompt()</a></code>) as the third argument. This
-allows for advanced configuration of the prompt and the extraction and
-validation logic based on the LLM provider and any data available the
-HTTP responses.</p>
-</div>
-<div class="section level4">
-<h4 id="configuring-a-prompt-wrap-based-on-other-prompt-wraps">Configuring a prompt wrap based on other prompt wraps<a class="anchor" aria-label="anchor" href="#configuring-a-prompt-wrap-based-on-other-prompt-wraps"></a>
-</h4>
-<p><code>modify_fn</code>, <code>extraction_fn</code>, and
-<code>validation_fn</code> all have access to the <code>self</code>
-object, which represents the tidyprompt object that they are a part of.
-This allows for advanced configuration of the prompt and the extraction
-and validation logic based on other prompt wraps.</p>
-</div>
-<div class="section level4">
-<h4 id="handler-functions">‘Handler functions’<a class="anchor" aria-label="anchor" href="#handler-functions"></a>
-</h4>
-<p>Prompt wraps may also include ‘handler functions’. These are
-functions which are called upon every received chat completion. This
-allows for advanced processing of the LLM’s responses, such as logging,
-tracking tokens, or other custom processing. See the
-<code><a href="../reference/prompt_wrap.html">prompt_wrap()</a></code> documentation for more information; see the
-source code of <code><a href="../reference/answer_using_tools.html">answer_using_tools()</a></code> for an example of a
-handler function.</p>
-</div>
+<p>See <code><a href="../reference/prompt_wrap.html">prompt_wrap()</a></code> and the ‘<a href="creating_prompt_wraps.html">Creating prompt wraps</a>’ vignette
+for information on how to create your own prompt wraps.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
