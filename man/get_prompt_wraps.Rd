@@ -7,12 +7,21 @@
 get_prompt_wraps(x, order = c("default", "modification", "evaluation"))
 }
 \arguments{
-\item{x}{A Tidyprompt object.}
+\item{x}{A Tidyprompt object}
 
-\item{order}{The order in which to return the prompt wraps. Options: "default", "modification", "evaluation".}
+\item{order}{The order to return the wraps. Options are:
+\itemize{
+\item "default": as added to the Tidyprompt
+\item "modification": ordered for modification of the base prompt;
+ordered by type: unspecified, mode, tool, break. This is the order
+in which wraps are applied during \code{\link[=construct_prompt_text]{construct_prompt_text()}}
+\item "evaluation": ordered for evaluation of the LLM response;
+ordered by type: tool, mode, break, unspecified. This is the order
+in which wraps are applied to the LLM output during \code{\link[=send_prompt]{send_prompt()}}
+}}
 }
 \value{
-A list of prompt wraps.
+A list of prompt wrap objects (see \code{\link[=prompt_wrap]{prompt_wrap()}})
 }
 \description{
 Get prompt wraps from a Tidyprompt

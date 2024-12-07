@@ -25,9 +25,14 @@ Other tidyprompt:
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{base_prompt}}{The base prompt string}
+\item{\code{base_prompt}}{The base prompt string. This may be modified
+by prompt wraps during \code{\link[=construct_prompt_text]{construct_prompt_text()}}; the constructed
+prompt text will be used as the first message of role 'user'
+in the chat history during \code{\link[=send_prompt]{send_prompt()}}}
 
-\item{\code{system_prompt}}{A system prompt string}
+\item{\code{system_prompt}}{A system prompt string. This will be added
+at the start of the chat history as role 'system' during
+\code{\link[=send_prompt]{send_prompt()}}}
 }
 \if{html}{\out{</div>}}
 }
@@ -54,12 +59,12 @@ Initialize a Tidyprompt object.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{input}}{A character string representing the base prompt.}
+\item{\code{input}}{A character string representing the base prompt}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A \code{Tidyprompt} object.
+A \code{Tidyprompt} object
 }
 }
 \if{html}{\out{<hr>}}
@@ -72,7 +77,7 @@ Check if the Tidyprompt object is valid.
 }
 
 \subsection{Returns}{
-\code{TRUE} if valid, otherwise \code{FALSE}.
+\code{TRUE} if valid, otherwise \code{FALSE}
 }
 }
 \if{html}{\out{<hr>}}
@@ -87,12 +92,12 @@ Add a \code{prompt_wrap} object to the Tidyprompt.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{prompt_wrap}}{A \code{prompt_wrap} object.}
+\item{\code{prompt_wrap}}{A \code{\link[=prompt_wrap]{prompt_wrap()}} object}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-The updated Tidyprompt object (invisible).
+The updated Tidyprompt object (invisible)
 }
 }
 \if{html}{\out{<hr>}}
@@ -111,9 +116,13 @@ Get the list of prompt wraps.
 \describe{
 \item{\code{order}}{The order to return the wraps. Options are:
 \itemize{
-\item "default": as added.
-\item "modification": ordered by modification stages.
-\item "evaluation": ordered by evaluation stages.
+\item "default": as added to the Tidyprompt
+\item "modification": ordered for modification of the base prompt;
+ordered by type: unspecified, mode, tool, break. This is the order
+in which wraps are applied during \code{\link[=construct_prompt_text]{construct_prompt_text()}}
+\item "evaluation": ordered for evaluation of the LLM response;
+ordered by type: tool, mode, break, unspecified. This is the order
+in which wraps are applied to the LLM output during \code{\link[=send_prompt]{send_prompt()}}
 }}
 }
 \if{html}{\out{</div>}}
@@ -134,12 +143,13 @@ Construct the complete prompt text.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{llm_provider}}{Optional LLM provider for context.}
+\item{\code{llm_provider}}{Optional \link{llm_provider-class} object.
+This may sometimes affect the prompt text construction}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A character string representing the constructed prompt text.
+A string representing the constructed prompt text
 }
 }
 \if{html}{\out{<hr>}}

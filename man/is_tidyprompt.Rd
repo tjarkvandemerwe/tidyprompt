@@ -7,10 +7,10 @@
 is_tidyprompt(x)
 }
 \arguments{
-\item{x}{An object to check.}
+\item{x}{An object to check}
 }
 \value{
-TRUE if the object is a Tidyprompt, otherwise FALSE.
+TRUE if the object is a valid Tidyprompt, otherwise FALSE
 }
 \description{
 Check if object is a Tidyprompt

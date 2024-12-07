@@ -29,7 +29,7 @@ print.Tidyprompt <- function(x, ...) {
 
   if (n_wraps == 0) {
     cat(col_silver("The base prompt is not modified by prompt wraps:\n"))
-    formatted_text <- format_with_prefix(x$get_base_prompt(), line_prefix)
+    formatted_text <- format_with_prefix(x$base_prompt, line_prefix)
     cat(formatted_text, "\n")
   } else if (n_wraps == 1) {
     cat(col_silver("The base prompt is modified by a prompt wrap, resulting in:\n"))

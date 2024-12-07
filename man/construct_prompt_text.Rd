@@ -7,12 +7,13 @@
 construct_prompt_text(x, llm_provider = NULL)
 }
 \arguments{
-\item{x}{A Tidyprompt object.}
+\item{x}{A Tidyprompt object}
 
-\item{llm_provider}{An optional LLM provider object.}
+\item{llm_provider}{An optional \link{llm_provider-class} object.
+This may sometimes affect the prompt text construction}
 }
 \value{
-The constructed prompt text.
+The constructed prompt text
 }
 \description{
 Construct prompt text from a Tidyprompt object

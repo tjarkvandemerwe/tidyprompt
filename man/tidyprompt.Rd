@@ -7,8 +7,8 @@
 tidyprompt(input)
 }
 \arguments{
-\item{input}{Input to prompt. If a character string is passed,
-a new prompt object will be created with that character string as the base prompt.}
+\item{input}{A Tidyprompt object or a string. If a string is passed,
+a new prompt object will be created with that as the base prompt}
 }
 \value{
 A Tidyprompt object
