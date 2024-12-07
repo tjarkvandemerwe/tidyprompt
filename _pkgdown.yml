@@ -4,7 +4,7 @@ template:
 reference:
 - title: Prompt wrapping and evaluation
 - subtitle: tidyprompt
-  desc: Function to create and handle tidyprompt objects.
+  desc: Function to create and handle Tidyprompt objects.
 - contents:
   - tidyprompt
   - tidyprompt-class
