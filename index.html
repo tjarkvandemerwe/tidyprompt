@@ -79,8 +79,69 @@
 <div class="section level2">
 <h2 id="getting-started">Getting started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
 </h2>
-<p>See the <a href="https://tjarkvandemerwe.github.io/tidyprompt/articles/getting_started.html">‘Getting started’</a> vignette for an introduction to ‘tidyprompt’.</p>
-<p>This vignette shows example usage and guides you through the basic functionalities of ‘tidyprompt’, demonstrating how to use and create prompt wraps and send prompts to LLMs.</p>
+<p>See the <a href="https://tjarkvandemerwe.github.io/tidyprompt/articles/getting_started.html">‘Getting started’</a> vignette for a detailed introduction to using ‘tidyprompt’.</p>
+<p>Below are some quick examples of what is possible with ‘tidyprompt’:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span>  <span class="st">"What is 5+5?"</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="reference/answer_as_integer.html">answer_as_integer</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="fu"><a href="reference/llm_provider_ollama.html">llm_provider_ollama</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 10</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="st">"Are you a large language model?"</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/answer_as_boolean.html">answer_as_boolean</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="fu"><a href="reference/llm_provider_ollama.html">llm_provider_ollama</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="st">"What animal is the biggest?"</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/answer_as_regex.html">answer_as_regex</a></span><span class="op">(</span><span class="st">"^(cat|dog|elephant)$"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="fu"><a href="reference/llm_provider_ollama.html">llm_provider_ollama</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "elephant"</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Make LLM use a function from an R package to search Wikipedia for the answer</span></span>
+<span><span class="st">"What is something fun that happened in November 2024?"</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/add_text.html">add_text</a></span><span class="op">(</span><span class="st">"Summarize in one sentence."</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/answer_by_chain_of_thought.html">answer_by_chain_of_thought</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/answer_using_tools.html">answer_using_tools</a></span><span class="op">(</span><span class="fu">getwiki</span><span class="fu">::</span><span class="va">search_wiki</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="fu"><a href="reference/llm_provider_openai.html">llm_provider_openai</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "The 2024 ARIA Music Awards ceremony, a vibrant celebration of Australian music,</span></span>
+<span><span class="co">#&gt; took place on November 20, 2024."</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># From prompt to linear model object in R</span></span>
+<span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span>
+<span>  <span class="st">"Using my data, create a statistical model"</span>,</span>
+<span>  <span class="st">" investigating the relationship between two variables."</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/answer_as_code.html">answer_as_code</a></span><span class="op">(</span></span>
+<span>    objects_to_use <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">cars</span><span class="op">)</span>,</span>
+<span>    evaluate_code <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    return_mode <span class="op">=</span> <span class="st">"object"</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/prompt_wrap.html">prompt_wrap</a></span><span class="op">(</span></span>
+<span>    validation_fn <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">inherits</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"lm"</span><span class="op">)</span><span class="op">)</span></span>
+<span>        <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fu"><a href="reference/llm_feedback.html">llm_feedback</a></span><span class="op">(</span><span class="st">"The output should be a linear model object."</span><span class="op">)</span><span class="op">)</span></span>
+<span>      <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span>    <span class="op">}</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="fu"><a href="reference/llm_provider_ollama.html">llm_provider_ollama</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Call:</span></span>
+<span><span class="co">#&gt; lm(formula = speed ~ dist, data = data)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Residuals:</span></span>
+<span><span class="co">#&gt;     Min      1Q  Median      3Q     Max </span></span>
+<span><span class="co">#&gt; -7.5293 -2.1550  0.3615  2.4377  6.4179 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Coefficients:</span></span>
+<span><span class="co">#&gt;             Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
+<span><span class="co">#&gt; (Intercept)  8.28391    0.87438   9.474 1.44e-12 ***</span></span>
+<span><span class="co">#&gt; dist         0.16557    0.01749   9.464 1.49e-12 ***</span></span>
+<span><span class="co">#&gt; ---</span></span>
+<span><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Residual standard error: 3.156 on 48 degrees of freedom</span></span>
+<span><span class="co">#&gt; Multiple R-squared:  0.6511, Adjusted R-squared:  0.6438 </span></span>
+<span><span class="co">#&gt; F-statistic: 89.57 on 1 and 48 DF,  p-value: 1.49e-12</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="more-information-and-contributing">More information and contributing<a class="anchor" aria-label="anchor" href="#more-information-and-contributing"></a>
