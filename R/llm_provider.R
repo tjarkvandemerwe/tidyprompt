@@ -27,23 +27,34 @@
     #' This is used to determine certain specific behaviors for different APIs,
     #' for instance, as is done in the [answer_as_json()] function
     api_type = "unspecified",
+    #' @field handler_fns A list of functions that will be called after the
+    #' completion of a chat. These functions can be used to modify the response
+    #' before it is returned to the user. Each function should take the response
+    #' object as input and return a modified response object. The functions will
+    #' be called in the order they are added to the list
+    handler_fns = list(),
 
     #' @description
     #' Create a new \link{llm_provider-class} object
     #'
     #' @param complete_chat_function Function that will be called by the
-    #' \link{llm_provider-class} to complete a chat. This function should take a
-    #' `chat_history` data frame as input and return a response object (a list
-    #' with `role` and `content`, detailing the chat completion)
+    #' \link{llm_provider-class} to complete a chat. This function should
+    #' take a list containing at least '$chat_history' (a data frame
+    #' with 'role' and 'content' columns) and return a response object, which contains:
+    #' \itemize{
+    #' \item 'completed': A dataframe with 'role' and 'content' columns,
+    #' containing the completed chat history
+    #' \item 'http': A list containing a list 'requests' and a list 'responses',
+    #' containing the HTTP requests and responses made during the chat completion
+    #' }
     #'
     #' @param parameters A named list of parameters to configure the \link{llm_provider-class}.
     #' These parameters may be appended to the request body when interacting with
     #' the LLM provider. For example, the `model` parameter may often be required.
-    #' The 'stream' parameter may be used to indicate that the API should stream,
-    #' which will be handled down the line by the make_llm_provider_request function.
-    #' Parameters should not include the chat_history, as this is passed as a
-    #' separate argument to the `complete_chat_function`. Paramters should also
-    #' not include 'api_key' or 'url'; these are treated separately
+    #' The 'stream' parameter may be used to indicate that the API should stream.
+    #' Parameters should not include the chat_history, or 'api_key' or 'url', which
+    #' are handled separately by the \link{llm_provider-class} and '$complete_chat()'.
+    #' Parameters should also not be set when they are handled by prompt wraps
     #'
     #' @param verbose A logical indicating whether interaction with the LLM
     #' provider should be printed to the console
@@ -105,7 +116,10 @@
     #' typically called by the `send_prompt` function to interact with the LLM
     #' provider, but it can also be called directly.
     #'
-    #' @param chat_history A data frame with 'role' and 'content' columns
+    #' @param input A list containing at least 'chat_history' (a data frame
+    #' with 'role' and 'content' columns) or a character string containing
+    #' a single chat message. If a character string is provided, the function
+    #' will create a chat_history object from the string
     #'
     #' @return The response from the LLM provider, in a named list
     #' with 'role', 'content', and 'http'. The 'role' and 'content'
@@ -113,8 +127,17 @@
     #' response (e.g., 'assistant' and 'Hello, how can I help you?').
     #' The 'http' field (optional) may contain any additional information, e.g.,
     #' data from the HTTP response about the number of tokens used.
-    complete_chat = function(chat_history) {
-      chat_history <- chat_history(chat_history)
+    complete_chat = function(input) {
+      if (length(input) == 1 & is.character(input)) {
+        chat_history <- chat_history(input)
+        input <- list(chat_history = chat_history)
+      }
+
+      stopifnot(
+        is.list(input), "chat_history" %in% names(input)
+      )
+
+      chat_history <- chat_history(input$chat_history)
       if (self$verbose) {
         message(crayon::bold(glue::glue(
           "--- Sending request to LLM provider",
@@ -139,28 +162,87 @@
       environment(private$complete_chat_function) <- environment()
       response <- private$complete_chat_function(chat_history)
 
-      # Check that response is valid
-      if (
-        !is.list(response)
-        || !all(c("role", "content") %in% names(response))
-      ) {
-        stop(paste0(
-          "The response from the LLM provider must be a list with 'role' and",
-          " 'content' fields."
-        ))
+      http <- list(requests = list(), responses = list())
+      http[["requests"]] <- c(http[["requests"]], response$http$request)
+      http[["responses"]] <- c(http[["responses"]], response$http$response)
+
+      while (TRUE) {
+        for (handler_fn in self$handler_fns) {
+          response <- handler_fn(response, self$clone())
+
+          stopifnot(
+            is.list(response), "completed" %in% names(response),
+            is.data.frame(response$completed),
+            all(c("role", "content") %in% names(response$completed))
+          )
+
+          if (isTRUE(response$`break`))
+            break
+        }
+
+        if (!isFALSE(response$done) | isTRUE(response$`break`)) {
+          break
+        }
       }
+
+      if (isTRUE(response$`break`))
+        warning(paste0(
+          "Chat completion was interrupted by a handler break"
+        ))
 
       if (
         self$verbose
         && (is.null(self$parameters$stream) || !self$parameters$stream)
       ) {
-        message(response$content)
+        # Print difference between chat_history & completed
+        chat_history_new <- response$completed[
+          (nrow(chat_history) + 1):nrow(response$completed),
+        ]
+
+        for (i in seq_len(nrow(chat_history_new))) {
+          cat(chat_history_new$content[i], "\n")
+        }
       }
 
       if (self$verbose)
         return(invisible(response))
 
       return(response)
+    },
+
+    #' @description Helper function to add a handler function to the
+    #' \link{llm_provider-class} object. Handler functions are called after the
+    #' completion of a chat and can be used to modify the response before it is
+    #' returned to the user. Each handler function should take the response object
+    #' as input (1st argument) as well as 'self' (the \link{llm_provider-class}
+    #' object) and return a modified response object.The functions will be called
+    #' in the order they are added to the list.
+    #'
+    #' @details If a handler function returns a list with a 'break' field set to TRUE,
+    #' the chat completion will be interrupted and the response will be returned at that point.
+    #' If a handler function returns a list with a 'done' field set to FALSE, the handler
+    #' functions will continue to be called in a loop until the 'done' field is not
+    #' set to FALSE
+    #'
+    #' @param handler_fn A function that takes the response object plus
+    #' 'self' (the \link{llm_provider-class} object) as input and
+    #' returns a modified response object
+    add_handler_fn = function(handler_fn) {
+      stopifnot(is.function(handler_fn))
+      self$handler_fns <- c(self$handler_fns, list(handler_fn))
+      return(self)
+    },
+
+    #' @description Helper function to set the handler functions of the
+    #' \link{llm_provider-class} object. This function replaces the existing
+    #' handler functions list with a new list of handler functions. See
+    #' [add_handler_fn()] for more information on handler functions
+    #'
+    #' @param handler_fns A list of handler functions to set
+    set_handler_fns = function(handler_fns) {
+      stopifnot(is.list(handler_fns))
+      self$handler_fns <- handler_fns
+      return(self)
     }
   ),
   private = list(
@@ -168,196 +250,6 @@
   )
 )
 
-
-
-#' Make a request to an LLM provider
-#'
-#' Helper function to handle making requests to LLM providers, to be used
-#' within a complete_chat() function for a LLM provider.
-#'
-#' @param url The URL of the LLM provider API endpoint
-#' @param headers A named list of headers to be passed to the API (can be NULL)
-#' @param body The body of the POST request
-#' @param stream A logical indicating whether the API should stream responses
-#' @param verbose A logical indicating whether the interaction with the LLM provider
-#' should be printed to the console. Default is TRUE.
-#' @param api_type The type of API to use. Currently, "openai" and "ollama" have been implemented
-#' in this function. "openai" should also work with other similar APIs for chat completion
-#'
-#' @return A list with the role and content of the response from the LLM provider
-#'
-#' @export
-make_llm_provider_request <- function(
-    url,
-    headers = NULL, body,
-    stream = NULL, verbose = getOption("tidyprompt.verbose", TRUE),
-    api_type = c("openai", "ollama")
-) {
-  if (!api_type %in% c("openai", "ollama")) {
-    warning(paste0(
-      "api_type must be 'openai' or 'ollama'",
-      " defaulting to ollama as this is used for development purposes"
-    ))
-    api_type <- "ollama"
-  }
-
-  req <- httr2::request(url) |>
-    httr2::req_body_json(body) |>
-    httr2::req_headers(!!!headers)
-
-  role <- NULL
-  message <- ""
-
-  handle_error <- function(e) {
-    message("Error: ", e$message)
-    tryCatch(
-      e$resp |>
-        httr2::resp_body_string() |>
-        jsonlite::fromJSON() |>
-        print(),
-      error = function(e)
-        message("(Could not parse JSON body from response)")
-    )
-    message("Use 'httr2::last_response()' and 'httr2::last_request()' for more information")
-    stop("Could not perform request to LLM provider")
-  }
-
-  if (!is.null(stream) && stream) { # Streaming:
-    tool_calls <- list()
-
-    response <- tryCatch(
-      httr2::req_perform_stream(
-        req, buffer_kb = 0.001, round = "line",
-        callback = function(chunk) {
-          if (api_type == "ollama") {
-            stream <- rawToChar(chunk) |> strsplit("\n") |> unlist()
-
-            for (x in stream) {
-              content <- tryCatch(
-                jsonlite::fromJSON(x),
-                error = function(e) NULL
-              )
-
-              if (is.null(content$message$content))
-                next
-
-              if (is.null(role))
-                role <<- content$message$role
-
-              message <<- paste0(message, content$message$content)
-
-              if (verbose)
-                cat(content$message$content)
-            }
-          }
-
-          if (api_type == "openai") {
-            char <- rawToChar(chunk) |> strsplit(split = "\ndata: ") |> unlist()
-
-            parsed_data <- lapply(char, function(chunk) {
-              json_text <- sub("^data:\\s*", "", chunk)
-              tryCatch(
-                jsonlite::fromJSON(json_text),
-                error = function(e) NULL
-              )
-            })
-
-            if (is.null(role)) {
-              role <<- parsed_data[[1]]$choices$delta$role
-            }
-
-            if (length(parsed_data[[1]]$choices$delta$tool_calls) > 0) {
-              tool_call <- parsed_data[[1]]$choices$delta$tool_calls[[1]]
-              id <- tool_call$id
-
-              last_id <- NULL
-              if (length(tool_calls) > 0) {
-                last_id <- tool_calls[[length(tool_calls)]]$id
-              }
-
-              if (!is.null(id) & (is.null(last_id) || (id != last_id))) {
-                if (verbose & !is.null(last_id)) cat("\n\n")
-
-                tool_calls <<- append(tool_calls, list(list(
-                  id = tool_call$id,
-                  type = tool_call$type,
-                  `function` = list(
-                    name = tool_call$`function`$name,
-                    args = tool_call$`function`$arguments
-                  )
-                )))
-
-                if (verbose) {
-                  cat(glue::glue(
-                    "Calling tool '{tool_call$`function`$name}', with arguments:"
-                  ))
-                  cat("\n")
-
-                  if (verbose & length(tool_call$`function`$arguments) > 0)
-                    cat(tool_call$`function`$arguments)
-                }
-              } else {
-                arguments_current <- tool_calls[[length(tool_calls)]]$`function`$arguments
-                arguments_new <- tool_call$`function`$arguments
-                if (length(arguments_new) > 0) {
-                  tool_calls[[length(tool_calls)]]$`function`$arguments <<-
-                    paste0(arguments_current, arguments_new)
-
-                  if (verbose)
-                    cat(arguments_new)
-                }
-              }
-
-              return(TRUE)
-            }
-
-            for (data in parsed_data) {
-              addition <- data$choices$delta$content
-
-              if (!is.null(addition)) {
-                message <<- paste0(message, addition)
-                if (verbose)
-                  cat(addition)
-              }
-            }
-          }
-
-          return(TRUE)
-        }
-      ),
-      error = function(e) handle_error(e)
-    )
-
-    if (!is.list(response$body))
-      response$body <- list()
-    response$body$tool_calls <- tool_calls
-
-    if (verbose) cat("\n")
-
-  } else { # Non-streaming:
-    response <- tryCatch(
-      httr2::req_perform(req),
-      error = function(e) handle_error(e)
-    )
-
-    content <- httr2::resp_body_json(response)
-
-    if (api_type == "ollama") {
-      role <- content$message$role
-      message <- content$message$content
-    } else { # OpenAI type API
-      role <- content$choices[[1]]$message$role
-      message <- content$choices[[1]]$message$content
-    }
-  }
-
-  return(list(
-    role = role,
-    content = message,
-    http_request = req,
-    http_response = response
-  ))
-}
 
 
 
@@ -401,18 +293,19 @@ llm_provider_ollama <- function(
       })
     )
 
-    # Append all other parameters to the body
     for (name in names(self$parameters))
       body[[name]] <- self$parameters[[name]]
 
-    return(make_llm_provider_request(
-      url = self$url,
-      headers = NULL,
-      body = body,
+    request <- httr2::request(self$url) |>
+      httr2::req_body_json(body)
+
+    request_llm_provider(
+      chat_history,
+      request,
       stream = self$parameters$stream,
       verbose = self$verbose,
       api_type = self$api_type
-    ))
+    )
   }
 
   if (is.null(parameters$stream))
@@ -472,21 +365,22 @@ llm_provider_openai <- function(
       "Authorization" = paste("Bearer", self$api_key)
     )
 
-    # Prepare the body by converting chat_history dataframe to list of lists
     body <- list(
       messages = lapply(seq_len(nrow(chat_history)), function(i) {
         list(role = chat_history$role[i], content = chat_history$content[i])
       })
     )
 
-    # Append all other parameters to the body
     for (name in names(self$parameters))
       body[[name]] <- self$parameters[[name]]
 
-    make_llm_provider_request(
-      url = self$url,
-      headers = headers,
-      body = body,
+    request <- httr2::request(self$url) |>
+      httr2::req_body_json(body) |>
+      httr2::req_headers(!!!headers)
+
+    request_llm_provider(
+      chat_history,
+      request,
       stream = self$parameters$stream,
       verbose = self$verbose,
       api_type = self$api_type
@@ -779,26 +673,23 @@ llm_provider_fake <- function(verbose = getOption("tidyprompt.verbose", TRUE)) {
       "To answer the user's prompt, you need to think step by step to arrive at a final answer."
 
     if (last_msg == "Hi there!") {
-      return(list(
+      return(list(completed = chat_history |> dplyr::bind_rows(data.frame(
         role = "assistant",
         content = paste0(
           "It's nice to meet you.",
           " Is there something I can help you with or would you like to chat?"
         )
-      ))
+      ))))
     }
 
     if (grepl(
       "What is a large language model? Explain in 10 words.", last_msg,
       fixed = TRUE
     )) {
-      return(list(
+      return(list(completed = chat_history |> dplyr::bind_rows(data.frame(
         role = "assistant",
-        content = paste0(
-          "Complex computer program trained on vast texts to generate human-like",
-          " responses."
-        )
-      ))
+        content = "Complex computer program trained on vast texts to generate human-like responses."
+      ))))
     }
 
     if (
@@ -806,20 +697,32 @@ llm_provider_fake <- function(verbose = getOption("tidyprompt.verbose", TRUE)) {
       & grepl(answer_as_integer_input, last_msg, fixed = TRUE)
       & !grepl(chain_of_thought_input, last_msg, fixed = TRUE)
     ) {
-      return(list(
+      return(list(completed = chat_history |> dplyr::bind_rows(data.frame(
         role = "assistant",
         content = "4"
-      ))
+      ))))
     }
 
     if (
       grepl("What is 2 + 2?", last_msg, fixed = TRUE)
       & !grepl(answer_as_integer_input, last_msg, fixed = TRUE)
     ) {
-      return(list(
+      return(list(completed = chat_history |> dplyr::bind_rows(data.frame(
         role = "assistant",
-        content = "Four."
-      ))
+        content = glue::glue(
+          ">> step 1: Identify the mathematical operation in the prompt,
+          which is a simple addition problem.
+
+          >> step 2: Recall the basic arithmetic fact that 2 + 2 equals a specific
+          numerical value.
+
+          >> step 3: Apply this knowledge to determine the result of the addition problem,
+          using the known facts about numbers and their operations.
+
+          >> step 4: Conclude that based on this mathematical understanding, the
+          solution to the prompt \"What is 2 + 2?\" is a fixed numerical quantity."
+        )
+      ))))
     }
 
     if (
@@ -827,10 +730,10 @@ llm_provider_fake <- function(verbose = getOption("tidyprompt.verbose", TRUE)) {
       & grepl(answer_as_integer_input, last_msg, fixed = TRUE)
       & !grepl(chain_of_thought_input, last_msg, fixed = TRUE)
     ) {
-      return(list(
+      return(list(completed = chat_history |> dplyr::bind_rows(data.frame(
         role = "assistant",
-        content = "4"
-      ))
+        content = "22"
+      ))))
     }
 
     if (
@@ -838,7 +741,7 @@ llm_provider_fake <- function(verbose = getOption("tidyprompt.verbose", TRUE)) {
       & grepl(chain_of_thought_input, last_msg,  fixed = TRUE)
       & grepl(answer_as_integer_input, last_msg,  fixed = TRUE)
     ) {
-      return(list(
+      return(list(completed = chat_history |> dplyr::bind_rows(data.frame(
         role = "assistant",
         content = glue::glue(
           ">> step 1: Identify the mathematical operation in the prompt,
@@ -855,7 +758,7 @@ llm_provider_fake <- function(verbose = getOption("tidyprompt.verbose", TRUE)) {
 
           FINISH[4]"
         )
-      ))
+      ))))
     }
 
     if (grepl(
@@ -863,24 +766,24 @@ llm_provider_fake <- function(verbose = getOption("tidyprompt.verbose", TRUE)) {
       last_msg,
       fixed = TRUE
     )) {
-      return(list(
+      return(list(completed = chat_history |> dplyr::bind_rows(data.frame(
         role = "assistant",
         content = glue::glue(
           "I'll use the provided function to get the current temperature in Enschede.
 
           FUNCTION[temperature_in_location](\"Enschede\", \"Celcius\")"
         )
-      ))
+      ))))
     }
 
     if (
       grepl("function called: temperature_in_location", last_msg, fixed = TRUE)
       & grepl("arguments used: location = Enschede", last_msg, fixed = TRUE)
     ) {
-      return(list(
+      return(list(completed = chat_history |> dplyr::bind_rows(data.frame(
         role = "assistant",
-        content = "So the current temperature in Enschede is 22.7 degrees Celsius."
-      ))
+        content = "22.7"
+      ))))
     }
 
     if (
@@ -891,16 +794,16 @@ llm_provider_fake <- function(verbose = getOption("tidyprompt.verbose", TRUE)) {
       ))
       & grepl(last_msg, answer_as_integer_input, fixed = TRUE)
     ) {
-      return(list(
+      return(list(completed = chat_history |> dplyr::bind_rows(data.frame(
         role = "assistant",
-        content = "22"
-      ))
+        content = "22.7"
+      ))))
     }
 
-    return(list(
+    return(list(completed = chat_history |> dplyr::bind_rows(data.frame(
       role = "assistant",
       content = "I'm a fake LLM! This is my default response."
-    ))
+    ))))
   }
 
   `llm_provider-class`$new(

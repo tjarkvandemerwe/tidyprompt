@@ -2,7 +2,7 @@
 % Please edit documentation in R/send_prompt.R
 \name{send_prompt}
 \alias{send_prompt}
-\title{Send a prompt or \code{\link[=tidyprompt]{tidyprompt()}} to a LLM provider}
+\title{Send a prompt to a LLM provider}
 \usage{
 send_prompt(
   prompt,
@@ -15,14 +15,14 @@ send_prompt(
 )
 }
 \arguments{
-\item{prompt}{A string or a \code{\link[=tidyprompt]{tidyprompt()}} object}
+\item{prompt}{A string or a \link{tidyprompt-class} object}
 
 \item{llm_provider}{\link{llm_provider-class} object (default is \code{\link[=llm_provider_ollama]{llm_provider_ollama()}}).
 This object and its settings will be used to evaluate the prompt. Note that
 the 'verbose' and 'stream' settings in the LLM provider will be overruled by
 the 'verbose' and 'stream' arguments in this function when those are not NULL.
-Furthermore, a \code{\link[=tidyprompt]{tidyprompt()}} object may carry '$parameters' which will
-be set in the \link{llm_provider-class} object using the '$set_parameters()' function}
+Furthermore, advanced \link{tidyprompt-class} objects may carry '$parameter_fn' functions
+which can set parameters in the llm_provider object (see \code{\link[=prompt_wrap]{prompt_wrap()}} for more information)}
 
 \item{max_interactions}{Maximum number of interactions allowed with the
 LLM provider. Default is 10. If the maximum number of interactions is reached
@@ -70,8 +70,7 @@ as returned by \code{llm_provider$complete_chat()}).
 }
 }
 \description{
-This function is responsible for sending strings or \code{\link[=tidyprompt]{tidyprompt()}} objects,
-including their prompt wraps, to a LLM provider for evaluation.
+This function is responsible for sending prompts to a LLM provider for evaluation.
 The function will interact with the LLM provider until a successful response
 is received or the maximum number of interactions is reached. The function will
 apply extraction and validation functions to the LLM response, as specified
@@ -127,10 +126,10 @@ in the prompt wraps (see \code{\link[=prompt_wrap]{prompt_wrap()}}). If the maxi
 }
 }
 \seealso{
-\code{\link[=tidyprompt]{tidyprompt()}}, \code{\link[=prompt_wrap]{prompt_wrap()}}, \link{llm_provider-class}, \code{\link[=llm_provider_ollama]{llm_provider_ollama()}},
+\link{tidyprompt-class}, \code{\link[=prompt_wrap]{prompt_wrap()}}, \link{llm_provider-class}, \code{\link[=llm_provider_ollama]{llm_provider_ollama()}},
 \code{\link[=llm_provider_openai]{llm_provider_openai()}}
 
-Other prompt_evaluation:
+Other prompt_evaluation: 
 \code{\link{llm_break}()},
 \code{\link{llm_feedback}()}
 }

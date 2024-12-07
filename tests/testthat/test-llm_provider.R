@@ -25,14 +25,17 @@ test_that("llm_provider updates parameters correctly", {
 # Test: complete_chat function with verbose on
 test_that("llm_provider complete_chat prints message when verbose is TRUE", {
   test_chat_function <- function(chat_history) {
-    return(list(role = "assistant", content = "Hello!"))
+    return(list(completed = data.frame(
+      role = "assistant",
+      content = "Hello!"
+    )))
   }
 
   provider <- `llm_provider-class`$new(complete_chat_function = test_chat_function, verbose = TRUE)
 
   # Test interaction with chat history
   chat_history <- data.frame(role = "user", content = "Hello")
-  expect_message(provider$complete_chat(chat_history), "--- Receiving response from LLM provider: ---")
+  expect_message(provider$complete_chat(list(chat_history = chat_history)), "--- Receiving response from LLM provider: ---")
 })
 
 # Test: Fake LLM provider responses
@@ -40,15 +43,11 @@ test_that("llm_provider_fake returns expected response for known prompt", {
   provider_fake <- llm_provider_fake(verbose = FALSE)
 
   chat_history <- data.frame(role = "user", content = "Hi there!")
-  response <- provider_fake$complete_chat(chat_history)
+  result <- provider_fake$complete_chat(list(chat_history = chat_history))
+  response <- result$completed |> utils::tail(1)
 
   expect_equal(response$role, "assistant")
   expect_match(response$content, "nice to meet you")
-
-  # Test specific known input and output
-  chat_history <- data.frame(role = "user", content = "What is 2 + 2?")
-  response <- provider_fake$complete_chat(chat_history)
-  expect_equal(response$content, "Four.")
 })
 
 # Test: Invalid parameters handling

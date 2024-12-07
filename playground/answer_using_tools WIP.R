@@ -81,17 +81,19 @@ answer_using_tools <- function(prompt, tools = list()) {
     }
   }
 
-  handler_fn <- function(response, llm_provider, http_list) {
-    if (!isTRUE(llm_provider$api_type == "openai")) {
+  handler_fn <- function(response, self) {
+    if (!isTRUE(self$api_type == "openai")) {
       return(response)
     }
 
     while (TRUE) {
-      if ("tool_calls" %in% names(response$http_response$body)) {
-        tool_calls <- response$http_response$body$tool_calls
+      body <- response$http$response$body
+
+      if ("tool_calls" %in% names(body)) {
+        tool_calls <- body$tool_calls
       } else {
         body <- tryCatch(
-          response$http_response$body |> rawToChar() |> jsonlite::fromJSON(),
+          body |> rawToChar() |> jsonlite::fromJSON(),
           error = function(e) {
             NULL
           }
@@ -115,7 +117,10 @@ answer_using_tools <- function(prompt, tools = list()) {
       if (length(tool_calls) == 0)
         break
 
-      messages <- response$http_request$body$data$messages
+      chat_history <- response$completed
+      messages = lapply(seq_len(nrow(chat_history)), function(i) {
+        list(role = chat_history$role[i], content = chat_history$content[i])
+      })
       messages[[length(messages) + 1]] <- list(
         role = "assistant",
         tool_calls = tool_calls
@@ -125,6 +130,14 @@ answer_using_tools <- function(prompt, tools = list()) {
         tool_name <- tool_call[["function"]]$name
         tool <- tools[[tool_name]]
         arguments <- tool_call[["function"]]$arguments |> jsonlite::fromJSON()
+
+        chat_history <- chat_history |> dplyr::bind_rows(data.frame(
+          role = "assistant",
+          content = paste0(
+            "Calling function '", tool_name, "' with arguments:\n",
+            jsonlite::toJSON(arguments, auto_unbox = TRUE, pretty = TRUE)
+          )
+        ))
 
         result <- tryCatch({
           do.call(tool, arguments)
@@ -144,21 +157,15 @@ answer_using_tools <- function(prompt, tools = list()) {
         )
       }
 
-      new_request <- response$http_request
+      new_request <- response$http$request
       new_request$body$data$messages <- messages
 
-      if (!llm_provider$parameters$stream) {
-        new_response <- httr2::req_perform(new_request)
-
-        response$http_request <- new_request
-        response$http_response <- new_response
-      } else {
-        # Stream next...
-        response <- make_llm_provider_request(
-          new_request$url, new_request$headers, new_request$body$data,
-          stream = TRUE, api_type = "openai"
-        )
-      }
+      response <- request_llm_provider(
+        chat_history,
+        new_request,
+        self$parameters$stream,
+        api_type = self$api_type
+      )
     }
 
     return(response)
@@ -183,12 +190,12 @@ answer_using_tools <- function(prompt, tools = list()) {
         "  }}\n",
         "  (Note: you may not provide function calls as function arguments.)"
       )
-    }
 
-    new_prompt <- glue::glue(
-      "{new_prompt}\n\n",
-      "The following functions are available:"
-    )
+      new_prompt <- glue::glue(
+        "{new_prompt}\n\n",
+        "The following functions are available:"
+      )
+    }
 
     for (tool_name in names(tools)) {
       tool <- tools[[tool_name]]

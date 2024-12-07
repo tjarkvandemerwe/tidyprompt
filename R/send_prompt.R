@@ -98,11 +98,17 @@ send_prompt <- function(
       llm_provider$set_parameters(parameter_fn(llm_provider))
     }
   }
+  # Add handler_fn's to the llm_provider
+  for (prompt_wrap in get_prompt_wraps(prompt, order = "default")) {
+    if (!is.null(prompt_wrap$handler_fn)) {
+      llm_provider$add_handler_fn(prompt_wrap$handler_fn)
+    }
+  }
 
   # Initialize variables which keep track of the process
   if (return_mode == "full")
     start_time <- Sys.time()
-  http_list <- list()
+  http <- list(requests = list(), responses = list())
 
 
   ## 2 Chat_history, send_chat, handler_fns
@@ -114,51 +120,36 @@ send_prompt <- function(
   if (!is.null(prompt$system_prompt))
     chat_history <- create_chat_df("system", prompt$system_prompt, FALSE)
 
-  # Define variable to keep track of handler_fn breaks
-  handler_break <- FALSE
-
   # Internal function to send chat messages
   send_chat <- function(
     message, role = "user", tool_result = FALSE
   ) {
     message <- as.character(message)
-    chat_history <<- rbind(chat_history, create_chat_df(
+    chat_history <<- dplyr::bind_rows(chat_history, create_chat_df(
       role, message, tool_result
     ))
 
     if (clean_chat_history) {
       cleaned_chat_history <- clean_chat_history_fn(chat_history)
-      completion <- llm_provider$complete_chat(cleaned_chat_history)
+      response <- llm_provider$complete_chat(list(chat_history = cleaned_chat_history))
+      chat_history <<- dplyr::bind_rows(
+        chat_history,
+        response$completed[(nrow(cleaned_chat_history) + 1):nrow(response$completed), ]
+      )
     } else {
-      completion <- llm_provider$complete_chat(chat_history)
+      response <- llm_provider$complete_chat(list(chat_history = chat_history))
+      chat_history <<- dplyr::bind_rows(
+        chat_history,
+        response$completed[(nrow(chat_history) + 1):nrow(response$completed), ]
+      )
     }
 
-    # Apply 'handler_fn' if available
-    for (prompt_wrap in get_prompt_wraps(prompt, order = "default")) {
-      if (!is.null(prompt_wrap$handler_fn)) {
-        handler_fn <- prompt_wrap$handler_fn
-        # Add environment
-        if (!is.null(attr(handler_fn, "environment"))) {
-          environment <- attr(handler_fn, "environment")
-          environment(handler_fn) <- environment
-        }
+    for (response in response$http$responses)
+      http$responses[[length(http$responses) + 1]] <<- response
+    for (request in response$http$requests)
+      http$requests[[length(http$requests) + 1]] <<- request
 
-        completion <- handler_fn(completion, llm_provider, http_list)
-
-        if (isTRUE(completion$break_process)) {
-          handler_break <<- TRUE
-          break
-        }
-      }
-    }
-
-    chat_history <<- rbind(chat_history, create_chat_df(
-      completion$role, completion$content, FALSE
-    ))
-
-    http_list[[length(http_list) + 1]] <<- completion$http
-
-    return(invisible(completion$content))
+    utils::tail(chat_history$content, 1)
   }
 
 
@@ -175,7 +166,7 @@ send_prompt <- function(
   # (Tools, then modes, then unspecified prompt_wraps)
 
   tries <- 1; success <- FALSE
-  while (tries < max_interactions & !success & !handler_break) {
+  while (tries < max_interactions & !success) {
     tries <- tries + 1
 
     if (length(prompt_wraps) == 0)
@@ -198,7 +189,7 @@ send_prompt <- function(
           environment(extraction_function) <- environment
         }
         extraction_result <-
-          extraction_function(response, llm_provider, http_list)
+          extraction_function(response, llm_provider, http)
 
         # If it inherits llm_feedback,
         #   send the feedback to the LLM & get new response
@@ -234,7 +225,7 @@ send_prompt <- function(
       # Apply validation function
       if (!is.null(prompt_wrap$validation_fn)) {
         validation_result <-
-          prompt_wrap$validation_fn(response, llm_provider, http_list)
+          prompt_wrap$validation_fn(response, llm_provider, http)
 
         # If it inherits llm_feedback, send the feedback to the LLM & get new response
         if (inherits(validation_result, "llm_feedback")) {
@@ -266,18 +257,9 @@ send_prompt <- function(
   ## 5 Final evaluation
 
   if (!success) {
-    if (handler_break) {
-      warning(paste0(
-        "Handler function broke the `send_prompt()` loop",
-        " (performed ", tries, " interactions)"
-      ))
-    } else {
-      warning(paste0(
-        "Failed to reach a valid answer after the maximum of ",
-        max_interactions, " interactions"
-      ))
-    }
-
+    warning(paste0(
+      "Failed to reach a valid answer after ", tries, " interactions"
+    ))
     response <- NULL
   }
 
@@ -296,7 +278,7 @@ send_prompt <- function(
       as.numeric(difftime(
         return_list$end_time, return_list$start_time, units = "secs"
       ))
-    return_list$http_list <- http_list
+    return_list$http <- http
 
     return(return_list)
   }

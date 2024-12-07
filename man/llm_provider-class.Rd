@@ -38,6 +38,12 @@ provider API}
 \item{\code{api_type}}{The type of API to use (e.g., "openai", "ollama").
 This is used to determine certain specific behaviors for different APIs,
 for instance, as is done in the \code{\link[=answer_as_json]{answer_as_json()}} function}
+
+\item{\code{handler_fns}}{A list of functions that will be called after the
+completion of a chat. These functions can be used to modify the response
+before it is returned to the user. Each function should take the response
+object as input and return a modified response object. The functions will
+be called in the order they are added to the list}
 }
 \if{html}{\out{</div>}}
 }
@@ -47,6 +53,8 @@ for instance, as is done in the \code{\link[=answer_as_json]{answer_as_json()}} 
 \item \href{#method-Llm_provider-new}{\code{llm_provider-class$new()}}
 \item \href{#method-Llm_provider-set_parameters}{\code{llm_provider-class$set_parameters()}}
 \item \href{#method-Llm_provider-complete_chat}{\code{llm_provider-class$complete_chat()}}
+\item \href{#method-Llm_provider-add_handler_fn}{\code{llm_provider-class$add_handler_fn()}}
+\item \href{#method-Llm_provider-set_handler_fns}{\code{llm_provider-class$set_handler_fns()}}
 \item \href{#method-Llm_provider-clone}{\code{llm_provider-class$clone()}}
 }
 }
@@ -70,18 +78,23 @@ Create a new \link{llm_provider-class} object
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{complete_chat_function}}{Function that will be called by the
-\link{llm_provider-class} to complete a chat. This function should take a
-\code{chat_history} data frame as input and return a response object (a list
-with \code{role} and \code{content}, detailing the chat completion)}
+\link{llm_provider-class} to complete a chat. This function should
+take a list containing at least '$chat_history' (a data frame
+with 'role' and 'content' columns) and return a response object, which contains:
+\itemize{
+\item 'completed': A dataframe with 'role' and 'content' columns,
+containing the completed chat history
+\item 'http': A list containing a list 'requests' and a list 'responses',
+containing the HTTP requests and responses made during the chat completion
+}}
 
 \item{\code{parameters}}{A named list of parameters to configure the \link{llm_provider-class}.
 These parameters may be appended to the request body when interacting with
 the LLM provider. For example, the \code{model} parameter may often be required.
-The 'stream' parameter may be used to indicate that the API should stream,
-which will be handled down the line by the make_llm_provider_request function.
-Parameters should not include the chat_history, as this is passed as a
-separate argument to the \code{complete_chat_function}. Paramters should also
-not include 'api_key' or 'url'; these are treated separately}
+The 'stream' parameter may be used to indicate that the API should stream.
+Parameters should not include the chat_history, or 'api_key' or 'url', which
+are handled separately by the \link{llm_provider-class} and '$complete_chat()'.
+Parameters should also not be set when they are handled by prompt wraps}
 
 \item{\code{verbose}}{A logical indicating whether interaction with the LLM
 provider should be printed to the console}
@@ -135,13 +148,16 @@ provider using the configured \code{complete_chat_function}. This function is
 typically called by the \code{send_prompt} function to interact with the LLM
 provider, but it can also be called directly.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{llm_provider-class$complete_chat(chat_history)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{llm_provider-class$complete_chat(input)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{chat_history}}{A data frame with 'role' and 'content' columns}
+\item{\code{input}}{A list containing at least 'chat_history' (a data frame
+with 'role' and 'content' columns) or a character string containing
+a single chat message. If a character string is provided, the function
+will create a chat_history object from the string}
 }
 \if{html}{\out{</div>}}
 }
@@ -152,6 +168,59 @@ fields (required) contain the extracted role and content from the
 response (e.g., 'assistant' and 'Hello, how can I help you?').
 The 'http' field (optional) may contain any additional information, e.g.,
 data from the HTTP response about the number of tokens used.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Llm_provider-add_handler_fn"></a>}}
+\if{latex}{\out{\hypertarget{method-Llm_provider-add_handler_fn}{}}}
+\subsection{Method \code{add_handler_fn()}}{
+Helper function to add a handler function to the
+\link{llm_provider-class} object. Handler functions are called after the
+completion of a chat and can be used to modify the response before it is
+returned to the user. Each handler function should take the response object
+as input (1st argument) as well as 'self' (the \link{llm_provider-class}
+object) and return a modified response object.The functions will be called
+in the order they are added to the list.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{llm_provider-class$add_handler_fn(handler_fn)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{handler_fn}}{A function that takes the response object plus
+'self' (the \link{llm_provider-class} object) as input and
+returns a modified response object}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+If a handler function returns a list with a 'break' field set to TRUE,
+the chat completion will be interrupted and the response will be returned at that point.
+If a handler function returns a list with a 'done' field set to FALSE, the handler
+functions will continue to be called in a loop until the 'done' field is not
+set to FALSE
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Llm_provider-set_handler_fns"></a>}}
+\if{latex}{\out{\hypertarget{method-Llm_provider-set_handler_fns}{}}}
+\subsection{Method \code{set_handler_fns()}}{
+Helper function to set the handler functions of the
+\link{llm_provider-class} object. This function replaces the existing
+handler functions list with a new list of handler functions. See
+\code{\link[=add_handler_fn]{add_handler_fn()}} for more information on handler functions
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{llm_provider-class$set_handler_fns(handler_fns)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{handler_fns}}{A list of handler functions to set}
+}
+\if{html}{\out{</div>}}
 }
 }
 \if{html}{\out{<hr>}}

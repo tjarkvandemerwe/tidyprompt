@@ -40,13 +40,13 @@
 #' are applied every time a chat completion is received from the LLM during [send_prompt()].
 #' If a handler function returns a completion with '$break_process' set to TRUE,
 #' [send_prompt()] will end with no further chat completions requested
-#' @param parameter_fn A function that takes the [llm_provider()] which is being
+#' @param parameter_fn A function that takes the \link{llm_provider-class} object which is being
 #' used with [send_prompt()] and returns a named list of parameters to be
-#' set in the [llm_provider()] via `llm_provider$set_parameters()`. This can be
-#' used to configure specific parameters of the [llm_provider()] when evaluating
+#' set in the \link{llm_provider-class} object via `llm_provider$set_parameters()`. This can be
+#' used to configure specific parameters of the \link{llm_provider-class} object when evaluating
 #' the prompt. For example, [answer_as_json()] may set different parameters for different APIs
 #' related to JSON output. This function is typically only used with advanced
-#' prompt wraps that require specific settings in the [llm_provider()]
+#' prompt wraps that require specific settings in the \link{llm_provider-class} object
 #' @param type The type of prompt wrap; one of 'unspecified', 'mode', 'tool', or 'break'.
 #' Types are used to determine the order in which prompt wraps are applied.
 #' When constructing the prompt text, prompt wraps are applied to the base prompt

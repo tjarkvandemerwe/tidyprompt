@@ -43,6 +43,7 @@ Suggests:
     tidyjson
 VignetteBuilder: knitr
 Imports: 
+    dplyr,
     glue,
     httr2,
     jsonlite,

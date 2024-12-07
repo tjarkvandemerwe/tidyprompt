@@ -44,10 +44,11 @@ If a handler function returns a completion with '$break_process' set to TRUE,
 
 \item{parameter_fn}{A function that takes the \link{llm_provider-class} object which is being
 used with \code{\link[=send_prompt]{send_prompt()}} and returns a named list of parameters to be
-used in the \link{llm_provider-class} object when sending the prompt. This function is called once,
-before any LLM responses are requested. It can be used to set specific parameters
-of the \link{llm_provider-class} object according to its characteristics, like the API type
-(e.g., \code{\link[=answer_as_json]{answer_as_json()}} may set different parameters for different APIs)}
+set in the \link{llm_provider-class} object via \code{llm_provider$set_parameters()}. This can be
+used to configure specific parameters of the \link{llm_provider-class} object when evaluating
+the prompt. For example, \code{\link[=answer_as_json]{answer_as_json()}} may set different parameters for different APIs
+related to JSON output. This function is typically only used with advanced
+prompt wraps that require specific settings in the \link{llm_provider-class} object}
 
 \item{type}{The type of prompt wrap; one of 'unspecified', 'mode', 'tool', or 'break'.
 Types are used to determine the order in which prompt wraps are applied.
@@ -81,8 +82,7 @@ may take 'llm_provider' (as used with \code{\link[=send_prompt]{send_prompt()}})
 http_list (a list of all HTTP requests made during send_prompt()) as third argument.
 This is not required, but can be useful for more complex prompt wraps which
 require additional information about the LLM provider or the HTTP requests made.
-}
-\details{
+
 'modify_fn', 'extraction_fn', 'validation_fn', 'handler_fn', and 'parameter_fn'
 may also access the \link{tidyprompt-class} object that they are a part of
 through 'self$...' which is attached to their environment. For instance,
@@ -204,11 +204,11 @@ answer_as_integer <- function(
 \seealso{
 \link{tidyprompt-class} \code{\link[=send_prompt]{send_prompt()}}
 
-Other prompt_wrap:
+Other prompt_wrap: 
 \code{\link{llm_break}()},
 \code{\link{llm_feedback}()}
 
-Other pre_built_prompt_wraps:
+Other pre_built_prompt_wraps: 
 \code{\link{add_text}()},
 \code{\link{add_tools}()},
 \code{\link{answer_as_boolean}()},
