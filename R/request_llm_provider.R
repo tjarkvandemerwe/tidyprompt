@@ -1,20 +1,13 @@
 #' Make a request to an LLM provider
 #'
-#' Refactored into smaller helper functions:
-#' - `req_llm_handle_error()`: Handle and report errors.
-#' - `req_llm_stream()`: Perform streaming requests.
-#' - `req_llm_non_stream()`: Perform non-streaming requests.
-#' - `parse_ollama_stream_chunk()`: Parse individual Ollama streaming chunks.
-#' - `parse_openai_stream_chunk()`: Parse individual OpenAI streaming chunks.
-#' - `append_or_update_tool_calls()`: Handle appending/updating tool calls for OpenAI.
-#'
 #' @param chat_history A data frame with 'role' and 'content' columns
 #' @param request A 'httr2' request object with the URL, headers, and body
 #' @param stream Logical indicating whether the API should stream responses.
 #' @param verbose Logical indicating whether interactions should be printed to the console.
 #' @param api_type API type, one of "openai" or "ollama".
 #'
-#' @return A list with the role, content, http_request, and http_response.
+#' @return A list with the completed chat history and the HTTP request and response
+#' objects
 #'
 #' @export
 request_llm_provider <- function(

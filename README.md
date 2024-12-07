@@ -94,8 +94,8 @@ Currently, `answer_as_json()` and `answer_using_tools()` offer native
 support for adhering to JSON schemas and calling functions. Native
 handling may be powerful in some cases, but restrictive in other cases.
 It is good to test what works best for your use case. When combining
-multiple prompt wraps, ‘text-based’ handling appears to be generally
-more flexible and robust.
+multiple prompt wraps, text-based handling appears to be generally more
+flexible and robust.
 
 The philosophy behind ‘tidyprompt’ is furthermore that it aims to be
 flexible enough that users can implement advanced features, potentially

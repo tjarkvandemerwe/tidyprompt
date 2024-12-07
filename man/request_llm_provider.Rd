@@ -24,16 +24,9 @@ request_llm_provider(
 \item{api_type}{API type, one of "openai" or "ollama".}
 }
 \value{
-A list with the role, content, http_request, and http_response.
+A list with the completed chat history and the HTTP request and response
+objects
 }
 \description{
-Refactored into smaller helper functions:
-\itemize{
-\item \code{req_llm_handle_error()}: Handle and report errors.
-\item \code{req_llm_stream()}: Perform streaming requests.
-\item \code{req_llm_non_stream()}: Perform non-streaming requests.
-\item \code{parse_ollama_stream_chunk()}: Parse individual Ollama streaming chunks.
-\item \code{parse_openai_stream_chunk()}: Parse individual OpenAI streaming chunks.
-\item \code{append_or_update_tool_calls()}: Handle appending/updating tool calls for OpenAI.
-}
+Make a request to an LLM provider
 }

@@ -9,7 +9,10 @@
 #' @param ... Additional arguments (unused)
 #'
 #' @return The Tidyprompt object, invisibly.
-#' @export
+#' @exportS3Method print Tidyprompt
+#'
+#' @noRd
+#' @keywords internal
 print.Tidyprompt <- function(x, ...) {
   cat(col_blue("<tidyprompt>\n"))
 

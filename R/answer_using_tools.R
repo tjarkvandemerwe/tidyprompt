@@ -645,8 +645,9 @@ tools_generate_docs <- function(name) {
 #'  is included and is NULL, the default value is NULL (and not missing)
 #'  - 'type': see 'gd_infer_type_from_default()'. If there is no default value,
 #'  the type is set to 'unknown'
-#'  @noRd
-#'  @keywords internal
+#'
+#' @noRd
+#' @keywords internal
 gd_get_args_defaults_types <- function(func) {
   args_formals <- formals(func)
   arg_names <- names(args_formals)
