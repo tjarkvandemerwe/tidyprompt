@@ -68,7 +68,7 @@
 #'
 #' @example inst/examples/answer_as_code.R
 #'
-#' @seealso [add_tools()]
+#' @seealso [answer_using_tools()]
 #'
 #' @family pre_built_prompt_wraps
 #' @family answer_as_prompt_wraps

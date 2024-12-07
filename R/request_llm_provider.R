@@ -76,9 +76,9 @@ req_llm_stream <- function(req, api_type, verbose) {
       parsed_data <- parse_ollama_stream_chunk(chunk)
 
       for (data in parsed_data) {
-        if (is.null(role)) role <<- data$role
-        message_accumulator <<- paste0(message_accumulator, data$content)
-        if (verbose) cat(data$content)
+        if (is.null(role)) role <<- data$message$role
+        message_accumulator <<- paste0(message_accumulator, data$message$content)
+        if (verbose) cat(data$message$content)
       }
     }
 
@@ -167,11 +167,11 @@ parse_ollama_stream_chunk <- function(chunk) {
 
   parsed <- lapply(lines, function(x) {
     content <- tryCatch(jsonlite::fromJSON(x), error = function(e) NULL)
-    if (!is.null(content$message$content)) {
-      list(role = content$message$role, content = content$message$content)
-    } else {
-      NULL
-    }
+    # if (!is.null(content$message$content)) {
+    #   list(role = content$message$role, content = content$message$content)
+    # } else {
+    #   NULL
+    # }
   })
 
   Filter(Negate(is.null), parsed)

@@ -210,7 +210,7 @@ set to FALSE
 Helper function to set the handler functions of the
 \link{llm_provider-class} object. This function replaces the existing
 handler functions list with a new list of handler functions. See
-\code{\link[=add_handler_fn]{add_handler_fn()}} for more information on handler functions
+'$add_handler_fn()' for more information on handler functions
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{llm_provider-class$set_handler_fns(handler_fns)}\if{html}{\out{</div>}}
 }

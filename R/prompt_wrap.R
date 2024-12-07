@@ -35,11 +35,10 @@
 #' object [llm_break()] can be returned to break the extraction and validation loop
 #' @param handler_fn A function that takes a 'completion' object (as returned by
 #' `llm_provider$complete_chat()`) and a (potentially modified) completion object.
-#' This can be used for advanced side effects, like logging, native tool calling,
-#' or keeping track of token usage. All handler functions from all prompt wraps
-#' are applied every time a chat completion is received from the LLM during [send_prompt()].
-#' If a handler function returns a completion with '$break_process' set to TRUE,
-#' [send_prompt()] will end with no further chat completions requested
+#' This can be used for advanced side effects, like logging, or native tool calling,
+#' or keeping track of token usage. See \link{llm_provider-class} for more information;
+#' handler_fn is attached to the \link{llm_provider-class} object that is being used.
+#' For example usage, see source code of [answer_using_tools()]
 #' @param parameter_fn A function that takes the \link{llm_provider-class} object which is being
 #' used with [send_prompt()] and returns a named list of parameters to be
 #' set in the \link{llm_provider-class} object via `llm_provider$set_parameters()`. This can be
@@ -54,7 +53,7 @@
 #' the LLM response and applying extraction and validation functions,
 #' prompt wraps are applied in the reverse order: 'tool', 'mode', 'break', 'unspecified'.
 #' Order among the same type is preserved in the order they were added to the prompt.
-#' Example of a tool is [add_tools()]; example of a mode is [answer_by_react()].
+#' Example of a tool is [answer_using_tools()]; example of a mode is [answer_by_react()].
 #' Example of a break is [quit_if()]. Most other prompt wraps will be 'unspecified',
 #' like [answer_as_regex()] or [add_text()]
 #' @param name An optional name for the prompt wrap. This can be used to identify
@@ -207,7 +206,6 @@ prompt_wrap_internal <- function(
   modify_fn <- ensure_three_arguments(modify_fn)
   validation_fn <- ensure_three_arguments(validation_fn)
   extraction_fn <- ensure_three_arguments(extraction_fn)
-  handler_fn <- ensure_three_arguments(handler_fn)
 
   if (!is.null(parameter_fn) && length(formals(parameter_fn)) != 1) {
     stop(paste0(

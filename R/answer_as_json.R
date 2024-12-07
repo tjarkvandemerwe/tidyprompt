@@ -4,37 +4,44 @@
 #' is a valid JSON object, optionally matching a given JSON schema.
 #'
 #' The function can work with all models and providers through text-based
-#' handling, but also supports native settings for the OpenAI-type APIs
-#' (llm_provider$api_type == "openai") and the Ollama API (llm_provider$api_type == "ollama").
-#' The 'llm_provider$api_type' is taken from the provider used in [send_prompt()];
-#' based on the provider, the function will automatically determine the appropriate
-#' way to reach the desired JSON outcome.
-#'
-#' This means that it is possible
-#' to easily switch between providers with different levels of JSON support,
+#' handling, but also supports native settings for the OpenAI and Ollama
+#' API types. (See argument 'type'.) This means that it is possible to easily
+#' switch between providers with different levels of JSON support,
 #' while ensuring the results will be in the correct format.
 #'
 #' @param prompt A single string or a [tidyprompt()] object
-#' @param schema (optional) A list (R object) which represents
+#' @param schema (optional) A list which represents
 #' a JSON schema that the response should match
 #' \itemize{
-#'  \item When not using the OpenAI API, the schema will be
-#'  added to the original prompt (see argument: 'schema_in_prompt_as'),
-#'  and the response will be validated against the schema with
-#'  [jsonvalidate::json_validate()].
-#'  \item When using an OpenAI API, the schema will be added to the API request parameters
-#'  and the API will ensure the response matches the schema.
+#'  \item When using type 'openai' or 'ollama', the schema will be provided
+#'  via the API parameters and the API will ensure the response matches the schema.
+#'  \item When using type 'text-based', the schema will be used to validate the response
+#'  with [jsonvalidate::json_validate()].
 #' }
-#' See example and/or the OpenAI API documentation for more information on defining JSON schemas
+#' See example and your API's documentation for more information on defining JSON schemas.
+#' 'r_json_schema_from_example()' can be used to generate a schema from an example object.
+#' Note that the schema should be a list (R object) representing a JSON schema, not
+#' a JSON string (use package 'jsonlite' to convert from/to JSON)
 #' @param schema_strict If TRUE, the provided schema will be strictly enforced.
-#' This option is passed the the API when using an OpenAI API and otherwise to
-#' [jsonvalidate::json_validate()]
-#' @param schema_in_prompt_as (optional) If providing a schema and when not using
-#' an OpenAI API, this argument specifies how the schema should be included in the prompt.
+#' This option is passed as part of the schema when using type 'openai' or 'ollama',
+#' and is passed to [jsonvalidate::json_validate()] when using type 'text-based'
+#' @param schema_in_prompt_as (optional) If providing a schema and when
+#' using type 'text-based', this argument specifies how the schema should be included in the prompt.
 #' \itemize{
-#'  \item "example" (default): The schema will be included as an example JSON object.
-#'  \item "schema": The schema will be included as a JSON schema.
-#' }
+#' \item "example" (default): The schema will be included as an example JSON object
+#' (tends to work best). 'r_json_schema_to_example()' is used to generate the example object
+#' \item "schema": The schema will be included as a JSON schema.#' }
+#' @param type (optional) The way that the JSON response should be enforced.
+#' 'auto' will automatically determine the type based on 'llm_provider$api_type'
+#' (note that this does not consider model compatibility, and could lead to errors;
+#' set 'type' manually if errors occur). 'openai' and 'ollama' will set the
+#' response format via the API parameters, while 'text-based' will validate the response
+#' with [jsonvalidate::json_validate()]. 'text-based' always works, but may
+#' be inefficient for APIs that support JSON natively. Note that
+#' when combining [answer_as_json()] with other prompt wraps, 'text-based'
+#' may offer more flexibility and be more reliable. Note that 'openai' and 'ollama'
+#' may also work for other APIs with a similar structure
+
 #' @return A [tidyprompt()] with an added [prompt_wrap()] which will ensure
 #' that the LLM response is a valid JSON object
 #'
@@ -50,38 +57,67 @@ answer_as_json <- function(
     prompt,
     schema = NULL,
     schema_strict = FALSE,
-    schema_in_prompt_as = c("example", "schema")
+    schema_in_prompt_as = c("example", "schema"),
+    type = c("text-based", "auto", "openai", "ollama")
 ) {
   prompt <- tidyprompt(prompt)
   schema_in_prompt_as <- match.arg(schema_in_prompt_as)
+  type <- match.arg(type)
+
+  if (!is.null(schema) & !is.list(schema))
+    stop("The 'schema' argument must be a list (R object) representing a JSON schema")
+  if (!is.null(schema) & length(schema) == 0)
+    stop("The 'schema' argument must be a non-empty list (R object) representing a JSON schema")
+
+  if (type == "auto" & getOption("tidyprompt.warn.auto.json", TRUE)) {
+    cli::cli_alert_warning(paste0(
+      "{.strong `answer_as_json()`}:\n",
+      "* Automatically determining type based on 'llm_provider$api_type';\n",
+      "this does not consider model compatability\n",
+      "* Manually set argument 'type' if errors occur ",
+      "(\"text-based\" always works)\n",
+      "* Use `options(tidyprompt.warn.auto.json = FALSE)` to suppress this warning"
+    ))
+  }
+
+  determine_type <- function(llm_provider = NULL) {
+    if (type != "auto")
+      return(type)
+    if (isTRUE(llm_provider$api_type == "openai"))
+      return("openai")
+    if (isTRUE(llm_provider$api_type == "ollama"))
+      return("ollama")
+    return("text-based")
+  }
 
   parameter_fn <- function(llm_provider) {
-    if (llm_provider$api_type == "ollama") {
-      return(list(format = "json"))
+    type <- determine_type(llm_provider)
+
+    if (type == "ollama") {
+      if (is.null(schema))
+        return(list(format = "json"))
+
+      schema$strict <- schema_strict
+      return(list(format = schema))
     }
 
-    if (llm_provider$api_type == "openai") {
-      if (is.null(schema)) {
+    if (type == "openai") {
+      if (is.null(schema))
         return(list(response_format = list(type = "json_object")))
-      } else {
-        schema$strict <- schema_strict
 
-        return(list(
-          response_format = list(
-            type = "json_schema",
-            json_schema = schema
-          )
-        ))
-      }
+      schema$strict <- schema_strict
+      return(list(response_format = list(
+        type = "json_schema",
+        json_schema = schema
+      )))
     }
 
     return(NULL)
   }
 
   modify_fn <- function(prompt_text, llm_provider) {
-    if (
-      isTRUE(llm_provider$api_type == "openai") & !is.null(schema)
-    )
+    type <- determine_type(llm_provider)
+    if (isTRUE(type %in% c("openai", "ollama")) & !is.null(schema))
       return(prompt_text)
 
     prompt_text <- glue::glue(
@@ -93,11 +129,13 @@ answer_as_json <- function(
       !is.null(schema)
     ) {
       if (!requireNamespace("jsonvalidate", quietly = TRUE)) {
-        warning(paste0(
-          "When using an llm_provider$api_type other than 'openai' and providing a schema,",
-          " the 'jsonvalidate' package must be installed to validate the response",
-          " against the schema. Currently, the 'jsonvalidate' package is not installed",
-          " and the LLM response will not be validated against the schema"
+        cli::cli_alert_warning(paste0(
+          "{.strong `answer_as_json()`}:\n",
+          "* When using type \"text-based\" and providing a schema,\n",
+          " the 'jsonvalidate' package must be installed to validate the response\n",
+          " against the schema\n",
+          "* The 'jsonvalidate' package is not installed;\n",
+          " the LLM response will not be validated against the schema"
         ))
       }
 
@@ -122,6 +160,8 @@ answer_as_json <- function(
   }
 
   extraction_fn <- function(llm_response, llm_provider) {
+    type <- determine_type(llm_provider)
+
     jsons <- extraction_fn_json(llm_response)
 
     if (length(jsons) == 0)
@@ -134,7 +174,7 @@ answer_as_json <- function(
 
     if (
       !is.null(schema)
-      & !isTRUE(llm_provider$api_type %in% c("openai"))
+      & !isTRUE(type %in% c("openai", "ollama"))
       & requireNamespace("jsonvalidate", quietly = TRUE)
     ) {
       # Convert to JSON

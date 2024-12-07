@@ -125,11 +125,16 @@ Below is an example of a prompt which will initially fail, but will succeed afte
 'tidyprompt' offers various other 'answer_as' functions, such as `answer_as_boolean()`, `answer_as_regex()`,
 `answer_as_named_list()`, `answer_as_code()`, and `answer_as_json()`.
 
-`answer_as_json()` may be especially powerful when your LLM provider has native support for
-returning JSON objects (e.g., Ollama, OpenAI).
-Text-based handling is however always possible, also for providers which do not
-natively support such functions. This means that you can always switch between
-providers while ensuring the results will be in the correct format.
+`answer_as_json()` may be especially powerful when your LLM provider and model have native support for
+returning JSON objects and adhering to JSON schemas (e.g., OpenAI, Ollama). Text-based handling is however always
+possible, also for providers which do not natively support such functions. This means that
+you can always switch between providers while ensuring the results will be in the correct format.
+It should also be noted that native JSON enforcement may also restrict the model too much,
+so it is always good to test and see what works best for your use case. In our experience,
+text-based handling is often more flexible and robust, especially when combining
+multiple prompt wraps. Note also that JSON schemas may not enforce all qualities 
+you are looking for in the output, so you may still need to add additional prompt wraps
+to ensure the output is in the desired format.
 
 ### Adding a reasoning mode to the LLM
 
@@ -151,60 +156,25 @@ function then ensures only the final answer is returned.
 
 ### Giving tools to the LLM (autonomous function-calling)
 
-With `add_tools()`, you can define your own
-R functions and give the LLM the ability to call them and process their output.
+With `answer_using_tools()`, you can enable your LLM to call R functions.
 This enables the LLM to autonomously retrieve additional information or take other actions.
-
-```{r tool_example, cache=FALSE}
-  # Define a function that returns fake data about the temperature in a location
-  temperature_in_location <- function(
-    location = c("Amsterdam", "Utrecht", "Enschede"),
-    unit = c("Celcius", "Fahrenheit")
-  ) {
-    location <- match.arg(location)
-    unit <- match.arg(unit)
-
-    temperature_celcius <- switch(
-      location,
-      "Amsterdam" = 32.55,
-      "Utrecht" = 19.8,
-      "Enschede" = 22.7
-    )
-
-    if (unit == "Celcius") {
-      return(temperature_celcius)
-    } else {
-      return(temperature_celcius * 9/5 + 32)
-    }
-  }
-
-  # Add documentation to the function for the LLM
-  temperature_in_location <- add_tools_add_documentation(
-    temperature_in_location,
-    description = "Get the temperature in a location",
-    arguments = list(
-      location = "Location, must be one of: 'Amsterdam', 'Utrecht', 'Enschede'",
-      unit = "Unit, must be one of: 'Celcius', 'Fahrenheit'"
-    ),
-    return_value = "The temperature in the specified location and unit"
-  )
-
-  # Ask the LLM a question which can be answered with the function
-  "Hi, what is the weather temperature in Enschede?" |>
-    add_text("I want to know the Celcius degrees.") |>
-    answer_as_integer() |>
-    add_tools(temperature_in_location) |>
-    send_prompt(ollama)
-```
-
-`add_tools()` can also be used to give the LLM access to pre-existing functions from packages or base R.
-The documentation will then be extracted from the available help file.
 
 ```{r tool_example2, cache=FALSE}
   "What are the files in my current directory?" |>
-    add_tools(list.files) |>
+    answer_using_tools(list.files) |>
     send_prompt(ollama)
 ```
+
+`answer_using_tools()` automatically extracts documentation when it is available
+for base R functions and functions from packages. Types are inferred from the
+default arguments of the function.
+
+If you want to define a custom function and/or override the default documentation,
+you can use `tools_add_docs()`. See the example usage of in the documentation
+of `answer_using_tools()`.
+
+`answer_using_tools()` supports both text-based function calling and native function calling (via API
+parameters, currently implemented for OpenAI and Ollama API structures).
 
 ### Code generation and evaluation
 
@@ -333,7 +303,7 @@ answer_as_boolean <- function(
 ```
 
 Take a look at the source code of, for instance, `answer_as_integer()`, `answer_by_chain_of_thought()`,
-and `add_tools()` for more advanced examples of prompt wraps.
+and `answer_using_tools()` for more advanced examples of prompt wraps.
 
 #### Breaking out of the evaluation loop
 

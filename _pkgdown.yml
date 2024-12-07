@@ -31,12 +31,11 @@ reference:
   desc: Functions to have LLMs answer in a specific way.
 - contents:
   - starts_with("answer_by")
-- subtitle: Tools (function-calling)
-  desc: Functions that empower a LLM with tools.
+- subtitle: Tools (function-calling) and code
+  desc: Functions that empower a LLM with tools and code
 - contents:
-  - add_tools
-  - add_tools_get_documentation
-  - add_tools_add_documentation
+  - starts_with("answer_using")
+  - starts_with("tools_")
   - answer_as_code
 - subtitle: Miscellaneous
 - contents:
@@ -57,14 +56,12 @@ reference:
   - starts_with("chat_history")
 - title: Helper functions
 - subtitle: Text helpers
-  desc: Functions to create text to be used in prompts, or to extract elements from text.
+  desc: Functions to create text to be used in prompts or extract text from prompts.
 - contents:
   - df_to_string
   - vector_list_to_string
   - skim_with_labels_and_levels
-  - json_schema_to_example
-  - json_schema_from_example
 - subtitle: Other helper functions
 - contents:
   - extract_from_return_list
-  - generate_json_example_from_schema
+  - starts_with("r_json_")

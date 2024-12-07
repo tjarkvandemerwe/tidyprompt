@@ -36,11 +36,10 @@ object \code{\link[=llm_break]{llm_break()}} can be returned to break the extrac
 
 \item{handler_fn}{A function that takes a 'completion' object (as returned by
 \code{llm_provider$complete_chat()}) and a (potentially modified) completion object.
-This can be used for advanced side effects, like logging, native tool calling,
-or keeping track of token usage. All handler functions from all prompt wraps
-are applied every time a chat completion is received from the LLM during \code{\link[=send_prompt]{send_prompt()}}.
-If a handler function returns a completion with '$break_process' set to TRUE,
-\code{\link[=send_prompt]{send_prompt()}} will end with no further chat completions requested}
+This can be used for advanced side effects, like logging, or native tool calling,
+or keeping track of token usage. See \link{llm_provider-class} for more information;
+handler_fn is attached to the \link{llm_provider-class} object that is being used.
+For example usage, see source code of \code{\link[=answer_using_tools]{answer_using_tools()}}}
 
 \item{parameter_fn}{A function that takes the \link{llm_provider-class} object which is being
 used with \code{\link[=send_prompt]{send_prompt()}} and returns a named list of parameters to be
@@ -57,7 +56,7 @@ in the following order: 'unspecified', 'break', 'mode', 'tool'. When evaluating
 the LLM response and applying extraction and validation functions,
 prompt wraps are applied in the reverse order: 'tool', 'mode', 'break', 'unspecified'.
 Order among the same type is preserved in the order they were added to the prompt.
-Example of a tool is \code{\link[=add_tools]{add_tools()}}; example of a mode is \code{\link[=answer_by_react]{answer_by_react()}}.
+Example of a tool is \code{\link[=answer_using_tools]{answer_using_tools()}}; example of a mode is \code{\link[=answer_by_react]{answer_by_react()}}.
 Example of a break is \code{\link[=quit_if]{quit_if()}}. Most other prompt wraps will be 'unspecified',
 like \code{\link[=answer_as_regex]{answer_as_regex()}} or \code{\link[=add_text]{add_text()}}}
 
@@ -210,7 +209,6 @@ Other prompt_wrap:
 
 Other pre_built_prompt_wraps: 
 \code{\link{add_text}()},
-\code{\link{add_tools}()},
 \code{\link{answer_as_boolean}()},
 \code{\link{answer_as_code}()},
 \code{\link{answer_as_integer}()},
@@ -220,6 +218,7 @@ Other pre_built_prompt_wraps:
 \code{\link{answer_as_regex}()},
 \code{\link{answer_by_chain_of_thought}()},
 \code{\link{answer_by_react}()},
+\code{\link{answer_using_tools}()},
 \code{\link{quit_if}()},
 \code{\link{set_system_prompt}()}
 }

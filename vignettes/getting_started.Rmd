@@ -69,8 +69,8 @@ while verifying that the output is structured and valid (including retries with 
 #> --- Sending request to LLM provider (llama3.1:8b): ---
 #> Hi there!
 #> --- Receiving response from LLM provider: ---
-#> It's nice to meet you. Is there something I can help you with, or would you like to chat?
-#> [1] "It's nice to meet you. Is there something I can help you with, or would you like to chat?"
+#> How's your day going so far? Is there something I can help you with or would you like to chat?
+#> [1] "How's your day going so far? Is there something I can help you with or would you like to chat?"
 ```
 `add_text()` is a simple example of a prompt wrap. It simply adds some text at the end of the base prompt.
 
@@ -84,8 +84,8 @@ while verifying that the output is structured and valid (including retries with 
 #> 
 #> What is a large language model? Explain in 10 words.
 #> --- Receiving response from LLM provider: ---
-#> Sophisticated computer program that processes and generates human-like written language.
-#> [1] "Sophisticated computer program that processes and generates human-like written language."
+#> Advanced computer program trained on vast amounts of written data.
+#> [1] "Advanced computer program trained on vast amounts of written data."
 ```
 You can also construct the final prompt text, without sending it to an LLM provider.
 
@@ -98,9 +98,9 @@ You can also construct the final prompt text, without sending it to an LLM provi
 #> > Hi there!
 #> > 
 #> > What is a large language model? Explain in 10 words. 
-#> Use '<tidyprompt>$prompt_wraps' to show the prompt wraps.
-#> Use '<tidyprompt>$base_prompt' to show the base prompt text.
-#> Use '<tidyprompt> |> construct_prompt_text()' to get the full prompt text.
+#> Use 'x$base_prompt' to show the base prompt text.
+#> Use 'x$construct_prompt_text()' to get the full prompt text.
+#> Use 'get_prompt_wraps(x)' to show the prompt wraps.
 ```
 
 ### Retrieving output in a specific format
@@ -146,7 +146,7 @@ Below is an example of a prompt which will initially fail, but will succeed afte
 #> 
 #> Please write out your reply in words, use no numbers.
 #> --- Receiving response from LLM provider: ---
-#> Two plus two equals four.
+#> Four.
 #> --- Sending request to LLM provider (llama3.1:8b): ---
 #> You must answer with only an integer (use no other characters).
 #> --- Receiving response from LLM provider: ---
@@ -155,13 +155,18 @@ Below is an example of a prompt which will initially fail, but will succeed afte
 ```
 
 'tidyprompt' offers various other 'answer_as' functions, such as `answer_as_boolean()`, `answer_as_regex()`,
-`answer_as_named_list()`, `answer_as_code()`, and `answer_as_json()`. 
+`answer_as_named_list()`, `answer_as_code()`, and `answer_as_json()`.
 
-`answer_as_json()` may be especially powerful when your LLM provider has native support for
-returning JSON objects (e.g., Ollama, OpenAI). 
-Text-based handling is however always possible, also for providers which do not 
-natively support such functions. This means that you can always switch between
-providers while ensuring the results will be in the correct format.
+`answer_as_json()` may be especially powerful when your LLM provider and model have native support for
+returning JSON objects and adhering to JSON schemas (e.g., OpenAI, Ollama). Text-based handling is however always
+possible, also for providers which do not natively support such functions. This means that
+you can always switch between providers while ensuring the results will be in the correct format.
+It should also be noted that native JSON enforcement may also restrict the model too much,
+so it is always good to test and see what works best for your use case. In our experience,
+text-based handling is often more flexible and robust, especially when combining
+multiple prompt wraps. Note also that JSON schemas may not enforce all qualities 
+you are looking for in the output, so you may still need to add additional prompt wraps
+to ensure the output is in the desired format.
 
 ### Adding a reasoning mode to the LLM
 
@@ -201,9 +206,15 @@ function then ensures only the final answer is returned.
 #> 
 #> Make sure your final answer follows the logical conclusion of your thought process.
 #> --- Receiving response from LLM provider: ---
-#> >> step 1: Identify that the problem is a basic arithmetic operation involving addition.
-#> >> step 2: Recall the specific numbers involved in the operation, which are 2 and 2.
-#> >> step 3: Perform the operation by adding the two numbers together to get their sum.
+#> Here are my thought steps:
+#> 
+#> >> step 1: Understand the question - The prompt asks for the result of a simple arithmetic operation, specifically adding 2 and 2.
+#> 
+#> >> step 2: Recall basic math facts - I recall that the sum of two identical numbers is equal to twice the value of each number. In this case, both numbers are 2.
+#> 
+#> >> step 3: Apply the math fact - Using the knowledge from step 2, I calculate the result by multiplying 2 (the number being added) by 2 (the other number), which gives 4.
+#> 
+#> >> step 4: Confirm the answer - Before providing a final response, I confirm that my calculation is correct. Adding 2 and 2 indeed equals 4.
 #> 
 #> FINISH[4]
 #> [1] 4
@@ -211,138 +222,30 @@ function then ensures only the final answer is returned.
 
 ### Giving tools to the LLM (autonomous function-calling)
 
-With `add_tools()`, you can define your own
-R functions and give the LLM the ability to call them and process their output.
+With `answer_using_tools()`, you can enable your LLM to call R functions.
 This enables the LLM to autonomously retrieve additional information or take other actions.
 
 
 ``` r
-  # Define a function that returns fake data about the temperature in a location
-  temperature_in_location <- function(
-    location = c("Amsterdam", "Utrecht", "Enschede"),
-    unit = c("Celcius", "Fahrenheit")
-  ) {
-    location <- match.arg(location)
-    unit <- match.arg(unit)
-
-    temperature_celcius <- switch(
-      location,
-      "Amsterdam" = 32.55,
-      "Utrecht" = 19.8,
-      "Enschede" = 22.7
-    )
-
-    if (unit == "Celcius") {
-      return(temperature_celcius)
-    } else {
-      return(temperature_celcius * 9/5 + 32)
-    }
-  }
-
-  # Add documentation to the function for the LLM
-  temperature_in_location <- add_tools_add_documentation(
-    temperature_in_location,
-    description = "Get the temperature in a location",
-    arguments = list(
-      location = "Location, must be one of: 'Amsterdam', 'Utrecht', 'Enschede'",
-      unit = "Unit, must be one of: 'Celcius', 'Fahrenheit'"
-    ),
-    return_value = "The temperature in the specified location and unit"
-  )
-
-  # Ask the LLM a question which can be answered with the function
-  "Hi, what is the weather temperature in Enschede?" |>
-    add_text("I want to know the Celcius degrees.") |>
-    answer_as_integer() |>
-    add_tools(temperature_in_location) |>
-    send_prompt(ollama)
-#> --- Sending request to LLM provider (llama3.1:8b): ---
-#> Hi, what is the weather temperature in Enschede?
-#> 
-#> I want to know the Celcius degrees.
-#> 
-#> You must answer with only an integer (use no other characters).
-#> 
-#> If you need more information, you can call functions to help you.
-#> To call a function, output a JSON object with the following format:
-#> 
-#> {
-#>   "function": "<function name>",
-#>   "arguments": {
-#>     "<argument_name>": <argument_value>,
-#>     ...
-#>   }
-#> }
-#> 
-#> (Note: you cannot call other functions within arguments.)
-#> 
-#> The following functions are available:
-#> 
-#>   function name: temperature_in_location
-#>   description: Get the temperature in a location
-#>   arguments:
-#>     - location: Location, must be one of: 'Amsterdam', 'Utrecht', 'Enschede'
-#>     - unit: Unit, must be one of: 'Celcius', 'Fahrenheit'
-#>   return value: The temperature in the specified location and unit
-#> 
-#> After you call a function, wait until you receive more information.
-#> Use the information to decide your next steps or provide a final response.
-#> --- Receiving response from LLM provider: ---
-#> To get the weather temperature in Enschede, I will call the `temperature_in_location` function with the required arguments.
-#> 
-#> Here's my first action:
-#> 
-#> ```
-#> {
-#>   "function": "temperature_in_location",
-#>   "arguments": {
-#>     "location": "Enschede",
-#>     "unit": "Celcius"
-#>   }
-#> }
-#> ```
-#> 
-#> Please wait for more information...
-#> --- Sending request to LLM provider (llama3.1:8b): ---
-#> function called: temperature_in_location
-#> arguments used: location = Enschede, unit = Celcius
-#> result: 22.7
-#> --- Receiving response from LLM provider: ---
-#> The current temperature in Enschede is 22.7°C.
-#> 
-#> So, my response to your original question is:
-#> 
-#> 22.7
-#> --- Sending request to LLM provider (llama3.1:8b): ---
-#> You must answer with only an integer (use no other characters).
-#> --- Receiving response from LLM provider: ---
-#> 22
-#> [1] 22
-```
-
-`add_tools()` can also be used to give the LLM access to pre-existing functions from packages or base R.
-The documentation will then be extracted from the available help file.
-
-
-``` r
   "What are the files in my current directory?" |>
-    add_tools(list.files) |>
+    answer_using_tools(list.files) |>
     send_prompt(ollama)
+#> ! `answer_using_tools()`, `tools_docs_to_text()`:
+#> * Argument 'pattern' has an unknown type. Defaulting to 'string'
 #> --- Sending request to LLM provider (llama3.1:8b): ---
 #> What are the files in my current directory?
 #> 
 #> If you need more information, you can call functions to help you.
+#> 
 #> To call a function, output a JSON object with the following format:
-#> 
-#> {
-#>   "function": "<function name>",
-#>   "arguments": {
-#>     "<argument_name>": <argument_value>,
-#>     ...
+#>   {
+#>     "function": "<function name>",
+#>     "arguments": {
+#>       "<argument_name>": <argument_value>,
+#>       # ...
+#>     }
 #>   }
-#> }
-#> 
-#> (Note: you cannot call other functions within arguments.)
+#>   (Note: you may not provide function calls as function arguments.)
 #> 
 #> The following functions are available:
 #> 
@@ -350,14 +253,14 @@ The documentation will then be extracted from the available help file.
 #>   description: List the Files in a Directory/Folder: These functions produce a character vector of the names of files
 #> or directories in the named directory.
 #>   arguments:
-#>     - path: a character vector of full path names; the default corresponds to the working directory, 'getwd()'.  Tilde expansion (see 'path.expand') is performed.  Missing values will be ignored.  Elements with a marked encoding will be converted to the native encoding (and if that fails, considered non-existent).
-#>     - pattern: an optional regular expression.  Only file names which match the regular expression will be returned.
-#>     - all.files: a logical value.  If 'FALSE', only the names of visible files are returned (following Unix-style visibility, that is files whose name does not start with a dot).  If 'TRUE', all file names will be returned.
-#>     - full.names: a logical value.  If 'TRUE', the directory path is prepended to the file names to give a relative file path.  If 'FALSE', the file names (rather than paths) are returned.
-#>     - recursive: logical.  Should the listing recurse into directories?
-#>     - ignore.case: logical.  Should pattern-matching be case-insensitive?
-#>     - include.dirs: logical.  Should subdirectory names be included in recursive listings?  (They always are in non-recursive ones).
-#>     - no..: logical.  Should both '"."' and '".."' be excluded also from non-recursive listings?
+#>     - path: a character vector of full path names; the default corresponds to the working directory, 'getwd()'.  Tilde expansion (see 'path.expand') is performed.  Missing values will be ignored.  Elements with a marked encoding will be converted to the native encoding (and if that fails, considered non-existent). [Type: string]
+#>     - pattern: an optional regular expression.  Only file names which match the regular expression will be returned. [Type: unknown]
+#>     - all.files: a logical value.  If 'FALSE', only the names of visible files are returned (following Unix-style visibility, that is files whose name does not start with a dot).  If 'TRUE', all file names will be returned. [Type: logical]
+#>     - full.names: a logical value.  If 'TRUE', the directory path is prepended to the file names to give a relative file path.  If 'FALSE', the file names (rather than paths) are returned. [Type: logical]
+#>     - recursive: logical.  Should the listing recurse into directories? [Type: logical]
+#>     - ignore.case: logical.  Should pattern-matching be case-insensitive? [Type: logical]
+#>     - include.dirs: logical.  Should subdirectory names be included in recursive listings?  (They always are in non-recursive ones). [Type: logical]
+#>     - no..: logical.  Should both '"."' and '".."' be excluded also from non-recursive listings? [Type: logical]
 #>   return value: A character vector containing the names of the files in the
 #> specified directories (empty if there were no files).  If a path
 #> does not exist or is not a directory or is unreadable it is
@@ -372,9 +275,9 @@ The documentation will then be extracted from the available help file.
 #> After you call a function, wait until you receive more information.
 #> Use the information to decide your next steps or provide a final response.
 #> --- Receiving response from LLM provider: ---
-#> I can call the "list.files" function with the necessary arguments.
+#> To get the files in my current directory, I will call the `list.files` function with the necessary arguments.
 #> 
-#> Here's my JSON object calling the function:
+#> Here's the JSON object:
 #> 
 #> ```
 #> {
@@ -385,27 +288,37 @@ The documentation will then be extracted from the available help file.
 #> }
 #> ```
 #> 
-#> Please wait for the output to determine my next steps.
+#> This will list the files in the current working directory. The argument `path` is set to `"."`, which corresponds to the current working directory, and I'm not providing any pattern or other arguments as they are optional.
+#> 
+#> Let's see what happens next...
 #> --- Sending request to LLM provider (llama3.1:8b): ---
 #> function called: list.files
 #> arguments used: path = .
-#> result: getting_started.Rmd, getting_started.Rmd.orig, precompile vignettes.R
+#> result: getting_started.Rmd, getting_started.Rmd.orig, man, precompile vignettes.R, sentiment_analysis.Rmd, sentiment_analysis.Rmd.orig
 #> --- Receiving response from LLM provider: ---
-#> The function has returned a result.
+#> It looks like I have a mix of files in my current directory.
 #> 
-#> It seems that I have a single file in my current directory (which is represented by the '.' argument), which are:
+#> The `list.files` function returned a list of file names, which are:
 #> 
-#> 1. `getting_started.Rmd`
-#> 2. `getting_started.Rmd.orig`
-#> 3. `precompile vignettes.R`
+#> * `getting_started.Rmd`
+#> * `getting_started.Rmd.orig`
+#> * `man`
+#> * `precompile vignettes.R`
+#> * `sentiment_analysis.Rmd`
+#> * `sentiment_analysis.Rmd.orig`
 #> 
-#> Since there are multiple files, and they do not match any specific pattern or condition mentioned in the problem statement, I will conclude that this is indeed the list of files in my current directory.
-#> 
-#> Therefore, my final response is:
-#> 
-#> The files in your current directory are: `getting_started.Rmd`, `getting_started.Rmd.orig`, `precompile vignettes.R`.
-#> [1] "The function has returned a result.\n\nIt seems that I have a single file in my current directory (which is represented by the '.' argument), which are:\n\n1. `getting_started.Rmd`\n2. `getting_started.Rmd.orig`\n3. `precompile vignettes.R`\n\nSince there are multiple files, and they do not match any specific pattern or condition mentioned in the problem statement, I will conclude that this is indeed the list of files in my current directory.\n\nTherefore, my final response is:\n\nThe files in your current directory are: `getting_started.Rmd`, `getting_started.Rmd.orig`, `precompile vignettes.R`."
-```
+#> These files seem to be related to some kind of project or documentation.
+
+`answer_using_tools()` automatically extracts documentation when it is available
+for base R functions and functions from packages. Types are inferred from the
+default arguments of the function.
+
+If you want to define a custom function and/or override the default documentation,
+you can use `tools_add_docs()`. See the example usage of in the documentation
+of `answer_using_tools()`.
+
+`answer_using_tools()` supports both text-based function calling and native function calling (via API
+parameters, currently implemented for OpenAI and Ollama API structures).
 
 ### Code generation and evaluation
 
@@ -415,8 +328,6 @@ for validity, and optionally be evaluated in a dedicated R session (using the
 'callr' package). The prompt wrap can also be set to 'tool mode' (with `output_as_tool = TRUE`),
 where the output of R code is returned to the LLM, so that it can be used to formulate
 a final answer.
-
-
 
 
 ``` r
@@ -436,7 +347,9 @@ plot <- paste0(
   send_prompt(openai)
 plot
 ```
-![Plot generated by LLM](../man/figures/answer_as_code1-1.png)
+![plot](man/figures/answer_as_code1-1.png)
+
+
 
 ### Creating your own prompt wraps
 
@@ -533,7 +446,7 @@ answer_as_boolean <- function(
 ```
 
 Take a look at the source code of, for instance, `answer_as_integer()`, `answer_by_chain_of_thought()`,
-and `add_tools()` for more advanced examples of prompt wraps.
+and `answer_using_tools()` for more advanced examples of prompt wraps.
 
 #### Breaking out of the evaluation loop
 
@@ -585,11 +498,11 @@ which will be set as the parameters of the LLM provider before sending the promp
 
 #### Configuring a prompt wrap based on the LLM provider or HTTP responses
 
-`modify_fn`, `extraction_fn`, and `validation_fn` may take the 
-LLM provider as the second argument and the `http_list` (a list of all 
-HTTP responses made during `send_prompt()`) as the third argument. This allows for 
-advanced configuration of the prompt and the extraction and validation logic 
-based on the LLM provider and any data available the HTTP responses. 
+`modify_fn`, `extraction_fn`, and `validation_fn` may take the
+LLM provider as the second argument and the `http_list` (a list of all
+HTTP responses made during `send_prompt()`) as the third argument. This allows for
+advanced configuration of the prompt and the extraction and validation logic
+based on the LLM provider and any data available the HTTP responses.
 
 #### 'Handler functions'
 

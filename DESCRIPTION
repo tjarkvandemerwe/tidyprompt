@@ -38,7 +38,6 @@ Suggests:
     here,
     callr,
     skimr,
-    cli,
     jsonvalidate,
     tidyjson
 VignetteBuilder: knitr
@@ -48,5 +47,6 @@ Imports:
     httr2,
     jsonlite,
     stringr,
-    utils
+    utils,
+    cli
 Config/testthat/edition: 3

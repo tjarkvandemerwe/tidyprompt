@@ -162,13 +162,16 @@
       environment(private$complete_chat_function) <- environment()
       response <- private$complete_chat_function(chat_history)
 
+      # Filter content with empty string ("") (Ollama tool call)
+      response$completed <- response$completed[response$completed$content != "", ]
+
       http <- list(requests = list(), responses = list())
       http[["requests"]] <- c(http[["requests"]], response$http$request)
       http[["responses"]] <- c(http[["responses"]], response$http$response)
 
       while (TRUE) {
         for (handler_fn in self$handler_fns) {
-          response <- handler_fn(response, self$clone())
+          response <- handler_fn(response, self)
 
           stopifnot(
             is.list(response), "completed" %in% names(response),
@@ -185,16 +188,11 @@
         }
       }
 
-      if (isTRUE(response$`break`))
-        warning(paste0(
-          "Chat completion was interrupted by a handler break"
-        ))
-
+      # Print difference between chat_history and completed
       if (
         self$verbose
         && (is.null(self$parameters$stream) || !self$parameters$stream)
       ) {
-        # Print difference between chat_history & completed
         chat_history_new <- response$completed[
           (nrow(chat_history) + 1):nrow(response$completed),
         ]
@@ -203,6 +201,11 @@
           cat(chat_history_new$content[i], "\n")
         }
       }
+
+      if (isTRUE(response$`break`))
+        warning(paste0(
+          "Chat completion was interrupted by a handler break"
+        ))
 
       if (self$verbose)
         return(invisible(response))
@@ -236,7 +239,7 @@
     #' @description Helper function to set the handler functions of the
     #' \link{llm_provider-class} object. This function replaces the existing
     #' handler functions list with a new list of handler functions. See
-    #' [add_handler_fn()] for more information on handler functions
+    #' '$add_handler_fn()' for more information on handler functions
     #'
     #' @param handler_fns A list of handler functions to set
     set_handler_fns = function(handler_fns) {

@@ -79,12 +79,9 @@ e-mail.
 
 ‘tidyprompt’ is primarily focused on ‘text-based’ handling of LLMs,
 where textual output is parsed to achieve structured output and other
-functionalities. This is in contrast to ‘native’ handling, where the LLM
-is directly controlled by the LLM provider to provide output in a
-certain manner (for instance, the available tokens are restricted to
-match a specific output format). While the latter may be more efficient,
-it tends to be more specific to LLM providers, certain models, and API
-structures.
+functionalities. Several LLM providers and models also offers forms of
+‘native’ handling, where the LLM is directly controlled by the LLM
+provider to provide output in a certain manner.
 
 In the first place, ‘tidyprompt’ aims to be suitable for all LLM
 providers and models that support chat completion. This means that
@@ -93,16 +90,16 @@ output and function calling for LLMs that do not natively support it.
 Where appropriate, ‘tidyprompt’ may also support native configuration of
 specific APIs.
 
-Currently, `answer_as_json()` supports both text-based handling and
-native configuration of Ollama and OpenAI-type APIs (including supplying
-JSON schemas). This means that it is possible to switch between
-providers with different levels of JSON support, ensuring the results
-will remain in the correct format. For `add_tools()`, ‘tidyprompt’
-currently only supports text-based handling of R functions, but will
-soon also support native tool handling for common API types (Ollama,
-OpenAI).
+Currently, `answer_as_json()` and `answer_using_tools()` offer native
+support for adhering to JSON schemas and calling functions. Native
+handling may be powerful in some cases, but restrictive in other cases.
+It is good to test what works best for your use case. When combining
+multiple prompt wraps, ‘text-based’ handling appears to be generally
+more flexible and robust.
 
 The philosophy behind ‘tidyprompt’ is furthermore that it aims to be
 flexible enough that users can implement advanced features, potentially
 specific to certain LLM providers, within the options of their custom
-prompt wraps.
+prompt wraps. This way, ‘tidyprompt’ can be a powerful tool for a wide
+range of use cases, without focusing too much on maintaining a large
+number of provider-specific features.

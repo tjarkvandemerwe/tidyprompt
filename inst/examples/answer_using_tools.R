@@ -1,3 +1,14 @@
+# When using functions from base R or R packages,
+#   suitable documentation may be available in the form of help files:
+\dontrun{
+  "What are the files in my current directory?" |>
+    answer_using_tools(list.files) |>
+    send_prompt(llm_provider_openai())
+}
+
+# Below it is shown how to use custom functions and how to override
+#   automatically generated documentation:
+
 # Example fake weather function to add to the prompt:
 temperature_in_location <- function(
     location = c("Amsterdam", "Utrecht", "Enschede"),
@@ -20,11 +31,14 @@ temperature_in_location <- function(
   }
 }
 
-# Generate documentation for a function (based on formals, & help file if available)
+# Generate documentation for a function
+#   (based on formals, & help file if available)
 docs <- tools_get_docs(temperature_in_location)
 docs
 
-# Since the help file is missing, we may still want to add some descriptions:
+# As we can see, the types were correctly inferred from the function's formals
+# However, descriptions are still missing as the function is not from a package
+# We can modify the documentation object to add descriptions:
 docs$description <- "Get the temperature in a location"
 docs$arguments$unit$description <- "Unit in which to return the temperature"
 docs$arguments$location$description <- "Location for which to return the temperature"
@@ -38,11 +52,8 @@ temperature_in_location <- tools_add_docs(temperature_in_location, docs)
 # Now we can use the function in a prompt:
 prompt <- "Hi, what is the weather in Enschede? Give me Celcius degrees" |>
   answer_using_tools(temperature_in_location)
-prompt
 
-prompt |>
-  send_prompt(llm_provider_openai())
-
-"What are the files in my current directory?" |>
-  answer_using_tools(list.files) |>
-  send_prompt(llm_provider_openai())
+\dontrun{
+  prompt |>
+    send_prompt(llm_provider_ollama())
+}
