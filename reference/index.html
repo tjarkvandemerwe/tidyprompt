@@ -44,7 +44,7 @@
     </div><div class="section level2">
 
       <h3 id="tidyprompt">tidyprompt<a class="anchor" aria-label="anchor" href="#tidyprompt"></a></h3>
-      <div class="section-desc"><p>Functions for creating and handling tidyprompt objects. These functions are typically called internally; in most scenarios, prompt wrap functions can be used.</p></div>
+      <div class="section-desc"><p>Function to create and handle tidyprompt objects.</p></div>
 
 
     </div><div class="section level2">
@@ -57,31 +57,31 @@
           <code><a href="tidyprompt.html">tidyprompt()</a></code>
 
         </dt>
-        <dd>Methods to create, construct, and empower prompt objects</dd>
+        <dd>Create a Tidyprompt object</dd>
+      </dl><dl><dt>
+
+          <code><a href="tidyprompt-class.html">tidyprompt-class</a></code>
+
+        </dt>
+        <dd>Tidyprompt R6 Class</dd>
       </dl><dl><dt>
 
           <code><a href="is_tidyprompt.html">is_tidyprompt()</a></code>
 
         </dt>
-        <dd>Validate tidyprompt: returns TRUE if a valid tidyprompt object, otherwise FALSE</dd>
-      </dl><dl><dt>
-
-          <code><a href="get_base_prompt.html">get_base_prompt()</a></code>
-
-        </dt>
-        <dd>Get base prompt from tidyprompt</dd>
+        <dd>Check if object is a Tidyprompt</dd>
       </dl><dl><dt>
 
           <code><a href="construct_prompt_text.html">construct_prompt_text()</a></code>
 
         </dt>
-        <dd>Construct prompt text from a tidyprompt object</dd>
+        <dd>Construct prompt text from a Tidyprompt object</dd>
       </dl><dl><dt>
 
           <code><a href="get_prompt_wraps.html">get_prompt_wraps()</a></code>
 
         </dt>
-        <dd>Get prompt wraps from tidyprompt</dd>
+        <dd>Get prompt wraps from a Tidyprompt</dd>
       </dl></div><div class="section level2">
 
       <h3 id="prompt-wrap">prompt_wrap<a class="anchor" aria-label="anchor" href="#prompt-wrap"></a></h3>
@@ -127,7 +127,7 @@
           <code><a href="send_prompt.html">send_prompt()</a></code>
 
         </dt>
-        <dd>Send a prompt or <code><a href="../reference/tidyprompt.html">tidyprompt()</a></code> to a LLM provider</dd>
+        <dd>Send a prompt to a LLM provider</dd>
       </dl></div><div class="section level2">
       <h2 id="prompt-wrap-library">Prompt wrap library<a class="anchor" aria-label="anchor" href="#prompt-wrap-library"></a></h2>
 
@@ -212,8 +212,8 @@
         <dd>Set ReAct mode for a prompt</dd>
       </dl></div><div class="section level2">
 
-      <h3 id="tools-function-calling-">Tools (function-calling)<a class="anchor" aria-label="anchor" href="#tools-function-calling-"></a></h3>
-      <div class="section-desc"><p>Functions that empower a LLM with tools.</p></div>
+      <h3 id="tools-function-calling-and-code">Tools (function-calling) and code<a class="anchor" aria-label="anchor" href="#tools-function-calling-and-code"></a></h3>
+      <div class="section-desc"><p>Functions that empower a LLM with tools and code</p></div>
 
 
     </div><div class="section level2">
@@ -223,22 +223,34 @@
 
       <dl><dt>
 
-          <code><a href="add_tools.html">add_tools()</a></code>
+          <code><a href="answer_using_tools.html">answer_using_tools()</a></code>
 
         </dt>
         <dd>Enable R function calling for prompt evaluation by a LLM</dd>
       </dl><dl><dt>
 
-          <code><a href="add_tools_get_documentation.html">add_tools_get_documentation()</a></code>
-
-        </dt>
-        <dd>Extract documentation from a function</dd>
-      </dl><dl><dt>
-
-          <code><a href="add_tools_add_documentation.html">add_tools_add_documentation()</a></code>
+          <code><a href="tools_add_docs.html">tools_add_docs()</a></code>
 
         </dt>
         <dd>Add tidyprompt function documentation to a function</dd>
+      </dl><dl><dt>
+
+          <code><a href="tools_docs_to_r_json_schema.html">tools_docs_to_r_json_schema()</a></code>
+
+        </dt>
+        <dd>Convert function documentation to a JSON schema</dd>
+      </dl><dl><dt>
+
+          <code><a href="tools_docs_to_text.html">tools_docs_to_text()</a></code>
+
+        </dt>
+        <dd>Create text description of function from documentation</dd>
+      </dl><dl><dt>
+
+          <code><a href="tools_get_docs.html">tools_get_docs()</a></code>
+
+        </dt>
+        <dd>Extract documentation from a function</dd>
       </dl><dl><dt>
 
           <code><a href="answer_as_code.html">answer_as_code()</a></code>
@@ -293,13 +305,13 @@
 
       <dl><dt>
 
-          <code><a href="llm_provider.html">llm_provider</a></code>
+          <code><a href="llm_provider-class.html">llm_provider-class</a></code>
 
         </dt>
-        <dd><code><a href="../reference/llm_provider.html">llm_provider()</a></code> R6 Class</dd>
+        <dd>Llm_provider R6 Class</dd>
       </dl><dl><dt>
 
-          <code><a href="make_llm_provider_request.html">make_llm_provider_request()</a></code>
+          <code><a href="request_llm_provider.html">request_llm_provider()</a></code>
 
         </dt>
         <dd>Make a request to an LLM provider</dd>
@@ -319,43 +331,43 @@
           <code><a href="llm_provider_google_gemini.html">llm_provider_google_gemini()</a></code>
 
         </dt>
-        <dd>Create a new Google Gemini <code><a href="../reference/llm_provider.html">llm_provider()</a></code> instance</dd>
+        <dd>Create a new Google Gemini LLM provider</dd>
       </dl><dl><dt>
 
           <code><a href="llm_provider_groq.html">llm_provider_groq()</a></code>
 
         </dt>
-        <dd>Create a new Groq <code><a href="../reference/llm_provider.html">llm_provider()</a></code> instance</dd>
+        <dd>Create a new Groq LLM provider</dd>
       </dl><dl><dt>
 
           <code><a href="llm_provider_mistral.html">llm_provider_mistral()</a></code>
 
         </dt>
-        <dd>Create a new Mistral <code><a href="../reference/llm_provider.html">llm_provider()</a></code> instance</dd>
+        <dd>Create a new Mistral LLM provider</dd>
       </dl><dl><dt>
 
           <code><a href="llm_provider_ollama.html">llm_provider_ollama()</a></code>
 
         </dt>
-        <dd>Create a new Ollama <code><a href="../reference/llm_provider.html">llm_provider()</a></code> instance</dd>
+        <dd>Create a new Ollama LLM provider</dd>
       </dl><dl><dt>
 
           <code><a href="llm_provider_openai.html">llm_provider_openai()</a></code>
 
         </dt>
-        <dd>Create a new OpenAI <code><a href="../reference/llm_provider.html">llm_provider()</a></code> instance</dd>
+        <dd>Create a new OpenAI LLM provider</dd>
       </dl><dl><dt>
 
           <code><a href="llm_provider_openrouter.html">llm_provider_openrouter()</a></code>
 
         </dt>
-        <dd>Create a new OpenRouter <code><a href="../reference/llm_provider.html">llm_provider()</a></code> instance</dd>
+        <dd>Create a new OpenRouter LLM provider</dd>
       </dl><dl><dt>
 
           <code><a href="llm_provider_xai.html">llm_provider_xai()</a></code>
 
         </dt>
-        <dd>Create a new XAI (Grok) <code><a href="../reference/llm_provider.html">llm_provider()</a></code> instance</dd>
+        <dd>Create a new XAI (Grok) LLM provider</dd>
       </dl></div><div class="section level2">
 
       <h3 id="chat-history">chat_history<a class="anchor" aria-label="anchor" href="#chat-history"></a></h3>
@@ -382,7 +394,7 @@
     </div><div class="section level2">
 
       <h3 id="text-helpers">Text helpers<a class="anchor" aria-label="anchor" href="#text-helpers"></a></h3>
-      <div class="section-desc"><p>Functions to create text to be used in prompts, or to extract elements from text.</p></div>
+      <div class="section-desc"><p>Functions to create text to be used in prompts or extract things from prompts.</p></div>
 
 
     </div><div class="section level2">
@@ -433,7 +445,13 @@
         <dd>Function to extract a specific element from a list</dd>
       </dl><dl><dt>
 
-          <code><a href="generate_json_example_from_schema.html">generate_json_example_from_schema()</a></code>
+          <code><a href="r_json_schema_from_example.html">r_json_schema_from_example()</a></code>
+
+        </dt>
+        <dd>Generate a JSON schema from an example object</dd>
+      </dl><dl><dt>
+
+          <code><a href="r_json_schema_to_example.html">r_json_schema_to_example()</a></code>
 
         </dt>
         <dd>Generate an example object from a JSON schema</dd>
