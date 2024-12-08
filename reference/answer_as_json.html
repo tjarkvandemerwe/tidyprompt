@@ -67,7 +67,7 @@ while ensuring the results will be in the correct format.</p>
 <span>  schema <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  schema_strict <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  schema_in_prompt_as <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"example"</span>, <span class="st">"schema"</span><span class="op">)</span>,</span>
-<span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"text-based"</span>, <span class="st">"auto"</span>, <span class="st">"openai"</span>, <span class="st">"ollama"</span><span class="op">)</span></span>
+<span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"text-based"</span>, <span class="st">"auto"</span>, <span class="st">"openai"</span>, <span class="st">"ollama"</span>, <span class="st">"openai_oo"</span>, <span class="st">"ollama_oo"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -81,41 +81,53 @@ while ensuring the results will be in the correct format.</p>
 
 <dt id="arg-schema">schema<a class="anchor" aria-label="anchor" href="#arg-schema"></a></dt>
 <dd><p>(optional) A list which represents
-a JSON schema that the response should match</p><ul><li><p>When using type 'openai' or 'ollama', the schema will be provided
-via the API parameters and the API will ensure the response matches the schema.</p></li>
-<li><p>When using type 'text-based', the schema will be used to validate the response
-with <code><a href="https://docs.ropensci.org/jsonvalidate/reference/json_validate.html" class="external-link">jsonvalidate::json_validate()</a></code>.</p></li>
-</ul><p>See example and your API's documentation for more information on defining JSON schemas.
-'r_json_schema_from_example()' can be used to generate a schema from an example object.
-Note that the schema should be a list (R object) representing a JSON schema, not
-a JSON string (use package 'jsonlite' to convert from/to JSON)</p></dd>
+a JSON schema that the response should match.See example and your API's
+documentation for more information on defining JSON schemas. <code><a href="r_json_schema_from_example.html">r_json_schema_from_example()</a></code>
+can be used to generate a schema from an example object. Note that the schema should be a
+list (R object) representing a JSON schema, not a JSON string
+(use <code><a href="https://rdrr.io/pkg/jsonlite/man/fromJSON.html" class="external-link">jsonlite::fromJSON()</a></code> and <code><a href="https://rdrr.io/pkg/jsonlite/man/fromJSON.html" class="external-link">jsonlite::toJSON()</a></code> to convert between the two)</p></dd>
 
 
 <dt id="arg-schema-strict">schema_strict<a class="anchor" aria-label="anchor" href="#arg-schema-strict"></a></dt>
 <dd><p>If TRUE, the provided schema will be strictly enforced.
-This option is passed as part of the schema when using type 'openai' or 'ollama',
-and is passed to <code><a href="https://docs.ropensci.org/jsonvalidate/reference/json_validate.html" class="external-link">jsonvalidate::json_validate()</a></code> when using type 'text-based'</p></dd>
+This option is passed as part of the schema when using type  type
+"openai" or "ollama", and when using the other types it is passed to
+<code><a href="https://docs.ropensci.org/jsonvalidate/reference/json_validate.html" class="external-link">jsonvalidate::json_validate()</a></code></p></dd>
 
 
 <dt id="arg-schema-in-prompt-as">schema_in_prompt_as<a class="anchor" aria-label="anchor" href="#arg-schema-in-prompt-as"></a></dt>
-<dd><p>(optional) If providing a schema and when
-using type 'text-based', this argument specifies how the schema should be included in the prompt.</p><ul><li><p>"example" (default): The schema will be included as an example JSON object
-(tends to work best). 'r_json_schema_to_example()' is used to generate the example object</p></li>
-<li><p>"schema": The schema will be included as a JSON schema.#'</p></li>
+<dd><p>(optional) If providing a schema and
+when using type "text-based", "openai_oo", or "ollama_oo", this argument specifies
+how the schema should be included in the prompt:</p><ul><li><p>"example" (default): The schema will be included as an example JSON object
+(tends to work best). <code><a href="r_json_schema_to_example.html">r_json_schema_to_example()</a></code> is used to generate the example object
+from the schema</p></li>
+<li><p>"schema": The schema will be included as a JSON schema</p></li>
 </ul></dd>
 
 
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
-<dd><p>(optional) The way that the JSON response should be enforced.
-'auto' will automatically determine the type based on 'llm_provider$api_type'
-(note that this does not consider model compatibility, and could lead to errors;
-set 'type' manually if errors occur). 'openai' and 'ollama' will set the
-response format via the API parameters, while 'text-based' will validate the response
-with <code><a href="https://docs.ropensci.org/jsonvalidate/reference/json_validate.html" class="external-link">jsonvalidate::json_validate()</a></code>. 'text-based' always works, but may
-be inefficient for APIs that support JSON natively. Note that
-when combining <code>answer_as_json()</code> with other prompt wraps, 'text-based'
-may offer more flexibility and be more reliable. Note that 'openai' and 'ollama'
-may also work for other APIs with a similar structure</p></dd>
+<dd><p>(optional) The way that JSON response should be enforced:</p><ul><li><p>"text-based" (default): Instruction will be added to the prompt
+asking for JSON; when a schema is provided, this will also be included
+in the prompt (see argument 'schema_in_prompt_as'). JSON will be parsed
+from the LLM response and, when a schema is provided, it will be validated
+against the schema with <code><a href="https://docs.ropensci.org/jsonvalidate/reference/json_validate.html" class="external-link">jsonvalidate::json_validate()</a></code>. Feedback is sent to the
+LLM when the response is not valid. This option always works, but may in some
+cases may be less powerful than the other native JSON options</p></li>
+<li><p>"auto": Automatically determine the type based on 'llm_provider$api_type'.
+This does not consider model compatibility and could lead to errors; set 'type'
+manually if errors occur. Use 'text-based' if unsure</p></li>
+<li><p>"openai" and "ollama": The response format will be set via the relevant API parameters,
+making the API enforce a valid JSON response. If a schema is provided,
+it will also be included in the API parameters and also be enforced by the API.
+When no schema is provided, a request for JSON is added to the prompt (as required
+by the APIs). Note that these JSON options may not be available for all models
+of your provider; consult their documentation for more information.
+If you are unsure or encounter errors, use "text-based"</p></li>
+<li><p>"openai_oo" and "ollama_oo": Similar to "openai" and "ollama", but if a
+schema is provided it is not included in the API parameters. Schema validation
+will be done in R with <code><a href="https://docs.ropensci.org/jsonvalidate/reference/json_validate.html" class="external-link">jsonvalidate::json_validate()</a></code>. This can be useful if
+you want to use the API's JSON support, but their schema support is limited</p></li>
+</ul><p>Note that the "openai" and "ollama" types may also work for other APIs with a similar structure</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -128,33 +140,26 @@ that the LLM response is a valid JSON object</p>
     <div class="dont-index"><p>Other pre_built_prompt_wraps:
 <code><a href="add_text.html">add_text</a>()</code>,
 <code><a href="answer_as_boolean.html">answer_as_boolean</a>()</code>,
-<code><a href="answer_as_code.html">answer_as_code</a>()</code>,
 <code><a href="answer_as_integer.html">answer_as_integer</a>()</code>,
 <code><a href="answer_as_list.html">answer_as_list</a>()</code>,
 <code><a href="answer_as_named_list.html">answer_as_named_list</a>()</code>,
 <code><a href="answer_as_regex.html">answer_as_regex</a>()</code>,
 <code><a href="answer_by_chain_of_thought.html">answer_by_chain_of_thought</a>()</code>,
 <code><a href="answer_by_react.html">answer_by_react</a>()</code>,
+<code><a href="answer_using_r.html">answer_using_r</a>()</code>,
 <code><a href="answer_using_tools.html">answer_using_tools</a>()</code>,
 <code><a href="prompt_wrap.html">prompt_wrap</a>()</code>,
 <code><a href="quit_if.html">quit_if</a>()</code>,
 <code><a href="set_system_prompt.html">set_system_prompt</a>()</code></p>
 <p>Other answer_as_prompt_wraps:
 <code><a href="answer_as_boolean.html">answer_as_boolean</a>()</code>,
-<code><a href="answer_as_code.html">answer_as_code</a>()</code>,
 <code><a href="answer_as_integer.html">answer_as_integer</a>()</code>,
 <code><a href="answer_as_list.html">answer_as_list</a>()</code>,
 <code><a href="answer_as_named_list.html">answer_as_named_list</a>()</code>,
 <code><a href="answer_as_regex.html">answer_as_regex</a>()</code></p>
-<p>Other answer_as_json:
+<p>Other json:
 <code><a href="r_json_schema_from_example.html">r_json_schema_from_example</a>()</code>,
-<code><a href="r_json_schema_to_example.html">r_json_schema_to_example</a>()</code></p>
-<p>Other text_helpers:
-<code><a href="df_to_string.html">df_to_string</a>()</code>,
-<code><a href="extraction_fn_json.html">extraction_fn_json</a>()</code>,
-<code><a href="r_json_schema_to_example.html">r_json_schema_to_example</a>()</code>,
-<code><a href="skim_with_labels_and_levels.html">skim_with_labels_and_levels</a>()</code>,
-<code><a href="vector_list_to_string.html">vector_list_to_string</a>()</code></p></div>
+<code><a href="r_json_schema_to_example.html">r_json_schema_to_example</a>()</code></p></div>
     </div>
 
     <div class="section level2">

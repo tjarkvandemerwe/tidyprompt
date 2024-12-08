@@ -11,8 +11,8 @@
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Prompt Large Language Models (LLMs) And Enhance Their Functionality">
-<meta name="description" content="‘tidyprompt’ is an R package to easily prompt large language models (LLMs) and enhance their functionality. A framework is provided which allows users to construct LLM prompts using tidyverse-inspired piping syntax. Prompt wraps influence how a LLM handles the base prompt, through modifying the original text and applying extraction and validation functions to the LLM response. Users can choose from a library of pre-built prompt wraps or write their own. This allows for obtaining structured LLM output, with automatic feedback and retries if necessary. Additionally, the package supports LLM reasoning modes (e.g., chain of thought), autonomous R function calling, and R code generation and evaluation. tidyprompt is compatible with any LLM provider that offers chat completions.">
-<meta property="og:description" content="‘tidyprompt’ is an R package to easily prompt large language models (LLMs) and enhance their functionality. A framework is provided which allows users to construct LLM prompts using tidyverse-inspired piping syntax. Prompt wraps influence how a LLM handles the base prompt, through modifying the original text and applying extraction and validation functions to the LLM response. Users can choose from a library of pre-built prompt wraps or write their own. This allows for obtaining structured LLM output, with automatic feedback and retries if necessary. Additionally, the package supports LLM reasoning modes (e.g., chain of thought), autonomous R function calling, and R code generation and evaluation. tidyprompt is compatible with any LLM provider that offers chat completions.">
+<meta name="description" content="‘tidyprompt’ is an R package for easily constructing prompts and associated logic for interacting with large language models (LLMs). tidyprompt introduces the concept of prompt wraps, which are building blocks that you can use to quickly turn a simple prompt into a complex one. Prompt wraps do not just modify the prompt text, but also add extraction and validation functions that will be applied to the response of the LLM. This ensures that the user gets the desired output. tidyprompt can add various features to prompts and their evaluation by LLMs, such as structured output, automatic feedback, retries, reasoning modes, autonomous R function calling, and R code generation and evaluation. It is designed to be compatible with any LLM provider that offers chat completion.">
+<meta property="og:description" content="‘tidyprompt’ is an R package for easily constructing prompts and associated logic for interacting with large language models (LLMs). tidyprompt introduces the concept of prompt wraps, which are building blocks that you can use to quickly turn a simple prompt into a complex one. Prompt wraps do not just modify the prompt text, but also add extraction and validation functions that will be applied to the response of the LLM. This ensures that the user gets the desired output. tidyprompt can add various features to prompts and their evaluation by LLMs, such as structured output, automatic feedback, retries, reasoning modes, autonomous R function calling, and R code generation and evaluation. It is designed to be compatible with any LLM provider that offers chat completion.">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -58,20 +58,18 @@
 </h1></div>
 <!-- badges: start -->
 
-<p>‘tidyprompt’ is an R package to easily prompt large language models (‘LLMs’) and enhance their functionality.</p>
-<p>Key features of ‘tidyprompt’ are:</p>
+<p>‘tidyprompt’ is an R package for easily constructing prompts and associated logic for interacting with large language models (‘LLMs’).</p>
+<p>Think of ‘tidyprompt’ as the ‘ggplot2’ package for handling LLMs. ‘tidyprompt’ introduces the concept of prompt wraps, which are building blocks that you can use to quickly turn a simple prompt into an advanced one. Prompt wraps do not just modify the prompt text, but also add extraction and validation functions that will be applied to the response of the LLM. Moreover, these functions can send feedback to the LLM.</p>
+<p>With ‘tidyprompt’ and prompt wraps, you can add various features to your prompts and how they are evaluated by LLMs. For example:</p>
 <ul>
-<li><p><strong>tidy prompting</strong>: Easily construct prompts for LLMs, using piping syntax (inspired by the ‘tidyverse’). Prompt wraps are building blocks with which you can quickly create advanced prompts, simultaneously adding extraction and validation functions for processing the LLM output. A library of pre-built prompt wraps is included, but you can also write custom prompt wraps.</p></li>
 <li><p><strong>structured output</strong>: Obtain structured output from a LLM, adhering to a specific type and/or format. Use pre-built prompt wraps or your own R code to validate.</p></li>
-<li><p><strong>feedback &amp; retries</strong>: Automatically provide feedback to the LLM when the output is not as expected, so that it can retry.</p></li>
-<li><p><strong>reasoning modes</strong>: Make your LLM answer a prompt in a specific mode, such as chain-of-thought or ReAct (Reasoning and Acting) modes.</p></li>
+<li><p><strong>feedback &amp; retries</strong>: Automatically provide feedback to the LLM when the output is not as expected, allowing the LLM to retry their answer.</p></li>
+<li><p><strong>reasoning modes</strong>: Make your LLM answer a prompt in a specific mode, such as chain-of-thought or ReAct (Reasoning and Acting).</p></li>
 <li><p><strong>function calling</strong>: Give your LLM the ability to autonomously call R functions (‘tools’). With this, the LLM can retrieve information or take other actions. ‘tidyprompt’ also supports R code generation and evaluation, allowing LLMs to run R code.</p></li>
-<li><p><strong>compatible with all LLM providers</strong>: All features of ‘tidyprompt’ are designed to be provider-agnostic, meaning that they can be used with any LLM provider that supports chat completion. ‘tidyprompt’ includes various default LLM providers, including Ollama, OpenAI, OpenRouter (offering various providers, including Anthropic), Mistral, Groq, XAI (Grok), and Google Gemini. You can also write a hook for any other LLM provider.</p></li>
 </ul>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>You can install the development version of tidyprompt from <a href="https://github.com/tjarkvandemerwe/tidyprompt" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"tjarkvandemerwe/tidyprompt"</span><span class="op">)</span></span></code></pre></div>
@@ -80,11 +78,15 @@
 <h2 id="getting-started">Getting started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
 </h2>
 <p>See the <a href="https://tjarkvandemerwe.github.io/tidyprompt/articles/getting_started.html">‘Getting started’</a> vignette for a detailed introduction to using ‘tidyprompt’.</p>
-<p>Below are some quick examples of what is possible with ‘tidyprompt’:</p>
+</div>
+<div class="section level2">
+<h2 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
+</h2>
+<p>Here are some quick examples of what you can do with ‘tidyprompt’:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span>  <span class="st">"What is 5+5?"</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="reference/answer_as_integer.html">answer_as_integer</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="fu"><a href="reference/llm_provider_ollama.html">llm_provider_ollama</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="st">"What is 5+5?"</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/answer_as_integer.html">answer_as_integer</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="fu"><a href="reference/llm_provider_ollama.html">llm_provider_ollama</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 10</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="st">"Are you a large language model?"</span> <span class="op">|&gt;</span></span>
@@ -100,9 +102,8 @@
 <code class="sourceCode R"><span><span class="co"># Make LLM use a function from an R package to search Wikipedia for the answer</span></span>
 <span><span class="st">"What is something fun that happened in November 2024?"</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/add_text.html">add_text</a></span><span class="op">(</span><span class="st">"Summarize in one sentence."</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="reference/answer_by_chain_of_thought.html">answer_by_chain_of_thought</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/answer_using_tools.html">answer_using_tools</a></span><span class="op">(</span><span class="fu">getwiki</span><span class="fu">::</span><span class="va">search_wiki</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="fu"><a href="reference/llm_provider_openai.html">llm_provider_openai</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="fu"><a href="reference/llm_provider_ollama.html">llm_provider_ollama</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "The 2024 ARIA Music Awards ceremony, a vibrant celebration of Australian music,</span></span>
 <span><span class="co">#&gt; took place on November 20, 2024."</span></span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
@@ -111,7 +112,7 @@
 <span>  <span class="st">"Using my data, create a statistical model"</span>,</span>
 <span>  <span class="st">" investigating the relationship between two variables."</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="reference/answer_as_code.html">answer_as_code</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="reference/answer_using_r.html">answer_using_r</a></span><span class="op">(</span></span>
 <span>    objects_to_use <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">cars</span><span class="op">)</span>,</span>
 <span>    evaluate_code <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>    return_mode <span class="op">=</span> <span class="st">"object"</span></span>
@@ -146,11 +147,12 @@
 <div class="section level2">
 <h2 id="more-information-and-contributing">More information and contributing<a class="anchor" aria-label="anchor" href="#more-information-and-contributing"></a>
 </h2>
-<p>‘tidyprompt’ is under active development by Luka Koning (<a href="mailto:l.koning@kennispunttwente.nl" class="email">l.koning@kennispunttwente.nl</a>) and Tjark van de Merwe (<a href="mailto:t.vandemerwe@kennispunttwente.nl" class="email">t.vandemerwe@kennispunttwente.nl</a>). Note that in this stage, the package is not yet fully stable and its architecture is subject to change.</p>
-<p>If you encounter issues, please open an issue in the GitHub repository. You are welcome to contribute to the package by opening a pull request. If you have any questions or suggestions, you can also reach us via e-mail.</p>
+<p>‘tidyprompt’ is under active development by Luka Koning (<a href="mailto:l.koning@kennispunttwente.nl" class="email">l.koning@kennispunttwente.nl</a>) and Tjark van de Merwe (<a href="mailto:t.vandemerwe@kennispunttwente.nl" class="email">t.vandemerwe@kennispunttwente.nl</a>). Note that at this stage, the package may not yet be fully stable and its architecture may be subject to change.</p>
+<p>If you encounter issues, have questions, or have suggestions, please open an issue in the GitHub repository. You are also welcome to contribute to the package by opening a pull request.</p>
 <div class="section level3">
-<h3 id="philosophy-of-tidyprompt">Philosophy of ‘tidyprompt’<a class="anchor" aria-label="anchor" href="#philosophy-of-tidyprompt"></a>
+<h3 id="why-tidyprompt">Why ‘tidyprompt’?<a class="anchor" aria-label="anchor" href="#why-tidyprompt"></a>
 </h3>
+<p>We designed ‘tidyprompt’ because we found ourselves writing code repeatedly to both construct prompts and handle the associated output of LLMs; these tasks were intertwined. Often times, we also wanted to add features to our prompts, or take them away, which required us to rewrite a lot of code. Thus, we wanted to have building blocks with which we could easily construct prompts and simultaneously add code to handle the output of LLMs. This led us to a design inspired by piping syntax, as popularized by the ‘tidyverse’ and familiar to many R users.</p>
 <p>‘tidyprompt’ should be seen as a tool which can be used to enhance the functionality of LLMs beyond what APIs natively offer. It is designed to be flexible and provider-agnostic, so that its features can be used with a wide range of LLM providers and models.</p>
 <p>‘tidyprompt’ is primarily focused on ‘text-based’ handling of LLMs, where textual output is parsed to achieve structured output and other functionalities. Several LLM providers and models also offers forms of ‘native’ handling, where the LLM is directly controlled by the LLM provider to provide output in a certain manner.</p>
 <p>Where appropriate, ‘tidyprompt’ may also support native configuration of specific APIs. Currently, <code><a href="reference/answer_as_json.html">answer_as_json()</a></code> and <code><a href="reference/answer_using_tools.html">answer_using_tools()</a></code> offer native support for adhering to JSON schemas and calling functions. Native handling may be powerful in some cases, but restrictive in other cases. It is good to test what works best for your use case. Note also that prompt wraps may extend what is enforced by native handling, such as adding additional validation or feedback.</p>
@@ -158,7 +160,7 @@
 <div class="section level4">
 <h4 id="tidyprompt-versus-elmer--tidyllm">‘tidyprompt’ versus ‘elmer’ &amp; ‘tidyllm’<a class="anchor" aria-label="anchor" href="#tidyprompt-versus-elmer--tidyllm"></a>
 </h4>
-<p>In line with the above philosophy, ‘tidyprompt’ is less focused on interfacing with the APIs of various LLM providers, like R packages ‘elmer’ and ‘tidyllm’ do. Instead, ‘tidyprompt’ is primarily focused on offering a framework for constructing prompts and associated logic for complex interactions with LLMs.</p>
+<p>In line with the above, ‘tidyprompt’ is less focused on interfacing with the APIs of various LLM providers, like R packages ‘elmer’ and ‘tidyllm’ do. Instead, ‘tidyprompt’ is primarily focused on offering a framework for constructing prompts and associated logic for interactions with LLMs.</p>
 <p>We aim to design ‘tidyprompt’ in such a way that it may be compatible with ‘elmer’, ‘tidyllm’, and any other packages offering an interface to LLM APIs. We are open to feedback on our design and may include compatability with specific features from these packages in the future.</p>
 </div>
 </div>
