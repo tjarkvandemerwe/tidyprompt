@@ -2,7 +2,7 @@
 % Please edit documentation in R/answer_as_named_list.R
 \name{answer_as_named_list}
 \alias{answer_as_named_list}
-\title{Extract named list from LLM response with optional item instructions and validations}
+\title{Make LLM answer as a named list}
 \usage{
 answer_as_named_list(
   prompt,
@@ -29,7 +29,7 @@ the LLM response is a named list with the specified item names, optional
 instructions, and validations.
 }
 \description{
-Extract named list from LLM response with optional item instructions and validations
+Get a named list from LLM response with optional item instructions and validations.
 }
 \examples{
 \dontrun{

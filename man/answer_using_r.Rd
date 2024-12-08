@@ -2,7 +2,7 @@
 % Please edit documentation in R/answer_using_r.R
 \name{answer_using_r}
 \alias{answer_using_r}
-\title{Instruct LLM to answer a prompt with R code}
+\title{Enable LLM to answer a prompt with R code}
 \usage{
 answer_using_r(
   prompt,
@@ -21,7 +21,7 @@ answer_using_r(
 \arguments{
 \item{prompt}{A single string or a \code{\link[=tidyprompt]{tidyprompt()}} object}
 
-\item{add_text}{Single string which will be added to the current prompt text,
+\item{add_text}{Single string which will be added to the prompt text,
 informing the LLM that they must code in R to answer the prompt}
 
 \item{pkgs_to_use}{A character vector of package names that may be used
@@ -59,26 +59,29 @@ will be used but with 'system_profile' and 'user_profile' set to FALSE}
 
 \item{output_as_tool}{Logical indicating whether the console output of the
 evaluated R code should be sent back to the LLM, meaning the LLM will use
-R code as a tool to formulate an answer to the prompt. If TRUE, the LLM
+R code as a tool to formulate a final answer to the prompt. If TRUE, the LLM
 can decide if they can answer the prompt with the output, or if they need to modify
 their R code. Once the LLM does not provide new R code (i.e., the prompt is being answered)
 this prompt wrap will end (it will continue for as long as the LLM provides R code).
 When this option is enabled, the resulting \code{\link[=prompt_wrap]{prompt_wrap()}} will be of type 'tool'.
 If TRUE, the return mode will also always be set to 'llm_answer'}
 
-\item{return_mode}{Single string indicating the return mode. One of
-'full', 'code', 'console', 'object', 'formatted_output', or 'llm_answer'.
-If 'full', the function will return a list with the original LLM answer,
-the extracted R code, and (if evaluated) the output of the R code.
-If 'code', the function will return the extracted R code. If 'console', the
-function will return the console output of the evaluated R code.
-If 'object', the function will return the object produced by the evaluated R code.
-If 'formatted_output', the function will return a formatted string with the
-extracted R code, its console output, and a print of the last object (identical
-to how it would be presented to the LLM if 'output_as_tool' is TRUE).
-If 'llm_answer', the function will return only the original LLM answer.
+\item{return_mode}{Single string indicating the return mode. One of:
+\itemize{
+\item 'full': Return a list with the final LLM answer, the extracted R code,
+and (if argument 'evaluate_code' is TRUE) the output of the R code
+\item 'code': Return only the extracted R code
+\item 'console': Return only the console output of the evaluated R code
+\item 'object': Return only the object produced by the evaluated R code
+\item 'formatted_output': Return a formatted string with the extracted R code
+and its console output, and a print of the last object (this is identical to how it would
+be presented to the LLM if 'output_as_tool' is TRUE)
+\item 'llm_answer': Return only the final LLM answer
+}
 When choosing 'console' or 'object', an additional instruction will be added to
-the prompt text to inform the LLM about the expected output of the R code.}
+the prompt text to inform the LLM about the expected output of the R code.
+If 'output_as_tool' is TRUE, the return mode will always be set to 'llm_answer'
+(as the LLM will be using the R code as a tool to answer the prompt)}
 }
 \value{
 A \code{\link[=tidyprompt]{tidyprompt()}} object with the \code{\link[=prompt_wrap]{prompt_wrap()}} added to it, which
@@ -101,13 +104,13 @@ system; you must use this function with caution.
   # Prompt to plot object in R
   plot <- paste0(
     "Create a scatter plot of miles per gallon (mpg) versus",
-    " horsepower (hp) for the cars in the mtcars dataset.",
+    " horsepower (hp) for the cars in my data.",
     " Use different colors to represent the number of cylinders (cyl).",
     " Be very creative and make the plot look nice but also a little crazy!"
   ) |>
     answer_using_r(
       pkgs_to_use = c("ggplot2"),
-      objects_to_use = list("mtcars" = mtcars),
+      objects_to_use = list(mtcars = mtcars),
       evaluate_code = TRUE,
       return_mode = "object"
     ) |>
@@ -116,19 +119,38 @@ system; you must use this function with caution.
 
   # Prompt to value calculated with R
   avg_miles_per_gallon <- paste0(
-    "Using the mtcars dataset,",
+    "Using my data,",
     " calculate the average miles per gallon (mpg) for cars with 6 cylinders."
   ) |>
     answer_as_integer() |>
     answer_using_r(
       pkgs_to_use = c("dplyr"),
-      objects_to_use = list("mtcars" = mtcars),
+      objects_to_use = list(mtcars = mtcars),
       evaluate_code = TRUE,
       output_as_tool = TRUE
     ) |>
-    answer_by_chain_of_thought() |>
     send_prompt(llm_provider_ollama())
   avg_miles_per_gallon
+
+  # Prompt to linear model object in R
+  model <- paste0(
+    "Using my data, create a statistical model",
+    " investigating the relationship between two variables."
+  ) |>
+    answer_using_r(
+      objects_to_use = list(data = mtcars),
+      evaluate_code = TRUE,
+      return_mode = "object"
+    ) |>
+    prompt_wrap(
+      validation_fn = function(x) {
+        if (!inherits(x, "lm"))
+          return(llm_feedback("The output should be a linear model object."))
+        return(x)
+      }
+    ) |>
+    send_prompt(llm_provider_ollama())
+  summary(model)
 }
 }
 \seealso{

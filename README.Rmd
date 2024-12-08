@@ -27,7 +27,7 @@ Think of ‘tidyprompt’ as the 'ggplot2' package for handling LLMs.
 blocks that you can use to quickly turn a simple prompt into an advanced
 one. Prompt wraps do not just modify the prompt text, but also add
 extraction and validation functions that will be applied to the response
-of the LLM. Moreover, these functions can send feedback to the LLM.
+of a LLM. Moreover, these functions can send feedback to the LLM.
 
 With 'tidyprompt' and prompt wraps, you can add various 
 features to your prompts and how they are evaluated by LLMs. For example:
@@ -36,13 +36,13 @@ features to your prompts and how they are evaluated by LLMs. For example:
   to a specific type and/or format. Use pre-built prompt wraps or your
   own R code to validate.
   
-- **feedback & retries**: Automatically provide feedback to the LLM when
+- **feedback & retries**: Automatically provide feedback to a LLM when
   the output is not as expected, allowing the LLM to retry their answer.
   
-- **reasoning modes**: Make your LLM answer a prompt in a specific mode,
+- **reasoning modes**: Make a LLM answer a prompt in a specific mode,
   such as chain-of-thought or ReAct (Reasoning and Acting).
   
-- **function calling**: Give your LLM the ability to autonomously call R
+- **function calling**: Give a LLM the ability to autonomously call R
   functions (‘tools’). With this, the LLM can retrieve information or
   take other actions. ‘tidyprompt’ also supports R code generation and
   evaluation, allowing LLMs to run R code.

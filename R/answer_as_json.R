@@ -11,7 +11,7 @@
 #'
 #' @param prompt A single string or a [tidyprompt()] object
 #'
-#' @param schema (optional) A list which represents
+#' @param schema A list which represents
 #' a JSON schema that the response should match.See example and your API's
 #' documentation for more information on defining JSON schemas. [r_json_schema_from_example()]
 #' can be used to generate a schema from an example object. Note that the schema should be a
@@ -23,7 +23,7 @@
 #' "openai" or "ollama", and when using the other types it is passed to
 #' [jsonvalidate::json_validate()]
 #'
-#' @param schema_in_prompt_as (optional) If providing a schema and
+#' @param schema_in_prompt_as If providing a schema and
 #' when using type "text-based", "openai_oo", or "ollama_oo", this argument specifies
 #' how the schema should be included in the prompt:
 #' \itemize{
@@ -32,7 +32,7 @@
 #' from the schema
 #' \item "schema": The schema will be included as a JSON schema
 #' }
-#' @param type (optional) The way that JSON response should be enforced:
+#' @param type The way that JSON response should be enforced:
 #' \itemize{
 #' \item "text-based" (default): Instruction will be added to the prompt
 #' asking for JSON; when a schema is provided, this will also be included

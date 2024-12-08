@@ -1,4 +1,6 @@
-#' Extract named list from LLM response with optional item instructions and validations
+#' Make LLM answer as a named list
+#'
+#' Get a named list from LLM response with optional item instructions and validations.
 #'
 #' @param prompt A single string or a [tidyprompt()] object
 #' @param item_names A character vector specifying the expected item names
