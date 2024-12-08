@@ -80,7 +80,7 @@ while ensuring the results will be in the correct format.</p>
 
 
 <dt id="arg-schema">schema<a class="anchor" aria-label="anchor" href="#arg-schema"></a></dt>
-<dd><p>(optional) A list which represents
+<dd><p>A list which represents
 a JSON schema that the response should match.See example and your API's
 documentation for more information on defining JSON schemas. <code><a href="r_json_schema_from_example.html">r_json_schema_from_example()</a></code>
 can be used to generate a schema from an example object. Note that the schema should be a
@@ -96,7 +96,7 @@ This option is passed as part of the schema when using type  type
 
 
 <dt id="arg-schema-in-prompt-as">schema_in_prompt_as<a class="anchor" aria-label="anchor" href="#arg-schema-in-prompt-as"></a></dt>
-<dd><p>(optional) If providing a schema and
+<dd><p>If providing a schema and
 when using type "text-based", "openai_oo", or "ollama_oo", this argument specifies
 how the schema should be included in the prompt:</p><ul><li><p>"example" (default): The schema will be included as an example JSON object
 (tends to work best). <code><a href="r_json_schema_to_example.html">r_json_schema_to_example()</a></code> is used to generate the example object
@@ -106,7 +106,7 @@ from the schema</p></li>
 
 
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
-<dd><p>(optional) The way that JSON response should be enforced:</p><ul><li><p>"text-based" (default): Instruction will be added to the prompt
+<dd><p>The way that JSON response should be enforced:</p><ul><li><p>"text-based" (default): Instruction will be added to the prompt
 asking for JSON; when a schema is provided, this will also be included
 in the prompt (see argument 'schema_in_prompt_as'). JSON will be parsed
 from the LLM response and, when a schema is provided, it will be validated

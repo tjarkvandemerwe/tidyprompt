@@ -59,13 +59,13 @@
 <!-- badges: start -->
 
 <p>‘tidyprompt’ is an R package for easily constructing prompts and associated logic for interacting with large language models (‘LLMs’).</p>
-<p>Think of ‘tidyprompt’ as the ‘ggplot2’ package for handling LLMs. ‘tidyprompt’ introduces the concept of prompt wraps, which are building blocks that you can use to quickly turn a simple prompt into an advanced one. Prompt wraps do not just modify the prompt text, but also add extraction and validation functions that will be applied to the response of the LLM. Moreover, these functions can send feedback to the LLM.</p>
+<p>Think of ‘tidyprompt’ as the ‘ggplot2’ package for handling LLMs. ‘tidyprompt’ introduces the concept of prompt wraps, which are building blocks that you can use to quickly turn a simple prompt into an advanced one. Prompt wraps do not just modify the prompt text, but also add extraction and validation functions that will be applied to the response of a LLM. Moreover, these functions can send feedback to the LLM.</p>
 <p>With ‘tidyprompt’ and prompt wraps, you can add various features to your prompts and how they are evaluated by LLMs. For example:</p>
 <ul>
 <li><p><strong>structured output</strong>: Obtain structured output from a LLM, adhering to a specific type and/or format. Use pre-built prompt wraps or your own R code to validate.</p></li>
-<li><p><strong>feedback &amp; retries</strong>: Automatically provide feedback to the LLM when the output is not as expected, allowing the LLM to retry their answer.</p></li>
-<li><p><strong>reasoning modes</strong>: Make your LLM answer a prompt in a specific mode, such as chain-of-thought or ReAct (Reasoning and Acting).</p></li>
-<li><p><strong>function calling</strong>: Give your LLM the ability to autonomously call R functions (‘tools’). With this, the LLM can retrieve information or take other actions. ‘tidyprompt’ also supports R code generation and evaluation, allowing LLMs to run R code.</p></li>
+<li><p><strong>feedback &amp; retries</strong>: Automatically provide feedback to a LLM when the output is not as expected, allowing the LLM to retry their answer.</p></li>
+<li><p><strong>reasoning modes</strong>: Make a LLM answer a prompt in a specific mode, such as chain-of-thought or ReAct (Reasoning and Acting).</p></li>
+<li><p><strong>function calling</strong>: Give a LLM the ability to autonomously call R functions (‘tools’). With this, the LLM can retrieve information or take other actions. ‘tidyprompt’ also supports R code generation and evaluation, allowing LLMs to run R code.</p></li>
 </ul>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
