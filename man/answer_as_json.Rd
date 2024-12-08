@@ -9,46 +9,59 @@ answer_as_json(
   schema = NULL,
   schema_strict = FALSE,
   schema_in_prompt_as = c("example", "schema"),
-  type = c("text-based", "auto", "openai", "ollama")
+  type = c("text-based", "auto", "openai", "ollama", "openai_oo", "ollama_oo")
 )
 }
 \arguments{
 \item{prompt}{A single string or a \code{\link[=tidyprompt]{tidyprompt()}} object}
 
 \item{schema}{(optional) A list which represents
-a JSON schema that the response should match
-\itemize{
-\item When using type 'openai' or 'ollama', the schema will be provided
-via the API parameters and the API will ensure the response matches the schema.
-\item When using type 'text-based', the schema will be used to validate the response
-with \code{\link[jsonvalidate:json_validate]{jsonvalidate::json_validate()}}.
-}
-See example and your API's documentation for more information on defining JSON schemas.
-'r_json_schema_from_example()' can be used to generate a schema from an example object.
-Note that the schema should be a list (R object) representing a JSON schema, not
-a JSON string (use package 'jsonlite' to convert from/to JSON)}
+a JSON schema that the response should match.See example and your API's
+documentation for more information on defining JSON schemas. \code{\link[=r_json_schema_from_example]{r_json_schema_from_example()}}
+can be used to generate a schema from an example object. Note that the schema should be a
+list (R object) representing a JSON schema, not a JSON string
+(use \code{\link[jsonlite:fromJSON]{jsonlite::fromJSON()}} and \code{\link[jsonlite:fromJSON]{jsonlite::toJSON()}} to convert between the two)}
 
 \item{schema_strict}{If TRUE, the provided schema will be strictly enforced.
-This option is passed as part of the schema when using type 'openai' or 'ollama',
-and is passed to \code{\link[jsonvalidate:json_validate]{jsonvalidate::json_validate()}} when using type 'text-based'}
+This option is passed as part of the schema when using type  type
+"openai" or "ollama", and when using the other types it is passed to
+\code{\link[jsonvalidate:json_validate]{jsonvalidate::json_validate()}}}
 
-\item{schema_in_prompt_as}{(optional) If providing a schema and when
-using type 'text-based', this argument specifies how the schema should be included in the prompt.
+\item{schema_in_prompt_as}{(optional) If providing a schema and
+when using type "text-based", "openai_oo", or "ollama_oo", this argument specifies
+how the schema should be included in the prompt:
 \itemize{
 \item "example" (default): The schema will be included as an example JSON object
-(tends to work best). 'r_json_schema_to_example()' is used to generate the example object
-\item "schema": The schema will be included as a JSON schema.#' }}
+(tends to work best). \code{\link[=r_json_schema_to_example]{r_json_schema_to_example()}} is used to generate the example object
+from the schema
+\item "schema": The schema will be included as a JSON schema
+}}
 
-\item{type}{(optional) The way that the JSON response should be enforced.
-'auto' will automatically determine the type based on 'llm_provider$api_type'
-(note that this does not consider model compatibility, and could lead to errors;
-set 'type' manually if errors occur). 'openai' and 'ollama' will set the
-response format via the API parameters, while 'text-based' will validate the response
-with \code{\link[jsonvalidate:json_validate]{jsonvalidate::json_validate()}}. 'text-based' always works, but may
-be inefficient for APIs that support JSON natively. Note that
-when combining \code{\link[=answer_as_json]{answer_as_json()}} with other prompt wraps, 'text-based'
-may offer more flexibility and be more reliable. Note that 'openai' and 'ollama'
-may also work for other APIs with a similar structure}
+\item{type}{(optional) The way that JSON response should be enforced:
+\itemize{
+\item "text-based" (default): Instruction will be added to the prompt
+asking for JSON; when a schema is provided, this will also be included
+in the prompt (see argument 'schema_in_prompt_as'). JSON will be parsed
+from the LLM response and, when a schema is provided, it will be validated
+against the schema with \code{\link[jsonvalidate:json_validate]{jsonvalidate::json_validate()}}. Feedback is sent to the
+LLM when the response is not valid. This option always works, but may in some
+cases may be less powerful than the other native JSON options
+\item "auto": Automatically determine the type based on 'llm_provider$api_type'.
+This does not consider model compatibility and could lead to errors; set 'type'
+manually if errors occur. Use 'text-based' if unsure
+\item "openai" and "ollama": The response format will be set via the relevant API parameters,
+making the API enforce a valid JSON response. If a schema is provided,
+it will also be included in the API parameters and also be enforced by the API.
+When no schema is provided, a request for JSON is added to the prompt (as required
+by the APIs). Note that these JSON options may not be available for all models
+of your provider; consult their documentation for more information.
+If you are unsure or encounter errors, use "text-based"
+\item "openai_oo" and "ollama_oo": Similar to "openai" and "ollama", but if a
+schema is provided it is not included in the API parameters. Schema validation
+will be done in R with \code{\link[jsonvalidate:json_validate]{jsonvalidate::json_validate()}}. This can be useful if
+you want to use the API's JSON support, but their schema support is limited
+}
+Note that the "openai" and "ollama" types may also work for other APIs with a similar structure}
 }
 \value{
 A \code{\link[=tidyprompt]{tidyprompt()}} with an added \code{\link[=prompt_wrap]{prompt_wrap()}} which will ensure
@@ -344,13 +357,13 @@ r_json_schema_to_example(json_schema)
 Other pre_built_prompt_wraps: 
 \code{\link{add_text}()},
 \code{\link{answer_as_boolean}()},
-\code{\link{answer_as_code}()},
 \code{\link{answer_as_integer}()},
 \code{\link{answer_as_list}()},
 \code{\link{answer_as_named_list}()},
 \code{\link{answer_as_regex}()},
 \code{\link{answer_by_chain_of_thought}()},
 \code{\link{answer_by_react}()},
+\code{\link{answer_using_r}()},
 \code{\link{answer_using_tools}()},
 \code{\link{prompt_wrap}()},
 \code{\link{quit_if}()},
@@ -358,24 +371,15 @@ Other pre_built_prompt_wraps:
 
 Other answer_as_prompt_wraps: 
 \code{\link{answer_as_boolean}()},
-\code{\link{answer_as_code}()},
 \code{\link{answer_as_integer}()},
 \code{\link{answer_as_list}()},
 \code{\link{answer_as_named_list}()},
 \code{\link{answer_as_regex}()}
 
-Other answer_as_json: 
+Other json: 
 \code{\link{r_json_schema_from_example}()},
 \code{\link{r_json_schema_to_example}()}
-
-Other text_helpers: 
-\code{\link{df_to_string}()},
-\code{\link{extraction_fn_json}()},
-\code{\link{r_json_schema_to_example}()},
-\code{\link{skim_with_labels_and_levels}()},
-\code{\link{vector_list_to_string}()}
 }
-\concept{answer_as_json}
 \concept{answer_as_prompt_wraps}
+\concept{json}
 \concept{pre_built_prompt_wraps}
-\concept{text_helpers}

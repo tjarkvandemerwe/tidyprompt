@@ -19,9 +19,7 @@ them to R objects.
 }
 \seealso{
 Other text_helpers: 
-\code{\link{answer_as_json}()},
 \code{\link{df_to_string}()},
-\code{\link{r_json_schema_to_example}()},
 \code{\link{skim_with_labels_and_levels}()},
 \code{\link{vector_list_to_string}()}
 }

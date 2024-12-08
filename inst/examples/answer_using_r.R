@@ -6,7 +6,7 @@
     " Use different colors to represent the number of cylinders (cyl).",
     " Be very creative and make the plot look nice but also a little crazy!"
   ) |>
-    answer_as_code(
+    answer_using_r(
       pkgs_to_use = c("ggplot2"),
       objects_to_use = list("mtcars" = mtcars),
       evaluate_code = TRUE,
@@ -21,7 +21,7 @@
     " calculate the average miles per gallon (mpg) for cars with 6 cylinders."
   ) |>
     answer_as_integer() |>
-    answer_as_code(
+    answer_using_r(
       pkgs_to_use = c("dplyr"),
       objects_to_use = list("mtcars" = mtcars),
       evaluate_code = TRUE,

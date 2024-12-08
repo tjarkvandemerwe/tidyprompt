@@ -34,7 +34,7 @@
 #' ReAct: Synergizing Reasoning and Acting in Language Models.
 #' <doi:10.48550/arXiv.2210.03629>
 #'
-#' @seealso [answer_using_tools()] [answer_as_code()]
+#' @seealso [answer_using_tools()] [answer_using_r()]
 #'
 #' @family pre_built_prompt_wraps
 #' @family answer_by_prompt_wraps

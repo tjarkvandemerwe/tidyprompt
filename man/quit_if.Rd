@@ -76,7 +76,6 @@ response to a prompt.
 Other pre_built_prompt_wraps: 
 \code{\link{add_text}()},
 \code{\link{answer_as_boolean}()},
-\code{\link{answer_as_code}()},
 \code{\link{answer_as_integer}()},
 \code{\link{answer_as_json}()},
 \code{\link{answer_as_list}()},
@@ -84,6 +83,7 @@ Other pre_built_prompt_wraps:
 \code{\link{answer_as_regex}()},
 \code{\link{answer_by_chain_of_thought}()},
 \code{\link{answer_by_react}()},
+\code{\link{answer_using_r}()},
 \code{\link{answer_using_tools}()},
 \code{\link{prompt_wrap}()},
 \code{\link{set_system_prompt}()}

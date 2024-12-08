@@ -115,12 +115,11 @@ prompt <- "Hi, what is the weather in Enschede? Give me Celcius degrees" |>
 }
 }
 \seealso{
-\code{\link[=answer_as_code]{answer_as_code()}} \code{\link[=tools_get_docs]{tools_get_docs()}}
+\code{\link[=answer_using_r]{answer_using_r()}} \code{\link[=tools_get_docs]{tools_get_docs()}}
 
 Other pre_built_prompt_wraps: 
 \code{\link{add_text}()},
 \code{\link{answer_as_boolean}()},
-\code{\link{answer_as_code}()},
 \code{\link{answer_as_integer}()},
 \code{\link{answer_as_json}()},
 \code{\link{answer_as_list}()},
@@ -128,16 +127,20 @@ Other pre_built_prompt_wraps:
 \code{\link{answer_as_regex}()},
 \code{\link{answer_by_chain_of_thought}()},
 \code{\link{answer_by_react}()},
+\code{\link{answer_using_r}()},
 \code{\link{prompt_wrap}()},
 \code{\link{quit_if}()},
 \code{\link{set_system_prompt}()}
 
-Other llm_tools: 
-\code{\link{answer_as_code}()}
+Other answer_using_prompt_wraps: 
+\code{\link{answer_using_r}()}
 
-Other add_tools: 
+Other tools: 
+\code{\link{tools_add_docs}()},
+\code{\link{tools_docs_to_r_json_schema}()},
+\code{\link{tools_docs_to_text}()},
 \code{\link{tools_get_docs}()}
 }
-\concept{add_tools}
-\concept{llm_tools}
+\concept{answer_using_prompt_wraps}
 \concept{pre_built_prompt_wraps}
+\concept{tools}

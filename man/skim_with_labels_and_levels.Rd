@@ -29,10 +29,8 @@ mtcars |>
 }
 \seealso{
 Other text_helpers: 
-\code{\link{answer_as_json}()},
 \code{\link{df_to_string}()},
 \code{\link{extraction_fn_json}()},
-\code{\link{r_json_schema_to_example}()},
 \code{\link{vector_list_to_string}()}
 }
 \concept{text_helpers}

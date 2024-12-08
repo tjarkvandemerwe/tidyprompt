@@ -90,3 +90,11 @@ prompt <- "Hi, what is the weather in Enschede? Give me Celcius degrees" |>
     send_prompt(llm_provider_ollama())
 }
 }
+\seealso{
+Other tools: 
+\code{\link{answer_using_tools}()},
+\code{\link{tools_add_docs}()},
+\code{\link{tools_docs_to_text}()},
+\code{\link{tools_get_docs}()}
+}
+\concept{tools}

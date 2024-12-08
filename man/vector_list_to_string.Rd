@@ -32,10 +32,8 @@ vector_list_to_string(named_vector, how = "expanded") |>
 }
 \seealso{
 Other text_helpers: 
-\code{\link{answer_as_json}()},
 \code{\link{df_to_string}()},
 \code{\link{extraction_fn_json}()},
-\code{\link{r_json_schema_to_example}()},
 \code{\link{skim_with_labels_and_levels}()}
 }
 \concept{text_helpers}

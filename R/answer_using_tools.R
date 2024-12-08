@@ -43,11 +43,11 @@
 #'
 #' @example inst/examples/answer_using_tools.R
 #'
-#' @seealso [answer_as_code()] [tools_get_docs()]
+#' @seealso [answer_using_r()] [tools_get_docs()]
 #'
 #' @family pre_built_prompt_wraps
-#' @family llm_tools
-#' @family add_tools
+#' @family answer_using_prompt_wraps
+#' @family tools
 answer_using_tools <- function(
     prompt,
     tools = list(),
@@ -438,6 +438,7 @@ answer_using_tools <- function(
 #' @export
 #'
 #' @example inst/examples/answer_using_tools.R
+#' @family tools
 tools_add_docs <- function(
     func,
     docs
@@ -492,7 +493,7 @@ tools_add_docs <- function(
 #'
 #' @example inst/examples/answer_using_tools.R
 #'
-#' @family add_tools
+#' @family tools
 tools_get_docs <- function(func, name = NULL) {
   stopifnot(
     is.function(func),
@@ -972,6 +973,7 @@ gd_parse_help_text <- function(help_text) {
 #' @export
 #'
 #' @example inst/examples/answer_using_tools.R
+#' @family tools
 tools_docs_to_r_json_schema <- function(
     docs,
     all_required = TRUE,
@@ -1121,6 +1123,7 @@ tools_docs_to_r_json_schema <- function(
 #' @export
 #'
 #' @example inst/examples/answer_using_tools.R
+#' @family tools
 tools_docs_to_text <- function(docs, with_arguments = TRUE) {
 
   # Internal helper function to process arguments

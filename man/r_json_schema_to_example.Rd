@@ -294,16 +294,8 @@ r_json_schema_to_example(json_schema)
 }
 }
 \seealso{
-Other answer_as_json: 
+Other json: 
 \code{\link{answer_as_json}()},
 \code{\link{r_json_schema_from_example}()}
-
-Other text_helpers: 
-\code{\link{answer_as_json}()},
-\code{\link{df_to_string}()},
-\code{\link{extraction_fn_json}()},
-\code{\link{skim_with_labels_and_levels}()},
-\code{\link{vector_list_to_string}()}
 }
-\concept{answer_as_json}
-\concept{text_helpers}
+\concept{json}

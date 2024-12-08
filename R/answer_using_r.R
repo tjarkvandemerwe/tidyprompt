@@ -66,14 +66,13 @@
 #'
 #' @export
 #'
-#' @example inst/examples/answer_as_code.R
+#' @example inst/examples/answer_using_r.R
 #'
 #' @seealso [answer_using_tools()]
 #'
 #' @family pre_built_prompt_wraps
-#' @family answer_as_prompt_wraps
-#' @family llm_tools
-answer_as_code <- function(
+#' @family answer_using_prompt_wraps
+answer_using_r <- function(
     prompt,
     add_text = "You must code in the programming language 'R' to answer this prompt.",
     pkgs_to_use = c(),
@@ -84,7 +83,14 @@ answer_as_code <- function(
     evaluate_code = FALSE,
     r_session_options = list(),
     output_as_tool = FALSE,
-    return_mode = c("full", "code", "console", "object", "formatted_output", "llm_answer")
+    return_mode = c(
+      "full",
+      "code",
+      "console",
+      "object",
+      "formatted_output",
+      "llm_answer"
+    )
 ) {
   ## Validate settings
 
@@ -277,7 +283,7 @@ answer_as_code <- function(
     return_list <- list()
     return_list$llm_answer <- x
 
-    extracted_code <- answer_as_code_extract_r_code(x)
+    extracted_code <- answer_using_r_extract_r_code(x)
 
     if (length(extracted_code) == 0) {
       if (output_as_tool) {
@@ -399,7 +405,7 @@ answer_as_code <- function(
 
   prompt_wrap(
     prompt, modify_fn, extraction_fn,
-    type = type, name = "answer_as_code"
+    type = type, name = "answer_using_r"
   )
 }
 
@@ -416,7 +422,7 @@ answer_as_code <- function(
 #' @return A character vector containing the extracted R code
 #'
 #' @noRd
-answer_as_code_extract_r_code <- function(input_string) {
+answer_using_r_extract_r_code <- function(input_string) {
   # Use regular expression to match all content between ```r and ```, with case-insensitive matching
   matches <- gregexpr("(?s)```[rR]\\s*(.*?)\\s*```", input_string, perl = TRUE)
   extracted_code <- regmatches(input_string, matches)

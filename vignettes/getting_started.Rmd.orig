@@ -6,7 +6,7 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 resource_files:
-  - ../man/figures/answer_as_code1-1.png
+  - ../man/figures/answer_using_r1-1.png
 ---
 
 ```{r chunk_options, include = FALSE}
@@ -122,7 +122,7 @@ Below is an example of a prompt which will initially fail, but will succeed afte
 ```
 
 'tidyprompt' offers various other 'answer_as' functions, such as `answer_as_boolean()`, `answer_as_regex()`,
-`answer_as_named_list()`, `answer_as_code()`, and `answer_as_json()`.
+`answer_as_named_list()`, `answer_using_r()`, and `answer_as_json()`.
 
 ##### JSON output
 
@@ -178,7 +178,7 @@ parameters, currently implemented for OpenAI and Ollama API structures).
 
 ### Code generation and evaluation
 
-`answer_as_code()` provides a more advanced prompt wrap, which has various options
+`answer_using_r()` provides a more advanced prompt wrap, which has various options
 to enable LLM code generation. R code can be extracted, parsed
 for validity, and optionally be evaluated in a dedicated R session (using the
 'callr' package). The prompt wrap can also be set to 'tool mode' (with `output_as_tool = TRUE`),
@@ -189,7 +189,7 @@ a final answer.
 openai$verbose <- FALSE; options(tidyprompt.verbose = FALSE)
 ```
 
-```{r answer_as_code1, warning=FALSE, cache=TRUE, eval=FALSE}
+```{r answer_using_r1, warning=FALSE, cache=TRUE, eval=FALSE}
 # From prompt to ggplot
 plot <- paste0(
   "Create a scatter plot of miles per gallon (mpg) versus",
@@ -198,7 +198,7 @@ plot <- paste0(
   " Make the plot nice and readable,",
   " but also be creative, a little crazy, and have humour!"
 ) |>
-  answer_as_code(
+  answer_using_r(
     pkgs_to_use = c("ggplot2"),
     evaluate_code = TRUE,
     return_mode = "object"
@@ -206,7 +206,7 @@ plot <- paste0(
   send_prompt(openai)
 plot
 ```
-![plot](figure/answer_as_code1-1.png)
+![plot](figure/answer_using_r1-1.png)
 
 ```{r include=FALSE}
 openai$verbose <- TRUE; options(tidyprompt.verbose = TRUE)

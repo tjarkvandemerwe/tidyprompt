@@ -4,7 +4,7 @@ template:
 reference:
 - title: Prompt wrapping and evaluation
 - subtitle: tidyprompt
-  desc: Function to create and handle Tidyprompt objects.
+  desc: Functions to create and handle Tidyprompt objects.
 - contents:
   - tidyprompt
   - tidyprompt-class
@@ -23,20 +23,19 @@ reference:
   - send_prompt
 - title: Prompt wrap library
   desc: A library of pre-built prompt wraps for common use cases.
-- subtitle: Answer as (structured output)
-  desc: Functions to have LLMs answer in a specific format.
+- subtitle: Answer as
+  desc: Functions to have LLMs answer in a specific format (structured output).
 - contents:
   - starts_with("answer_as")
-- subtitle: Answer by (mode)
+- subtitle: Answer by
   desc: Functions to have LLMs answer in a specific way.
 - contents:
   - starts_with("answer_by")
-- subtitle: Tools (function-calling) and code
-  desc: Functions that empower a LLM with tools and code
+- subtitle: Answer using
+  desc: Functions that give LLMs access to tools (function-calling) and code
 - contents:
   - starts_with("answer_using")
   - starts_with("tools_")
-  - answer_as_code
 - subtitle: Miscellaneous
 - contents:
   - add_text

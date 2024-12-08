@@ -293,9 +293,9 @@ r_json_schema_to_example(json_schema)
 }
 }
 \seealso{
-Other answer_as_json: 
+Other json: 
 \code{\link{answer_as_json}()},
 \code{\link{r_json_schema_to_example}()}
 }
 \concept{answer_as_json}
-\concept{json_schema}
+\concept{json}

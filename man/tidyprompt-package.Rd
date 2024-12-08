@@ -5,7 +5,7 @@
 \alias{tidyprompt-package}
 \title{tidyprompt: Prompt Large Language Models ('LLMs') And Enhance Their Functionality}
 \description{
-‘tidyprompt’ is an R package to easily prompt large language models ('LLMs') and enhance their functionality. A framework is provided which allows users to construct LLM prompts using 'tidyverse'-inspired piping syntax. 'Prompt wraps' influence how a LLM handles the base prompt, through modifying the original text and applying extraction and validation functions to the LLM response. Users can choose from a library of pre-built prompt wraps or write their own. This allows for obtaining structured LLM output, with automatic feedback and retries if necessary. Additionally, the package supports LLM reasoning modes (e.g., chain of thought), autonomous R function calling, and R code generation and evaluation. 'tidyprompt' is compatible with any LLM provider that offers chat completions.
+‘tidyprompt’ is an R package for easily constructing prompts and associated logic for interacting with large language models ('LLMs'). 'tidyprompt' introduces the concept of prompt wraps, which are building blocks that you can use to quickly turn a simple prompt into a complex one. Prompt wraps do not just modify the prompt text, but also add extraction and validation functions that will be applied to the response of the LLM. This ensures that the user gets the desired output. 'tidyprompt' can add various features to prompts and their evaluation by LLMs, such as structured output, automatic feedback, retries, reasoning modes, autonomous R function calling, and R code generation and evaluation. It is designed to be compatible with any LLM provider that offers chat completion.
 }
 \seealso{
 Useful links:
