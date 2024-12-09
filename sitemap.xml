@@ -12,12 +12,15 @@
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/answer_as_boolean.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/answer_as_integer.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/answer_as_json.html</loc></url>
+<url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/answer_as_key_value.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/answer_as_list.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/answer_as_named_list.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/answer_as_regex.html</loc></url>
+<url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/answer_as_text.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/answer_by_chain_of_thought.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/answer_by_react.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/answer_using_r.html</loc></url>
+<url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/answer_using_sql.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/answer_using_tools.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/chat_history.character.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/chat_history.data.frame.html</loc></url>
