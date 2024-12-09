@@ -1,4 +1,4 @@
-#' Enable LLM to answer prompt with SQL database
+#' Enable LLM to draft and execute SQL queries on a database
 #'
 #' @param prompt A single string or a [tidyprompt()] object
 #'

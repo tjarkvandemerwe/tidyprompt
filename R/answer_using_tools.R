@@ -1,4 +1,4 @@
-#' Enable R function calling for prompt evaluation by a LLM
+#' Enable LLM to call R functions
 #'
 #' This function adds the ability for the a LLM to call R functions.
 #' Users can specify a list of functions that the LLM can call, and the

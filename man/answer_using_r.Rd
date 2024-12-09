@@ -2,7 +2,7 @@
 % Please edit documentation in R/answer_using_r.R
 \name{answer_using_r}
 \alias{answer_using_r}
-\title{Enable LLM to answer a prompt with R code}
+\title{Enable LLM to draft and execute R code}
 \usage{
 answer_using_r(
   prompt,

@@ -1,4 +1,4 @@
-#' Enable LLM to answer a prompt with R code
+#' Enable LLM to draft and execute R code
 #'
 #' This function adds a prompt wrap to a [tidyprompt()] that instructs the
 #' LLM to answer the prompt with R code. There are various options to customize

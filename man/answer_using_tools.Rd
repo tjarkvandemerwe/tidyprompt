@@ -2,7 +2,7 @@
 % Please edit documentation in R/answer_using_tools.R
 \name{answer_using_tools}
 \alias{answer_using_tools}
-\title{Enable R function calling for prompt evaluation by a LLM}
+\title{Enable LLM to call R functions}
 \usage{
 answer_using_tools(
   prompt,

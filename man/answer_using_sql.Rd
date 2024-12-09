@@ -2,7 +2,7 @@
 % Please edit documentation in R/answer_using_sql.R
 \name{answer_using_sql}
 \alias{answer_using_sql}
-\title{Enable LLM to answer prompt with SQL database}
+\title{Enable LLM to draft and execute SQL queries on a database}
 \usage{
 answer_using_sql(
   prompt,
@@ -59,7 +59,7 @@ A \code{\link[=tidyprompt]{tidyprompt()}} with an added \code{\link[=prompt_wrap
 that the LLM will use SQL to answer the prompt
 }
 \description{
-Enable LLM to answer prompt with SQL database
+Enable LLM to draft and execute SQL queries on a database
 }
 \examples{
 \dontrun{
