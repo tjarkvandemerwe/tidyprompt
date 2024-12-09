@@ -40,7 +40,8 @@ Suggests:
     callr,
     skimr,
     jsonvalidate,
-    tidyjson
+    tidyjson,
+    DBI
 VignetteBuilder: knitr
 Imports: 
     dplyr,

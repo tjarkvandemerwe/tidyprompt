@@ -164,14 +164,17 @@ Other pre_built_prompt_wraps:
 \code{\link{answer_as_list}()},
 \code{\link{answer_as_named_list}()},
 \code{\link{answer_as_regex}()},
+\code{\link{answer_as_text}()},
 \code{\link{answer_by_chain_of_thought}()},
 \code{\link{answer_by_react}()},
+\code{\link{answer_using_sql}()},
 \code{\link{answer_using_tools}()},
 \code{\link{prompt_wrap}()},
 \code{\link{quit_if}()},
 \code{\link{set_system_prompt}()}
 
 Other answer_using_prompt_wraps: 
+\code{\link{answer_using_sql}()},
 \code{\link{answer_using_tools}()}
 }
 \concept{answer_using_prompt_wraps}

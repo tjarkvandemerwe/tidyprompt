@@ -361,9 +361,11 @@ Other pre_built_prompt_wraps:
 \code{\link{answer_as_list}()},
 \code{\link{answer_as_named_list}()},
 \code{\link{answer_as_regex}()},
+\code{\link{answer_as_text}()},
 \code{\link{answer_by_chain_of_thought}()},
 \code{\link{answer_by_react}()},
 \code{\link{answer_using_r}()},
+\code{\link{answer_using_sql}()},
 \code{\link{answer_using_tools}()},
 \code{\link{prompt_wrap}()},
 \code{\link{quit_if}()},
@@ -374,7 +376,8 @@ Other answer_as_prompt_wraps:
 \code{\link{answer_as_integer}()},
 \code{\link{answer_as_list}()},
 \code{\link{answer_as_named_list}()},
-\code{\link{answer_as_regex}()}
+\code{\link{answer_as_regex}()},
+\code{\link{answer_as_text}()}
 
 Other json: 
 \code{\link{r_json_schema_from_example}()},
