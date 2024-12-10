@@ -143,10 +143,11 @@ that the LLM will use SQL to answer the prompt</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span>  <span class="co"># Sample SQLite database to illustrate example:</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># Create an in-memory SQLite database</span></span></span>
 <span class="r-in"><span>  <span class="va">conn</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">RSQLite</span><span class="fu">::</span><span class="fu">SQLite</span><span class="op">(</span><span class="op">)</span>, <span class="st">":memory:"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co"># Sample table of customers:</span></span></span>
+<span class="r-in"><span>  <span class="co"># Create a sample table of customers</span></span></span>
 <span class="r-in"><span>  <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">conn</span>, <span class="st">"</span></span></span>
 <span class="r-in"><span><span class="st">  CREATE TABLE</span></span></span>
 <span class="r-in"><span><span class="st">    customers (</span></span></span>
@@ -157,7 +158,7 @@ that the LLM will use SQL to answer the prompt</p>
 <span class="r-in"><span><span class="st">    );</span></span></span>
 <span class="r-in"><span><span class="st">  "</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co"># Some sample customer data:</span></span></span>
+<span class="r-in"><span>  <span class="co"># Insert some sample customer data</span></span></span>
 <span class="r-in"><span>  <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">conn</span>, <span class="st">"</span></span></span>
 <span class="r-in"><span><span class="st">  INSERT INTO</span></span></span>
 <span class="r-in"><span><span class="st">    customers (name, email, country)</span></span></span>
@@ -168,16 +169,29 @@ that the LLM will use SQL to answer the prompt</p>
 <span class="r-in"><span><span class="st">    ('Diana', 'diana@example.com', 'USA');</span></span></span>
 <span class="r-in"><span><span class="st">  "</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co"># Sample table for orders:</span></span></span>
+<span class="r-in"><span>  <span class="co"># Create another sample table for orders</span></span></span>
 <span class="r-in"><span>  <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">conn</span>, <span class="st">"</span></span></span>
-<span class="r-in"><span><span class="st">    CREATE TABLE orders (</span></span></span>
-<span class="r-in"><span><span class="st">      order_id INTEGER PRIMARY KEY,</span></span></span>
-<span class="r-in"><span><span class="st">      customer_id INTEGER,</span></span></span>
-<span class="r-in"><span><span class="st">      product TEXT,</span></span></span>
-<span class="r-in"><span><span class="st">      amount REAL,</span></span></span>
-<span class="r-in"><span><span class="st">      order_date TEXT,</span></span></span>
-<span class="r-in"><span><span class="st">      FOREIGN KEY(customer_id) REFERENCES customers(id)</span></span></span>
-<span class="r-in"><span><span class="st">    );</span></span></span>
+<span class="r-in"><span><span class="st">  CREATE TABLE orders (</span></span></span>
+<span class="r-in"><span><span class="st">    order_id INTEGER PRIMARY KEY,</span></span></span>
+<span class="r-in"><span><span class="st">    customer_id INTEGER,</span></span></span>
+<span class="r-in"><span><span class="st">    product TEXT,</span></span></span>
+<span class="r-in"><span><span class="st">    amount REAL,</span></span></span>
+<span class="r-in"><span><span class="st">    order_date TEXT,</span></span></span>
+<span class="r-in"><span><span class="st">    FOREIGN KEY(customer_id) REFERENCES customers(id)</span></span></span>
+<span class="r-in"><span><span class="st">  );</span></span></span>
+<span class="r-in"><span><span class="st">  "</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># Insert some sample orders</span></span></span>
+<span class="r-in"><span>  <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">conn</span>, <span class="st">"</span></span></span>
+<span class="r-in"><span><span class="st">  INSERT INTO</span></span></span>
+<span class="r-in"><span><span class="st">    orders (customer_id, product, amount, order_date)</span></span></span>
+<span class="r-in"><span><span class="st">  VALUES</span></span></span>
+<span class="r-in"><span><span class="st">    (1, 'Widget', 19.99, '2024-01-15'),</span></span></span>
+<span class="r-in"><span><span class="st">    (1, 'Gadget', 29.99, '2024-01-17'),</span></span></span>
+<span class="r-in"><span><span class="st">    (2, 'Widget', 19.99, '2024-02-10'),</span></span></span>
+<span class="r-in"><span><span class="st">    (3, 'SuperWidget', 49.99, '2024-03-05'),</span></span></span>
+<span class="r-in"><span><span class="st">    (4, 'Gadget', 29.99, '2024-04-01'),</span></span></span>
+<span class="r-in"><span><span class="st">    (1, 'Thingamajig', 9.99, '2024-04-02');</span></span></span>
 <span class="r-in"><span><span class="st">  "</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="co"># Ask LLM a question which it will answer using the SQL database:</span></span></span>
