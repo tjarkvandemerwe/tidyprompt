@@ -1,8 +1,9 @@
 \dontrun{
-  # Sample SQLite database to illustrate example:
+
+  # Create an in-memory SQLite database
   conn <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 
-  # Sample table of customers:
+  # Create a sample table of customers
   DBI::dbExecute(conn, "
   CREATE TABLE
     customers (
@@ -13,7 +14,7 @@
     );
   ")
 
-  # Some sample customer data:
+  # Insert some sample customer data
   DBI::dbExecute(conn, "
   INSERT INTO
     customers (name, email, country)
@@ -24,16 +25,29 @@
     ('Diana', 'diana@example.com', 'USA');
   ")
 
-  # Sample table for orders:
+  # Create another sample table for orders
   DBI::dbExecute(conn, "
-    CREATE TABLE orders (
-      order_id INTEGER PRIMARY KEY,
-      customer_id INTEGER,
-      product TEXT,
-      amount REAL,
-      order_date TEXT,
-      FOREIGN KEY(customer_id) REFERENCES customers(id)
-    );
+  CREATE TABLE orders (
+    order_id INTEGER PRIMARY KEY,
+    customer_id INTEGER,
+    product TEXT,
+    amount REAL,
+    order_date TEXT,
+    FOREIGN KEY(customer_id) REFERENCES customers(id)
+  );
+  ")
+
+  # Insert some sample orders
+  DBI::dbExecute(conn, "
+  INSERT INTO
+    orders (customer_id, product, amount, order_date)
+  VALUES
+    (1, 'Widget', 19.99, '2024-01-15'),
+    (1, 'Gadget', 29.99, '2024-01-17'),
+    (2, 'Widget', 19.99, '2024-02-10'),
+    (3, 'SuperWidget', 49.99, '2024-03-05'),
+    (4, 'Gadget', 29.99, '2024-04-01'),
+    (1, 'Thingamajig', 9.99, '2024-04-02');
   ")
 
   # Ask LLM a question which it will answer using the SQL database:

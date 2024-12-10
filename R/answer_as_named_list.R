@@ -63,7 +63,9 @@ answer_as_named_list <- function(
       ),
       collapse = "\n"
     ),
-    "\nEach name must correspond to: {paste(item_names, collapse = ', ')}"
+    "\n\nItem names in the list must correspond to:\n",
+    "  {paste(item_names, collapse = ', ')}",
+    .trim = FALSE
   )
 
   modify_fn <- function(original_prompt_text) {
@@ -86,7 +88,7 @@ answer_as_named_list <- function(
 
     if (nrow(named_items) == 0) {
       return(llm_feedback(glue::glue(
-        "Could not parse any named items from your response.",
+        "Could not parse any named items from your response.\n\n",
         "{list_instruction}"
       )))
     }
