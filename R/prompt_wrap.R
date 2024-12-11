@@ -55,7 +55,7 @@
 #' Order among the same type is preserved in the order they were added to the prompt.
 #' Example of a tool is [answer_using_tools()]; example of a mode is [answer_by_react()].
 #' Example of a break is [quit_if()]. Most other prompt wraps will be 'unspecified',
-#' like [answer_as_regex()] or [add_text()]
+#' like [answer_as_regex_match()] or [add_text()]
 #' @param name An optional name for the prompt wrap. This can be used to identify
 #' the prompt wrap in the \link{tidyprompt-class} object
 #'

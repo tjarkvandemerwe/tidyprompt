@@ -81,7 +81,7 @@ Here are some quick examples of what you can do with 'tidyprompt':
 
 ``` r
 "What animal is the biggest?" |>
-  answer_as_regex("^(cat|dog|elephant)$") |>
+  answer_as_regex_match("^(cat|dog|elephant)$") |>
   send_prompt(llm_provider_ollama())
 #> [1] "elephant"
 ```

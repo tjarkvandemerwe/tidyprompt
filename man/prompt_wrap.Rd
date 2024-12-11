@@ -58,7 +58,7 @@ prompt wraps are applied in the reverse order: 'tool', 'mode', 'break', 'unspeci
 Order among the same type is preserved in the order they were added to the prompt.
 Example of a tool is \code{\link[=answer_using_tools]{answer_using_tools()}}; example of a mode is \code{\link[=answer_by_react]{answer_by_react()}}.
 Example of a break is \code{\link[=quit_if]{quit_if()}}. Most other prompt wraps will be 'unspecified',
-like \code{\link[=answer_as_regex]{answer_as_regex()}} or \code{\link[=add_text]{add_text()}}}
+like \code{\link[=answer_as_regex_match]{answer_as_regex_match()}} or \code{\link[=add_text]{add_text()}}}
 
 \item{name}{An optional name for the prompt wrap. This can be used to identify
 the prompt wrap in the \link{tidyprompt-class} object}
@@ -214,7 +214,7 @@ Other pre_built_prompt_wraps:
 \code{\link{answer_as_json}()},
 \code{\link{answer_as_list}()},
 \code{\link{answer_as_named_list}()},
-\code{\link{answer_as_regex}()},
+\code{\link{answer_as_regex_match}()},
 \code{\link{answer_as_text}()},
 \code{\link{answer_by_chain_of_thought}()},
 \code{\link{answer_by_react}()},

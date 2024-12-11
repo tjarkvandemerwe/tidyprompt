@@ -121,7 +121,7 @@ Below is an example of a prompt which will initially fail, but will succeed afte
     send_prompt(ollama)
 ```
 
-'tidyprompt' offers various other 'answer_as' functions, such as `answer_as_boolean()`, `answer_as_regex()`,
+'tidyprompt' offers various other 'answer_as' functions, such as `answer_as_boolean()`, `answer_as_regex_match()`,
 `answer_as_named_list()`, `answer_using_r()`, and `answer_as_json()`.
 
 ##### JSON output

@@ -16,11 +16,11 @@
 #'
 #' @export
 #'
-#' @example inst/examples/answer_as_regex.R
+#' @example inst/examples/answer_as_regex_match.R
 #'
 #' @family pre_built_prompt_wraps
 #' @family answer_as_prompt_wraps
-answer_as_regex <- function(
+answer_as_regex_match <- function(
     prompt,
     regex,
     mode = c("full_match", "extract_matches")

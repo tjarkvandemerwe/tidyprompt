@@ -1,6 +1,6 @@
 \dontrun{
   "What would be a suitable e-mail address for cupcake company?" |>
-    answer_as_regex("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$") |>
+    answer_as_regex_match("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$") |>
     send_prompt(llm_provider_ollama())
   # --- Sending request to LLM provider (llama3.1:8b): ---
   #   What would be a suitable e-mail address for cupcake company?
@@ -14,7 +14,7 @@
 
   "What would be a suitable e-mail address for cupcake company?" |>
     add_text("Give three ideas.") |>
-    answer_as_regex(
+    answer_as_regex_match(
       "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}",
       mode = "extract_matches"
     ) |>
