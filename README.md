@@ -99,7 +99,7 @@ model <- paste0(
     validation_fn = function(x) {
       if (!inherits(x, "lm"))
         return(llm_feedback("The output should be a linear model object."))
-      return(x)
+      return(TRUE)
     }
   ) |>
   send_prompt(llm_provider_ollama())
