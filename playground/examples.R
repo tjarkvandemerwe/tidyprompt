@@ -12,25 +12,74 @@ oai <- llm_provider_openai()
 or <- llm_provider_openrouter()
 or$parameters$model <- "anthropic/claude-3.5-haiku"
 
+# Send message
+oai$complete_chat("Hi!! How are you?")
+
 
 
 #### 2 Basic prompt ####
 
-oai$complete_chat("Hi!! How are you?")
-oai$complete_chat("What is 2+2?")
+## Prompt aanpassen
+
+"Hi!!" |>
+  prompt_wrap(
+    modify_fn = function(prompt) {
+      paste0(prompt, "\n\n", "How are you?")
+    }
+  ) |>
+  send_prompt(oai)
+
+
+## Prompt aanpassen, extractie en validatie toepassen
+
+# Instructie voor enkel 'ja/nee'
+yes_no_instruction <- "Respond with only 'YES' or 'NO' (use no other characters)"
+
+# 'ja/nee' uit respons halen; feedback geven als niet correct.
+#   Ook 'ja/nee' in boolean omzetten
+"Hi, are you a large language model?" |>
+  prompt_wrap(
+    modify_fn = function(prompt) {
+      paste0(prompt, "\n\n", yes_no_instruction)
+    },
+
+    extraction_fn = function(response) {
+      if (!toupper(response) %in% c("YES", "NO"))
+        return(llm_feedback(yes_no_instruction))
+
+      return(toupper(response) %in% "YES") # Boolean
+    }
+  ) |>
+  send_prompt(oai)
 
 
 
-#### 3 Basic prompt wraps ####
+#### 3 Structured output ####
 
 "What is 2+2" |>
   answer_as_integer() |>
   send_prompt(oai)
+#> --- Sending request to LLM provider (gpt-4o-mini): ---
+#> What is 2+2
+#>
+#> You must answer with only an integer (use no other characters).
+#> --- Receiving response from LLM provider: ---
+#> 4
+#> [1] 4
 
 # Na feedback toch het correcte format:
 "What is 2+2?" |>
   answer_as_integer(add_instruction_to_prompt = FALSE) |>
   send_prompt(oai)
+#> --- Sending request to LLM provider (gpt-4o-mini): ---
+#> What is 2+2?
+#> --- Receiving response from LLM provider: ---
+#> 2 + 2 equals 4.
+#> --- Sending request to LLM provider (gpt-4o-mini): ---
+#> You must answer with only an integer (use no other characters).
+#> --- Receiving response from LLM provider: ---
+#>  4
+#> [1] 4
 
 
 ## Verschillende formats mogelijk
