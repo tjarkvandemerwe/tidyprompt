@@ -116,10 +116,9 @@
     #' typically called by the `send_prompt` function to interact with the LLM
     #' provider, but it can also be called directly.
     #'
-    #' @param input A list containing at least 'chat_history' (a data frame
-    #' with 'role' and 'content' columns) or a character string containing
-    #' a single chat message. If a character string is provided, the function
-    #' will create a chat_history object from the string
+    #' @param input A string, a data frame which is a valid chat history
+    #' (see [chat_history()]), or a list containing a valid chat history under key
+    #' '#chat_history'
     #'
     #' @return The response from the LLM provider, in a named list
     #' with 'role', 'content', and 'http'. The 'role' and 'content'
@@ -129,6 +128,9 @@
     #' data from the HTTP response about the number of tokens used.
     complete_chat = function(input) {
       if (length(input) == 1 & is.character(input)) {
+        chat_history <- chat_history(input)
+        input <- list(chat_history = chat_history)
+      } else if (is.data.frame(input)) {
         chat_history <- chat_history(input)
         input <- list(chat_history = chat_history)
       }

@@ -7,17 +7,32 @@
 tidyprompt(input)
 }
 \arguments{
-\item{input}{A Tidyprompt object or a string. If a string is passed,
-a new prompt object will be created with that as the base prompt}
+\item{input}{A string, a \code{\link[=chat_history]{chat_history()}}, a list containing
+a chat history under '$chat_history', or a Tidyprompt object}
 }
 \value{
 A Tidyprompt object
 }
 \description{
-Create a Tidyprompt object
+This function creates a Tidyprompt object (being a wrapper around
+the initialize method of \code{tidyprompt-class}).
+}
+\details{
+Different types of input are accepted for initialization of a Tidyprompt object:
+\itemize{
+\item A single character string. This will be used as the base prompt
+\item A dataframe which is a valid chat history (see \code{\link[=chat_history]{chat_history()}})
+\item A list containing a valid chat history under '$chat_history' (e.g., a result from \code{\link[=send_prompt]{send_prompt()}}
+when using 'return_mode' = "full")
+\item A Tidyprompt object. This will be checked for validity and if valid, the fields are copied to the object
+which is returned from this method
+}
+When passing a dataframe or list with a chat history, the last row of the chat history must have role 'user';
+this row will be used as the base prompt. If the first row of the chat history has role 'system', it will be used
+as the system prompt.
 }
 \seealso{
-\code{\link[=prompt_wrap]{prompt_wrap()}}
+\link{tidyprompt-class} \code{\link[=prompt_wrap]{prompt_wrap()}}#'
 
 Other tidyprompt: 
 \code{\link{construct_prompt_text}()},

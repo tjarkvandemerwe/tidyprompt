@@ -33,6 +33,12 @@ in the chat history during \code{\link[=send_prompt]{send_prompt()}}}
 \item{\code{system_prompt}}{A system prompt string. This will be added
 at the start of the chat history as role 'system' during
 \code{\link[=send_prompt]{send_prompt()}}}
+
+\item{\code{chat_history}}{A dataframe containing the chat history.
+This will be used to construct the chat history during \code{\link[=send_prompt]{send_prompt()}}
+It should not contain a base prompt (which would typically be the
+last row with role 'user') and should not contain a system prompt
+(which would typically be the first row with role 'system')}
 }
 \if{html}{\out{</div>}}
 }
@@ -59,10 +65,26 @@ Initialize a Tidyprompt object.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{input}}{A character string representing the base prompt}
+\item{\code{input}}{A string, a \code{\link[=chat_history]{chat_history()}}, a list containing
+a chat history under '$chat_history', or a Tidyprompt object}
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Details}{
+Different types of input are accepted for initialization of a Tidyprompt object:
+\itemize{
+\item A single character string. This will be used as the base prompt
+\item A dataframe which is a valid chat history (see \code{\link[=chat_history]{chat_history()}})
+\item A list containing a valid chat history under '$chat_history' (e.g., a result from \code{\link[=send_prompt]{send_prompt()}}
+when using 'return_mode' = "full")
+\item A Tidyprompt object. This will be checked for validity and if valid, the fields are copied to the object
+which is returned from this method
+}
+When passing a dataframe or list with a chat history, the last row of the chat history must have role 'user';
+this row will be used as the base prompt. If the first row of the chat history has role 'system', it will be used
+as the system prompt.
+}
+
 \subsection{Returns}{
 A \code{Tidyprompt} object
 }

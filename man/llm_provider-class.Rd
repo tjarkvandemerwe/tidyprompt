@@ -154,10 +154,9 @@ provider, but it can also be called directly.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{input}}{A list containing at least 'chat_history' (a data frame
-with 'role' and 'content' columns) or a character string containing
-a single chat message. If a character string is provided, the function
-will create a chat_history object from the string}
+\item{\code{input}}{A string, a data frame which is a valid chat history
+(see \code{\link[=chat_history]{chat_history()}}), or a list containing a valid chat history under key
+'#chat_history'}
 }
 \if{html}{\out{</div>}}
 }

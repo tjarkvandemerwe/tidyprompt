@@ -1,3 +1,5 @@
+# TODO: take $chat_history from tidyprompt object & add when sending to provider
+
 #' Send a prompt to a LLM provider
 #'
 #' This function is responsible for sending prompts to a LLM provider for evaluation.
@@ -339,7 +341,9 @@ clean_chat_history_fn <- function(chat_history) {
   user_rows <- which(chat_history$role == "user")
   assistant_rows <- which(chat_history$role == "assistant")
   system_rows <- which(chat_history$role == "system")
-  tool_result_rows <- which(chat_history$tool_result)
+  tool_result_rows <- which(
+    chat_history$tool_result | chat_history$role == "tool"
+  )
 
   keep_rows <- c(
     system_rows,

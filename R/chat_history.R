@@ -89,3 +89,124 @@ chat_history.data.frame <- function(chat_history) {
   class(chat_history) <- c("chat_history", class(chat_history))
   return(invisible(chat_history))
 }
+
+
+
+#' Add a message to a chat history
+#'
+#' This function appends a message to a [chat_history()] object.
+#' The function can automatically determine the role of the message to be
+#' added based on the last message in the chat history. The role can also be
+#' manually specified.
+#'
+#' @details The chat_history object may be of different types:
+#' \itemize{
+#' \item A single string: The function will create a new chat history object
+#' with the string as the first message; the role of that first message will be
+#' "user"
+#' \item A data.frame: The function will append the message to the data.frame.
+#' The data.frame must be a valid chat history; see [chat_history()]
+#' \item A list: The function will extract the chat history from the list.
+#' The list must contain a valid chat history under the key 'chat_history'.
+#' This may typically be the result from [send_prompt()] when using
+#' 'return_mode = "full"'
+#' \item A Tidyprompt object ([tidyprompt-class]): The function will extract the chat history
+#' from the object. This will be done by concatenating the 'system_prompt',
+#' 'chat_history', and 'base_prompt' into a chat history data.frame. Note
+#' that the other properties of the [tidyprompt-class] object will be lost
+#' \item NULL: The function will create a new chat history object
+#' with no messages; the message will be the first message
+#' }
+#'
+#' @param chat_history A single string, a data.frame which is a valid chat history
+#' (see `[chat_history()]`), a list containing a valid chat history under key
+#' '$chat_history', a \link{tidyprompt-class} object, or NULL
+#'
+#' A [chat_history()] object
+#'
+#' @param message A character string representing the message to add
+#'
+#' @param role A character string representing the role of the message sender.
+#' One of: \itemize{
+#' \item "auto": The function automatically determines the role. If the last message
+#' was from the user, the role will be "assistant". If the last message was from anything
+#' else, the role will be "user"
+#' \item "user": The message is from the user
+#' \item "assistant": The message is from the assistant
+#' \item "system": The message is from the system
+#' \item "tool": The message is from a tool (e.g., indicating the result of a function call)
+#' }
+#'
+#' @param tool_result A logical indicating whether the message is a tool result
+#' (e.g., the result of a function call)
+#'
+#' @return A [chat_history()] object with the message added as the last row
+#' @export
+#'
+#' @example inst/examples/chat_history.R
+chat_history_add_msg <- function(
+    chat_history,
+    message,
+    role = c("auto", "user", "assistant", "system", "tool"),
+    tool_result = NULL
+) {
+  if (is.null(chat_history)) {
+    chat_history <- data.frame(
+      role = character(),
+      content = character(),
+      stringsAsFactors = FALSE
+    )
+  } else if (inherits(chat_history, "Tidyprompt")) {
+    chat_history_from_object <- c(
+      role = "system", content = chat_history$system_prompt
+    ) |> dplyr::bind_rows(
+      chat_history$chat_history
+    ) |> dplyr::bind_rows(c(
+      role = "user", content = chat_history$base_prompt
+    ))
+
+    # Remove roles with no content
+    chat_history_from_object <- chat_history_from_object |>
+      dplyr::filter(.data$content != "" & !is.na(.data$content) & !is.null(.data$content))
+
+    chat_history <- chat_history(chat_history_from_object)
+  } else if (
+    is.list(chat_history)
+    & !is.data.frame(chat_history)
+    & "chat_history" %in% names(chat_history)
+  ) {
+    chat_history <- chat_history$chat_history |> chat_history()
+  } else {
+    chat_history <- chat_history(chat_history)
+  }
+
+  role <- match.arg(role)
+
+  stopifnot(
+    is.character(message), length(message) == 1,
+    is.character(role), length(role) == 1,
+    is.null(tool_result) || is.logical(tool_result)
+  )
+
+  # Automatically determine the role if set to "auto"
+  if (role == "auto") {
+    if (nrow(chat_history) == 0) {
+      role <- "user"
+    } else {
+      role <- ifelse(
+        chat_history[nrow(chat_history), "role"] == "user",
+        "assistant",
+        "user"
+      )
+    }
+  }
+
+  chat_history <- chat_history |>
+    dplyr::bind_rows(c(
+      role = role,
+      content = message,
+      tool_result = tool_result
+    ))
+
+  return(chat_history)
+}

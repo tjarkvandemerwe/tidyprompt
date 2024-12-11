@@ -43,20 +43,116 @@
     #' at the start of the chat history as role 'system' during
     #' [send_prompt()]
     system_prompt = NULL,
+    #' @field chat_history A dataframe containing the chat history.
+    #' This will be used to construct the chat history during [send_prompt()]
+    #' It should not contain a base prompt (which would typically be the
+    #' last row with role 'user') and should not contain a system prompt
+    #' (which would typically be the first row with role 'system')
+    chat_history = NULL,
 
     #' @description
     #' Initialize a Tidyprompt object.
     #'
-    #' @param input A character string representing the base prompt
+    #' @details Different types of input are accepted for initialization of a Tidyprompt object:
+    #' \itemize{
+    #'  \item A single character string. This will be used as the base prompt
+    #'  \item A dataframe which is a valid chat history (see [chat_history()])
+    #'  \item A list containing a valid chat history under '$chat_history' (e.g., a result from [send_prompt()]
+    #'  when using 'return_mode' = "full")
+    #'  \item A Tidyprompt object. This will be checked for validity and if valid, the fields are copied to the object
+    #'  which is returned from this method
+    #' }
+    #' When passing a dataframe or list with a chat history, the last row of the chat history must have role 'user';
+    #' this row will be used as the base prompt. If the first row of the chat history has role 'system', it will be used
+    #' as the system prompt.
+    #'
+    #' @param input A string, a [chat_history()], a list containing
+    #' a chat history under '$chat_history', or a Tidyprompt object
+    #'
     #' @return A `Tidyprompt` object
     initialize = function(input) {
-      if (!is.character(input) || length(input) != 1) {
-        stop("Input must be a single character string.", call. = FALSE)
+      input_must_be <- paste0(
+        "Input must be:",
+        " a single character string,",
+        " a dataframe which is a valid chat history,",
+        " a list containing a valid chat history under '$chat_history',",
+        " or a Tidyprompt object"
+      )
+      # Turn single string input into base prompt
+      if (is.character(input) && length(input) == 1) {
+        self$base_prompt <- input
+        return(invisible(self))
       }
-      self$base_prompt <- input
-      private$prompt_wraps <- list()
-      private$validate_tidyprompt()
-      invisible(self)
+
+      # Take chat_history from list input
+      if (is.list(input) & !is.data.frame(input)) {
+        if (is.null(input$chat_history)) {
+          stop(input_must_be)
+        }
+        input <- input$chat_history
+      }
+
+      # Take relevant variables from dataframe input
+      if (is.data.frame(input)) {
+        chat_history <- tryCatch(
+          chat_history(input),
+          error = function(e) {
+            stop(paste0(
+              "Input for Tidyprompt is a dataframe, but dataframe is not a valid chat history.\n",
+              "Error in `chat_history(input)`:\n", e$message
+            ))
+            NULL
+          }
+        )
+
+        if (is.null(chat_history)) {
+          stop(input_must_be)
+        }
+
+        # Last row of chat history must be user
+        if (tail(chat_history$role, 1) != "user") {
+          stop(paste0(
+            "The last row of the chat history must have role 'user'.\n",
+            "Add a message to the chat history using `chat_history_add_msg()`"
+          ))
+        }
+
+        self$base_prompt <- tail(chat_history$content, 1)
+        # Remove base prompt from chat history
+        chat_history <- chat_history[-nrow(chat_history), ]
+
+        # If first row is system message, we will set it as the system prompt
+        if (
+          nrow(chat_history) > 0
+          && head(chat_history$role, 1) == "system"
+        ) {
+          self$system_prompt <- head(chat_history$content, 1)
+          # Remove system prompt from chat history
+          chat_history <- chat_history[-1, ]
+        }
+
+        # Add the rest of chat history as field 'chat_history'
+        self$chat_history <- chat_history
+
+        return(invisible(self))
+      }
+
+      # Validate pre-existing Tidyprompt object
+      if (inherits(input, "Tidyprompt")) {
+        if (!input$is_valid()) {
+          stop("The provided Tidyprompt object is not valid")
+        }
+
+        # Copy fields
+        self$base_prompt <- input$base_prompt
+        self$system_prompt <- input$system_prompt
+        self$chat_history <- input$chat_history
+        private$prompt_wraps <- input$.__enclos_env__$private$prompt_wraps
+
+        return(invisible(self))
+      }
+
+      stop(input_must_be)
     },
 
     #' @description
@@ -160,24 +256,33 @@
 
 #' Create a Tidyprompt object
 #'
-#' @param input A Tidyprompt object or a string. If a string is passed,
-#' a new prompt object will be created with that as the base prompt
+#' This function creates a Tidyprompt object (being a wrapper around
+#' the initialize method of `tidyprompt-class`).
+#'
+#' @details Different types of input are accepted for initialization of a Tidyprompt object:
+#' \itemize{
+#'  \item A single character string. This will be used as the base prompt
+#'  \item A dataframe which is a valid chat history (see [chat_history()])
+#'  \item A list containing a valid chat history under '$chat_history' (e.g., a result from [send_prompt()]
+#'  when using 'return_mode' = "full")
+#'  \item A Tidyprompt object. This will be checked for validity and if valid, the fields are copied to the object
+#'  which is returned from this method
+#' }
+#' When passing a dataframe or list with a chat history, the last row of the chat history must have role 'user';
+#' this row will be used as the base prompt. If the first row of the chat history has role 'system', it will be used
+#' as the system prompt.
+#'
+#' @param input A string, a [chat_history()], a list containing
+#' a chat history under '$chat_history', or a Tidyprompt object
 #'
 #' @return A Tidyprompt object
+#'
 #' @export
-#' @seealso [prompt_wrap()]
+#'
+#' @seealso \link{tidyprompt-class} [prompt_wrap()]#'
 #' @family tidyprompt
 tidyprompt <- function(input) {
-  if (inherits(input, "Tidyprompt")) {
-    if (!input$is_valid()) {
-      stop("The provided Tidyprompt object is not valid.", call. = FALSE)
-    }
-    return(input)
-  } else if (is.character(input) && length(input) == 1) {
-    return(`tidyprompt-class`$new(input))
-  } else {
-    stop("Input must be a single character string or a Tidyprompt object.", call. = FALSE)
-  }
+  `tidyprompt-class`$new(input)
 }
 
 #' Check if object is a Tidyprompt
