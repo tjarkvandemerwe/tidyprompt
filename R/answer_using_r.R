@@ -321,7 +321,9 @@ answer_using_r <- function(
     return_list$code <- parsed_code
 
     if (!evaluate_code) {
-      return(parsed_code)
+      if (return_mode == "code") return(parsed_code)
+      if (return_mode == "llm_answer") return(x)
+      return(return_list)
     }
 
     clone_session <- evaluation_session$clone() # Reset the session everytime
