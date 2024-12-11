@@ -2,16 +2,16 @@
 #'
 #' @param prompt A single string or a [tidyprompt()] object
 #' @param max_words (optional) Maximum number of words allowed in the response.
-#' If specified, responses exceeding this limit will fail validation.
+#' If specified, responses exceeding this limit will fail validation
 #' @param max_characters (optional) Maximum number of characters allowed in the response.
-#' If specified, responses exceeding this limit will fail validation.
+#' If specified, responses exceeding this limit will fail validation
 #' @param add_instruction_to_prompt (optional) Add instruction for replying
 #' within the constraints to the prompt text. Set to FALSE for debugging if
 #' extractions/validations are working as expected (without instruction the
-#' answer should fail the validation function, initiating a retry).
+#' answer should fail the validation function, initiating a retry)
 #'
 #' @return A [tidyprompt()] with an added [prompt_wrap()] which
-#' will ensure that the LLM response conforms to the specified constraints.
+#' will ensure that the LLM response conforms to the specified constraints
 #'
 #' @export
 #'

@@ -15,19 +15,19 @@ answer_as_text(
 \item{prompt}{A single string or a \code{\link[=tidyprompt]{tidyprompt()}} object}
 
 \item{max_words}{(optional) Maximum number of words allowed in the response.
-If specified, responses exceeding this limit will fail validation.}
+If specified, responses exceeding this limit will fail validation}
 
 \item{max_characters}{(optional) Maximum number of characters allowed in the response.
-If specified, responses exceeding this limit will fail validation.}
+If specified, responses exceeding this limit will fail validation}
 
 \item{add_instruction_to_prompt}{(optional) Add instruction for replying
 within the constraints to the prompt text. Set to FALSE for debugging if
 extractions/validations are working as expected (without instruction the
-answer should fail the validation function, initiating a retry).}
+answer should fail the validation function, initiating a retry)}
 }
 \value{
 A \code{\link[=tidyprompt]{tidyprompt()}} with an added \code{\link[=prompt_wrap]{prompt_wrap()}} which
-will ensure that the LLM response conforms to the specified constraints.
+will ensure that the LLM response conforms to the specified constraints
 }
 \description{
 Make LLM answer as a constrained text response

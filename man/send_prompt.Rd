@@ -57,6 +57,7 @@ when unsuccessful after the maximum number of interactions).
 \itemize{
 \item 'response' (the LLM response after extraction and validation functions have been applied;
 NULL is returned when unsuccessful after the maximum number of interactions),
+\item 'interactions' (the number of interactions with the LLM provider),
 \item 'chat_history' (a dataframe with the full chat history which led to the final response),
 \item 'chat_history_clean' (a dataframe with the cleaned chat history which led to
 the final response; here, only the first and last message from the user, the

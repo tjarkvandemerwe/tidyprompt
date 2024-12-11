@@ -40,6 +40,7 @@
 #'  \itemize{
 #'    \item 'response' (the LLM response after extraction and validation functions have been applied;
 #'  NULL is returned when unsuccessful after the maximum number of interactions),
+#'    \item 'interactions' (the number of interactions with the LLM provider),
 #'    \item 'chat_history' (a dataframe with the full chat history which led to the final response),
 #'    \item 'chat_history_clean' (a dataframe with the cleaned chat history which led to
 #' the final response; here, only the first and last message from the user, the
@@ -144,10 +145,10 @@ send_prompt <- function(
       )
     }
 
-    for (response in response$http$responses)
-      http$responses[[length(http$responses) + 1]] <<- response
-    for (request in response$http$requests)
-      http$requests[[length(http$requests) + 1]] <<- request
+    for (http_response in response$http$response)
+      http$responses[[length(http$responses) + 1]] <<- http_response
+    for (http_request in response$http$request)
+      http$requests[[length(http$requests) + 1]] <<- http_request
 
     utils::tail(chat_history$content, 1)
   }
@@ -165,9 +166,9 @@ send_prompt <- function(
   prompt_wraps <- get_prompt_wraps(prompt, order = "evaluation")
   # (Tools, then modes, then unspecified prompt_wraps)
 
-  tries <- 1; success <- FALSE
-  while (tries < max_interactions & !success) {
-    tries <- tries + 1
+  interactions <- 1; success <- FALSE
+  while (interactions < max_interactions & !success) {
+    interactions <- interactions + 1
 
     if (length(prompt_wraps) == 0)
       success <- TRUE
@@ -258,7 +259,7 @@ send_prompt <- function(
 
   if (!success) {
     warning(paste0(
-      "Failed to reach a valid answer after ", tries, " interactions"
+      "Failed to reach a valid answer after ", interactions, " interactions"
     ))
     response <- NULL
   }
@@ -270,6 +271,7 @@ send_prompt <- function(
     return_list <- list()
 
     return_list$response <- response
+    return_list$interactions <- interactions
     return_list$chat_history <- chat_history
     return_list$chat_history_clean <- clean_chat_history_fn(chat_history)
     return_list$start_time <- start_time

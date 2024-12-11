@@ -165,13 +165,15 @@
       # Filter content with empty string ("") (Ollama tool call)
       response$completed <- response$completed[response$completed$content != "", ]
 
-      http <- list(requests = list(), responses = list())
-      http[["requests"]] <- c(http[["requests"]], response$http$request)
-      http[["responses"]] <- c(http[["responses"]], response$http$response)
+      http <- list()
+      http$requests[[1]] <- response$http$request
+      http$responses[[1]] <- response$http$response
 
       while (TRUE) {
         for (handler_fn in self$handler_fns) {
           response <- handler_fn(response, self)
+          http$requests[[length(http$requests) + 1]] <- response$http$request
+          http$responses[[length(http$responses) + 1]] <- response$http$response
 
           stopifnot(
             is.list(response), "completed" %in% names(response),
@@ -187,6 +189,9 @@
           break
         }
       }
+
+      # Update http list
+      response$http <- http
 
       # Print difference between chat_history and completed
       if (

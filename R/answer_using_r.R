@@ -326,12 +326,12 @@ answer_using_r <- function(
       return(return_list)
     }
 
-    clone_session <- evaluation_session$clone() # Reset the session everytime
+    clone_session <- evaluation_session$clone() # Reset the session every time
     output <- clone_session$run_with_output(function(r_code) {
       eval(parse(text = r_code))
     }, args = list(parsed_code))
 
-    # Check if errors occured during execution
+    # Check if errors occurred during execution
     if (!is.null(output$error)) {
       return(llm_feedback(glue::glue(
         "An error occurred while executing the R code:\n",
