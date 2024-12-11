@@ -90,7 +90,7 @@ Here are some quick examples of what you can do with 'tidyprompt':
 ``` r
 # Make LLM use a function from an R package to search Wikipedia for the answer
 "What is something fun that happened in November 2024?" |>
-  add_text("Summarize in one sentence.") |>
+  answer_as_text(max_words = 25) |>
   answer_using_tools(getwiki::search_wiki) |>
   send_prompt(llm_provider_ollama())
 #> [1] "The 2024 ARIA Music Awards ceremony, a vibrant celebration of Australian music,
