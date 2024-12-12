@@ -260,11 +260,7 @@
       prompt_text
     },
 
-
-
-    #' Set chat history for the Tidyprompt object
-    #'
-    #' This function sets the chat history for the Tidyprompt object. The chat
+    #' @description This function sets the chat history for the Tidyprompt object. The chat
     #' history will also set the base prompt and system prompt
     #' (the last message of the chat history should be of role 'user' and
     #' will be used as the base prompt; the first message of the chat history
@@ -302,14 +298,9 @@
       }
 
       private$chat_history <- chat_history
-
-      self
     },
 
-
-    #' Get the chat history of the Tidyprompt object
-    #'
-    #' This function gets the chat history of the Tidyprompt object. The chat
+    #' @description This function gets the chat history of the Tidyprompt object. The chat
     #' history is constructed from the base prompt, system prompt, and chat
     #' history field. The returned object will be the chat history
     #' with the system prompt as the first message with role 'system' and the

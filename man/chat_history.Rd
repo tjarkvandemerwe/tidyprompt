@@ -33,12 +33,12 @@ chat_from_df <- data.frame(
   chat_history()
 chat_from_df
 
-# `chat_history_add_msg()` may be used to add messages to a chat history
+# `add_msg_to_chat_history()` may be used to add messages to a chat history
 chat_from_df <- chat_from_df |>
-  chat_history_add_msg("Calculate 2+2 for me, please!")
+  add_msg_to_chat_history("Calculate 2+2 for me, please!")
 chat_from_df
 
-# You can also call `chat_history_add_msg()` on a list
+# You can also call `add_msg_to_chat_history()` on a list
 #   containing '$chat_history`;
 #   e.g., a result of `send-prompt()` with `return_mode = "full"`
 #     This may be used to continue a chat history in a new session

@@ -124,7 +124,7 @@ send_prompt <- function(
   ) {
     message <- as.character(message)
     chat_history <<- chat_history |>
-      chat_history_add_msg(message, role, tool_result)
+      add_msg_to_chat_history(message, role, tool_result)
 
     if (clean_chat_history) {
       cleaned_chat_history <- clean_chat_history_fn(chat_history)

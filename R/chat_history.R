@@ -151,7 +151,7 @@ chat_history.data.frame <- function(chat_history) {
 #' @export
 #'
 #' @example inst/examples/chat_history.R
-chat_history_add_msg <- function(
+add_msg_to_chat_history <- function(
     chat_history,
     message,
     role = c("auto", "user", "assistant", "system", "tool"),

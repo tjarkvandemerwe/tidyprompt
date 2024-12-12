@@ -170,8 +170,12 @@ This may sometimes affect the prompt text construction}
 }
 \subsection{Returns}{
 A string representing the constructed prompt text
-Set chat history for the Tidyprompt object
-
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Tidyprompt-set_chat_history"></a>}}
+\if{latex}{\out{\hypertarget{method-Tidyprompt-set_chat_history}{}}}
+\subsection{Method \code{set_chat_history()}}{
 This function sets the chat history for the Tidyprompt object. The chat
 history will also set the base prompt and system prompt
 (the last message of the chat history should be of role 'user' and
@@ -180,12 +184,6 @@ may be of the role 'system' and will then be used as the system prompt).
 This may be useful when one wants to change the base prompt, system prompt,
 and chat history of a Tidyprompt object while retaining other fields like
 the prompt wraps.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Tidyprompt-set_chat_history"></a>}}
-\if{latex}{\out{\hypertarget{method-Tidyprompt-set_chat_history}{}}}
-\subsection{Method \code{set_chat_history()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{tidyprompt-class$set_chat_history(chat_history)}\if{html}{\out{</div>}}
 }
@@ -199,19 +197,17 @@ the prompt wraps.
 }
 \subsection{Returns}{
 The updated Tidyprompt object
-Get the chat history of the Tidyprompt object
-
-This function gets the chat history of the Tidyprompt object. The chat
-history is constructed from the base prompt, system prompt, and chat
-history field. The returned object will be the chat history
-with the system prompt as the first message with role 'system' and the
-the base prompt as the last message with role 'user'.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Tidyprompt-get_chat_history"></a>}}
 \if{latex}{\out{\hypertarget{method-Tidyprompt-get_chat_history}{}}}
 \subsection{Method \code{get_chat_history()}}{
+This function gets the chat history of the Tidyprompt object. The chat
+history is constructed from the base prompt, system prompt, and chat
+history field. The returned object will be the chat history
+with the system prompt as the first message with role 'system' and the
+the base prompt as the last message with role 'user'.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{tidyprompt-class$get_chat_history()}\if{html}{\out{</div>}}
 }
