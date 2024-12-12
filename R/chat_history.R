@@ -55,10 +55,11 @@ chat_history.character <- function(chat_history) {
   chat_data <- data.frame(
     role = "user",
     content = chat_history,
+    tool_result = FALSE,
     stringsAsFactors = FALSE
   )
   class(chat_data) <- c("chat_history", class(chat_data))
-  return(invisible(chat_data))
+  return(chat_data)
 }
 
 
@@ -86,8 +87,14 @@ chat_history.data.frame <- function(chat_history) {
   if (!is.character(chat_history$content)) {
     stop("The 'content' column must be of type character.")
   }
+
+  # Add tool_result column if missing
+  if (!"tool_result" %in% names(chat_history)) {
+    chat_history$tool_result <- FALSE
+  }
+
   class(chat_history) <- c("chat_history", class(chat_history))
-  return(invisible(chat_history))
+  return(chat_history)
 }
 
 
@@ -156,20 +163,9 @@ chat_history_add_msg <- function(
       content = character(),
       stringsAsFactors = FALSE
     )
-  } else if (inherits(chat_history, "Tidyprompt")) {
-    chat_history_from_object <- c(
-      role = "system", content = chat_history$system_prompt
-    ) |> dplyr::bind_rows(
-      chat_history$chat_history
-    ) |> dplyr::bind_rows(c(
-      role = "user", content = chat_history$base_prompt
-    ))
-
-    # Remove roles with no content
-    chat_history_from_object <- chat_history_from_object |>
-      dplyr::filter(.data$content != "" & !is.na(.data$content) & !is.null(.data$content))
-
-    chat_history <- chat_history(chat_history_from_object)
+  }
+  else if (inherits(chat_history, "Tidyprompt")) {
+    chat_history <- chat_history$get_chat_history()
   } else if (
     is.list(chat_history)
     & !is.data.frame(chat_history)
@@ -201,8 +197,12 @@ chat_history_add_msg <- function(
     }
   }
 
+  if (is.null(tool_result)) {
+    tool_result <- FALSE
+  }
+
   chat_history <- chat_history |>
-    dplyr::bind_rows(c(
+    dplyr::bind_rows(data.frame(
       role = role,
       content = message,
       tool_result = tool_result

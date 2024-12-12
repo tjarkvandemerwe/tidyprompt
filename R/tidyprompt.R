@@ -28,6 +28,17 @@
           !all(sapply(private$prompt_wraps, function(x) inherits(x, "prompt_wrap")))) {
         stop("All elements of $prompt_wraps must be of class `prompt_wrap`.", call. = FALSE)
       }
+      if (!is.null(self$chat_history)) {
+        tryCatch(
+          chat_history(self$chat_history),
+          error = function(e) {
+            stop(paste0(
+              "The chat history is not valid.\n",
+              "Error in `chat_history(self$chat_history)`:\n", e$message
+            ))
+          }
+        )
+      }
     },
 
     # A list of prompt_wrap objects
@@ -81,7 +92,7 @@
       # Turn single string input into base prompt
       if (is.character(input) && length(input) == 1) {
         self$base_prompt <- input
-        return(invisible(self))
+        return(self)
       }
 
       # Take chat_history from list input
@@ -134,7 +145,7 @@
         # Add the rest of chat history as field 'chat_history'
         self$chat_history <- chat_history
 
-        return(invisible(self))
+        return(self)
       }
 
       # Validate pre-existing Tidyprompt object
@@ -149,7 +160,7 @@
         self$chat_history <- input$chat_history
         private$prompt_wraps <- input$.__enclos_env__$private$prompt_wraps
 
-        return(invisible(self))
+        return(self)
       }
 
       stop(input_must_be)
@@ -170,14 +181,14 @@
     #' Add a `prompt_wrap` object to the Tidyprompt.
     #'
     #' @param prompt_wrap A [prompt_wrap()] object
-    #' @return The updated Tidyprompt object (invisible)
+    #' @return The updated Tidyprompt object
     add_prompt_wrap = function(prompt_wrap) {
       if (!inherits(prompt_wrap, "prompt_wrap")) {
         stop("`prompt_wrap` must be of class `prompt_wrap`.", call. = FALSE)
       }
       private$prompt_wraps <- c(private$prompt_wraps, list(prompt_wrap))
       private$validate_tidyprompt()
-      invisible(self)
+      self
     },
 
     #' @description
@@ -250,6 +261,79 @@
         }
       }
       prompt_text
+    },
+
+
+
+    #' Set chat history for the Tidyprompt object
+    #'
+    #' This function sets the chat history for the Tidyprompt object. The chat
+    #' history will also set the base prompt and system prompt
+    #' (the last message of the chat history should be of role 'user' and
+    #' will be used as the base prompt; the first message of the chat history
+    #' may be of the role 'system' and will then be used as the system prompt).
+    #' This may be useful when one wants to change the base prompt, system prompt,
+    #' and chat history of a Tidyprompt object while retaining other fields like
+    #' the prompt wraps.
+    #'
+    #' @param chat_history A valid chat history (see [chat_history()])
+    #'
+    #' @return The updated Tidyprompt object
+    set_chat_history = function(chat_history) {
+      chat_history <- chat_history(chat_history)
+
+      # Last row of chat history must be user
+      if (tail(chat_history$role, 1) != "user") {
+        stop(paste0(
+          "The last row of the chat history must have role 'user'.\n",
+          "Add a message to the chat history using `chat_history_add_msg()`"
+        ))
+      }
+
+      self$base_prompt <- tail(chat_history$content, 1)
+      # Remove base prompt from chat history
+      chat_history <- chat_history[-nrow(chat_history), ]
+
+      # If first row is system message, we will set it as the system prompt
+      if (
+        nrow(chat_history) > 0
+        && head(chat_history$role, 1) == "system"
+      ) {
+        self$system_prompt <- head(chat_history$content, 1)
+        # Remove system prompt from chat history
+        chat_history <- chat_history[-1, ]
+      }
+
+      self$chat_history <- chat_history
+
+      self
+    },
+
+
+    #' Get the chat history of the Tidyprompt object
+    #'
+    #' This function gets the chat history of the Tidyprompt object. The chat
+    #' history is constructed from the base prompt, system prompt, and chat
+    #' history field. The returned object will be the chat history
+    #' with the system prompt as the first message with role 'system' and the
+    #' the base prompt as the last message with role 'user'.
+    #'
+    #' @return A dataframe containing the chat history
+    get_chat_history = function() {
+      chat_history_construction <- c(
+        role = "system", content = self$system_prompt
+      ) |> dplyr::bind_rows(
+        self$chat_history
+      ) |> dplyr::bind_rows(c(
+        role = "user", content = self$base_prompt
+      ))
+
+      # Remove roles with no content
+      chat_history_construction <- chat_history_construction |>
+        dplyr::filter(.data$content != "" & !is.na(.data$content) & !is.null(.data$content))
+
+      chat_history <- chat_history(chat_history_construction)
+      chat_history
     }
   )
 )
@@ -281,6 +365,7 @@
 #'
 #' @seealso \link{tidyprompt-class} [prompt_wrap()]#'
 #' @family tidyprompt
+#' @example inst/examples/tidyprompt.R
 tidyprompt <- function(input) {
   `tidyprompt-class`$new(input)
 }
@@ -292,6 +377,7 @@ tidyprompt <- function(input) {
 #' @return TRUE if the object is a valid Tidyprompt, otherwise FALSE
 #' @export
 #' @family tidyprompt
+#' @example inst/examples/tidyprompt.R
 is_tidyprompt <- function(x) {
   inherits(x, "Tidyprompt") && x$is_valid()
 }
@@ -313,10 +399,9 @@ is_tidyprompt <- function(x) {
 #' @return A list of prompt wrap objects (see [prompt_wrap()])
 #' @export
 #' @family tidyprompt
+#' @example inst/examples/tidyprompt.R
 get_prompt_wraps <- function(x, order = c("default", "modification", "evaluation")) {
-  if (!is_tidyprompt(x)) {
-    stop("x must be a valid Tidyprompt object.", call. = FALSE)
-  }
+  x <- tidyprompt(x)
   x$get_prompt_wraps(order = order)
 }
 
@@ -329,9 +414,58 @@ get_prompt_wraps <- function(x, order = c("default", "modification", "evaluation
 #' @return The constructed prompt text
 #' @export
 #' @family tidyprompt
+#' @example inst/examples/tidyprompt.R
 construct_prompt_text <- function(x, llm_provider = NULL) {
-  if (!is_tidyprompt(x)) {
-    stop("x must be a valid Tidyprompt object.", call. = FALSE)
-  }
+  x <- tidyprompt(x)
   x$construct_prompt_text(llm_provider)
+}
+
+
+
+#' Set the chat history for a Tidyprompt object
+#'
+#' This function sets the chat history for the Tidyprompt object. The chat
+#' history will also set the base prompt and system prompt
+#' (the last message of the chat history should be of role 'user' and
+#' will be used as the base prompt; the first message of the chat history
+#' may be of the role 'system' and will then be used as the system prompt).
+#' This may be useful when one wants to change the base prompt, system prompt,
+#' and chat history of a Tidyprompt object while retaining other fields like
+#' the prompt wraps.
+#'
+#' @param x A Tidyprompt object
+#' @param chat_history A valid chat history (see [chat_history()])
+#'
+#' @return The updated Tidyprompt object
+#'
+#' @export
+#' @family tidyprompt
+#' @seealso [chat_history()]
+#' @example inst/examples/tidyprompt.R
+set_chat_history <- function(x, chat_history) {
+  x <- tidyprompt(x)
+  x$set_chat_history(chat_history)
+}
+
+
+
+#' Get the chat history of a Tidyprompt object
+#'
+#' This function gets the chat history of the Tidyprompt object. The chat
+#' history is constructed from the base prompt, system prompt, and chat
+#' history field. The returned object will be the chat history
+#' with the system prompt as the first message with role 'system' and the
+#' the base prompt as the last message with role 'user'.
+#'
+#' @param x A Tidyprompt object
+#'
+#' @return A dataframe containing the chat history
+#'
+#' @export
+#' @family tidyprompt
+#' @example inst/examples/tidyprompt.R
+#' @seealso [chat_history()]
+get_chat_history <- function(x) {
+  x <- tidyprompt(x)
+  x$get_chat_history()
 }

@@ -116,21 +116,15 @@ send_prompt <- function(
 
   ## 2 Chat_history, send_chat, handler_fns
 
-  # Create internal chat_history
-  chat_history <- create_chat_df()
-
-  # Add system prompt if available
-  if (!is.null(prompt$system_prompt))
-    chat_history <- create_chat_df("system", prompt$system_prompt, FALSE)
+  chat_history <- prompt$get_chat_history()
 
   # Internal function to send chat messages
   send_chat <- function(
     message, role = "user", tool_result = FALSE
   ) {
     message <- as.character(message)
-    chat_history <<- dplyr::bind_rows(chat_history, create_chat_df(
-      role, message, tool_result
-    ))
+    chat_history <<- chat_history |>
+      chat_history_add_msg(message, role, tool_result)
 
     if (clean_chat_history) {
       cleaned_chat_history <- clean_chat_history_fn(chat_history)

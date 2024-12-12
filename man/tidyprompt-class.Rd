@@ -17,8 +17,10 @@ and validating responses, ensuring a seamless flow in prompt design.
 \seealso{
 Other tidyprompt: 
 \code{\link{construct_prompt_text}()},
+\code{\link{get_chat_history}()},
 \code{\link{get_prompt_wraps}()},
 \code{\link{is_tidyprompt}()},
+\code{\link{set_chat_history}()},
 \code{\link{tidyprompt}()}
 }
 \concept{tidyprompt}
@@ -50,6 +52,8 @@ last row with role 'user') and should not contain a system prompt
 \item \href{#method-Tidyprompt-add_prompt_wrap}{\code{tidyprompt-class$add_prompt_wrap()}}
 \item \href{#method-Tidyprompt-get_prompt_wraps}{\code{tidyprompt-class$get_prompt_wraps()}}
 \item \href{#method-Tidyprompt-construct_prompt_text}{\code{tidyprompt-class$construct_prompt_text()}}
+\item \href{#method-Tidyprompt-set_chat_history}{\code{tidyprompt-class$set_chat_history()}}
+\item \href{#method-Tidyprompt-get_chat_history}{\code{tidyprompt-class$get_chat_history()}}
 \item \href{#method-Tidyprompt-clone}{\code{tidyprompt-class$clone()}}
 }
 }
@@ -172,6 +176,54 @@ This may sometimes affect the prompt text construction}
 }
 \subsection{Returns}{
 A string representing the constructed prompt text
+Set chat history for the Tidyprompt object
+
+This function sets the chat history for the Tidyprompt object. The chat
+history will also set the base prompt and system prompt
+(the last message of the chat history should be of role 'user' and
+will be used as the base prompt; the first message of the chat history
+may be of the role 'system' and will then be used as the system prompt).
+This may be useful when one wants to change the base prompt, system prompt,
+and chat history of a Tidyprompt object while retaining other fields like
+the prompt wraps.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Tidyprompt-set_chat_history"></a>}}
+\if{latex}{\out{\hypertarget{method-Tidyprompt-set_chat_history}{}}}
+\subsection{Method \code{set_chat_history()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{tidyprompt-class$set_chat_history(chat_history)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{chat_history}}{A valid chat history (see \code{\link[=chat_history]{chat_history()}})}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The updated Tidyprompt object (invisible)
+Get the chat history of the Tidyprompt object
+
+This function gets the chat history of the Tidyprompt object. The chat
+history is constructed from the base prompt, system prompt, and chat
+history field. The returned object will be the chat history
+with the system prompt as the first message with role 'system' and the
+the base prompt as the last message with role 'user'.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Tidyprompt-get_chat_history"></a>}}
+\if{latex}{\out{\hypertarget{method-Tidyprompt-get_chat_history}{}}}
+\subsection{Method \code{get_chat_history()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{tidyprompt-class$get_chat_history()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A dataframe containing the chat history
 }
 }
 \if{html}{\out{<hr>}}
