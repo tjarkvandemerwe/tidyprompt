@@ -2,7 +2,7 @@ test_that("chat_history.character creates a valid chat_history data frame", {
   # Test with a single string input
   result <- chat_history("Hello, this is a test message.")
   expect_s3_class(result, "chat_history")
-  expect_equal(ncol(result), 2)
+  expect_equal(ncol(result), 3)
   expect_equal(result$role, "user")
   expect_equal(result$content, "Hello, this is a test message.")
 })
@@ -22,7 +22,7 @@ test_that("chat_history.data.frame accepts valid chat history data frame", {
   )
   result <- chat_history(valid_df)
   expect_s3_class(result, "chat_history")
-  expect_equal(ncol(result), 2)
+  expect_equal(ncol(result), 3)
   expect_equal(result$role, c("user", "assistant", "system"))
   expect_equal(result$content, c("User message", "Assistant response", "System message"))
 })

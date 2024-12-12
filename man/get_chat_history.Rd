@@ -22,7 +22,7 @@ the base prompt as the last message with role 'user'.
 \examples{
 tidyprompt("Hi!")
 
-# Add to a tidyprompt using a prompt_wrap():
+# Add to a tidyprompt using a prompt wrap:
 tidyprompt("Hi!") |>
   add_text("How are you?")
 
@@ -59,13 +59,23 @@ prompt <- "Hi" |>
 is_tidyprompt(prompt) # Returns TRUE if input is a valid tidyprompt object
 
 # Get base prompt text
-get_base_prompt(prompt)
+prompt$base_prompt
 
 # Get all prompt wraps
-get_prompt_wraps(prompt)
+prompt$get_prompt_wraps()
 
 # Construct prompt text
-construct_prompt_text(prompt)
+prompt$construct_prompt_text()
+
+# Configure chat history (affecting also the base prompt)
+chat_history <- data.frame(
+  role = c("user", "assistant", "user"),
+  content = c("What is 5 + 5?", "10", "And what is 5 + 6?")
+)
+prompt$set_chat_history(chat_history)
+
+# Get chat history
+prompt$get_chat_history()
 }
 \seealso{
 \code{\link[=chat_history]{chat_history()}}

@@ -28,13 +28,13 @@
           !all(sapply(private$prompt_wraps, function(x) inherits(x, "prompt_wrap")))) {
         stop("All elements of $prompt_wraps must be of class `prompt_wrap`.", call. = FALSE)
       }
-      if (!is.null(self$chat_history)) {
+      if (!is.null(private$chat_history)) {
         tryCatch(
-          chat_history(self$chat_history),
+          chat_history(private$chat_history),
           error = function(e) {
             stop(paste0(
               "The chat history is not valid.\n",
-              "Error in `chat_history(self$chat_history)`:\n", e$message
+              "Error in `chat_history(private$chat_history)`:\n", e$message
             ))
           }
         )
@@ -42,7 +42,10 @@
     },
 
     # A list of prompt_wrap objects
-    prompt_wraps = list()
+    prompt_wraps = list(),
+
+    # A chat history object
+    chat_history = NULL
   ),
   public = list(
     #' @field base_prompt The base prompt string. This may be modified
@@ -54,12 +57,6 @@
     #' at the start of the chat history as role 'system' during
     #' [send_prompt()]
     system_prompt = NULL,
-    #' @field chat_history A dataframe containing the chat history.
-    #' This will be used to construct the chat history during [send_prompt()]
-    #' It should not contain a base prompt (which would typically be the
-    #' last row with role 'user') and should not contain a system prompt
-    #' (which would typically be the first row with role 'system')
-    chat_history = NULL,
 
     #' @description
     #' Initialize a Tidyprompt object.
@@ -143,7 +140,7 @@
         }
 
         # Add the rest of chat history as field 'chat_history'
-        self$chat_history <- chat_history
+        private$chat_history <- chat_history
 
         return(self)
       }
@@ -157,7 +154,7 @@
         # Copy fields
         self$base_prompt <- input$base_prompt
         self$system_prompt <- input$system_prompt
-        self$chat_history <- input$chat_history
+        private$chat_history <- input$chat_history
         private$prompt_wraps <- input$.__enclos_env__$private$prompt_wraps
 
         return(self)
@@ -304,7 +301,7 @@
         chat_history <- chat_history[-1, ]
       }
 
-      self$chat_history <- chat_history
+      private$chat_history <- chat_history
 
       self
     },
@@ -323,7 +320,7 @@
       chat_history_construction <- c(
         role = "system", content = self$system_prompt
       ) |> dplyr::bind_rows(
-        self$chat_history
+        private$chat_history
       ) |> dplyr::bind_rows(c(
         role = "user", content = self$base_prompt
       ))

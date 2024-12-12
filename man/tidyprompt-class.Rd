@@ -35,12 +35,6 @@ in the chat history during \code{\link[=send_prompt]{send_prompt()}}}
 \item{\code{system_prompt}}{A system prompt string. This will be added
 at the start of the chat history as role 'system' during
 \code{\link[=send_prompt]{send_prompt()}}}
-
-\item{\code{chat_history}}{A dataframe containing the chat history.
-This will be used to construct the chat history during \code{\link[=send_prompt]{send_prompt()}}
-It should not contain a base prompt (which would typically be the
-last row with role 'user') and should not contain a system prompt
-(which would typically be the first row with role 'system')}
 }
 \if{html}{\out{</div>}}
 }
@@ -123,7 +117,7 @@ Add a \code{prompt_wrap} object to the Tidyprompt.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-The updated Tidyprompt object (invisible)
+The updated Tidyprompt object
 }
 }
 \if{html}{\out{<hr>}}
@@ -204,7 +198,7 @@ the prompt wraps.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-The updated Tidyprompt object (invisible)
+The updated Tidyprompt object
 Get the chat history of the Tidyprompt object
 
 This function gets the chat history of the Tidyprompt object. The chat
