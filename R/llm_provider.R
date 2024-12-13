@@ -44,8 +44,8 @@
     #' @description
     #' Create a new [llm_provider-class] object
     #'
-    #' @param complete_chat_function Function that will be called by the
-    #' [llm_provider-class] to complete a chat.
+    #' @param complete_chat_function
+    #' Function that will be called by the [llm_provider-class] to complete a chat.
     #' This function should take a list containing at least '$chat_history'
     #'  (a data frame with 'role' and 'content' columns) and return a response
     #'  object, which contains:
@@ -67,21 +67,26 @@
     #'  are handled separately by the [llm_provider-class] and '$complete_chat()'.
     #' Parameters should also not be set when they are handled by prompt wraps
     #'
-    #' @param verbose A logical indicating whether interaction with the LLM
-    #' provider should be printed to the console
+    #' @param verbose
+    #' A logical indicating whether interaction with the LLM
+    #'  provider should be printed to the console
     #'
-    #' @param url The URL to the LLM provider API endpoint for chat completion
-    #' (typically required, but may be left NULL in some cases, for instance
-    #' when creating a fake LLM provider)
+    #' @param url
+    #' The URL to the LLM provider API endpoint for chat completion
+    #'  (typically required, but may be left NULL in some cases, for instance
+    #'  when creating a fake LLM provider)
     #'
-    #' @param api_key The API key to use for authentication with the LLM
-    #' provider API (optional, not required for, for instance, Ollama)
+    #' @param api_key
+    #' The API key to use for authentication with the LLM
+    #'  provider API (optional, not required for, for instance, Ollama)
     #'
-    #' @param api_type The type of API to use (e.g., "openai", "ollama").
-    #' This is used to determine certain specific behaviors for different APIs
-    #' (see for example the [answer_as_json()] function)
+    #' @param api_type
+    #' The type of API to use (e.g., "openai", "ollama").
+    #'  This is used to determine certain specific behaviors for different APIs
+    #'  (see for example the [answer_as_json()] function)
     #'
-    #' @return A new [llm_provider-class] R6 object
+    #' @return
+    #' A new [llm_provider-class] R6 object
     initialize = function(
       complete_chat_function,
       parameters = list(),
@@ -101,12 +106,15 @@
       self$api_type <- api_type
     },
 
-    #' @description Helper function to set the parameters of the [llm_provider-class]
-    #' object. This function appends new parameters to the existing parameters
-    #' list.
+    #' @description
+    #' Helper function to set the parameters of the [llm_provider-class]
+    #'  object.
+    #' This function appends new parameters to the existing parameters
+    #'  list.
     #'
-    #' @param new_parameters A named list of new parameters to append to the
-    #' existing parameters list
+    #' @param new_parameters
+    #' A named list of new parameters to append to the
+    #'  existing parameters list
     #'
     #' @return The modified [llm_provider-class] object
     set_parameters = function(new_parameters) {
@@ -122,21 +130,16 @@
       return(self)
     },
 
-    #' @description complete_chat function; sends a chat_history to the LLM
-    #' provider using the configured `complete_chat_function`. This function is
-    #' typically called by the `send_prompt` function to interact with the LLM
-    #' provider, but it can also be called directly.
+    #' @description Sends a chat history (see [chat_history()]
+    #'  for details) to the LLM provider using the configured `$complete_chat()`.
+    #' This function is typically called by [send_prompt()] to interact with the LLM
+    #'  provider, but it can also be called directly.
     #'
     #' @param input A string, a data frame which is a valid chat history
-    #' (see [chat_history()]), or a list containing a valid chat history under key
-    #' '#chat_history'
+    #'  (see [chat_history()]), or a list containing a valid chat history under key
+    #'  '$chat_history'
     #'
-    #' @return The response from the LLM provider, in a named list
-    #' with 'role', 'content', and 'http'. The 'role' and 'content'
-    #' fields (required) contain the extracted role and content from the
-    #' response (e.g., 'assistant' and 'Hello, how can I help you?').
-    #' The 'http' field (optional) may contain any additional information, e.g.,
-    #' data from the HTTP response about the number of tokens used.
+    #' @return The response from the LLM provider
     complete_chat = function(input) {
       if (length(input) == 1 & is.character(input)) {
         chat_history <- chat_history(input)
@@ -258,10 +261,12 @@
       return(self)
     },
 
-    #' @description Helper function to set the handler functions of the
-    #' [llm_provider-class] object. This function replaces the existing
-    #' handler functions list with a new list of handler functions. See
-    #' '$add_handler_fn()' for more information on handler functions
+    #' @description
+    #' Helper function to set the handler functions of the
+    #'  [llm_provider-class] object.
+    #' This function replaces the existing
+    #'  handler functions list with a new list of handler functions.
+    #' See `$add_handler_fn()` for more information
     #'
     #' @param handler_fns A list of handler functions to set
     set_handler_fns = function(handler_fns) {

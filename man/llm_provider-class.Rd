@@ -2,12 +2,12 @@
 % Please edit documentation in R/llm_provider.R
 \name{llm_provider-class}
 \alias{llm_provider-class}
-\title{Llm_provider R6 Class}
+\title{LlmProvider R6 Class}
 \description{
 This class provides a structure for creating \linkS4class{llm_provider}
-objects with different implementations of the \code{complete_chat} function. Using
-this class, you can create an \linkS4class{llm_provider} object that interacts with
-different LLM providers, such Ollama, OpenAI, or other custom providers.
+objects with different implementations of \verb{$complete_chat()}.
+Using this class, you can create an \linkS4class{llm_provider} object that interacts
+with different LLM providers, such Ollama, OpenAI, or other custom providers.
 }
 \seealso{
 Other llm_provider: 
@@ -23,44 +23,40 @@ Other llm_provider:
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{parameters}}{A named list of parameters to configure the
-\linkS4class{llm_provider}. Parameters may be appended to the request body when
-interacting with the LLM provider API}
+\item{\code{parameters}}{A named list of parameters to configure the \linkS4class{llm_provider}.
+Parameters may be appended to the request body when interacting with the
+LLM provider API}
 
-\item{\code{verbose}}{A logical indicating whether interaction with the LLM
-provider should be printed to the console}
+\item{\code{verbose}}{A logical indicating whether interaction with the LLM provider should be
+printed to the console}
 
 \item{\code{url}}{The URL to the LLM provider API endpoint for chat completion}
 
-\item{\code{api_key}}{The API key to use for authentication with the LLM
-provider API}
+\item{\code{api_key}}{The API key to use for authentication with the LLM provider API}
 
 \item{\code{api_type}}{The type of API to use (e.g., "openai", "ollama").
 This is used to determine certain specific behaviors for different APIs,
 for instance, as is done in the \code{\link[=answer_as_json]{answer_as_json()}} function}
 
-\item{\code{handler_fns}}{A list of functions that will be called after the
-completion of a chat. These functions can be used to modify the response
-before it is returned to the user. Each function should take the response
-object as input and return a modified response object. The functions will
-be called in the order they are added to the list}
+\item{\code{handler_fns}}{A list of functions that will be called after the completion of a chat.
+See \verb{$add_handler_fn()}}
 }
 \if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-Llm_provider-new}{\code{llm_provider-class$new()}}
-\item \href{#method-Llm_provider-set_parameters}{\code{llm_provider-class$set_parameters()}}
-\item \href{#method-Llm_provider-complete_chat}{\code{llm_provider-class$complete_chat()}}
-\item \href{#method-Llm_provider-add_handler_fn}{\code{llm_provider-class$add_handler_fn()}}
-\item \href{#method-Llm_provider-set_handler_fns}{\code{llm_provider-class$set_handler_fns()}}
-\item \href{#method-Llm_provider-clone}{\code{llm_provider-class$clone()}}
+\item \href{#method-LlmProvider-new}{\code{llm_provider-class$new()}}
+\item \href{#method-LlmProvider-set_parameters}{\code{llm_provider-class$set_parameters()}}
+\item \href{#method-LlmProvider-complete_chat}{\code{llm_provider-class$complete_chat()}}
+\item \href{#method-LlmProvider-add_handler_fn}{\code{llm_provider-class$add_handler_fn()}}
+\item \href{#method-LlmProvider-set_handler_fns}{\code{llm_provider-class$set_handler_fns()}}
+\item \href{#method-LlmProvider-clone}{\code{llm_provider-class$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Llm_provider-new"></a>}}
-\if{latex}{\out{\hypertarget{method-Llm_provider-new}{}}}
+\if{html}{\out{<a id="method-LlmProvider-new"></a>}}
+\if{latex}{\out{\hypertarget{method-LlmProvider-new}{}}}
 \subsection{Method \code{new()}}{
 Create a new \linkS4class{llm_provider} object
 \subsection{Usage}{
@@ -77,20 +73,22 @@ Create a new \linkS4class{llm_provider} object
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{complete_chat_function}}{Function that will be called by the
-\linkS4class{llm_provider} to complete a chat. This function should
-take a list containing at least '$chat_history' (a data frame
-with 'role' and 'content' columns) and return a response object, which contains:
+\item{\code{complete_chat_function}}{Function that will be called by the \linkS4class{llm_provider} to complete a chat.
+This function should take a list containing at least '$chat_history'
+(a data frame with 'role' and 'content' columns) and return a response
+object, which contains:
 \itemize{
 \item 'completed': A dataframe with 'role' and 'content' columns,
 containing the completed chat history
+
 \item 'http': A list containing a list 'requests' and a list 'responses',
 containing the HTTP requests and responses made during the chat completion
 }}
 
 \item{\code{parameters}}{A named list of parameters to configure the \linkS4class{llm_provider}.
 These parameters may be appended to the request body when interacting with
-the LLM provider. For example, the \code{model} parameter may often be required.
+the LLM provider.
+For example, the \code{model} parameter may often be required.
 The 'stream' parameter may be used to indicate that the API should stream.
 Parameters should not include the chat_history, or 'api_key' or 'url', which
 are handled separately by the \linkS4class{llm_provider} and '$complete_chat()'.
@@ -117,11 +115,12 @@ A new \linkS4class{llm_provider} R6 object
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Llm_provider-set_parameters"></a>}}
-\if{latex}{\out{\hypertarget{method-Llm_provider-set_parameters}{}}}
+\if{html}{\out{<a id="method-LlmProvider-set_parameters"></a>}}
+\if{latex}{\out{\hypertarget{method-LlmProvider-set_parameters}{}}}
 \subsection{Method \code{set_parameters()}}{
 Helper function to set the parameters of the \linkS4class{llm_provider}
-object. This function appends new parameters to the existing parameters
+object.
+This function appends new parameters to the existing parameters
 list.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{llm_provider-class$set_parameters(new_parameters)}\if{html}{\out{</div>}}
@@ -140,12 +139,12 @@ The modified \linkS4class{llm_provider} object
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Llm_provider-complete_chat"></a>}}
-\if{latex}{\out{\hypertarget{method-Llm_provider-complete_chat}{}}}
+\if{html}{\out{<a id="method-LlmProvider-complete_chat"></a>}}
+\if{latex}{\out{\hypertarget{method-LlmProvider-complete_chat}{}}}
 \subsection{Method \code{complete_chat()}}{
-complete_chat function; sends a chat_history to the LLM
-provider using the configured \code{complete_chat_function}. This function is
-typically called by the \code{send_prompt} function to interact with the LLM
+Sends a chat history (see \code{\link[=chat_history]{chat_history()}}
+for details) to the LLM provider using the configured \verb{$complete_chat()}.
+This function is typically called by \code{\link[=send_prompt]{send_prompt()}} to interact with the LLM
 provider, but it can also be called directly.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{llm_provider-class$complete_chat(input)}\if{html}{\out{</div>}}
@@ -156,22 +155,17 @@ provider, but it can also be called directly.
 \describe{
 \item{\code{input}}{A string, a data frame which is a valid chat history
 (see \code{\link[=chat_history]{chat_history()}}), or a list containing a valid chat history under key
-'#chat_history'}
+'$chat_history'}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-The response from the LLM provider, in a named list
-with 'role', 'content', and 'http'. The 'role' and 'content'
-fields (required) contain the extracted role and content from the
-response (e.g., 'assistant' and 'Hello, how can I help you?').
-The 'http' field (optional) may contain any additional information, e.g.,
-data from the HTTP response about the number of tokens used.
+The response from the LLM provider
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Llm_provider-add_handler_fn"></a>}}
-\if{latex}{\out{\hypertarget{method-Llm_provider-add_handler_fn}{}}}
+\if{html}{\out{<a id="method-LlmProvider-add_handler_fn"></a>}}
+\if{latex}{\out{\hypertarget{method-LlmProvider-add_handler_fn}{}}}
 \subsection{Method \code{add_handler_fn()}}{
 Helper function to add a handler function to the
 \linkS4class{llm_provider} object.
@@ -205,13 +199,14 @@ field is not set to \code{FALSE}.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Llm_provider-set_handler_fns"></a>}}
-\if{latex}{\out{\hypertarget{method-Llm_provider-set_handler_fns}{}}}
+\if{html}{\out{<a id="method-LlmProvider-set_handler_fns"></a>}}
+\if{latex}{\out{\hypertarget{method-LlmProvider-set_handler_fns}{}}}
 \subsection{Method \code{set_handler_fns()}}{
 Helper function to set the handler functions of the
-\linkS4class{llm_provider} object. This function replaces the existing
-handler functions list with a new list of handler functions. See
-'$add_handler_fn()' for more information on handler functions
+\linkS4class{llm_provider} object.
+This function replaces the existing
+handler functions list with a new list of handler functions.
+See \verb{$add_handler_fn()} for more information
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{llm_provider-class$set_handler_fns(handler_fns)}\if{html}{\out{</div>}}
 }
@@ -225,8 +220,8 @@ handler functions list with a new list of handler functions. See
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Llm_provider-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-Llm_provider-clone}{}}}
+\if{html}{\out{<a id="method-LlmProvider-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-LlmProvider-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{
