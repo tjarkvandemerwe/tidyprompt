@@ -2,21 +2,21 @@
 % Please edit documentation in R/tidyprompt.R
 \name{construct_prompt_text}
 \alias{construct_prompt_text}
-\title{Construct prompt text from a Tidyprompt object}
+\title{Construct prompt text from a \linkS4class{tidyprompt} object}
 \usage{
 construct_prompt_text(x, llm_provider = NULL)
 }
 \arguments{
-\item{x}{A Tidyprompt object}
+\item{x}{A \linkS4class{tidyprompt} object}
 
-\item{llm_provider}{An optional \link{llm_provider-class} object.
+\item{llm_provider}{An optional \linkS4class{llm_provider} object.
 This may sometimes affect the prompt text construction}
 }
 \value{
 The constructed prompt text
 }
 \description{
-Construct prompt text from a Tidyprompt object
+Construct prompt text from a \linkS4class{tidyprompt} object
 }
 \examples{
 tidyprompt("Hi!")

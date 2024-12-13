@@ -1,65 +1,103 @@
-#' Wrap a prompt with empowering functions
+#' @title
+#' Wrap a prompt with functions for modification and handling the LLM response
 #'
-#' This function takes a single string or a \link{tidyprompt-class} object and
-#' adds a new prompt wrap to it. A prompt wrap is a set of functions
-#' that modify the prompt text, extract a value from the LLM response,
-#' and validate the extracted value. The functions are used to ensure
-#' that the prompt and LLM response is in the correct format and meets the
-#' specified criteria; they may also be used to provide the LLM with feedback
-#' or additional information, like the result of a tool call.
+#' @description
+#' This function takes a single string or a [tidyprompt-class] object and
+#'  adds a new prompt wrap to it.
 #'
-#' @details For advanced use, modify_fn, extraction_fn, and validation_fn
-#' may take 'llm_provider' (as used with [send_prompt()]) as second argument, and the
-#' http_list (a list of all HTTP requests made during send_prompt()) as third argument.
-#' This is not required, but can be useful for more complex prompt wraps which
-#' require additional information about the LLM provider or the HTTP requests made.
+#' A prompt wrap is a set of functions that modify the prompt text,
+#'  extract a value from the LLM response, and validate the extracted value.
 #'
-#' @details 'modify_fn', 'extraction_fn', 'validation_fn', 'handler_fn', and 'parameter_fn'
-#' may also access the \link{tidyprompt-class} object that they are a part of
-#' through 'self$...' which is attached to their environment. For instance,
-#' other prompt wraps can be accessed through 'self$get_prompt_wraps()'
+#' The functions are used to ensure that the prompt and LLM response are in the
+#'  correct format and meet the specified criteria; they may also be used to
+#'  provide the LLM with feedback or additional information,
+#'  like the result of a tool call or some evaluated code.
 #'
-#' @param prompt A single string or a \link{tidyprompt-class} object
+#' Advanced prompt wraps may also include functions that directly handle
+#' the response from a LLM API or configure API parameters.
+#'
+#' @details
+#' For advanced use, modify_fn, extraction_fn, and validation_fn
+#'  may take the [llm_provider-class] object (as used with [send_prompt()]) as
+#'  second argument, and the 'http_list' (a list of all HTTP requests
+#'  and responses made during [send_prompt()]) as third argument.
+#' Use of these arguments is not required, but can be useful for more complex
+#'  prompt wraps which require additional information about the LLM provider
+#'  or requests made so far.
+#' The functions (including parameter_fn) also have access to
+#'  the object `self` (not a function argument; it is attached to the environment
+#'  of the function) which contains the [tidyprompt-class] object that the prompt wrap
+#'  is a part of. This can be used to access other prompt wraps, or to access the
+#'  prompt text or other information about the prompt. For instance,
+#'  other prompt wraps can be accessed through `self$get_prompt_wraps()`.
+#'
+#' @param prompt A string or a [tidyprompt-class] object
+#'
 #' @param modify_fn A function that takes the previous prompt text (as
-#' first argument) and returns the new prompt text
+#'  first argument) and returns the new prompt text
+#'
 #' @param extraction_fn A function that takes the LLM response (as first argument)
-#' and attempts to extract a value from it. Upon succesful extraction, the function
-#' should return the extracted value. If the extraction fails, the function should
-#' return a [llm_feedback()] message to initiate a retry. A [llm_break()] can be
-#' returned to break the extraction and validation loop, ending [send_prompt()]
+#'  and attempts to extract a value from it.
+#' Upon succesful extraction, the function should return the extracted value.
+#'  If the extraction fails, the function should return a [llm_feedback()] message
+#'  to initiate a retry.
+#' A [llm_break()] can be returned to break the extraction and validation loop,
+#'  ending [send_prompt()]
+#'
 #' @param validation_fn A function that takes the (extracted) LLM response
-#' (as first argument) and attempts to validate it. Upon succesful validation,
-#' the function should return TRUE. If the validation fails, the function should
-#' return a [llm_feedback()] message to initiate a retry. A [llm_break()] can be
-#' returned to break the extraction and validation loop, ending [send_prompt()]
-#' object [llm_break()] can be returned to break the extraction and validation loop
-#' @param handler_fn A function that takes a 'completion' object (as returned by
-#' `llm_provider$complete_chat()`) and a (potentially modified) completion object.
+#'  (as first argument) and attempts to validate it.
+#' Upon succesful validation, the function should return TRUE. If the validation
+#'  fails, the function should return a [llm_feedback()] message to initiate a retry.
+#' A [llm_break()] can be returned to break the extraction and validation loop,
+#'  ending [send_prompt()]
+#'
+#' @param handler_fn A function that takes a 'completion' object (a result
+#'  of a request to a LLM, as returned by `$complete_chat()` of a [llm_provider-class]
+#'  object) as first argument and the [llm_provider-class] object as second argument.
+#' The function should return a (modified or identical) completion object.
 #' This can be used for advanced side effects, like logging, or native tool calling,
-#' or keeping track of token usage. See \link{llm_provider-class} for more information;
-#' handler_fn is attached to the \link{llm_provider-class} object that is being used.
+#'  or keeping track of token usage. See [llm_provider-class] for more information;
+#'  handler_fn is attached to the [llm_provider-class] object that is being used.
 #' For example usage, see source code of [answer_using_tools()]
-#' @param parameter_fn A function that takes the \link{llm_provider-class} object which is being
-#' used with [send_prompt()] and returns a named list of parameters to be
-#' set in the \link{llm_provider-class} object via `llm_provider$set_parameters()`. This can be
-#' used to configure specific parameters of the \link{llm_provider-class} object when evaluating
-#' the prompt. For example, [answer_as_json()] may set different parameters for different APIs
-#' related to JSON output. This function is typically only used with advanced
-#' prompt wraps that require specific settings in the \link{llm_provider-class} object
-#' @param type The type of prompt wrap; one of 'unspecified', 'mode', 'tool', or 'break'.
+
+#' @param parameter_fn A function that takes the [llm_provider-class] object
+#'  which is being used with [send_prompt()] and returns a named list of parameters
+#'  to be set in the [llm_provider-class] object via its `$set_parameters()` method.
+#' This can be used to configure specific parameters of the [llm_provider-class]
+#'  object when evaluating the prompt.
+#' For example, [answer_as_json()] may set different parameters for different APIs
+#'  related to JSON output.
+#' This function is typically only used with advanced prompt wraps that require
+#'  specific settings in the [llm_provider-class] object
+#'
+#' @param type The type of prompt wrap. Must be one of:
+#' \itemize{
+#' \item{'unspecified'}{The default type, typically used for prompt wraps
+#' which request a specific format of the LLM response, like [answer_as_integer()]}
+#'
+#' \item{'mode'} For prompt wraps that change how the LLM should answer the prompt,
+#' like [answer_by_chain_of_thought()] or [answer_by_react()]
+#'
+#' \item{'tool'} For prompt wraps that enable the LLM to use tools, like [answer_using_tools()]
+#' or [answer_using_r()] when 'output_as_tool' = TRUE
+#'
+#' \item{'break'} For prompt wraps that break the extraction and validation loop,
+#' like [quit_if()]
+#'
+#' \item{'check'} For prompt wraps that apply a last check to the final answer
+#' }
 #' Types are used to determine the order in which prompt wraps are applied.
 #' When constructing the prompt text, prompt wraps are applied to the base prompt
-#' in the following order: 'unspecified', 'break', 'mode', 'tool'. When evaluating
-#' the LLM response and applying extraction and validation functions,
-#' prompt wraps are applied in the reverse order: 'tool', 'mode', 'break', 'unspecified'.
+#'  in the following order: 'check', 'unspecified', 'break', 'mode', 'tool'.
+#' When evaluating the LLM response and applying extraction and validation functions,
+#'  prompt wraps are applied in the reverse order: 'tool', 'mode', 'break',
+#'  'unspecified', 'check'.
 #' Order among the same type is preserved in the order they were added to the prompt.
-#' Example of a tool is [answer_using_tools()]; example of a mode is [answer_by_react()].
-#' Example of a break is [quit_if()]. Most other prompt wraps will be 'unspecified',
-#' like [answer_as_regex_match()] or [add_text()]
-#' @param name An optional name for the prompt wrap. This can be used to identify
-#' the prompt wrap in the \link{tidyprompt-class} object
+
+#' @param name An optional name for the prompt wrap.
+#'  This can be used to identify the prompt wrap in the [tidyprompt-class] object
 #'
-#' @return A \link{tidyprompt-class} object with the [prompt_wrap()] appended to it
+#' @return A [tidyprompt-class] object with the [prompt_wrap()] appended to it
 #'
 #' @export
 #'
@@ -69,7 +107,7 @@
 #' @family prompt_wrap
 #' @family pre_built_prompt_wraps
 #'
-#' @seealso \link{tidyprompt-class} [send_prompt()]
+#' @seealso [tidyprompt-class] [send_prompt()]
 prompt_wrap <- function(
     prompt,
     modify_fn = NULL,
@@ -77,7 +115,7 @@ prompt_wrap <- function(
     validation_fn = NULL,
     handler_fn = NULL,
     parameter_fn = NULL,
-    type = c("unspecified", "mode", "tool", "break"),
+    type = c("unspecified", "mode", "tool", "break", "check"),
     name = NULL
 ) {
   UseMethod("prompt_wrap")
@@ -85,16 +123,18 @@ prompt_wrap <- function(
 
 
 
-#' [prompt_wrap()] method for when a \link{tidyprompt-class} object is supplied
+#' [prompt_wrap()] method for when a [tidyprompt-class] object is supplied
 #'
 #' Calls the internal function to append the prompt wrap.
 #'
-#' @param prompt A single string or a \link{tidyprompt-class} object
+#' @param prompt A single string or a [tidyprompt-class] object
 #' @param ... Additional arguments
 #'
-#' @return A \link{tidyprompt-class} object with the [prompt_wrap()] appended to it
+#' @return A [tidyprompt-class] object with the [prompt_wrap()] appended to it
 #'
 #' @exportS3Method prompt_wrap tidyprompt
+#'
+#' @noRd
 #' @keywords internal
 prompt_wrap.tidyprompt <- function(prompt, ...) {
   prompt_wrap_internal(prompt, ...)
@@ -104,15 +144,17 @@ prompt_wrap.tidyprompt <- function(prompt, ...) {
 
 #' Default method for [prompt_wrap()]
 #'
-#' Attempts to create a \link{tidyprompt-class} object from whatever is passed as 'prompt';
+#' Attempts to create a [tidyprompt-class] object from whatever is passed as 'prompt';
 #' then calls the internal function to append the [prompt_wrap()].
 #'
-#' @param prompt A single string or a \link{tidyprompt-class} object
+#' @param prompt A single string or a [tidyprompt-class] object
 #' @param ... Additional arguments
 #'
-#' @return A \link{tidyprompt-class} object with the [prompt_wrap()] appended to it
+#' @return A [tidyprompt-class] object with the [prompt_wrap()] appended to it
 #'
 #' @exportS3Method prompt_wrap default
+#'
+#' @noRd
 #' @keywords internal
 prompt_wrap.default <- function(prompt, ...) {
   prompt <- tidyprompt(prompt)
@@ -121,7 +163,7 @@ prompt_wrap.default <- function(prompt, ...) {
 
 
 
-#' Internal function to append a [prompt_wrap()] to a \link{tidyprompt-class} object
+#' Internal function to append a [prompt_wrap()] to a [tidyprompt-class] object
 #'
 #' @param prompt See [prompt_wrap()]
 #' @param modify_fn See [prompt_wrap()]
@@ -132,7 +174,7 @@ prompt_wrap.default <- function(prompt, ...) {
 #' @param type See [prompt_wrap()]
 #' @param name See [prompt_wrap()]
 #'
-#' @return A \link{tidyprompt-class} object with the [prompt_wrap()] appended to it
+#' @return A [tidyprompt-class] object with the [prompt_wrap()] appended to it
 #'
 #' @noRd
 #' @keywords internal
@@ -143,7 +185,7 @@ prompt_wrap_internal <- function(
     validation_fn = NULL,
     handler_fn = NULL,
     parameter_fn = NULL,
-    type = c("unspecified", "mode", "tool", "break"),
+    type = c("unspecified", "mode", "tool", "break", "check"),
     name = NULL
 ) {
   stopifnot(

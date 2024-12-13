@@ -1,7 +1,7 @@
 #' Create an `llm_break` object
 #'
-#' This object is used to break a extraction and validation loop in a [prompt_wrap()]
-#' evaluated by [send_prompt()]. When an extraction or validation function returns
+#' This object is used to break a extraction and validation loop defined in a [prompt_wrap()]
+#' as evaluated by [send_prompt()]. When an extraction or validation function returns
 #' this object, the loop will be broken and no further extraction or validation
 #' functions are applied; instead, [send_prompt()] will be able to return
 #' the result at that point. This may be useful in scenarios where
@@ -21,7 +21,8 @@
 #' will be returned as the response result of [send_prompt()] (and [send_prompt()])
 #' will print no warning about unsuccessful evaluation).
 #'
-#' @return An object of class "llm_break"
+#' @return An list of class "llm_break" containing the object to return and
+#' a logical indicating whether the evaluation was successful
 #'
 #' @export
 #'
@@ -29,6 +30,7 @@
 #'
 #' @family prompt_wrap
 #' @family prompt_evaluation
+#' @seealso [llm_feedback()]
 llm_break <- function(
     object_to_return = NULL,
     success = FALSE

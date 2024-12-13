@@ -2,33 +2,37 @@
 % Please edit documentation in R/tidyprompt.R
 \name{tidyprompt}
 \alias{tidyprompt}
-\title{Create a Tidyprompt object}
+\title{Create a \linkS4class{tidyprompt} object}
 \usage{
 tidyprompt(input)
 }
 \arguments{
-\item{input}{A string, a \code{\link[=chat_history]{chat_history()}}, a list containing
-a chat history under '$chat_history', or a Tidyprompt object}
+\item{input}{A string, a chat history, a list containing
+a chat history under key '$chat_history', or a \linkS4class{tidyprompt} object}
 }
 \value{
-A Tidyprompt object
+A \linkS4class{tidyprompt} object
 }
 \description{
-This function creates a Tidyprompt object (being a wrapper around
-the initialize method of \code{tidyprompt-class}).
+This is a wrapper around the \linkS4class{tidyprompt} constructor.
 }
 \details{
-Different types of input are accepted for initialization of a Tidyprompt object:
+Different types of input are accepted for initialization of
+a \linkS4class{tidyprompt} object:
 \itemize{
 \item A single character string. This will be used as the base prompt
+
 \item A dataframe which is a valid chat history (see \code{\link[=chat_history]{chat_history()}})
-\item A list containing a valid chat history under '$chat_history' (e.g., a result from \code{\link[=send_prompt]{send_prompt()}}
-when using 'return_mode' = "full")
-\item A Tidyprompt object. This will be checked for validity and if valid, the fields are copied to the object
-which is returned from this method
+
+\item A list containing a valid chat history under '$chat_history'
+(e.g., a result from \code{\link[=send_prompt]{send_prompt()}} when using 'return_mode' = "full")
+
+\item A \linkS4class{tidyprompt} object. This will be checked for validity and, if valid,
+the fields are copied to the object which is returned from this method
 }
-When passing a dataframe or list with a chat history, the last row of the chat history must have role 'user';
-this row will be used as the base prompt. If the first row of the chat history has role 'system', it will be used
+When passing a dataframe or list with a chat history, the last row of the
+chat history must have role 'user'; this row will be used as the base prompt.
+If the first row of the chat history has role 'system', it will be used
 as the system prompt.
 }
 \examples{
@@ -90,8 +94,6 @@ prompt$set_chat_history(chat_history)
 prompt$get_chat_history()
 }
 \seealso{
-\link{tidyprompt-class} \code{\link[=prompt_wrap]{prompt_wrap()}}#'
-
 Other tidyprompt: 
 \code{\link{construct_prompt_text}()},
 \code{\link{get_chat_history}()},

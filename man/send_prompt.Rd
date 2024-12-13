@@ -15,13 +15,13 @@ send_prompt(
 )
 }
 \arguments{
-\item{prompt}{A string or a \link{tidyprompt-class} object}
+\item{prompt}{A string or a \linkS4class{tidyprompt} object}
 
-\item{llm_provider}{\link{llm_provider-class} object (default is \code{\link[=llm_provider_ollama]{llm_provider_ollama()}}).
+\item{llm_provider}{\linkS4class{llm_provider} object (default is \code{\link[=llm_provider_ollama]{llm_provider_ollama()}}).
 This object and its settings will be used to evaluate the prompt. Note that
 the 'verbose' and 'stream' settings in the LLM provider will be overruled by
 the 'verbose' and 'stream' arguments in this function when those are not NULL.
-Furthermore, advanced \link{tidyprompt-class} objects may carry '$parameter_fn' functions
+Furthermore, advanced \linkS4class{tidyprompt} objects may carry '$parameter_fn' functions
 which can set parameters in the llm_provider object (see \code{\link[=prompt_wrap]{prompt_wrap()}} for more information)}
 
 \item{max_interactions}{Maximum number of interactions allowed with the
@@ -127,7 +127,7 @@ in the prompt wraps (see \code{\link[=prompt_wrap]{prompt_wrap()}}). If the maxi
 }
 }
 \seealso{
-\link{tidyprompt-class}, \code{\link[=prompt_wrap]{prompt_wrap()}}, \link{llm_provider-class}, \code{\link[=llm_provider_ollama]{llm_provider_ollama()}},
+\linkS4class{tidyprompt}, \code{\link[=prompt_wrap]{prompt_wrap()}}, \linkS4class{llm_provider}, \code{\link[=llm_provider_ollama]{llm_provider_ollama()}},
 \code{\link[=llm_provider_openai]{llm_provider_openai()}}
 
 Other prompt_evaluation: 

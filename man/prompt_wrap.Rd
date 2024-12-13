@@ -2,7 +2,7 @@
 % Please edit documentation in R/prompt_wrap.R
 \name{prompt_wrap}
 \alias{prompt_wrap}
-\title{Wrap a prompt with empowering functions}
+\title{Wrap a prompt with functions for modification and handling the LLM response}
 \usage{
 prompt_wrap(
   prompt,
@@ -11,81 +11,109 @@ prompt_wrap(
   validation_fn = NULL,
   handler_fn = NULL,
   parameter_fn = NULL,
-  type = c("unspecified", "mode", "tool", "break"),
+  type = c("unspecified", "mode", "tool", "break", "check"),
   name = NULL
 )
 }
 \arguments{
-\item{prompt}{A single string or a \link{tidyprompt-class} object}
+\item{prompt}{A string or a \linkS4class{tidyprompt} object}
 
 \item{modify_fn}{A function that takes the previous prompt text (as
 first argument) and returns the new prompt text}
 
 \item{extraction_fn}{A function that takes the LLM response (as first argument)
-and attempts to extract a value from it. Upon succesful extraction, the function
-should return the extracted value. If the extraction fails, the function should
-return a \code{\link[=llm_feedback]{llm_feedback()}} message to initiate a retry. A \code{\link[=llm_break]{llm_break()}} can be
-returned to break the extraction and validation loop, ending \code{\link[=send_prompt]{send_prompt()}}}
+and attempts to extract a value from it.
+Upon succesful extraction, the function should return the extracted value.
+If the extraction fails, the function should return a \code{\link[=llm_feedback]{llm_feedback()}} message
+to initiate a retry.
+A \code{\link[=llm_break]{llm_break()}} can be returned to break the extraction and validation loop,
+ending \code{\link[=send_prompt]{send_prompt()}}}
 
 \item{validation_fn}{A function that takes the (extracted) LLM response
-(as first argument) and attempts to validate it. Upon succesful validation,
-the function should return TRUE. If the validation fails, the function should
-return a \code{\link[=llm_feedback]{llm_feedback()}} message to initiate a retry. A \code{\link[=llm_break]{llm_break()}} can be
-returned to break the extraction and validation loop, ending \code{\link[=send_prompt]{send_prompt()}}
-object \code{\link[=llm_break]{llm_break()}} can be returned to break the extraction and validation loop}
+(as first argument) and attempts to validate it.
+Upon succesful validation, the function should return TRUE. If the validation
+fails, the function should return a \code{\link[=llm_feedback]{llm_feedback()}} message to initiate a retry.
+A \code{\link[=llm_break]{llm_break()}} can be returned to break the extraction and validation loop,
+ending \code{\link[=send_prompt]{send_prompt()}}}
 
-\item{handler_fn}{A function that takes a 'completion' object (as returned by
-\code{llm_provider$complete_chat()}) and a (potentially modified) completion object.
+\item{handler_fn}{A function that takes a 'completion' object (a result
+of a request to a LLM, as returned by \verb{$complete_chat()} of a \linkS4class{llm_provider}
+object) as first argument and the \linkS4class{llm_provider} object as second argument.
+The function should return a (modified or identical) completion object.
 This can be used for advanced side effects, like logging, or native tool calling,
-or keeping track of token usage. See \link{llm_provider-class} for more information;
-handler_fn is attached to the \link{llm_provider-class} object that is being used.
+or keeping track of token usage. See \linkS4class{llm_provider} for more information;
+handler_fn is attached to the \linkS4class{llm_provider} object that is being used.
 For example usage, see source code of \code{\link[=answer_using_tools]{answer_using_tools()}}}
 
-\item{parameter_fn}{A function that takes the \link{llm_provider-class} object which is being
-used with \code{\link[=send_prompt]{send_prompt()}} and returns a named list of parameters to be
-set in the \link{llm_provider-class} object via \code{llm_provider$set_parameters()}. This can be
-used to configure specific parameters of the \link{llm_provider-class} object when evaluating
-the prompt. For example, \code{\link[=answer_as_json]{answer_as_json()}} may set different parameters for different APIs
-related to JSON output. This function is typically only used with advanced
-prompt wraps that require specific settings in the \link{llm_provider-class} object}
+\item{parameter_fn}{A function that takes the \linkS4class{llm_provider} object
+which is being used with \code{\link[=send_prompt]{send_prompt()}} and returns a named list of parameters
+to be set in the \linkS4class{llm_provider} object via its \verb{$set_parameters()} method.
+This can be used to configure specific parameters of the \linkS4class{llm_provider}
+object when evaluating the prompt.
+For example, \code{\link[=answer_as_json]{answer_as_json()}} may set different parameters for different APIs
+related to JSON output.
+This function is typically only used with advanced prompt wraps that require
+specific settings in the \linkS4class{llm_provider} object}
 
-\item{type}{The type of prompt wrap; one of 'unspecified', 'mode', 'tool', or 'break'.
+\item{type}{The type of prompt wrap. Must be one of:
+\itemize{
+\item{'unspecified'}{The default type, typically used for prompt wraps
+which request a specific format of the LLM response, like \code{\link[=answer_as_integer]{answer_as_integer()}}}
+
+\item{'mode'} For prompt wraps that change how the LLM should answer the prompt,
+like \code{\link[=answer_by_chain_of_thought]{answer_by_chain_of_thought()}} or \code{\link[=answer_by_react]{answer_by_react()}}
+
+\item{'tool'} For prompt wraps that enable the LLM to use tools, like \code{\link[=answer_using_tools]{answer_using_tools()}}
+or \code{\link[=answer_using_r]{answer_using_r()}} when 'output_as_tool' = TRUE
+
+\item{'break'} For prompt wraps that break the extraction and validation loop,
+like \code{\link[=quit_if]{quit_if()}}
+
+\item{'check'} For prompt wraps that apply a last check to the final answer
+}
 Types are used to determine the order in which prompt wraps are applied.
 When constructing the prompt text, prompt wraps are applied to the base prompt
-in the following order: 'unspecified', 'break', 'mode', 'tool'. When evaluating
-the LLM response and applying extraction and validation functions,
-prompt wraps are applied in the reverse order: 'tool', 'mode', 'break', 'unspecified'.
-Order among the same type is preserved in the order they were added to the prompt.
-Example of a tool is \code{\link[=answer_using_tools]{answer_using_tools()}}; example of a mode is \code{\link[=answer_by_react]{answer_by_react()}}.
-Example of a break is \code{\link[=quit_if]{quit_if()}}. Most other prompt wraps will be 'unspecified',
-like \code{\link[=answer_as_regex_match]{answer_as_regex_match()}} or \code{\link[=add_text]{add_text()}}}
+in the following order: 'check', 'unspecified', 'break', 'mode', 'tool'.
+When evaluating the LLM response and applying extraction and validation functions,
+prompt wraps are applied in the reverse order: 'tool', 'mode', 'break',
+'unspecified', 'check'.
+Order among the same type is preserved in the order they were added to the prompt.}
 
-\item{name}{An optional name for the prompt wrap. This can be used to identify
-the prompt wrap in the \link{tidyprompt-class} object}
+\item{name}{An optional name for the prompt wrap.
+This can be used to identify the prompt wrap in the \linkS4class{tidyprompt} object}
 }
 \value{
-A \link{tidyprompt-class} object with the \code{\link[=prompt_wrap]{prompt_wrap()}} appended to it
+A \linkS4class{tidyprompt} object with the \code{\link[=prompt_wrap]{prompt_wrap()}} appended to it
 }
 \description{
-This function takes a single string or a \link{tidyprompt-class} object and
-adds a new prompt wrap to it. A prompt wrap is a set of functions
-that modify the prompt text, extract a value from the LLM response,
-and validate the extracted value. The functions are used to ensure
-that the prompt and LLM response is in the correct format and meets the
-specified criteria; they may also be used to provide the LLM with feedback
-or additional information, like the result of a tool call.
+This function takes a single string or a \linkS4class{tidyprompt} object and
+adds a new prompt wrap to it.
+
+A prompt wrap is a set of functions that modify the prompt text,
+extract a value from the LLM response, and validate the extracted value.
+
+The functions are used to ensure that the prompt and LLM response are in the
+correct format and meet the specified criteria; they may also be used to
+provide the LLM with feedback or additional information,
+like the result of a tool call or some evaluated code.
+
+Advanced prompt wraps may also include functions that directly handle
+the response from a LLM API or configure API parameters.
 }
 \details{
 For advanced use, modify_fn, extraction_fn, and validation_fn
-may take 'llm_provider' (as used with \code{\link[=send_prompt]{send_prompt()}}) as second argument, and the
-http_list (a list of all HTTP requests made during send_prompt()) as third argument.
-This is not required, but can be useful for more complex prompt wraps which
-require additional information about the LLM provider or the HTTP requests made.
-
-'modify_fn', 'extraction_fn', 'validation_fn', 'handler_fn', and 'parameter_fn'
-may also access the \link{tidyprompt-class} object that they are a part of
-through 'self$...' which is attached to their environment. For instance,
-other prompt wraps can be accessed through 'self$get_prompt_wraps()'
+may take the \linkS4class{llm_provider} object (as used with \code{\link[=send_prompt]{send_prompt()}}) as
+second argument, and the 'http_list' (a list of all HTTP requests
+and responses made during \code{\link[=send_prompt]{send_prompt()}}) as third argument.
+Use of these arguments is not required, but can be useful for more complex
+prompt wraps which require additional information about the LLM provider
+or requests made so far.
+The functions (including parameter_fn) also have access to
+the object \code{self} (not a function argument; it is attached to the environment
+of the function) which contains the \linkS4class{tidyprompt} object that the prompt wrap
+is a part of. This can be used to access other prompt wraps, or to access the
+prompt text or other information about the prompt. For instance,
+other prompt wraps can be accessed through \code{self$get_prompt_wraps()}.
 }
 \examples{
 # A custom prompt_wrap may be created during piping
@@ -201,7 +229,7 @@ answer_as_integer <- function(
 }
 }
 \seealso{
-\link{tidyprompt-class} \code{\link[=send_prompt]{send_prompt()}}
+\linkS4class{tidyprompt} \code{\link[=send_prompt]{send_prompt()}}
 
 Other prompt_wrap: 
 \code{\link{llm_break}()},

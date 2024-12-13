@@ -2,19 +2,19 @@
 % Please edit documentation in R/tidyprompt.R
 \name{get_chat_history}
 \alias{get_chat_history}
-\title{Get the chat history of a Tidyprompt object}
+\title{Get the chat history of a \linkS4class{tidyprompt} object}
 \usage{
 get_chat_history(x)
 }
 \arguments{
-\item{x}{A Tidyprompt object}
+\item{x}{A \linkS4class{tidyprompt} object}
 }
 \value{
 A dataframe containing the chat history
 }
 \description{
-This function gets the chat history of the Tidyprompt object. The chat
-history is constructed from the base prompt, system prompt, and chat
+This function gets the chat history of the \linkS4class{tidyprompt} object.
+The chat history is constructed from the base prompt, system prompt, and chat
 history field. The returned object will be the chat history
 with the system prompt as the first message with role 'system' and the
 the base prompt as the last message with role 'user'.

@@ -1,4 +1,13 @@
-#' Make a request to an LLM provider
+#' @title Make a request to an LLM provider
+#'
+#' @description This is a helper function which facilitates making requests to LLM
+#' providers which follow the structure of the OpenAI API or the Ollama
+#' API. It handles both streaming and non-streaming requests.
+#'
+#' This function is part of the internal API and is not intended to be called directly by
+#' users. It is used in some of the pre-built [llm_provider-class] objects
+#' included in 'tidyprompt' (e.g., [llm_provider_openai()) and
+#' [llm_provider_ollama()]).
 #'
 #' @param chat_history A data frame with 'role' and 'content' columns
 #' @param request A 'httr2' request object with the URL, headers, and body
@@ -9,7 +18,8 @@
 #' @return A list with the completed chat history and the HTTP request and response
 #' objects
 #'
-#' @export
+#' @keywords internal
+#' @noRd
 request_llm_provider <- function(
     chat_history, # A data frame with 'role' and 'content' columns
     request, # 'httr2' request object

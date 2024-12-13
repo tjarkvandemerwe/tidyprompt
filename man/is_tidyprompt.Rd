@@ -2,7 +2,7 @@
 % Please edit documentation in R/tidyprompt.R
 \name{is_tidyprompt}
 \alias{is_tidyprompt}
-\title{Check if object is a Tidyprompt}
+\title{Check if object is a \linkS4class{tidyprompt} object}
 \usage{
 is_tidyprompt(x)
 }
@@ -10,10 +10,10 @@ is_tidyprompt(x)
 \item{x}{An object to check}
 }
 \value{
-TRUE if the object is a valid Tidyprompt, otherwise FALSE
+TRUE if the object is a valid \linkS4class{tidyprompt} object, otherwise FALSE
 }
 \description{
-Check if object is a Tidyprompt
+Check if object is a \linkS4class{tidyprompt} object
 }
 \examples{
 tidyprompt("Hi!")

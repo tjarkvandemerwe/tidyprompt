@@ -2,27 +2,28 @@
 % Please edit documentation in R/tidyprompt.R
 \name{set_chat_history}
 \alias{set_chat_history}
-\title{Set the chat history for a Tidyprompt object}
+\title{Set the chat history for \linkS4class{tidyprompt} object}
 \usage{
 set_chat_history(x, chat_history)
 }
 \arguments{
-\item{x}{A Tidyprompt object}
+\item{x}{A \linkS4class{tidyprompt} object}
 
 \item{chat_history}{A valid chat history (see \code{\link[=chat_history]{chat_history()}})}
 }
 \value{
-The updated Tidyprompt object
+The updated \linkS4class{tidyprompt} object
 }
 \description{
-This function sets the chat history for the Tidyprompt object. The chat
-history will also set the base prompt and system prompt
+This function sets the chat history for a \linkS4class{tidyprompt} object.
+The chat history will also set the base prompt and system prompt
 (the last message of the chat history should be of role 'user' and
 will be used as the base prompt; the first message of the chat history
 may be of the role 'system' and will then be used as the system prompt).
+
 This may be useful when one wants to change the base prompt, system prompt,
-and chat history of a Tidyprompt object while retaining other fields like
-the prompt wraps.
+and chat history of a \linkS4class{tidyprompt} object while retaining other fields like
+the list of prompt wraps.
 }
 \examples{
 tidyprompt("Hi!")

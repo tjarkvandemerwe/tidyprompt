@@ -2,7 +2,7 @@
 #'
 #' This object is used to send feedback to a LLM when a LLM reply
 #' does not succesfully pass an extraction or validation function
-#' (as handled by [send_prompt()] and passed with [tidyprompt()] and [prompt_wrap()]).
+#' (as handled by [send_prompt()] and defined using [prompt_wrap()]).
 #' The feedback text is sent back to the LLM. The extraction or validation function
 #' should then return this object with the feedback text that should be sent to the LLM.
 #'
@@ -10,11 +10,11 @@
 #' be sent back to the LLM after not passing an extractor or validator function
 #'
 #' @param tool_result A logical indicating whether the feedback is a tool result.
-#' If TRUE, it will be handled differently by [send_prompt()], by presenting the
-#' text as a 'system' message. This ensures it will not be
-#' filtered out when cleaning the context window in [send_prompt()]
+#' If TRUE, [send_prompt()] will not remove it from the chat history when
+#' cleaning the context window during repeated interactions
 #'
-#' @return An object of class "llm_feedback" containing the feedback text
+#' @return An object of class "llm_feedback" (or "llm_feedback_tool_result")
+#' containing the feedback text to send back to the LLM
 #'
 #' @export
 #'
@@ -22,6 +22,7 @@
 #'
 #' @family prompt_wrap
 #' @family prompt_evaluation
+#' @seealso [llm_break()]
 llm_feedback <- function(text, tool_result = FALSE) {
   if (!tool_result) {
     return(structure(

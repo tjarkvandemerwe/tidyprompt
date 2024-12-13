@@ -4,15 +4,11 @@
 \alias{tidyprompt-class}
 \title{Tidyprompt R6 Class}
 \description{
-A \code{Tidyprompt} is an object containing a base prompt string and a list
-of \code{prompt_wrap} objects. It provides structured methods to modify the prompt,
-validate responses, and chain modifications, ensuring robust interaction with
-LLMs.
-}
-\details{
-This class includes methods for adding prompt wraps, constructing prompt text,
-and validating the object. It allows chaining modifications to the prompt
-and validating responses, ensuring a seamless flow in prompt design.
+A \linkS4class{tidyprompt} object contains a base prompt and a list
+of \code{\link[=prompt_wrap]{prompt_wrap()}} objects. It provides structured methods to modify the prompt
+while simultaneously adding logic to extract from and validate the LLM response.
+Besides a base prompt, a \linkS4class{tidyprompt} object may contain a system prompt
+and a chat history which precede the base prompt.
 }
 \seealso{
 Other tidyprompt: 
@@ -27,14 +23,14 @@ Other tidyprompt:
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{base_prompt}}{The base prompt string. This may be modified
-by prompt wraps during \code{\link[=construct_prompt_text]{construct_prompt_text()}}; the constructed
-prompt text will be used as the first message of role 'user'
-in the chat history during \code{\link[=send_prompt]{send_prompt()}}}
+\item{\code{base_prompt}}{The base prompt string.
+The base prompt be modified by prompt wraps during \code{\link[=construct_prompt_text]{construct_prompt_text()}};
+the modified prompt text will be used as the final message of role 'user'
+during \code{\link[=send_prompt]{send_prompt()}}}
 
-\item{\code{system_prompt}}{A system prompt string. This will be added
-at the start of the chat history as role 'system' during
-\code{\link[=send_prompt]{send_prompt()}}}
+\item{\code{system_prompt}}{A system prompt string.
+This will be added at the start of the chat history as role 'system'
+during \code{\link[=send_prompt]{send_prompt()}}}
 }
 \if{html}{\out{</div>}}
 }
@@ -55,7 +51,7 @@ at the start of the chat history as role 'system' during
 \if{html}{\out{<a id="method-Tidyprompt-new"></a>}}
 \if{latex}{\out{\hypertarget{method-Tidyprompt-new}{}}}
 \subsection{Method \code{new()}}{
-Initialize a Tidyprompt object.
+Initialize a \linkS4class{tidyprompt} object
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{tidyprompt-class$new(input)}\if{html}{\out{</div>}}
 }
@@ -63,35 +59,40 @@ Initialize a Tidyprompt object.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{input}}{A string, a \code{\link[=chat_history]{chat_history()}}, a list containing
-a chat history under '$chat_history', or a Tidyprompt object}
+\item{\code{input}}{A string, a chat history, a list containing
+a chat history under key '$chat_history', or a \linkS4class{tidyprompt} object}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
-Different types of input are accepted for initialization of a Tidyprompt object:
+Different types of input are accepted for initialization of
+a \linkS4class{tidyprompt} object:
 \itemize{
 \item A single character string. This will be used as the base prompt
+
 \item A dataframe which is a valid chat history (see \code{\link[=chat_history]{chat_history()}})
-\item A list containing a valid chat history under '$chat_history' (e.g., a result from \code{\link[=send_prompt]{send_prompt()}}
-when using 'return_mode' = "full")
-\item A Tidyprompt object. This will be checked for validity and if valid, the fields are copied to the object
-which is returned from this method
+
+\item A list containing a valid chat history under '$chat_history'
+(e.g., a result from \code{\link[=send_prompt]{send_prompt()}} when using 'return_mode' = "full")
+
+\item A \linkS4class{tidyprompt} object. This will be checked for validity and, if valid,
+the fields are copied to the object which is returned from this method
 }
-When passing a dataframe or list with a chat history, the last row of the chat history must have role 'user';
-this row will be used as the base prompt. If the first row of the chat history has role 'system', it will be used
+When passing a dataframe or list with a chat history, the last row of the
+chat history must have role 'user'; this row will be used as the base prompt.
+If the first row of the chat history has role 'system', it will be used
 as the system prompt.
 }
 
 \subsection{Returns}{
-A \code{Tidyprompt} object
+A \linkS4class{tidyprompt} object
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Tidyprompt-is_valid"></a>}}
 \if{latex}{\out{\hypertarget{method-Tidyprompt-is_valid}{}}}
 \subsection{Method \code{is_valid()}}{
-Check if the Tidyprompt object is valid.
+Check if the tidyprompt object is valid.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{tidyprompt-class$is_valid()}\if{html}{\out{</div>}}
 }
@@ -104,7 +105,7 @@ Check if the Tidyprompt object is valid.
 \if{html}{\out{<a id="method-Tidyprompt-add_prompt_wrap"></a>}}
 \if{latex}{\out{\hypertarget{method-Tidyprompt-add_prompt_wrap}{}}}
 \subsection{Method \code{add_prompt_wrap()}}{
-Add a \code{prompt_wrap} object to the Tidyprompt.
+Add a \code{\link[=prompt_wrap]{prompt_wrap()}} to the \linkS4class{tidyprompt} object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{tidyprompt-class$add_prompt_wrap(prompt_wrap)}\if{html}{\out{</div>}}
 }
@@ -117,14 +118,14 @@ Add a \code{prompt_wrap} object to the Tidyprompt.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-The updated Tidyprompt object
+The updated \linkS4class{tidyprompt} object
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Tidyprompt-get_prompt_wraps"></a>}}
 \if{latex}{\out{\hypertarget{method-Tidyprompt-get_prompt_wraps}{}}}
 \subsection{Method \code{get_prompt_wraps()}}{
-Get the list of prompt wraps.
+Get list of \code{\link[=prompt_wrap]{prompt_wrap()}} objects from the \linkS4class{tidyprompt} object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{tidyprompt-class$get_prompt_wraps(
   order = c("default", "modification", "evaluation")
@@ -136,19 +137,19 @@ Get the list of prompt wraps.
 \describe{
 \item{\code{order}}{The order to return the wraps. Options are:
 \itemize{
-\item "default": as added to the Tidyprompt
-\item "modification": ordered for modification of the base prompt;
-ordered by type: unspecified, mode, tool, break. This is the order
-in which wraps are applied during \code{\link[=construct_prompt_text]{construct_prompt_text()}}
+\item "default": as originally added to the object
+\item "modification": as ordered for modification of the base prompt;
+ordered by type: check, unspecified, mode, tool, break. This is the order
+in which prompt wraps are applied during \code{\link[=construct_prompt_text]{construct_prompt_text()}}
 \item "evaluation": ordered for evaluation of the LLM response;
-ordered by type: tool, mode, break, unspecified. This is the order
+ordered by type: tool, mode, break, unspecified, check. This is the order
 in which wraps are applied to the LLM output during \code{\link[=send_prompt]{send_prompt()}}
 }}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A list of \code{prompt_wrap} objects.
+A list of \code{\link[=prompt_wrap]{prompt_wrap()}} objects.
 }
 }
 \if{html}{\out{<hr>}}
@@ -163,7 +164,7 @@ Construct the complete prompt text.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{llm_provider}}{Optional \link{llm_provider-class} object.
+\item{\code{llm_provider}}{Optional \linkS4class{llm_provider} object.
 This may sometimes affect the prompt text construction}
 }
 \if{html}{\out{</div>}}
@@ -176,13 +177,13 @@ A string representing the constructed prompt text
 \if{html}{\out{<a id="method-Tidyprompt-set_chat_history"></a>}}
 \if{latex}{\out{\hypertarget{method-Tidyprompt-set_chat_history}{}}}
 \subsection{Method \code{set_chat_history()}}{
-This function sets the chat history for the Tidyprompt object. The chat
-history will also set the base prompt and system prompt
+This function sets the chat history for the tidyprompt object.
+The chat history will also set the base prompt and system prompt
 (the last message of the chat history should be of role 'user' and
 will be used as the base prompt; the first message of the chat history
 may be of the role 'system' and will then be used as the system prompt).
 This may be useful when one wants to change the base prompt, system prompt,
-and chat history of a Tidyprompt object while retaining other fields like
+and chat history of a \linkS4class{tidyprompt} object while retaining other fields like
 the prompt wraps.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{tidyprompt-class$set_chat_history(chat_history)}\if{html}{\out{</div>}}
@@ -196,15 +197,15 @@ the prompt wraps.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-The updated Tidyprompt object
+The updated \linkS4class{tidyprompt} object
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Tidyprompt-get_chat_history"></a>}}
 \if{latex}{\out{\hypertarget{method-Tidyprompt-get_chat_history}{}}}
 \subsection{Method \code{get_chat_history()}}{
-This function gets the chat history of the Tidyprompt object. The chat
-history is constructed from the base prompt, system prompt, and chat
+This function gets the chat history of the \linkS4class{tidyprompt} object.
+The chat history is constructed from the base prompt, system prompt, and chat
 history field. The returned object will be the chat history
 with the system prompt as the first message with role 'system' and the
 the base prompt as the last message with role 'user'.

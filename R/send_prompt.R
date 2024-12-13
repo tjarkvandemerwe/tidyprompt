@@ -8,12 +8,12 @@
 #' apply extraction and validation functions to the LLM response, as specified
 #' in the prompt wraps (see [prompt_wrap()]). If the maximum number of interactions
 #'
-#' @param prompt A string or a \link{tidyprompt-class} object
-#' @param llm_provider \link{llm_provider-class} object (default is [llm_provider_ollama()]).
+#' @param prompt A string or a [tidyprompt-class] object
+#' @param llm_provider [llm_provider-class] object (default is [llm_provider_ollama()]).
 #' This object and its settings will be used to evaluate the prompt. Note that
 #' the 'verbose' and 'stream' settings in the LLM provider will be overruled by
 #' the 'verbose' and 'stream' arguments in this function when those are not NULL.
-#' Furthermore, advanced \link{tidyprompt-class} objects may carry '$parameter_fn' functions
+#' Furthermore, advanced [tidyprompt-class] objects may carry '$parameter_fn' functions
 #' which can set parameters in the llm_provider object (see [prompt_wrap()] for more information)
 #' @param max_interactions Maximum number of interactions allowed with the
 #' LLM provider. Default is 10. If the maximum number of interactions is reached
@@ -59,7 +59,7 @@
 #'
 #' @example inst/examples/send_prompt.R
 #'
-#' @seealso \link{tidyprompt-class}, [prompt_wrap()], \link{llm_provider-class}, [llm_provider_ollama()],
+#' @seealso [tidyprompt-class], [prompt_wrap()], [llm_provider-class], [llm_provider_ollama()],
 #' [llm_provider_openai()]
 #'
 #' @family prompt_evaluation

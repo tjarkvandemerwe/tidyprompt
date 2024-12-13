@@ -4,9 +4,9 @@
 \alias{llm_provider-class}
 \title{Llm_provider R6 Class}
 \description{
-This class provides a structure for creating \link{llm_provider-class}
+This class provides a structure for creating \linkS4class{llm_provider}
 objects with different implementations of the \code{complete_chat} function. Using
-this class, you can create an \link{llm_provider-class} object that interacts with
+this class, you can create an \linkS4class{llm_provider} object that interacts with
 different LLM providers, such Ollama, OpenAI, or other custom providers.
 }
 \seealso{
@@ -24,7 +24,7 @@ Other llm_provider:
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
 \item{\code{parameters}}{A named list of parameters to configure the
-\link{llm_provider-class}. Parameters may be appended to the request body when
+\linkS4class{llm_provider}. Parameters may be appended to the request body when
 interacting with the LLM provider API}
 
 \item{\code{verbose}}{A logical indicating whether interaction with the LLM
@@ -62,7 +62,7 @@ be called in the order they are added to the list}
 \if{html}{\out{<a id="method-Llm_provider-new"></a>}}
 \if{latex}{\out{\hypertarget{method-Llm_provider-new}{}}}
 \subsection{Method \code{new()}}{
-Create a new \link{llm_provider-class} object
+Create a new \linkS4class{llm_provider} object
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{llm_provider-class$new(
   complete_chat_function,
@@ -78,7 +78,7 @@ Create a new \link{llm_provider-class} object
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{complete_chat_function}}{Function that will be called by the
-\link{llm_provider-class} to complete a chat. This function should
+\linkS4class{llm_provider} to complete a chat. This function should
 take a list containing at least '$chat_history' (a data frame
 with 'role' and 'content' columns) and return a response object, which contains:
 \itemize{
@@ -88,12 +88,12 @@ containing the completed chat history
 containing the HTTP requests and responses made during the chat completion
 }}
 
-\item{\code{parameters}}{A named list of parameters to configure the \link{llm_provider-class}.
+\item{\code{parameters}}{A named list of parameters to configure the \linkS4class{llm_provider}.
 These parameters may be appended to the request body when interacting with
 the LLM provider. For example, the \code{model} parameter may often be required.
 The 'stream' parameter may be used to indicate that the API should stream.
 Parameters should not include the chat_history, or 'api_key' or 'url', which
-are handled separately by the \link{llm_provider-class} and '$complete_chat()'.
+are handled separately by the \linkS4class{llm_provider} and '$complete_chat()'.
 Parameters should also not be set when they are handled by prompt wraps}
 
 \item{\code{verbose}}{A logical indicating whether interaction with the LLM
@@ -113,14 +113,14 @@ This is used to determine certain specific behaviors for different APIs
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A new \link{llm_provider-class} R6 object
+A new \linkS4class{llm_provider} R6 object
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Llm_provider-set_parameters"></a>}}
 \if{latex}{\out{\hypertarget{method-Llm_provider-set_parameters}{}}}
 \subsection{Method \code{set_parameters()}}{
-Helper function to set the parameters of the \link{llm_provider-class}
+Helper function to set the parameters of the \linkS4class{llm_provider}
 object. This function appends new parameters to the existing parameters
 list.
 \subsection{Usage}{
@@ -136,7 +136,7 @@ existing parameters list}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-The modified \link{llm_provider-class} object
+The modified \linkS4class{llm_provider} object
 }
 }
 \if{html}{\out{<hr>}}
@@ -174,12 +174,13 @@ data from the HTTP response about the number of tokens used.
 \if{latex}{\out{\hypertarget{method-Llm_provider-add_handler_fn}{}}}
 \subsection{Method \code{add_handler_fn()}}{
 Helper function to add a handler function to the
-\link{llm_provider-class} object. Handler functions are called after the
-completion of a chat and can be used to modify the response before it is
-returned to the user. Each handler function should take the response object
-as input (1st argument) as well as 'self' (the \link{llm_provider-class}
-object) and return a modified response object.The functions will be called
-in the order they are added to the list.
+\linkS4class{llm_provider} object.
+Handler functions are called after the completion of a chat and can be
+used to modify the response before it is returned by the \linkS4class{llm_provider}.
+Each handler function should take the response object
+as input (first argument) as well as 'self' (the \linkS4class{llm_provider}
+object) and return a modified response object.
+The functions will be called in the order they are added to the list.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{llm_provider-class$add_handler_fn(handler_fn)}\if{html}{\out{</div>}}
 }
@@ -188,17 +189,18 @@ in the order they are added to the list.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{handler_fn}}{A function that takes the response object plus
-'self' (the \link{llm_provider-class} object) as input and
+'self' (the \linkS4class{llm_provider} object) as input and
 returns a modified response object}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
-If a handler function returns a list with a 'break' field set to TRUE,
-the chat completion will be interrupted and the response will be returned at that point.
-If a handler function returns a list with a 'done' field set to FALSE, the handler
-functions will continue to be called in a loop until the 'done' field is not
-set to FALSE
+If a handler function returns a list with a 'break' field set to \code{TRUE},
+the chat completion will be interrupted and the response will be returned
+at that point.
+If a handler function returns a list with a 'done' field set to \code{FALSE},
+the handler functions will continue to be called in a loop until the 'done'
+field is not set to \code{FALSE}.
 }
 
 }
@@ -207,7 +209,7 @@ set to FALSE
 \if{latex}{\out{\hypertarget{method-Llm_provider-set_handler_fns}{}}}
 \subsection{Method \code{set_handler_fns()}}{
 Helper function to set the handler functions of the
-\link{llm_provider-class} object. This function replaces the existing
+\linkS4class{llm_provider} object. This function replaces the existing
 handler functions list with a new list of handler functions. See
 '$add_handler_fn()' for more information on handler functions
 \subsection{Usage}{

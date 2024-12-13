@@ -23,11 +23,12 @@ will be returned as the response result of \code{\link[=send_prompt]{send_prompt
 will print no warning about unsuccessful evaluation).}
 }
 \value{
-An object of class "llm_break"
+An list of class "llm_break" containing the object to return and
+a logical indicating whether the evaluation was successful
 }
 \description{
-This object is used to break a extraction and validation loop in a \code{\link[=prompt_wrap]{prompt_wrap()}}
-evaluated by \code{\link[=send_prompt]{send_prompt()}}. When an extraction or validation function returns
+This object is used to break a extraction and validation loop defined in a \code{\link[=prompt_wrap]{prompt_wrap()}}
+as evaluated by \code{\link[=send_prompt]{send_prompt()}}. When an extraction or validation function returns
 this object, the loop will be broken and no further extraction or validation
 functions are applied; instead, \code{\link[=send_prompt]{send_prompt()}} will be able to return
 the result at that point. This may be useful in scenarios where
@@ -51,6 +52,8 @@ extraction_fn <- function(x) {
 # This extraction_fn would be part of a prompt_wrap()
 }
 \seealso{
+\code{\link[=llm_feedback]{llm_feedback()}}
+
 Other prompt_wrap: 
 \code{\link{llm_feedback}()},
 \code{\link{prompt_wrap}()}
