@@ -32,7 +32,7 @@ should be printed to the console. Default is TRUE.}
 A new \linkS4class{llm_provider} object for use of the XAI API
 }
 \description{
-Create a new XAI (Grok) LLM provider
+This function creates a new \linkS4class{llm_provider} object that interacts with the XAI API.
 }
 \examples{
 # Various providers:

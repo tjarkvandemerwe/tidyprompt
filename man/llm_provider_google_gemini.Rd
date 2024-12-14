@@ -35,7 +35,7 @@ A new \linkS4class{llm_provider} object for use of the Google Gemini API
 A new \linkS4class{llm_provider} object for use of the Google Gemini API
 }
 \description{
-Creates an \linkS4class{llm_provider} object that interacts with the Google Gemini API.
+This function creates a new \linkS4class{llm_provider} object that interacts with the Google Gemini API.
 Streaming is not yet supported in this implementation.
 }
 \examples{

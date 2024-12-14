@@ -57,19 +57,19 @@ specific settings in the \linkS4class{llm_provider} object}
 
 \item{type}{The type of prompt wrap. Must be one of:
 \itemize{
-\item{'unspecified'}{The default type, typically used for prompt wraps
-which request a specific format of the LLM response, like \code{\link[=answer_as_integer]{answer_as_integer()}}}
+\item "unspecified": The default type, typically used for prompt wraps
+which request a specific format of the LLM response, like \code{\link[=answer_as_integer]{answer_as_integer()}}
 
-\item{'mode'} For prompt wraps that change how the LLM should answer the prompt,
+\item "mode": For prompt wraps that change how the LLM should answer the prompt,
 like \code{\link[=answer_by_chain_of_thought]{answer_by_chain_of_thought()}} or \code{\link[=answer_by_react]{answer_by_react()}}
 
-\item{'tool'} For prompt wraps that enable the LLM to use tools, like \code{\link[=answer_using_tools]{answer_using_tools()}}
+\item "tool": For prompt wraps that enable the LLM to use tools, like \code{\link[=answer_using_tools]{answer_using_tools()}}
 or \code{\link[=answer_using_r]{answer_using_r()}} when 'output_as_tool' = TRUE
 
-\item{'break'} For prompt wraps that break the extraction and validation loop,
+\item "break": For prompt wraps that break the extraction and validation loop,
 like \code{\link[=quit_if]{quit_if()}}
 
-\item{'check'} For prompt wraps that apply a last check to the final answer
+\item "check": For prompt wraps that apply a last check to the final answer
 }
 Types are used to determine the order in which prompt wraps are applied.
 When constructing the prompt text, prompt wraps are applied to the base prompt

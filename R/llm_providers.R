@@ -1,6 +1,6 @@
 #' Create a new Ollama LLM provider
 #'
-#' This function creates a new [llm_provider-class] object that interacts with the Ollama API
+#' This function creates a new [llm_provider-class] object that interacts with the Ollama API.
 #'
 #' @param parameters A named list of parameters. Currently the following parameters are required:
 #'    - model: The name of the model to use
@@ -71,7 +71,7 @@ llm_provider_ollama <- function(
 
 #' Create a new OpenAI LLM provider
 #'
-#' This function creates a new [llm_provider-class] object that interacts with the Open AI API
+#' This function creates a new [llm_provider-class] object that interacts with the Open AI API.
 #'
 #' @param parameters A named list of parameters. Currently the following parameters are required:
 #'    - model: The name of the model to use
@@ -146,6 +146,8 @@ llm_provider_openai <- function(
 
 #' Create a new OpenRouter LLM provider
 #'
+#' This function creates a new [llm_provider-class] object that interacts with the OpenRouter API.
+#'
 #' @param parameters A named list of parameters. Currently the following parameters are required:
 #'    - model: The name of the model to use
 #'    - stream: A logical indicating whether the API should stream responses
@@ -214,6 +216,8 @@ llm_provider_mistral <- function(
 
 #' Create a new Groq LLM provider
 #'
+#' This function creates a new [llm_provider-class] object that interacts with the Groq API.
+#'
 #' @param parameters A named list of parameters. Currently the following parameters are required:
 #'   - model: The name of the model to use
 #'   - stream: A logical indicating whether the API should stream responses
@@ -246,6 +250,8 @@ llm_provider_groq <- function(
 
 
 #' Create a new XAI (Grok) LLM provider
+#'
+#' This function creates a new [llm_provider-class] object that interacts with the XAI API.
 #'
 #' @param parameters A named list of parameters. Currently the following parameters are required:
 #'   - model: The name of the model to use
@@ -280,7 +286,7 @@ llm_provider_xai <- function(
 
 #' Create a new Google Gemini LLM provider
 #'
-#' Creates an [llm_provider-class] object that interacts with the Google Gemini API.
+#' This function creates a new [llm_provider-class] object that interacts with the Google Gemini API.
 #' Streaming is not yet supported in this implementation.
 #'
 #' @param parameters A named list of parameters. Currently the following parameters are required:

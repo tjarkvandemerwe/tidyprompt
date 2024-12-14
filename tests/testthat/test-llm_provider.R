@@ -3,7 +3,7 @@ test_that("llm_provider initializes with parameters", {
   parameters <- list(model = "my-llm-model", api_key = "my-api-key")
   provider <- `llm_provider-class`$new(complete_chat_function = function(chat_history) list(role = "assistant", content = "Hello"), parameters = parameters)
 
-  expect_s3_class(provider, "Llm_provider")
+  expect_s3_class(provider, "LlmProvider")
   expect_equal(provider$parameters, parameters)
 })
 

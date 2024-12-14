@@ -32,7 +32,7 @@ should be printed to the console}
 A new \linkS4class{llm_provider} object for use of the Ollama API
 }
 \description{
-This function creates a new \linkS4class{llm_provider} object that interacts with the Ollama API
+This function creates a new \linkS4class{llm_provider} object that interacts with the Ollama API.
 }
 \examples{
 # Various providers:

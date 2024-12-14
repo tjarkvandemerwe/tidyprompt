@@ -9,12 +9,17 @@
 #' in the prompt wraps (see [prompt_wrap()]). If the maximum number of interactions
 #'
 #' @param prompt A string or a [tidyprompt-class] object
-#' @param llm_provider [llm_provider-class] object (default is [llm_provider_ollama()]).
-#' This object and its settings will be used to evaluate the prompt. Note that
-#' the 'verbose' and 'stream' settings in the LLM provider will be overruled by
-#' the 'verbose' and 'stream' arguments in this function when those are not NULL.
-#' Furthermore, advanced [tidyprompt-class] objects may carry '$parameter_fn' functions
-#' which can set parameters in the llm_provider object (see [prompt_wrap()] for more information)
+#'
+#' @param llm_provider [llm_provider-class] object
+#'  (default is [llm_provider_ollama()]).
+#' This object and its settings will be used to evaluate the prompt.
+#' Note that the 'verbose' and 'stream' settings in the LLM provider will be
+#'  overruled by the 'verbose' and 'stream' arguments in this function
+#'  when those are not NULL.
+#' Furthermore, advanced [tidyprompt-class] objects may carry '$parameter_fn'
+#'  functions which can set parameters in the llm_provider object
+#'  (see [prompt_wrap()] and [llm_provider-class] for more ).
+#'
 #' @param max_interactions Maximum number of interactions allowed with the
 #' LLM provider. Default is 10. If the maximum number of interactions is reached
 #' without a successful response, 'NULL' is returned as the response (see return
@@ -78,7 +83,7 @@ send_prompt <- function(
   prompt <- tidyprompt(prompt)
   return_mode <- match.arg(return_mode)
   stopifnot(
-    inherits(llm_provider, "Llm_provider"),
+    inherits(llm_provider, "LlmProvider"),
     max_interactions > 0, max_interactions == floor(max_interactions),
     is.logical(clean_chat_history),
     is.null(verbose) | is.logical(verbose),
@@ -127,7 +132,7 @@ send_prompt <- function(
       add_msg_to_chat_history(message, role, tool_result)
 
     if (clean_chat_history) {
-      cleaned_chat_history <- clean_chat_history_fn(chat_history)
+      cleaned_chat_history <- clean_chat_history(chat_history)
       response <- llm_provider$complete_chat(list(chat_history = cleaned_chat_history))
       chat_history <<- dplyr::bind_rows(
         chat_history,
@@ -269,7 +274,7 @@ send_prompt <- function(
     return_list$response <- response
     return_list$interactions <- interactions
     return_list$chat_history <- chat_history
-    return_list$chat_history_clean <- clean_chat_history_fn(chat_history)
+    return_list$chat_history_clean <- clean_chat_history(chat_history)
     return_list$start_time <- start_time
     return_list$end_time <- Sys.time()
     return_list$duration_seconds <-
@@ -297,7 +302,7 @@ send_prompt <- function(
 #' @param content Content of the message
 #' @param tool_result Logical indicating whether the message is a tool result.
 #' This will ensure it is not removed when cleaning the context window by
-#' [clean_chat_history_fn()]
+#' [clean_chat_history()]
 #'
 #' @return A dataframe with the chat history
 #'
@@ -327,7 +332,7 @@ create_chat_df <- function(
 #'
 #' @noRd
 #' @keywords internal
-clean_chat_history_fn <- function(chat_history) {
+clean_chat_history <- function(chat_history) {
   # Keep only first and last message from user;
   # keep only last message from assistant;
   # keep all messages from system;

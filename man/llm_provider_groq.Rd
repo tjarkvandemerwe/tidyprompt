@@ -32,7 +32,7 @@ should be printed to the console}
 A new \linkS4class{llm_provider} object for use of the Groq API
 }
 \description{
-Create a new Groq LLM provider
+This function creates a new \linkS4class{llm_provider} object that interacts with the Groq API.
 }
 \examples{
 # Various providers:

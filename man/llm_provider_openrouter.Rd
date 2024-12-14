@@ -33,7 +33,7 @@ should be printed to the console.}
 A new \linkS4class{llm_provider} object for use of the OpenRouter API
 }
 \description{
-Create a new OpenRouter LLM provider
+This function creates a new \linkS4class{llm_provider} object that interacts with the OpenRouter API.
 }
 \examples{
 # Various providers:

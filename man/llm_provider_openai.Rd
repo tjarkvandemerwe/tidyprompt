@@ -37,7 +37,7 @@ should be printed to the console. Default is TRUE.}
 A new \linkS4class{llm_provider} object for use of the OpenAI API
 }
 \description{
-This function creates a new \linkS4class{llm_provider} object that interacts with the Open AI API
+This function creates a new \linkS4class{llm_provider} object that interacts with the Open AI API.
 }
 \examples{
 # Various providers:

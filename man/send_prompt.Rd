@@ -17,12 +17,15 @@ send_prompt(
 \arguments{
 \item{prompt}{A string or a \linkS4class{tidyprompt} object}
 
-\item{llm_provider}{\linkS4class{llm_provider} object (default is \code{\link[=llm_provider_ollama]{llm_provider_ollama()}}).
-This object and its settings will be used to evaluate the prompt. Note that
-the 'verbose' and 'stream' settings in the LLM provider will be overruled by
-the 'verbose' and 'stream' arguments in this function when those are not NULL.
-Furthermore, advanced \linkS4class{tidyprompt} objects may carry '$parameter_fn' functions
-which can set parameters in the llm_provider object (see \code{\link[=prompt_wrap]{prompt_wrap()}} for more information)}
+\item{llm_provider}{\linkS4class{llm_provider} object
+(default is \code{\link[=llm_provider_ollama]{llm_provider_ollama()}}).
+This object and its settings will be used to evaluate the prompt.
+Note that the 'verbose' and 'stream' settings in the LLM provider will be
+overruled by the 'verbose' and 'stream' arguments in this function
+when those are not NULL.
+Furthermore, advanced \linkS4class{tidyprompt} objects may carry '$parameter_fn'
+functions which can set parameters in the llm_provider object
+(see \code{\link[=prompt_wrap]{prompt_wrap()}} and \linkS4class{llm_provider} for more ).}
 
 \item{max_interactions}{Maximum number of interactions allowed with the
 LLM provider. Default is 10. If the maximum number of interactions is reached
