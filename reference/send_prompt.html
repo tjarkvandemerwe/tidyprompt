@@ -72,16 +72,19 @@ in the prompt wraps (see <code><a href="prompt_wrap.html">prompt_wrap()</a></cod
 
 
 <dl><dt id="arg-prompt">prompt<a class="anchor" aria-label="anchor" href="#arg-prompt"></a></dt>
-<dd><p>A string or a <a href="tidyprompt-class.html">tidyprompt-class</a> object</p></dd>
+<dd><p>A string or a <a href="tidyprompt-class.html">tidyprompt</a> object</p></dd>
 
 
 <dt id="arg-llm-provider">llm_provider<a class="anchor" aria-label="anchor" href="#arg-llm-provider"></a></dt>
-<dd><p><a href="llm_provider-class.html">llm_provider-class</a> object (default is <code><a href="llm_provider_ollama.html">llm_provider_ollama()</a></code>).
-This object and its settings will be used to evaluate the prompt. Note that
-the 'verbose' and 'stream' settings in the LLM provider will be overruled by
-the 'verbose' and 'stream' arguments in this function when those are not NULL.
-Furthermore, advanced <a href="tidyprompt-class.html">tidyprompt-class</a> objects may carry '$parameter_fn' functions
-which can set parameters in the llm_provider object (see <code><a href="prompt_wrap.html">prompt_wrap()</a></code> for more information)</p></dd>
+<dd><p><a href="llm_provider-class.html">llm_provider</a> object
+(default is <code><a href="llm_provider_ollama.html">llm_provider_ollama()</a></code>).
+This object and its settings will be used to evaluate the prompt.
+Note that the 'verbose' and 'stream' settings in the LLM provider will be
+overruled by the 'verbose' and 'stream' arguments in this function
+when those are not NULL.
+Furthermore, advanced <a href="tidyprompt-class.html">tidyprompt</a> objects may carry '$parameter_fn'
+functions which can set parameters in the llm_provider object
+(see <code><a href="prompt_wrap.html">prompt_wrap()</a></code> and <a href="llm_provider-class.html">llm_provider</a> for more ).</p></dd>
 
 
 <dt id="arg-max-interactions">max_interactions<a class="anchor" aria-label="anchor" href="#arg-max-interactions"></a></dt>
@@ -140,7 +143,7 @@ as returned by <code>llm_provider$complete_chat()</code>).</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><a href="tidyprompt-class.html">tidyprompt-class</a>, <code><a href="prompt_wrap.html">prompt_wrap()</a></code>, <a href="llm_provider-class.html">llm_provider-class</a>, <code><a href="llm_provider_ollama.html">llm_provider_ollama()</a></code>,
+    <div class="dont-index"><p><a href="tidyprompt-class.html">tidyprompt</a>, <code><a href="prompt_wrap.html">prompt_wrap()</a></code>, <a href="llm_provider-class.html">llm_provider</a>, <code><a href="llm_provider_ollama.html">llm_provider_ollama()</a></code>,
 <code><a href="llm_provider_openai.html">llm_provider_openai()</a></code></p>
 <p>Other prompt_evaluation:
 <code><a href="llm_break.html">llm_break</a>()</code>,
