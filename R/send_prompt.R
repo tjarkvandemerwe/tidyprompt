@@ -175,7 +175,6 @@ send_prompt <- function(
       success <- TRUE
 
     # Initialize variables for the loop
-    pw_index <- 0
     any_prompt_wrap_not_done <- FALSE
     llm_break <- FALSE
 

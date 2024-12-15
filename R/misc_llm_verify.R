@@ -13,14 +13,15 @@
 #'
 #' Note that this function is experimental and, because it relies on chain of
 #' thought reasoning by a LLM about the answer of another LLM, it may not
-#' always provide accurate results and can dramatically increase the token cost of
+#' always provide accurate results and can increase the token cost of
 #' evaluating a prompt.
 #'
-#' Note also that, currently, the evaluating LLM may attempt to evaluate criteria
-#' which were already validated by prompt wraps, such as the format of the
-#' response. This may lead to unexpected results. This may be fixed
-#' in the future by only providing the base prompt and not the constructed
-#' prompt to the evaluating LLM.
+#' @details The original prompt text shown to the LLM is built from
+#' the base prompt as well as all prompt wraps that have a modify function
+#' but do not have an extraction or validation function. This is to ensure
+#' that no redundant validation is performed by the evaluating LLM on
+#' instructions which have already been validated by functions in those
+#' prompt wraps.
 #'
 #' @param prompt A single string or a [tidyprompt-class] object
 #'
@@ -57,13 +58,32 @@ llm_verify <- function(
     if (!is.null(super_llm_provider)) {
       llm_provider <- super_llm_provider
     }
+    llm_provider <- llm_provider$clone()
+
+    prompt_text <- self$base_prompt
+    prompt_wraps <- self$get_prompt_wraps("modification")
+    for (wrap in prompt_wraps) {
+      if (is.null(wrap$modify_fn)) {
+        next
+      }
+      # We skip prompt wraps that have extraction or validation functions;
+      #   we assume that potential instructions added by these wraps
+      #   have been properly validated by these functions;
+      #   adding them to the prompt text here would lead to
+      #   redundant validation by the LLM)
+      if (!is.null(wrap$extraction_fn) | !is.null(wrap$validation_fn)) {
+        next
+      }
+
+      prompt_text <- wrap$modify_fn(prompt_text)
+    }
 
     original_prompt <- self$construct_prompt_text()
     result_as_text <- utils::capture.output(print(response))
 
     satisfied <- glue::glue(
       ">>> An assistant was asked:\n\n",
-      "{original_prompt}\n\n",
+      "{prompt_text}\n\n",
       ">>> The assistant answered:\n\n",
       "  ", paste(result_as_text, collapse = "\n  "), "\n\n",
       ">>> Please verify if the answer is satisfactory.",
