@@ -5,6 +5,12 @@
 \title{PersistentChat R6 class}
 \description{
 A class for managing a persistent chat with a large language model (LLM).
+
+While 'tidyprompt' is primariy focused on automatic interactions with
+LLMs through \code{\link[=send_prompt]{send_prompt()}} using a \linkS4class{tidyprompt} object with
+\code{\link[=prompt_wrap]{prompt_wrap()}}, this class may be useful for having a manual conversation
+with an LLM. (It may specifically be used to continue a chat history which was
+returned by \code{\link[=send_prompt]{send_prompt()}} with \code{return_mode = "full"}.)
 }
 \seealso{
 \linkS4class{llm_provider} \code{\link[=chat_history]{chat_history()}}

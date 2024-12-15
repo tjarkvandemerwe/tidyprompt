@@ -10,10 +10,11 @@
 #' [llm_provider_ollama()]).
 #'
 #' @param chat_history A data frame with 'role' and 'content' columns
+#' (see [chat_history()])
 #' @param request A 'httr2' request object with the URL, headers, and body
-#' @param stream Logical indicating whether the API should stream responses.
-#' @param verbose Logical indicating whether interactions should be printed to the console.
-#' @param api_type API type, one of "openai" or "ollama".
+#' @param stream Logical indicating whether the API should stream responses
+#' @param verbose Logical indicating whether interactions should be printed to the console
+#' @param api_type API type, one of "openai" or "ollama"
 #'
 #' @return A list with the completed chat history and the HTTP request and response
 #' objects
@@ -21,8 +22,8 @@
 #' @keywords internal
 #' @noRd
 request_llm_provider <- function(
-    chat_history, # A data frame with 'role' and 'content' columns
-    request, # 'httr2' request object
+    chat_history,
+    request,
     stream = NULL,
     verbose = getOption("tidyprompt.verbose", TRUE),
     api_type = c("openai", "ollama")
@@ -30,10 +31,8 @@ request_llm_provider <- function(
   api_type <- match.arg(api_type)
 
   if (!is.null(stream) && stream) {
-    # Streaming request
     req_result <- req_llm_stream(request, api_type, verbose)
   } else {
-    # Non-streaming request
     req_result <- req_llm_non_stream(request, api_type, verbose)
   }
 

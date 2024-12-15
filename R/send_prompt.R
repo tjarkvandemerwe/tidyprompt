@@ -100,14 +100,14 @@ send_prompt <- function(
   )
     llm_provider$parameters$stream <- stream
   # Apply parameter_fn's to the llm_provider
-  for (prompt_wrap in get_prompt_wraps(prompt, order = "default")) {
+  for (prompt_wrap in get_prompt_wraps(prompt)) {
     if (!is.null(prompt_wrap$parameter_fn)) {
       parameter_fn <- prompt_wrap$parameter_fn
       llm_provider$set_parameters(parameter_fn(llm_provider))
     }
   }
   # Add handler_fn's to the llm_provider
-  for (prompt_wrap in get_prompt_wraps(prompt, order = "default")) {
+  for (prompt_wrap in get_prompt_wraps(prompt)) {
     if (!is.null(prompt_wrap$handler_fn)) {
       llm_provider$add_handler_fn(prompt_wrap$handler_fn)
     }
@@ -119,7 +119,7 @@ send_prompt <- function(
   http <- list(requests = list(), responses = list())
 
 
-  ## 2 Chat_history, send_chat, handler_fns
+  ## 2 Chat history, send_chat, handler_fns
 
   chat_history <- prompt$get_chat_history()
 
@@ -174,10 +174,13 @@ send_prompt <- function(
     if (length(prompt_wraps) == 0)
       success <- TRUE
 
+    # Initialize variables for the loop
+    pw_index <- 0
     any_prompt_wrap_not_done <- FALSE
     llm_break <- FALSE
+
     for (prompt_wrap in prompt_wraps) {
-      role <- "user"
+      pw_index <- pw_index + 1
 
       # Apply extraction function
       if (!is.null(prompt_wrap$extraction_fn)) {
@@ -202,14 +205,29 @@ send_prompt <- function(
           if (inherits(extraction_result, "llm_feedback_tool_result")) {
             # This ensures tool results are not filtered out when cleaning
             #   the context window in send_prompt()
-            response <- send_chat(extraction_result, role, tool_result = TRUE)
+            response <- send_chat(extraction_result, tool_result = TRUE)
           } else {
-            response <- send_chat(extraction_result, role, tool_result = FALSE)
+            response <- send_chat(extraction_result, tool_result = FALSE)
           }
           any_prompt_wrap_not_done <- TRUE; break
         }
 
         if (inherits(extraction_result, "llm_break")) {
+          # Apply remaining prompt wraps if they are of type 'check'
+          if (pw_index < length(prompt_wraps)) {
+            prompt_wraps_remaining <- prompt_wraps[(pw_index + 1):length(prompt_wraps)]
+            for (prompt_wrap_remaining in prompt_wraps_remaining) {
+              if (prompt_wrap_remaining$type == "check") {
+                check_result <-
+                  prompt_wrap_remaining$validation_fn(response, llm_provider, http)
+                if (inherits(check_result, "llm_feedback")) {
+                  response <- send_chat(check_result, tool_result = TRUE)
+                  any_prompt_wrap_not_done <- TRUE; break
+                }
+              }
+            }
+          }
+
           if (!extraction_result$success) {
             any_prompt_wrap_not_done <- TRUE # Will result in no success
           } else {
@@ -231,11 +249,32 @@ send_prompt <- function(
 
         # If it inherits llm_feedback, send the feedback to the LLM & get new response
         if (inherits(validation_result, "llm_feedback")) {
-          response <- send_chat(validation_result)
+          # Set as 'tool_result' to not clear user feedback when type = 'check'
+          tool_result <- FALSE
+          if (prompt_wrap$type == "check") {
+            tool_result <- TRUE
+          }
+
+          response <- send_chat(validation_result, tool_result = tool_result)
           any_prompt_wrap_not_done <- TRUE; break
         }
 
         if (inherits(validation_result, "llm_break")) {
+          # Apply remaining prompt wraps if they are of type 'check'
+          if (pw_index < length(prompt_wraps)) {
+            prompt_wraps_remaining <- prompt_wraps[(pw_index + 1):length(prompt_wraps)]
+            for (prompt_wrap_remaining in prompt_wraps_remaining) {
+              if (prompt_wrap_remaining$type == "check") {
+                check_result <-
+                  prompt_wrap_remaining$validation_fn(response, llm_provider, http)
+                if (inherits(check_result, "llm_feedback")) {
+                  response <- send_chat(check_result, tool_result = TRUE)
+                  any_prompt_wrap_not_done <- TRUE; break
+                }
+              }
+            }
+          }
+
           if (!validation_result$success) {
             any_prompt_wrap_not_done <- TRUE # Will result in no success
           } else {

@@ -81,10 +81,17 @@
 #' \item "tool": For prompt wraps that enable the LLM to use tools, like [answer_using_tools()]
 #' or [answer_using_r()] when 'output_as_tool' = TRUE
 #'
-#' \item "break": For prompt wraps that break the extraction and validation loop,
-#' like [quit_if()]
+#' \item "break": For prompt wraps that may break the extraction and validation loop,
+#'  like [quit_if()]. These are applied before type "unspecified" as they may
+#'  instruct the LLM to not answer the prompt in the manner specified by those
+#'  prompt wraps
 #'
-#' \item "check": For prompt wraps that apply a last check to the final answer
+#' \item "check": For prompt wraps that apply a last check to the final answer,
+#'  after all other prompt wraps have been evaluated.
+#' These prompt wraps may only contain a validation function, and are applied
+#'  after all other prompt wraps have been evaluated. These prompt wraps are
+#'  even applied after an earlier prompt wrap has broken the extraction and validation loop
+#'  with [llm_break()]
 #' }
 #' Types are used to determine the order in which prompt wraps are applied.
 #' When constructing the prompt text, prompt wraps are applied to the base prompt
@@ -188,6 +195,8 @@ prompt_wrap_internal <- function(
     type = c("unspecified", "mode", "tool", "break", "check"),
     name = NULL
 ) {
+  type <- match.arg(type)
+
   stopifnot(
     is.null(modify_fn) || is.function(modify_fn),
     is.null(validation_fn) || is.function(validation_fn),
@@ -195,6 +204,16 @@ prompt_wrap_internal <- function(
     is.null(handler_fn) || is.function(handler_fn),
     is.null(parameter_fn) || is.function(parameter_fn)
   )
+
+  if (type == "check") {
+    if (is.null(validation_fn)) {
+      stop("When using type 'check', validation_fn is required")
+    }
+    if (!all(sapply(list(modify_fn, extraction_fn, handler_fn, parameter_fn), is.null))) {
+      stop("When using type 'check', only validation_fn is allowed")
+    }
+  }
+
 
   if (all(sapply(list(
     modify_fn, extraction_fn, validation_fn, handler_fn, parameter_fn
@@ -210,36 +229,22 @@ prompt_wrap_internal <- function(
     # Get the original arguments of the function
     original_args <- formals(func)
 
-    # Check if the function has more than 3 arguments
-    if (length(original_args) > 3) {
-      stop(paste0(
-        "Function should take at most 3 arguments:",
-        " (1) the LLM response, (2) the http_list, and (3) the llm_provider.",
-        " Other variables may be accessed from the parent environment and ",
-        " do not need to be passed as arguments to the function"
-      ))
-    }
+    # Define the required arguments in the desired order, without overwriting the first argument's name
+    required_args <- c("llm_provider", "http_list")
 
-    # Define the required arguments in the desired order
-    required_args <- c("llm_response", "llm_provider", "http_list")
-
-    # Find missing arguments from required_args
-    missing_args <- setdiff(required_args, names(original_args))
-
-    # Combine original arguments with missing arguments
+    # Combine the original arguments with the missing required arguments
     combined_args <- c(
       original_args,
-      structure(rep(list(quote(expr = NULL)), length(missing_args)), names = missing_args)
+      structure(rep(list(quote(expr = NULL)), length(required_args)), names = required_args)
     )
 
-    # Ensure the required arguments are in order, keeping original names first
-    final_args <- c(
-      combined_args[names(original_args)],              # Original arguments in original order
-      combined_args[setdiff(required_args, names(original_args))] # Add missing required arguments
-    )
+    # Remove excess arguments beyond the first three
+    final_args <- combined_args[1:3]
 
-    # Limit to at most three arguments
-    final_args <- final_args[1:3]
+    # Ensure the non-first required arguments are named appropriately
+    if (length(final_args) > 1) {
+      names(final_args)[-1] <- required_args[1:(length(final_args) - 1)]
+    }
 
     # Update the function's arguments
     formals(func) <- final_args

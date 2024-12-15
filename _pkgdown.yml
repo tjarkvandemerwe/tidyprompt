@@ -3,21 +3,22 @@ template:
   bootstrap: 5
 reference:
 - title: Prompt wrapping and evaluation
-- subtitle: tidyprompt
-  desc: Functions to create and handle Tidyprompt objects.
+- subtitle: Tidyprompt
+  desc: Functions to create and handle tidyprompt objects.
 - contents:
   - tidyprompt
   - tidyprompt-class
   - is_tidyprompt
   - construct_prompt_text
   - get_prompt_wraps
-- subtitle: prompt_wrap
+  - get_chat_history
+- subtitle: Prompt wrap
   desc: Functions for creating prompt wraps.
 - contents:
   - prompt_wrap
   - llm_feedback
   - llm_break
-- subtitle: send_prompt
+- subtitle: Send prompt
   desc: Function to evaluate prompts with an LLM provider.
 - contents:
   - send_prompt
@@ -40,27 +41,33 @@ reference:
 - contents:
   - add_text
   - set_system_prompt
+  - set_chat_history
   - quit_if
-- title: LLM providers
-  desc: Functions to interact with LLM providers.
+  - user_verify
+  - llm_verify
+- title: LLM providers & chat history
+  desc: Functions to interact with LLM providers and manage chat history.
 - subtitle: LLM provider class
 - contents:
   - llm_provider-class
-  - request_llm_provider
 - subtitle: Pre-built LLM providers
 - contents:
   - starts_with("llm_provider_")
-- subtitle: chat_history
+- subtitle: Chat history
 - contents:
   - starts_with("chat_history")
+  - add_msg_to_chat_history
+- subtitle: Persistent chat
+  desc: A helper class to have a persistent, manual conversation with a LLM provider.
+- contents:
+  - persistent_chat-class
 - title: Helper functions
 - subtitle: Text helpers
-  desc: Functions to create text to be used in prompts or extract things from prompts.
+  desc: Functions to create text to be used in prompts.
 - contents:
   - df_to_string
   - vector_list_to_string
   - skim_with_labels_and_levels
-  - extraction_fn_json
 - subtitle: Other helper functions
 - contents:
   - extract_from_return_list

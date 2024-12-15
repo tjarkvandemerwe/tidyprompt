@@ -66,10 +66,17 @@ like \code{\link[=answer_by_chain_of_thought]{answer_by_chain_of_thought()}} or 
 \item "tool": For prompt wraps that enable the LLM to use tools, like \code{\link[=answer_using_tools]{answer_using_tools()}}
 or \code{\link[=answer_using_r]{answer_using_r()}} when 'output_as_tool' = TRUE
 
-\item "break": For prompt wraps that break the extraction and validation loop,
-like \code{\link[=quit_if]{quit_if()}}
+\item "break": For prompt wraps that may break the extraction and validation loop,
+like \code{\link[=quit_if]{quit_if()}}. These are applied before type "unspecified" as they may
+instruct the LLM to not answer the prompt in the manner specified by those
+prompt wraps
 
-\item "check": For prompt wraps that apply a last check to the final answer
+\item "check": For prompt wraps that apply a last check to the final answer,
+after all other prompt wraps have been evaluated.
+These prompt wraps may only contain a validation function, and are applied
+after all other prompt wraps have been evaluated. These prompt wraps are
+even applied after an earlier prompt wrap has broken the extraction and validation loop
+with \code{\link[=llm_break]{llm_break()}}
 }
 Types are used to determine the order in which prompt wraps are applied.
 When constructing the prompt text, prompt wraps are applied to the base prompt

@@ -3,6 +3,12 @@
 #' @description
 #' A class for managing a persistent chat with a large language model (LLM).
 #'
+#' While 'tidyprompt' is primariy focused on automatic interactions with
+#' LLMs through [send_prompt()] using a [tidyprompt-class] object with
+#' [prompt_wrap()], this class may be useful for having a manual conversation
+#' with an LLM. (It may specifically be used to continue a chat history which was
+#' returned by [send_prompt()] with `return_mode = "full"`.)
+#'
 #' @export
 #'
 #' @seealso [llm_provider-class] [chat_history()]
