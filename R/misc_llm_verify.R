@@ -70,7 +70,7 @@ llm_verify <- function(
       #   we assume that potential instructions added by these wraps
       #   have been properly validated by these functions;
       #   adding them to the prompt text here would lead to
-      #   redundant validation by the LLM)
+      #   redundant validation by the LLM
       if (!is.null(wrap$extraction_fn) | !is.null(wrap$validation_fn)) {
         next
       }
