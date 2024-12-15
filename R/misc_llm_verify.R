@@ -25,6 +25,11 @@
 #'
 #' @param prompt A single string or a [tidyprompt-class] object
 #'
+#' @param question The question to ask the LLM to verify the result of the prompt.
+#' The LLM will be presented the original prompt, its result, and this question.
+#' The LLM will be asked to provide a boolean answer to this question. If TRUE,
+#' the result of the prompt will be accepted; if FALSE, the result will be declined
+#'
 #' @param llm_provider A [llm_provider-class] object
 #'  which will be used to verify the evaluation led to a satisfactory result.
 #' If not provided, the same LLM provider as the prompt was originally
@@ -43,6 +48,7 @@
 #' @example inst/examples/llm_verify.R
 llm_verify <- function(
     prompt,
+    question = "Is the answer satisfactory?",
     llm_provider = NULL,
     max_words_feedback = 50
 ) {
@@ -86,7 +92,7 @@ llm_verify <- function(
       "{prompt_text}\n\n",
       ">>> The assistant answered:\n\n",
       "  ", paste(result_as_text, collapse = "\n  "), "\n\n",
-      ">>> Please verify if the answer is satisfactory.",
+      ">>> {question}",
       .trim = FALSE
     ) |>
       answer_as_boolean() |>

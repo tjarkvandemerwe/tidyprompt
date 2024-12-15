@@ -4,10 +4,20 @@
 \alias{llm_verify}
 \title{Have LLM check the result of a prompt (LLM-in-the-loop)}
 \usage{
-llm_verify(prompt, llm_provider = NULL, max_words_feedback = 50)
+llm_verify(
+  prompt,
+  question = "Is the answer satisfactory?",
+  llm_provider = NULL,
+  max_words_feedback = 50
+)
 }
 \arguments{
 \item{prompt}{A single string or a \linkS4class{tidyprompt} object}
+
+\item{question}{The question to ask the LLM to verify the result of the prompt.
+The LLM will be presented the original prompt, its result, and this question.
+The LLM will be asked to provide a boolean answer to this question. If TRUE,
+the result of the prompt will be accepted; if FALSE, the result will be declined}
 
 \item{llm_provider}{A \linkS4class{llm_provider} object
 which will be used to verify the evaluation led to a satisfactory result.
@@ -76,7 +86,7 @@ prompt wraps.
 #   particularly the University of Twente, as well as its textiles industry and
 #   beautiful parks."
 #
-#   >>> Please verify if the answer is satisfactory.
+#   >>> Is the answer satisfactory?
 #
 #   You must answer with only TRUE or FALSE (use no other characters).
 #   ----- END OF USER'S PROMPT -----

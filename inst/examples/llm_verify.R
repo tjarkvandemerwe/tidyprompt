@@ -27,7 +27,7 @@
 #   particularly the University of Twente, as well as its textiles industry and
 #   beautiful parks."
 #
-#   >>> Please verify if the answer is satisfactory.
+#   >>> Is the answer satisfactory?
 #
 #   You must answer with only TRUE or FALSE (use no other characters).
 #   ----- END OF USER'S PROMPT -----
