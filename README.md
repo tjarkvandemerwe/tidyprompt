@@ -128,16 +128,16 @@ summary(model)
 "How many years old is my neighbour's dog?" |>
   answer_as_integer() |>
   quit_if() |>
-  send_prompt(llm_provider_openai())
+  send_prompt(llm_provider_ollama())
 #> NULL
 ```
 
 ``` r
 # LLM in the loop; 
-#     LLM verifies answer of LLM and can provide feedback
+#   LLM verifies answer of LLM and can provide feedback
 "What is the capital of France?" |>
   llm_verify() |>
-  send_prompt()
+  send_prompt(llm_provider_ollama())
 #> ...
   
 # Human in the loop; 

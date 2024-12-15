@@ -127,9 +127,11 @@ send_prompt <- function(
   send_chat <- function(
     message, role = "user", tool_result = FALSE
   ) {
-    message <- as.character(message)
-    chat_history <<- chat_history |>
-      add_msg_to_chat_history(message, role, tool_result)
+    if (!is.null(message)) {
+      message <- as.character(message)
+      chat_history <<- chat_history |>
+        add_msg_to_chat_history(message, role, tool_result)
+    }
 
     if (clean_chat_history) {
       cleaned_chat_history <- clean_chat_history(chat_history)
@@ -157,9 +159,8 @@ send_prompt <- function(
 
   ## 3 Retrieve initial response
 
-  response <- prompt |>
-    construct_prompt_text(llm_provider) |>
-    send_chat()
+  response <- send_chat(NULL)
+  # (NULL as initial message is already included in the chat_history)
 
 
   ## 4 Apply extractions and validations

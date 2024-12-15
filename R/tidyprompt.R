@@ -328,7 +328,7 @@
       ) |> dplyr::bind_rows(
         private$chat_history
       ) |> dplyr::bind_rows(c(
-        role = "user", content = self$base_prompt
+        role = "user", content = self$construct_prompt_text()
       ))
 
       # Remove roles with no content
