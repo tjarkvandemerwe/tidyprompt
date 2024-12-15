@@ -123,6 +123,31 @@ summary(model)
 #> F-statistic: 89.57 on 1 and 48 DF,  p-value: 1.49e-12
 ```
 
+``` r
+# Escape validation on questions that cannot be answered
+"How many years old is my neighbour's dog?" |>
+  answer_as_integer() |>
+  quit_if() |>
+  send_prompt(llm_provider_openai())
+#> NULL
+```
+
+``` r
+# LLM in the loop; 
+#     LLM verifies answer of LLM and can provide feedback
+"What is the capital of France?" |>
+  llm_verify() |>
+  send_prompt()
+#> ...
+  
+# Human in the loop; 
+#   user verifies answer of LLM and can provide feedback
+"What is the capital of France?" |>
+  user_verify() |>
+  send_prompt(llm_provider_ollama())
+#> ...
+```
+
 ## More information and contributing
 
 ‘tidyprompt’ is under active development by Luka Koning
