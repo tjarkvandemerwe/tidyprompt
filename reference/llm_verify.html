@@ -77,7 +77,12 @@ evaluating a prompt.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">llm_verify</span><span class="op">(</span><span class="va">prompt</span>, llm_provider <span class="op">=</span> <span class="cn">NULL</span>, max_words_feedback <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">llm_verify</span><span class="op">(</span></span>
+<span>  <span class="va">prompt</span>,</span>
+<span>  question <span class="op">=</span> <span class="st">"Is the answer satisfactory?"</span>,</span>
+<span>  llm_provider <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  max_words_feedback <span class="op">=</span> <span class="fl">50</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -86,6 +91,13 @@ evaluating a prompt.</p>
 
 <dl><dt id="arg-prompt">prompt<a class="anchor" aria-label="anchor" href="#arg-prompt"></a></dt>
 <dd><p>A single string or a <a href="tidyprompt-class.html">tidyprompt</a> object</p></dd>
+
+
+<dt id="arg-question">question<a class="anchor" aria-label="anchor" href="#arg-question"></a></dt>
+<dd><p>The question to ask the LLM to verify the result of the prompt.
+The LLM will be presented the original prompt, its result, and this question.
+The LLM will be asked to provide a boolean answer to this question. If TRUE,
+the result of the prompt will be accepted; if FALSE, the result will be declined</p></dd>
 
 
 <dt id="arg-llm-provider">llm_provider<a class="anchor" aria-label="anchor" href="#arg-llm-provider"></a></dt>
@@ -148,7 +160,7 @@ prompt wraps.</p>
 <span class="r-in"><span><span class="co">#   particularly the University of Twente, as well as its textiles industry and</span></span></span>
 <span class="r-in"><span><span class="co">#   beautiful parks."</span></span></span>
 <span class="r-in"><span><span class="co">#</span></span></span>
-<span class="r-in"><span><span class="co">#   &gt;&gt;&gt; Please verify if the answer is satisfactory.</span></span></span>
+<span class="r-in"><span><span class="co">#   &gt;&gt;&gt; Is the answer satisfactory?</span></span></span>
 <span class="r-in"><span><span class="co">#</span></span></span>
 <span class="r-in"><span><span class="co">#   You must answer with only TRUE or FALSE (use no other characters).</span></span></span>
 <span class="r-in"><span><span class="co">#   ----- END OF USER'S PROMPT -----</span></span></span>
