@@ -143,6 +143,27 @@
 <span><span class="co">#&gt; Residual standard error: 3.156 on 48 degrees of freedom</span></span>
 <span><span class="co">#&gt; Multiple R-squared:  0.6511, Adjusted R-squared:  0.6438 </span></span>
 <span><span class="co">#&gt; F-statistic: 89.57 on 1 and 48 DF,  p-value: 1.49e-12</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Escape validation on questions that cannot be answered</span></span>
+<span><span class="st">"How many years old is my neighbour's dog?"</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/answer_as_integer.html">answer_as_integer</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/quit_if.html">quit_if</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="fu"><a href="reference/llm_provider_openai.html">llm_provider_openai</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; NULL</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># LLM in the loop; </span></span>
+<span><span class="co">#     LLM verifies answer of LLM and can provide feedback</span></span>
+<span><span class="st">"What is the capital of France?"</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/llm_verify.html">llm_verify</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; ...</span></span>
+<span>  </span>
+<span><span class="co"># Human in the loop; </span></span>
+<span><span class="co">#   user verifies answer of LLM and can provide feedback</span></span>
+<span><span class="st">"What is the capital of France?"</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/user_verify.html">user_verify</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="fu"><a href="reference/llm_provider_ollama.html">llm_provider_ollama</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; ...</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="more-information-and-contributing">More information and contributing<a class="anchor" aria-label="anchor" href="#more-information-and-contributing"></a>
