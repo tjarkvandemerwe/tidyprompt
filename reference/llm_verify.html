@@ -9,11 +9,8 @@ will be summarized and sent back to the original LLM that was asked to
 evaluate the prompt, so that it may retry the prompt.
 Note that this function is experimental and, because it relies on chain of
 thought reasoning by a LLM about the answer of another LLM, it may not
-always provide accurate results and can dramatically increase the token cost of
-evaluating a prompt.
-Note also that, currently, the evaluating LLM may attempt to evaluate criteria
-which were already validated by prompt wraps, such as the format of the
-response. This may lead to unexpected results."><meta property="og:description" content="This function will wrap a prompt with a check for a LLM to accept or decline
+always provide accurate results and can increase the token cost of
+evaluating a prompt."><meta property="og:description" content="This function will wrap a prompt with a check for a LLM to accept or decline
 the result of the prompt, providing feedback if the result is declined.
 The evaluating LLM will be presented with the original prompt and the result
 of the prompt, and will be asked to verify if the answer is satisfactory
@@ -23,11 +20,8 @@ will be summarized and sent back to the original LLM that was asked to
 evaluate the prompt, so that it may retry the prompt.
 Note that this function is experimental and, because it relies on chain of
 thought reasoning by a LLM about the answer of another LLM, it may not
-always provide accurate results and can dramatically increase the token cost of
-evaluating a prompt.
-Note also that, currently, the evaluating LLM may attempt to evaluate criteria
-which were already validated by prompt wraps, such as the format of the
-response. This may lead to unexpected results."></head><body>
+always provide accurate results and can increase the token cost of
+evaluating a prompt."></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -77,11 +71,8 @@ will be summarized and sent back to the original LLM that was asked to
 evaluate the prompt, so that it may retry the prompt.</p>
 <p>Note that this function is experimental and, because it relies on chain of
 thought reasoning by a LLM about the answer of another LLM, it may not
-always provide accurate results and can dramatically increase the token cost of
+always provide accurate results and can increase the token cost of
 evaluating a prompt.</p>
-<p>Note also that, currently, the evaluating LLM may attempt to evaluate criteria
-which were already validated by prompt wraps, such as the format of the
-response. This may lead to unexpected results.</p>
     </div>
 
     <div class="section level2">
@@ -116,6 +107,15 @@ This summary is sent back to the LLM originally asked to evaluate the prompt</p>
 will add a check for a LLM to accept or decline the result of the prompt,
 providing feedback if the result is declined</p>
     </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>The original prompt text shown to the LLM is built from
+the base prompt as well as all prompt wraps that have a modify function
+but do not have an extraction or validation function. This is to ensure
+that no redundant validation is performed by the evaluating LLM on
+instructions which have already been validated by functions in those
+prompt wraps.</p>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
@@ -124,65 +124,62 @@ providing feedback if the result is declined</p>
 <span class="r-in"><span>    <span class="fu"><a href="answer_as_text.html">answer_as_text</a></span><span class="op">(</span>max_words <span class="op">=</span> <span class="fl">50</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>    <span class="fu">llm_verify</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="co"># --- Sending request to LLM provider (llama3.1:8b): ---</span></span></span>
-<span class="r-in"><span>  <span class="co"># What is 'Enschede'?!</span></span></span>
-<span class="r-in"><span>  <span class="co">#</span></span></span>
-<span class="r-in"><span>  <span class="co"># You must provide a text response. The response must be at most 50 words.</span></span></span>
-<span class="r-in"><span>  <span class="co"># --- Receiving response from LLM provider: ---</span></span></span>
-<span class="r-in"><span>  <span class="co"># Enschede is a city in the eastern Netherlands, located in the province of Overijssel.</span></span></span>
-<span class="r-in"><span>  <span class="co"># It has a population of around 160,000 people and is known for its textile industry heritage,</span></span></span>
-<span class="r-in"><span>  <span class="co"># universities (including the University of Twente), and cultural attractions like</span></span></span>
-<span class="r-in"><span>  <span class="co"># the Rietveld Schröder House, a UNESCO World Heritage Site.</span></span></span>
-<span class="r-in"><span>  <span class="co"># --- Sending request to LLM provider (llama3.1:8b): ---</span></span></span>
-<span class="r-in"><span>  <span class="co"># You are given a user's prompt.</span></span></span>
-<span class="r-in"><span>  <span class="co"># To answer the user's prompt, you need to think step by step to arrive at a final answer.</span></span></span>
-<span class="r-in"><span>  <span class="co">#</span></span></span>
-<span class="r-in"><span>  <span class="co"># ----- START OF USER'S PROMPT -----</span></span></span>
-<span class="r-in"><span>  <span class="co"># &gt;&gt;&gt; An assistant was asked:</span></span></span>
-<span class="r-in"><span>  <span class="co">#</span></span></span>
-<span class="r-in"><span>  <span class="co"># What is 'Enschede'?!</span></span></span>
-<span class="r-in"><span>  <span class="co">#</span></span></span>
-<span class="r-in"><span>  <span class="co"># You must provide a text response. The response must be at most 50 words.</span></span></span>
-<span class="r-in"><span>  <span class="co">#</span></span></span>
-<span class="r-in"><span>  <span class="co"># &gt;&gt;&gt; The assistant answered:</span></span></span>
-<span class="r-in"><span>  <span class="co">#</span></span></span>
-<span class="r-in"><span>  <span class="co">#   [1] "Enschede is a city in the eastern Netherlands, located in the province of Overijssel.</span></span></span>
-<span class="r-in"><span>  <span class="co">#   It has a population of around 160,000 people and is known for its textile industry heritage,</span></span></span>
-<span class="r-in"><span>  <span class="co">#   universities (including the University of Twente), and cultural attractions like</span></span></span>
-<span class="r-in"><span>  <span class="co">#   the Rietveld Schröder House, a UNESCO World Heritage Site."</span></span></span>
-<span class="r-in"><span>  <span class="co">#</span></span></span>
-<span class="r-in"><span>  <span class="co"># &gt;&gt;&gt; Please verify if the answer is satisfactory.</span></span></span>
-<span class="r-in"><span>  <span class="co">#</span></span></span>
-<span class="r-in"><span>  <span class="co"># You must answer with only TRUE or FALSE (use no other characters).</span></span></span>
-<span class="r-in"><span>  <span class="co"># ----- END OF USER'S PROMPT -----</span></span></span>
-<span class="r-in"><span>  <span class="co">#</span></span></span>
-<span class="r-in"><span>  <span class="co"># What are the steps you would take to answer the user's prompt?</span></span></span>
-<span class="r-in"><span>  <span class="co"># Describe your thought process in the following format:</span></span></span>
-<span class="r-in"><span>  <span class="co">#   &gt;&gt; step 1: &lt;step 1 description&gt;</span></span></span>
-<span class="r-in"><span>  <span class="co">#   &gt;&gt; step 2: &lt;step 2 description&gt;</span></span></span>
-<span class="r-in"><span>  <span class="co">#   (etc.)</span></span></span>
-<span class="r-in"><span>  <span class="co">#</span></span></span>
-<span class="r-in"><span>  <span class="co"># When you are done, you must type:</span></span></span>
-<span class="r-in"><span>  <span class="co">#   FINISH[&lt;put here your final answer to the user's prompt&gt;]</span></span></span>
-<span class="r-in"><span>  <span class="co">#</span></span></span>
-<span class="r-in"><span>  <span class="co"># Make sure your final answer follows the logical conclusion of your thought process.</span></span></span>
-<span class="r-in"><span>  <span class="co"># --- Receiving response from LLM provider: ---</span></span></span>
-<span class="r-in"><span>  <span class="co"># &gt;&gt; step 1: Read and understand the original user's prompt, which asks for a text</span></span></span>
-<span class="r-in"><span>  <span class="co"># response with at most 50 words.</span></span></span>
-<span class="r-in"><span>  <span class="co"># &gt;&gt; step 2: Read and compare the assistant's initial answer to the original user's</span></span></span>
-<span class="r-in"><span>  <span class="co"># prompt to see if it meets the specified requirements.</span></span></span>
-<span class="r-in"><span>  <span class="co"># &gt;&gt; step 3: Determine if the assistant's answer is within the 50-word limit by counting</span></span></span>
-<span class="r-in"><span>  <span class="co"># the number of words in the response.</span></span></span>
-<span class="r-in"><span>  <span class="co"># &gt;&gt; step 4: Verify that the content of the assistant's answer provides a concise</span></span></span>
-<span class="r-in"><span>  <span class="co"># and relevant description of what "Enschede" is, considering its context and purpose.</span></span></span>
-<span class="r-in"><span>  <span class="co">#</span></span></span>
-<span class="r-in"><span>  <span class="co"># Based on these steps, I conclude:</span></span></span>
-<span class="r-in"><span>  <span class="co">#</span></span></span>
-<span class="r-in"><span>  <span class="co"># FINISH[TRUE]</span></span></span>
-<span class="r-in"><span>  <span class="co"># [1] "Enschede is a city in the eastern Netherlands, located in the province of Overijssel.</span></span></span>
-<span class="r-in"><span>  <span class="co"># It has a population of around 160,000 people and is known for its textile industry heritage,</span></span></span>
-<span class="r-in"><span>  <span class="co"># universities (including the University of Twente), and cultural attractions like the</span></span></span>
-<span class="r-in"><span>  <span class="co"># Rietveld Schröder House, a UNESCO World Heritage Site."</span></span></span>
+<span class="r-in"><span><span class="co">#   --- Sending request to LLM provider (gpt-4o-mini): ---</span></span></span>
+<span class="r-in"><span><span class="co">#   What is 'Enschede'?!</span></span></span>
+<span class="r-in"><span><span class="co">#</span></span></span>
+<span class="r-in"><span><span class="co">#   You must provide a text response. The response must be at most 50 words.</span></span></span>
+<span class="r-in"><span><span class="co">#   --- Receiving response from LLM provider: ---</span></span></span>
+<span class="r-in"><span><span class="co">#   Enschede is a city in the Netherlands, located in the eastern part near the German border.</span></span></span>
+<span class="r-in"><span><span class="co">#   It is known for its vibrant culture, history, and universities, particularly the</span></span></span>
+<span class="r-in"><span><span class="co">#   University of Twente, as well as its textiles industry and beautiful parks.</span></span></span>
+<span class="r-in"><span><span class="co">#   --- Sending request to LLM provider (gpt-4o-mini): ---</span></span></span>
+<span class="r-in"><span><span class="co">#   You are given a user's prompt.</span></span></span>
+<span class="r-in"><span><span class="co">#   To answer the user's prompt, you need to think step by step to arrive at a final answer.</span></span></span>
+<span class="r-in"><span><span class="co">#</span></span></span>
+<span class="r-in"><span><span class="co">#   ----- START OF USER'S PROMPT -----</span></span></span>
+<span class="r-in"><span><span class="co">#   &gt;&gt;&gt; An assistant was asked:</span></span></span>
+<span class="r-in"><span><span class="co">#</span></span></span>
+<span class="r-in"><span><span class="co">#   What is 'Enschede'?!</span></span></span>
+<span class="r-in"><span><span class="co">#</span></span></span>
+<span class="r-in"><span><span class="co">#   &gt;&gt;&gt; The assistant answered:</span></span></span>
+<span class="r-in"><span><span class="co">#</span></span></span>
+<span class="r-in"><span><span class="co">#   [1] "Enschede is a city in the Netherlands, located in the eastern part near</span></span></span>
+<span class="r-in"><span><span class="co">#   the German border. It is known for its vibrant culture, history, and universities,</span></span></span>
+<span class="r-in"><span><span class="co">#   particularly the University of Twente, as well as its textiles industry and</span></span></span>
+<span class="r-in"><span><span class="co">#   beautiful parks."</span></span></span>
+<span class="r-in"><span><span class="co">#</span></span></span>
+<span class="r-in"><span><span class="co">#   &gt;&gt;&gt; Please verify if the answer is satisfactory.</span></span></span>
+<span class="r-in"><span><span class="co">#</span></span></span>
+<span class="r-in"><span><span class="co">#   You must answer with only TRUE or FALSE (use no other characters).</span></span></span>
+<span class="r-in"><span><span class="co">#   ----- END OF USER'S PROMPT -----</span></span></span>
+<span class="r-in"><span><span class="co">#</span></span></span>
+<span class="r-in"><span><span class="co">#   What are the steps you would take to answer the user's prompt?</span></span></span>
+<span class="r-in"><span><span class="co">#   Describe your thought process in the following format:</span></span></span>
+<span class="r-in"><span><span class="co">#     &gt;&gt; step 1: &lt;step 1 description&gt;</span></span></span>
+<span class="r-in"><span><span class="co">#     &gt;&gt; step 2: &lt;step 2 description&gt;</span></span></span>
+<span class="r-in"><span><span class="co">#     (etc.)</span></span></span>
+<span class="r-in"><span><span class="co">#</span></span></span>
+<span class="r-in"><span><span class="co">#   When you are done, you must type:</span></span></span>
+<span class="r-in"><span><span class="co">#     FINISH[&lt;put here your final answer to the user's prompt&gt;]</span></span></span>
+<span class="r-in"><span><span class="co">#</span></span></span>
+<span class="r-in"><span><span class="co">#   Make sure your final answer follows the logical conclusion of your thought process.</span></span></span>
+<span class="r-in"><span><span class="co">#   --- Receiving response from LLM provider: ---</span></span></span>
+<span class="r-in"><span><span class="co">#   &gt;&gt; step 1: Read the user's prompt carefully to understand what is being asked</span></span></span>
+<span class="r-in"><span><span class="co">#   regarding the assistant's answer about Enschede.</span></span></span>
+<span class="r-in"><span><span class="co">#   &gt;&gt; step 2: Analyze the assistant's provided answer for accuracy and completeness,</span></span></span>
+<span class="r-in"><span><span class="co">#   ensuring it conveys relevant information about Enschede.</span></span></span>
+<span class="r-in"><span><span class="co">#   &gt;&gt; step 3: Assess whether the answer includes key aspects, such as the city's</span></span></span>
+<span class="r-in"><span><span class="co">#   location, cultural significance, educational institutions, and any notable</span></span></span>
+<span class="r-in"><span><span class="co">#   historical references or industries tied to the city.</span></span></span>
+<span class="r-in"><span><span class="co">#   &gt;&gt; step 4: Determine if the assistant's answer sufficiently addresses the</span></span></span>
+<span class="r-in"><span><span class="co">#   question "What is Enschede?" and provides a clear and informative overview of the city.</span></span></span>
+<span class="r-in"><span><span class="co">#   &gt;&gt; step 5: Conclude whether the assistant's answer meets the standards for being</span></span></span>
+<span class="r-in"><span><span class="co">#   satisfactory in terms of detail and correctness.</span></span></span>
+<span class="r-in"><span><span class="co">#</span></span></span>
+<span class="r-in"><span><span class="co">#   FINISH[TRUE]</span></span></span>
+<span class="r-in"><span><span class="co">#   [1] "Enschede is a city in the Netherlands, located in the eastern part near the</span></span></span>
+<span class="r-in"><span><span class="co">#   German border. It is known for its vibrant culture, history, and universities,</span></span></span>
+<span class="r-in"><span><span class="co">#   particularly the University of Twente, as well as its textiles industry and beautiful parks."</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
