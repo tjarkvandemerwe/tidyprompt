@@ -179,8 +179,8 @@ send_prompt <- function(
     any_prompt_wrap_not_done <- FALSE
     llm_break <- FALSE
 
-    for (prompt_wrap in prompt_wraps) {
-      pw_index <- pw_index + 1
+    for (pw_index in seq_along(prompt_wraps)) {
+      prompt_wrap <- prompt_wraps[[pw_index]]
 
       # Apply extraction function
       if (!is.null(prompt_wrap$extraction_fn)) {
@@ -213,7 +213,8 @@ send_prompt <- function(
         }
 
         if (inherits(extraction_result, "llm_break")) {
-          # Apply remaining prompt wraps if they are of type 'check'
+          # Still apply remaining prompt wraps of type 'check'
+          #   (this may block the break when feedback is returned)
           if (pw_index < length(prompt_wraps)) {
             prompt_wraps_remaining <- prompt_wraps[(pw_index + 1):length(prompt_wraps)]
             for (prompt_wrap_remaining in prompt_wraps_remaining) {
@@ -260,7 +261,8 @@ send_prompt <- function(
         }
 
         if (inherits(validation_result, "llm_break")) {
-          # Apply remaining prompt wraps if they are of type 'check'
+          # Still apply remaining prompt wraps of type 'check'
+          #   (this may block the break when feedback is returned)
           if (pw_index < length(prompt_wraps)) {
             prompt_wraps_remaining <- prompt_wraps[(pw_index + 1):length(prompt_wraps)]
             for (prompt_wrap_remaining in prompt_wraps_remaining) {
