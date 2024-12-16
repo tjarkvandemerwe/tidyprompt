@@ -42,6 +42,7 @@ test_that("setting and getting chat history returns consistent results", {
   ) |> chat_history()
 
   # Create Tidyprompt object and set chat history
+  # Initial prompt should not show up.
   prompt <- tidyprompt("Initial prompt")
   prompt$set_chat_history(chat_history)
 
