@@ -22,7 +22,8 @@ knitr::opts_chunk$set(
 ‘tidyprompt’ is an R package for easily constructing prompts and
 associated logic for interacting with large language models ('LLMs'). 
 
-Think of ‘tidyprompt’ as the 'ggplot2' package for handling LLMs.
+Think of ‘tidyprompt’ as the 'ggplot2' package for creating prompts and 
+handling LLM interactions.
 'tidyprompt' introduces the concept of prompt wraps, which are building
 blocks that you can use to quickly turn a simple prompt into an advanced
 one. Prompt wraps do not just modify the prompt text, but also add
@@ -30,7 +31,7 @@ extraction and validation functions that will be applied to the response
 of a LLM. Moreover, these functions can send feedback to the LLM.
 
 With 'tidyprompt' and prompt wraps, you can add various 
-features to your prompts and how they are evaluated by LLMs. For example:
+features to your prompts and define how they are evaluated by LLMs. For example:
 
 - **structured output**: Obtain structured output from a LLM, adhering
   to a specific type and/or format. Use pre-built prompt wraps or your
