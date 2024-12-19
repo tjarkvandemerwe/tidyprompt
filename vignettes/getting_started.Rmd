@@ -102,7 +102,15 @@ You can also construct the final prompt text, without sending it to an LLM provi
 #> Use 'get_prompt_wraps(x)' to show the prompt wraps.
 ```
 
-### Retrieving output in a specific format
+## Type of prompt wraps
+This package contains three different family's of prompt wraps to change the behaviour
+of prompts.
+
+- `answer_as`: wraps to specify the **format** of the output object (e.g. integer, list, json)
+- `answer_by`: wraps to specify the **reasoning mode** to get to the answer (e.g. chain-of-thought, react)
+- `answer_using`: wraps to give **tools** to use to the llm to find the answer (e.g. R, SQL)
+
+### answer_as: Retrieving output in a specific format
 
 Using prompt wraps, you can force the LLM to return the output in a specific format.
 You can also extract the output to turn it from a character into another data type.
@@ -154,7 +162,7 @@ Below is an example of a prompt which will initially fail, but will succeed afte
 ```
 
 'tidyprompt' offers various other 'answer_as' functions, such as `answer_as_boolean()`, `answer_as_regex_match()`,
-`answer_as_named_list()`, `answer_using_r()`, and `answer_as_json()`.
+`answer_as_named_list()`, `answer_as_text()` and `answer_as_json()`.
 
 ##### JSON output
 
@@ -170,7 +178,7 @@ multiple prompt wraps. Note also that JSON schemas may not enforce all qualities
 you are looking for in the output, so you may still need to add additional prompt wraps
 to ensure the output is as desired.
 
-### Adding a reasoning mode to the LLM
+### answer_by: Adding a reasoning mode to the LLM
 
 Prompt wraps may also be used to add a reasoning mode to the LLM. It is hypothesized that this could
 improve the LLM's performance on more complex tasks.
@@ -222,7 +230,7 @@ function then ensures only the final answer is returned.
 #> [1] 4
 ```
 
-### Giving tools to the LLM (autonomous function-calling)
+### answer_using: Giving tools to the LLM (autonomous function-calling)
 
 With `answer_using_tools()`, you can enable your LLM to call R functions.
 This enables the LLM to autonomously retrieve additional information or take other actions.
