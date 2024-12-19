@@ -40,6 +40,13 @@ prompts and define how they are evaluated by LLMs. For example:
 ## Installation
 
 ``` r
+# Pending CRAN release:
+instal.packages("tidyprompt")
+```
+
+### Development version
+
+``` r
 # install.packages("remotes")
 remotes::install_github("tjarkvandemerwe/tidyprompt")
 ```
