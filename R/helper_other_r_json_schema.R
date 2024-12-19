@@ -38,6 +38,9 @@ r_json_schema_to_example <- function(schema) {
       return(list(example_item))
     },
     string = {
+      if (!is.null(schema$enum)) {
+        return(schema$enum)  # Include all possible values
+      }
       return(ifelse(!is.null(schema$example), schema$example, "..."))
     },
     number = {
@@ -51,36 +54,4 @@ r_json_schema_to_example <- function(schema) {
     },
     NULL
   ) # For unsupported or missing types, return NULL
-}
-
-
-
-#' Generate a JSON schema from an example object
-#'
-#' This function generates a JSON schema from an example R object.
-#'
-#' @param example A list (R object) that represents an example object
-#'
-#' @return A list (R object) representing a JSON schema matching
-#' the example object
-#' @export
-#'
-#' @example inst/examples/answer_as_json.R
-#'
-#' @family answer_as_json
-#' @family json
-r_json_schema_from_example <- function(example) {
-  if (!requireNamespace("tidyjson", quietly = TRUE))
-    stop(paste0(
-      "The 'tidyjson' package is required to generate a JSON schema",
-      " from an example object"
-    ))
-
-  # Convert the list to JSON
-  json_data <- jsonlite::toJSON(example, auto_unbox = TRUE) |> as.character()
-
-  # Generate the JSON schema
-  schema <- json_data |> tidyjson::json_schema()
-
-  return(schema)
 }

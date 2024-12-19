@@ -17,8 +17,7 @@ answer_as_json(
 
 \item{schema}{A list which represents
 a JSON schema that the response should match.See example and your API's
-documentation for more information on defining JSON schemas. \code{\link[=r_json_schema_from_example]{r_json_schema_from_example()}}
-can be used to generate a schema from an example object. Note that the schema should be a
+documentation for more information on defining JSON schemas. Note that the schema should be a
 list (R object) representing a JSON schema, not a JSON string
 (use \code{\link[jsonlite:fromJSON]{jsonlite::fromJSON()}} and \code{\link[jsonlite:fromJSON]{jsonlite::toJSON()}} to convert between the two)}
 
@@ -39,7 +38,7 @@ from the schema
 
 \item{type}{The way that JSON response should be enforced:
 \itemize{
-\item "text-based" (default): Instruction will be added to the prompt
+\item "text-based": Instruction will be added to the prompt
 asking for JSON; when a schema is provided, this will also be included
 in the prompt (see argument 'schema_in_prompt_as'). JSON will be parsed
 from the LLM response and, when a schema is provided, it will be validated
@@ -48,7 +47,7 @@ LLM when the response is not valid. This option always works, but may in some
 cases may be less powerful than the other native JSON options
 \item "auto": Automatically determine the type based on 'llm_provider$api_type'.
 This does not consider model compatibility and could lead to errors; set 'type'
-manually if errors occur. Use 'text-based' if unsure
+manually if errors occur; use 'text-based' if unsure
 \item "openai" and "ollama": The response format will be set via the relevant API parameters,
 making the API enforce a valid JSON response. If a schema is provided,
 it will also be included in the API parameters and also be enforced by the API.
@@ -380,7 +379,6 @@ Other answer_as_prompt_wraps:
 \code{\link{answer_as_text}()}
 
 Other json: 
-\code{\link{r_json_schema_from_example}()},
 \code{\link{r_json_schema_to_example}()}
 }
 \concept{answer_as_prompt_wraps}
