@@ -16,7 +16,6 @@ test_that("construct more complex prompt text", {
 })
 
 test_that("create tidyprompt from chat_history object", {
-
   prompt <- "Hi" |> add_text("How are you?", sep = "\n\n", position = "after")
 
   chat_history <- prompt$get_chat_history()
@@ -49,4 +48,13 @@ test_that("setting and getting chat history returns consistent results", {
   # Get chat history and compare
   retrieved_chat_history <- prompt$get_chat_history()
   expect_equal(retrieved_chat_history, chat_history)
+})
+
+test_that("can create tidyprompt from tidyprompt", {
+  prompt <- tidyprompt("hi") |>
+    answer_as_integer() |>
+    quit_if()
+  prompt2 <- tidyprompt(prompt)
+
+  expect_identical(prompt, prompt2)
 })

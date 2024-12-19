@@ -1,5 +1,3 @@
-
-
 test_that("answer_as_int returns int", {
   skip_test_if_no_ollama()
 
@@ -10,5 +8,17 @@ test_that("answer_as_int returns int", {
     send_prompt(ollama, verbose = FALSE)
 
   expect_true(is.numeric(response))
+})
 
+test_that("answer_as_integer adds instruction", {
+  prompt <- "What is 5+5?" |>
+    answer_as_integer() |>
+    construct_prompt_text()
+
+  expect_true(
+    grepl(
+      "You must answer with only an integer (use no other characters).", prompt,
+      fixed = TRUE
+    )
+  )
 })
