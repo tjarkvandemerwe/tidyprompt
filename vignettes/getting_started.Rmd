@@ -102,13 +102,16 @@ You can also construct the final prompt text, without sending it to an LLM provi
 #> Use 'get_prompt_wraps(x)' to show the prompt wraps.
 ```
 
-## Type of prompt wraps
-This package contains three different family's of prompt wraps to change the behaviour
-of prompts.
+## Types of prompt wraps
 
-- `answer_as`: wraps to specify the **format** of the output object (e.g. integer, list, json)
-- `answer_by`: wraps to specify the **reasoning mode** to get to the answer (e.g. chain-of-thought, react)
-- `answer_using`: wraps to give **tools** to use to the llm to find the answer (e.g. R, SQL)
+This package contains three main families of prompt wraps which affect
+how a LLM handles a prompt:
+
+- `answer_as`: specify the **format** of the output (e.g., integer, list, json)
+- `answer_by`: specify a **reasoning mode** to reach the answer (e.g., chain-of-thought, ReAct)
+- `answer_using`: give the LLM **tools** to reach the answer (e.g., R functions, R code, SQL)
+
+Below, we will show examples of each type of prompt wrap.
 
 ### answer_as: Retrieving output in a specific format
 
@@ -230,7 +233,9 @@ function then ensures only the final answer is returned.
 #> [1] 4
 ```
 
-### answer_using: Giving tools to the LLM (autonomous function-calling)
+### answer_using: Tools and code
+
+#### Giving tools to the LLM (autonomous function-calling)
 
 With `answer_using_tools()`, you can enable your LLM to call R functions.
 This enables the LLM to autonomously retrieve additional information or take other actions.
@@ -317,7 +322,7 @@ parameters, currently implemented for OpenAI and Ollama API structures).
 #> These files seem to be related to some kind of project or documentation.
 ```
 
-### Code generation and evaluation
+#### Code generation and evaluation
 
 `answer_using_r()` provides a more advanced prompt wrap, which has various options
 to enable LLM code generation. R code can be extracted, parsed
