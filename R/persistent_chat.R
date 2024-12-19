@@ -10,8 +10,6 @@
 #' with an LLM. (It may specifically be used to continue a chat history which was
 #' returned by [send_prompt()] with `return_mode = "full"`.)
 #'
-#' @export
-#'
 #' @example inst/examples/persistent_chat.R
 #'
 #' @seealso [llm_provider-class] [chat_history()]

@@ -1,4 +1,5 @@
 #' @title Tidyprompt R6 Class
+#' @name tidyprompt-class
 #'
 #' @description
 #' A [tidyprompt-class] object contains a base prompt and a list
@@ -7,9 +8,13 @@
 #' Besides a base prompt, a [tidyprompt-class] object may contain a system prompt
 #' and a chat history which precede the base prompt.
 #'
-#' @export
+#' @example inst/examples/tidyprompt.R
 #'
 #' @family tidyprompt
+NULL
+
+#' @rdname tidyprompt-class
+#' @export
 `tidyprompt-class` <- R6::R6Class(
   "Tidyprompt",
   private = list(
