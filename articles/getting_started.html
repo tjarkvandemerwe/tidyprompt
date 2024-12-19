@@ -38,6 +38,7 @@
     <li><a class="dropdown-item" href="../articles/sentiment_analysis.html">Sentiment analysis in R with a LLM and 'tidyprompt'</a></li>
   </ul>
 </li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><form class="form-inline" role="search">
@@ -147,8 +148,24 @@ an LLM provider.</p>
 <span><span class="co">#&gt; Use 'x$construct_prompt_text()' to get the full prompt text.</span></span>
 <span><span class="co">#&gt; Use 'get_prompt_wraps(x)' to show the prompt wraps.</span></span></code></pre></div>
 </div>
+<div class="section level2">
+<h2 id="type-of-prompt-wraps">Type of prompt wraps<a class="anchor" aria-label="anchor" href="#type-of-prompt-wraps"></a>
+</h2>
+<p>This package contains three different family’s of prompt wraps to
+change the behaviour of prompts.</p>
+<ul>
+<li>
+<code>answer_as</code>: wraps to specify the <strong>format</strong>
+of the output object (e.g. integer, list, json)</li>
+<li>
+<code>answer_by</code>: wraps to specify the <strong>reasoning
+mode</strong> to get to the answer (e.g. chain-of-thought, react)</li>
+<li>
+<code>answer_using</code>: wraps to give <strong>tools</strong> to
+use to the llm to find the answer (e.g. R, SQL)</li>
+</ul>
 <div class="section level3">
-<h3 id="retrieving-output-in-a-specific-format">Retrieving output in a specific format<a class="anchor" aria-label="anchor" href="#retrieving-output-in-a-specific-format"></a>
+<h3 id="answer_as-retrieving-output-in-a-specific-format">answer_as: Retrieving output in a specific format<a class="anchor" aria-label="anchor" href="#answer_as-retrieving-output-in-a-specific-format"></a>
 </h3>
 <p>Using prompt wraps, you can force the LLM to return the output in a
 specific format. You can also extract the output to turn it from a
@@ -194,7 +211,7 @@ succeed after <code><a href="../reference/llm_feedback.html">llm_feedback()</a><
 <span><span class="co">#&gt; [1] 4</span></span></code></pre></div>
 <p>‘tidyprompt’ offers various other ‘answer_as’ functions, such as
 <code><a href="../reference/answer_as_boolean.html">answer_as_boolean()</a></code>, <code><a href="../reference/answer_as_regex_match.html">answer_as_regex_match()</a></code>,
-<code><a href="../reference/answer_as_named_list.html">answer_as_named_list()</a></code>, <code><a href="../reference/answer_using_r.html">answer_using_r()</a></code>, and
+<code><a href="../reference/answer_as_named_list.html">answer_as_named_list()</a></code>, <code><a href="../reference/answer_as_text.html">answer_as_text()</a></code> and
 <code><a href="../reference/answer_as_json.html">answer_as_json()</a></code>.</p>
 <div class="section level5">
 <h5 id="json-output">JSON output<a class="anchor" aria-label="anchor" href="#json-output"></a>
@@ -215,7 +232,7 @@ additional prompt wraps to ensure the output is as desired.</p>
 </div>
 </div>
 <div class="section level3">
-<h3 id="adding-a-reasoning-mode-to-the-llm">Adding a reasoning mode to the LLM<a class="anchor" aria-label="anchor" href="#adding-a-reasoning-mode-to-the-llm"></a>
+<h3 id="answer_by-adding-a-reasoning-mode-to-the-llm">answer_by: Adding a reasoning mode to the LLM<a class="anchor" aria-label="anchor" href="#answer_by-adding-a-reasoning-mode-to-the-llm"></a>
 </h3>
 <p>Prompt wraps may also be used to add a reasoning mode to the LLM. It
 is hypothesized that this could improve the LLM’s performance on more
@@ -266,7 +283,8 @@ the final answer is returned.</final></p>
 <span><span class="co">#&gt; [1] 4</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="giving-tools-to-the-llm-autonomous-function-calling">Giving tools to the LLM (autonomous function-calling)<a class="anchor" aria-label="anchor" href="#giving-tools-to-the-llm-autonomous-function-calling"></a>
+<h3 id="answer_using-giving-tools-to-the-llm-autonomous-function-calling">answer_using: Giving tools to the LLM (autonomous
+function-calling)<a class="anchor" aria-label="anchor" href="#answer_using-giving-tools-to-the-llm-autonomous-function-calling"></a>
 </h3>
 <p>With <code><a href="../reference/answer_using_tools.html">answer_using_tools()</a></code>, you can enable your LLM to
 call R functions. This enables the LLM to autonomously retrieve
@@ -388,6 +406,7 @@ used to formulate a final answer.</p>
 </h3>
 <p>See <code><a href="../reference/prompt_wrap.html">prompt_wrap()</a></code> and the ‘<a href="creating_prompt_wraps.html">Creating prompt wraps</a>’ vignette
 for information on how to create your own prompt wraps.</p>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

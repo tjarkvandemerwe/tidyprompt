@@ -40,6 +40,7 @@
     <li><a class="dropdown-item" href="articles/sentiment_analysis.html">Sentiment analysis in R with a LLM and 'tidyprompt'</a></li>
   </ul>
 </li>
+<li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><form class="form-inline" role="search">
@@ -59,8 +60,8 @@
 <!-- badges: start -->
 
 <p>‘tidyprompt’ is an R package for easily constructing prompts and associated logic for interacting with large language models (‘LLMs’).</p>
-<p>Think of ‘tidyprompt’ as the ‘ggplot2’ package for handling LLMs. ‘tidyprompt’ introduces the concept of prompt wraps, which are building blocks that you can use to quickly turn a simple prompt into an advanced one. Prompt wraps do not just modify the prompt text, but also add extraction and validation functions that will be applied to the response of a LLM. Moreover, these functions can send feedback to the LLM.</p>
-<p>With ‘tidyprompt’ and prompt wraps, you can add various features to your prompts and how they are evaluated by LLMs. For example:</p>
+<p>Think of ‘tidyprompt’ as the ‘ggplot2’ package for creating prompts and handling LLM interactions. ‘tidyprompt’ introduces the concept of prompt wraps, which are building blocks that you can use to quickly turn a simple prompt into an advanced one. Prompt wraps do not just modify the prompt text, but also add extraction and validation functions that will be applied to the response of a LLM. Moreover, these functions can send feedback to the LLM.</p>
+<p>With ‘tidyprompt’ and prompt wraps, you can add various features to your prompts and define how they are evaluated by LLMs. For example:</p>
 <ul>
 <li><p><strong>structured output</strong>: Obtain structured output from a LLM, adhering to a specific type and/or format. Use pre-built prompt wraps or your own R code to validate.</p></li>
 <li><p><strong>feedback &amp; retries</strong>: Automatically provide feedback to a LLM when the output is not as expected, allowing the LLM to retry their answer.</p></li>
@@ -71,8 +72,15 @@
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Pending CRAN release:</span></span>
+<span><span class="fu">instal.packages</span><span class="op">(</span><span class="st">"tidyprompt"</span><span class="op">)</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="development-version">Development version<a class="anchor" aria-label="anchor" href="#development-version"></a>
+</h3>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"tjarkvandemerwe/tidyprompt"</span><span class="op">)</span></span></code></pre></div>
+</div>
 </div>
 <div class="section level2">
 <h2 id="getting-started">Getting started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
@@ -83,22 +91,22 @@
 <h2 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
 </h2>
 <p>Here are some quick examples of what you can do with ‘tidyprompt’:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="st">"What is 5+5?"</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/answer_as_integer.html">answer_as_integer</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="fu"><a href="reference/llm_provider_ollama.html">llm_provider_ollama</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 10</span></span></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="st">"Are you a large language model?"</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/answer_as_boolean.html">answer_as_boolean</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="fu"><a href="reference/llm_provider_ollama.html">llm_provider_ollama</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="st">"What animal is the biggest?"</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/answer_as_regex_match.html">answer_as_regex_match</a></span><span class="op">(</span><span class="st">"^(cat|dog|elephant)$"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="fu"><a href="reference/llm_provider_ollama.html">llm_provider_ollama</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "elephant"</span></span></code></pre></div>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Make LLM use a function from an R package to search Wikipedia for the answer</span></span>
 <span><span class="st">"What is something fun that happened in November 2024?"</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/answer_as_text.html">answer_as_text</a></span><span class="op">(</span>max_words <span class="op">=</span> <span class="fl">25</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -106,7 +114,7 @@
 <span>  <span class="fu"><a href="reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="fu"><a href="reference/llm_provider_ollama.html">llm_provider_ollama</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "The 2024 ARIA Music Awards ceremony, a vibrant celebration of Australian music,</span></span>
 <span><span class="co">#&gt; took place on November 20, 2024."</span></span></code></pre></div>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># From prompt to linear model object in R</span></span>
 <span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span>
 <span>  <span class="st">"Using my data, create a statistical model"</span>,</span>
@@ -143,14 +151,14 @@
 <span><span class="co">#&gt; Residual standard error: 3.156 on 48 degrees of freedom</span></span>
 <span><span class="co">#&gt; Multiple R-squared:  0.6511, Adjusted R-squared:  0.6438 </span></span>
 <span><span class="co">#&gt; F-statistic: 89.57 on 1 and 48 DF,  p-value: 1.49e-12</span></span></code></pre></div>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Escape validation on questions that cannot be answered</span></span>
 <span><span class="st">"How many years old is my neighbour's dog?"</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/answer_as_integer.html">answer_as_integer</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/quit_if.html">quit_if</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="fu"><a href="reference/llm_provider_ollama.html">llm_provider_ollama</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; NULL</span></span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># LLM in the loop; </span></span>
 <span><span class="co">#   LLM verifies answer of LLM and can provide feedback</span></span>
 <span><span class="st">"What is the capital of France?"</span> <span class="op">|&gt;</span></span>
