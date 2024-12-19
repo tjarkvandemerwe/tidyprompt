@@ -8,8 +8,8 @@
 [![R-CMD-check](https://github.com/tjarkvandemerwe/tidyprompt/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/tjarkvandemerwe/tidyprompt/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-‘tidyprompt’ is an R package for easily constructing prompts and
-associated logic for interacting with large language models (‘LLMs’).
+Easily construct prompts and associated logic for interacting with large
+language models (‘LLMs’).
 
 Think of ‘tidyprompt’ as the ‘ggplot2’ package for creating prompts and
 handling LLM interactions. ‘tidyprompt’ introduces the concept of prompt
@@ -41,7 +41,7 @@ prompts and define how they are evaluated by LLMs. For example:
 
 ``` r
 # Pending CRAN release:
-instal.packages("tidyprompt")
+install.packages("tidyprompt")
 ```
 
 ### Development version
