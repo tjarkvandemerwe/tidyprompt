@@ -28,7 +28,7 @@ skip_test_if_no_ollama <- function() {
   )
 
   if (!ollama_running) {
-    return(skip("skip test: Ollama not available"))
+    return(testthat::skip("skip test: Ollama not available"))
   }
 
   return(invisible(NULL))
