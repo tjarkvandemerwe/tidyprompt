@@ -169,6 +169,55 @@ returned by <code><a href="send_prompt.html">send_prompt()</a></code> with <code
 
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Create a persistent chat with any LLM provider</span></span></span>
+<span class="r-in"><span><span class="va">chat</span> <span class="op">&lt;-</span> <span class="va">`persistent_chat-class`</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="fu"><a href="llm_provider_ollama.html">llm_provider_ollama</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span>  <span class="va">chat</span><span class="op">$</span><span class="fu">chat</span><span class="op">(</span><span class="st">"Hi! Tell me about Twente, in a short sentence?"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># --- Sending request to LLM provider (llama3.1:8b): ---</span></span></span>
+<span class="r-in"><span>  <span class="co"># Hi! Tell me about Twente, in a short sentence?</span></span></span>
+<span class="r-in"><span>  <span class="co"># --- Receiving response from LLM provider: ---</span></span></span>
+<span class="r-in"><span>  <span class="co"># Twente is a charming region in the Netherlands known for its picturesque</span></span></span>
+<span class="r-in"><span>  <span class="co"># countryside and vibrant culture!</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="va">chat</span><span class="op">$</span><span class="fu">chat</span><span class="op">(</span><span class="st">"How many people live there?"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># --- Sending request to LLM provider (llama3.1:8b): ---</span></span></span>
+<span class="r-in"><span>  <span class="co"># How many people live there?</span></span></span>
+<span class="r-in"><span>  <span class="co"># --- Receiving response from LLM provider: ---</span></span></span>
+<span class="r-in"><span>  <span class="co"># The population of Twente is approximately 650,000 inhabitants, making it one of</span></span></span>
+<span class="r-in"><span>  <span class="co"># the largest regions in the Netherlands.</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># Access the chat history:</span></span></span>
+<span class="r-in"><span>  <span class="va">chat</span><span class="op">$</span><span class="va">chat_history</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># Reset the chat history:</span></span></span>
+<span class="r-in"><span>  <span class="va">chat</span><span class="op">$</span><span class="fu">reset_chat_history</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># Continue a chat from the result of `send_prompt()`:</span></span></span>
+<span class="r-in"><span>  <span class="va">result</span> <span class="op">&lt;-</span> <span class="st">"Hi there!"</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="answer_as_integer.html">answer_as_integer</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="send_prompt.html">send_prompt</a></span><span class="op">(</span>return_mode <span class="op">=</span> <span class="st">"full"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># --- Sending request to LLM provider (llama3.1:8b): ---</span></span></span>
+<span class="r-in"><span>  <span class="co"># Hi there!</span></span></span>
+<span class="r-in"><span>  <span class="co">#</span></span></span>
+<span class="r-in"><span>  <span class="co"># You must answer with only an integer (use no other characters).</span></span></span>
+<span class="r-in"><span>  <span class="co"># --- Receiving response from LLM provider: ---</span></span></span>
+<span class="r-in"><span>  <span class="co"># 42</span></span></span>
+<span class="r-in"><span>  <span class="va">chat</span> <span class="op">&lt;-</span> <span class="va">`persistent_chat-class`</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="fu"><a href="llm_provider_ollama.html">llm_provider_ollama</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">result</span><span class="op">$</span><span class="va">chat_history</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">chat</span><span class="op">$</span><span class="fu">chat</span><span class="op">(</span><span class="st">"Why did you choose that number?"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># --- Sending request to LLM provider (llama3.1:8b): ---</span></span></span>
+<span class="r-in"><span>  <span class="co"># Why did you choose that number?</span></span></span>
+<span class="r-in"><span>  <span class="co"># --- Receiving response from LLM provider: ---</span></span></span>
+<span class="r-in"><span>  <span class="co"># I chose the number 42 because it's a reference to Douglas Adams' science fiction</span></span></span>
+<span class="r-in"><span>  <span class="co"># series "The Hitchhiker's Guide to the Galaxy," in which a supercomputer named</span></span></span>
+<span class="r-in"><span>  <span class="co"># Deep Thought is said to have calculated the "Answer to the Ultimate Question of</span></span></span>
+<span class="r-in"><span>  <span class="co"># Life, the Universe, and Everything" as 42.</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 
