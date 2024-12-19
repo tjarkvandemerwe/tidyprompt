@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">tidyprompt</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -149,21 +149,22 @@ an LLM provider.</p>
 <span><span class="co">#&gt; Use 'get_prompt_wraps(x)' to show the prompt wraps.</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="type-of-prompt-wraps">Type of prompt wraps<a class="anchor" aria-label="anchor" href="#type-of-prompt-wraps"></a>
+<h2 id="types-of-prompt-wraps">Types of prompt wraps<a class="anchor" aria-label="anchor" href="#types-of-prompt-wraps"></a>
 </h2>
-<p>This package contains three different family’s of prompt wraps to
-change the behaviour of prompts.</p>
+<p>This package contains three main families of prompt wraps which
+affect how a LLM handles a prompt:</p>
 <ul>
 <li>
-<code>answer_as</code>: wraps to specify the <strong>format</strong>
-of the output object (e.g. integer, list, json)</li>
+<code>answer_as</code>: specify the <strong>format</strong> of the
+output (e.g., integer, list, json)</li>
 <li>
-<code>answer_by</code>: wraps to specify the <strong>reasoning
-mode</strong> to get to the answer (e.g. chain-of-thought, react)</li>
+<code>answer_by</code>: specify a <strong>reasoning mode</strong> to
+reach the answer (e.g., chain-of-thought, ReAct)</li>
 <li>
-<code>answer_using</code>: wraps to give <strong>tools</strong> to
-use to the llm to find the answer (e.g. R, SQL)</li>
+<code>answer_using</code>: give the LLM <strong>tools</strong> to
+reach the answer (e.g., R functions, R code, SQL)</li>
 </ul>
+<p>Below, we will show examples of each type of prompt wrap.</p>
 <div class="section level3">
 <h3 id="answer_as-retrieving-output-in-a-specific-format">answer_as: Retrieving output in a specific format<a class="anchor" aria-label="anchor" href="#answer_as-retrieving-output-in-a-specific-format"></a>
 </h3>
@@ -283,9 +284,11 @@ the final answer is returned.</final></p>
 <span><span class="co">#&gt; [1] 4</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="answer_using-giving-tools-to-the-llm-autonomous-function-calling">answer_using: Giving tools to the LLM (autonomous
-function-calling)<a class="anchor" aria-label="anchor" href="#answer_using-giving-tools-to-the-llm-autonomous-function-calling"></a>
+<h3 id="answer_using-tools-and-code">answer_using: Tools and code<a class="anchor" aria-label="anchor" href="#answer_using-tools-and-code"></a>
 </h3>
+<div class="section level4">
+<h4 id="giving-tools-to-the-llm-autonomous-function-calling">Giving tools to the LLM (autonomous function-calling)<a class="anchor" aria-label="anchor" href="#giving-tools-to-the-llm-autonomous-function-calling"></a>
+</h4>
 <p>With <code><a href="../reference/answer_using_tools.html">answer_using_tools()</a></code>, you can enable your LLM to
 call R functions. This enables the LLM to autonomously retrieve
 additional information or take other actions.</p>
@@ -371,9 +374,9 @@ implemented for OpenAI and Ollama API structures).</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; These files seem to be related to some kind of project or documentation.</span></span></code></pre></div>
 </div>
-<div class="section level3">
-<h3 id="code-generation-and-evaluation">Code generation and evaluation<a class="anchor" aria-label="anchor" href="#code-generation-and-evaluation"></a>
-</h3>
+<div class="section level4">
+<h4 id="code-generation-and-evaluation">Code generation and evaluation<a class="anchor" aria-label="anchor" href="#code-generation-and-evaluation"></a>
+</h4>
 <p><code><a href="../reference/answer_using_r.html">answer_using_r()</a></code> provides a more advanced prompt wrap,
 which has various options to enable LLM code generation. R code can be
 extracted, parsed for validity, and optionally be evaluated in a
@@ -399,6 +402,7 @@ used to formulate a final answer.</p>
 <span><span class="va">plot</span></span></code></pre></div>
 <div class="float">
 <img src="../reference/figures/answer_using_r1-1.png" alt="plot"><div class="figcaption">plot</div>
+</div>
 </div>
 </div>
 <div class="section level3">
