@@ -14,8 +14,8 @@ Authors@R:
            role = "fnd",
            email = "info@kennispunttwente.nl"))
 Description: 
-  ‘tidyprompt’ is an R package for easily constructing prompts and
-  associated logic for interacting with large language models ('LLMs'). 
+  Easily construct prompts and associated logic for interacting with 
+  large language models ('LLMs'). 
   'tidyprompt' introduces the concept of prompt wraps, which are building
   blocks that you can use to quickly turn a simple prompt into a complex
   one. Prompt wraps do not just modify the prompt text, but also add
