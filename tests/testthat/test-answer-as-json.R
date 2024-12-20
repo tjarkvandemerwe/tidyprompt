@@ -1,4 +1,4 @@
-test_that("answer_as_json returns valid JSON", {
+test_that("ollama answer_as_json returns valid JSON", {
   skip_test_if_no_ollama()
 
   schema <- list(
@@ -80,4 +80,42 @@ test_that("answer_as_json returns valid JSON", {
   expect_true(is.character(response$pet$species), info = "`pet$species` should be a string")
   expect_true(response$pet$species %in% c("Dog", "Cat", "Fish", "Bird", "Other"),
               info = "`pet$species` should be one of the allowed values")
+})
+
+test_that("openai answer_as_json works", {
+  skip_test_if_no_openai()
+
+  schema <- list(
+    "$schema" = "http://json-schema.org/draft-04/schema#",
+    title = "Persona",
+    type = "object",
+    properties = list(
+      name = list(type = "string", description = "The persona's name"),
+      age = list(type = "integer", description = "The persona's age"),
+      gender = list(
+        type = "string",
+        enum = c("Male", "Female", "Non-binary", "Other"),
+        description = "The persona's gender"
+      ),
+      hobbies = list(
+        type = "array",
+        items = list(type = "string"),
+        description = "List of hobbies"
+      )
+    ),
+    required = c("name", "age", "gender", "hobbies"),
+    additionalProperties = FALSE
+  )
+
+  expect_no_error(
+    "Create a persona" |>
+      answer_as_json(schema, type = "auto") |>
+      send_prompt(llm_provider_openai())
+  )
+
+  expect_no_error(
+    "Create a very short persona" |>
+      answer_as_json(type = "auto") |>
+      send_prompt(llm_provider_openai())
+  )
 })
