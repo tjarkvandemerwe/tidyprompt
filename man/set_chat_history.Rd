@@ -2,7 +2,7 @@
 % Please edit documentation in R/tidyprompt.R
 \name{set_chat_history}
 \alias{set_chat_history}
-\title{Set the chat history}
+\title{Set the chat history of a \linkS4class{tidyprompt} object}
 \usage{
 set_chat_history(x, chat_history)
 }

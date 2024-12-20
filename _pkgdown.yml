@@ -12,6 +12,8 @@ reference:
   - construct_prompt_text
   - get_prompt_wraps
   - get_chat_history
+  - set_chat_history
+  - set_system_prompt
 - subtitle: Prompt wrap
   desc: Functions for creating prompt wraps.
 - contents:
@@ -40,8 +42,6 @@ reference:
 - subtitle: Miscellaneous
 - contents:
   - add_text
-  - set_system_prompt
-  - set_chat_history
   - quit_if
   - user_verify
   - llm_verify
