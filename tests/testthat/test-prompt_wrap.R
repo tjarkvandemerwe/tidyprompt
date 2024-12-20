@@ -42,7 +42,6 @@ test_that("handler fn works", {
 test_that("parameter_fn throws no error", {
   fake <- llm_provider_fake()
 
-  # Expect no error
   expect_no_error("Hi" |>
     prompt_wrap(
       parameter_fn = function(llm_provider) {
