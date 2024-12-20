@@ -26,6 +26,10 @@ test_that("handler fn works", {
   result <- "Hi" |>
     prompt_wrap(
       handler_fn = function(response, llm_provider) {
+        if (!inherits(llm_provider, "LlmProvider")) {
+          stop("llm_provider passed by handler_fn is not an LlmProvider")
+        }
+
         response$completed$content[nrow(response$completed)] <- "beepido boop ba"
         return(response)
       }
