@@ -18,4 +18,5 @@ validation_fn <- function(x, min = 0, max = 100) {
   return(TRUE)
 }
 
-# This validation_fn would be part of a prompt_wrap()
+# This validation_fn would be part of a prompt_wrap();
+#   see the `answer_as_integer()` function for an example of how to use it
