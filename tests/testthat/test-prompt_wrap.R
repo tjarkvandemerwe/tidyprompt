@@ -21,8 +21,6 @@ test_that("can add prompt wraps of all types and they are ordered correctly", {
 })
 
 test_that("handler fn works", {
-  skip_test_if_no_ollama()
-
   fake <- llm_provider_fake()
 
   result <- "Hi" |>
