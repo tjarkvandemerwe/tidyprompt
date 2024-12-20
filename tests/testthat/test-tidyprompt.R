@@ -23,7 +23,7 @@ test_that("construct prompt text based on llm_provider", {
       modify_fn = function(x) {
         if (!is.null(llm_provider)) {
           if (!inherits(llm_provider, "LlmProvider")) {
-            stop("llm_provider must be an LlmProvider object")
+            stop("llm_provider passed to modify_fn is not LlmProvider object")
           }
         }
 
