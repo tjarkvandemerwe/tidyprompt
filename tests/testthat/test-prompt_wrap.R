@@ -34,3 +34,23 @@ test_that("handler fn works", {
 
   expect_identical(result, "beepido boop ba")
 })
+
+test_that("parameter_fn throws no error", {
+  fake <- llm_provider_fake()
+
+  # Expect no error
+  expect_no_error("Hi" |>
+    prompt_wrap(
+      parameter_fn = function(llm_provider) {
+        if (!inherits(llm_provider, "LlmProvider")) {
+          stop("llm_provider passed by parameter_fn is not an LlmProvider")
+        }
+
+        return(list(
+          beep = "boop"
+        ))
+      }
+    ) |>
+    send_prompt(fake)
+  )
+})
