@@ -78,78 +78,20 @@ with 'schema_in_prompt_as = "example"' and type = 'text-based'/'ollama'.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># This example will show how to enforce JSON format in the response,</span></span></span>
 <span class="r-in"><span><span class="co">#   with and without a schema, using the 'answer_as_json()' prompt wrap.</span></span></span>
-<span class="r-in"><span><span class="co">#   Based on which LLM provider you are using, the JSON format enforcement</span></span></span>
-<span class="r-in"><span><span class="co">#   will automatically be handled in the best way. This also means that</span></span></span>
-<span class="r-in"><span><span class="co">#   you can easily swap between different LLM providers while still</span></span></span>
-<span class="r-in"><span><span class="co">#   achieving the same results</span></span></span>
+<span class="r-in"><span><span class="co"># If you use type = 'auto', the function will automatically detect the</span></span></span>
+<span class="r-in"><span><span class="co">#   best way to enforce JSON based on the LLM provider you are using.</span></span></span>
+<span class="r-in"><span><span class="co"># Note that the default type is 'text-based', which will work for any provider/model</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Enforcing JSON without a schema: ####</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span>  <span class="co"># Ollama:</span></span></span>
-<span class="r-in"><span>  <span class="co">#   Sets 'format' parameter to 'json', enforcing JSON</span></span></span>
-<span class="r-in"><span>  <span class="co">#   Adds request to prompt for a JSON object, as is recommended by the docs</span></span></span>
-<span class="r-in"><span>  <span class="co">#   Parses JSON to R object</span></span></span>
-<span class="r-in"><span>  <span class="va">json1</span> <span class="op">&lt;-</span> <span class="va">base_prompt</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="answer_as_json.html">answer_as_json</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="fu"><a href="llm_provider_ollama.html">llm_provider_ollama</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="co"># --- Sending request to LLM provider (llama3.1:8b): ---</span></span></span>
-<span class="r-in"><span>  <span class="co"># How can I solve 8x + 7 = -23?</span></span></span>
-<span class="r-in"><span>  <span class="co">#</span></span></span>
-<span class="r-in"><span>  <span class="co"># Your must format your response as a JSON object.</span></span></span>
-<span class="r-in"><span>  <span class="co"># --- Receiving response from LLM provider: ---</span></span></span>
-<span class="r-in"><span>  <span class="co"># {"steps": [</span></span></span>
-<span class="r-in"><span>  <span class="co">#   "Subtract 7 from both sides to get 8x = -30",</span></span></span>
-<span class="r-in"><span>  <span class="co">#   "Simplify the right side of the equation to get 8x = -30",</span></span></span>
-<span class="r-in"><span>  <span class="co">#   "Divide both sides by 8 to solve for x, resulting in x = -30/8",</span></span></span>
-<span class="r-in"><span>  <span class="co">#   "Simplify the fraction to find the value of x"</span></span></span>
-<span class="r-in"><span>  <span class="co"># ],</span></span></span>
-<span class="r-in"><span>  <span class="co"># "value_of_x": "-3.75"}</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co"># OpenAI-type API without schema</span></span></span>
-<span class="r-in"><span>  <span class="co">#   Sets 'response_format' parameter to 'json_object', enforcing JSON</span></span></span>
-<span class="r-in"><span>  <span class="co">#   Adds request to prompt for a JSON object, as is required by the API</span></span></span>
-<span class="r-in"><span>  <span class="co">#   Parses JSON to R object</span></span></span>
-<span class="r-in"><span>  <span class="va">json2</span> <span class="op">&lt;-</span> <span class="va">base_prompt</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="answer_as_json.html">answer_as_json</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="fu"><a href="llm_provider_openai.html">llm_provider_openai</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="co"># --- Sending request to LLM provider (gpt-4o-mini): ---</span></span></span>
-<span class="r-in"><span>  <span class="co"># How can I solve 8x + 7 = -23?</span></span></span>
-<span class="r-in"><span>  <span class="co">#</span></span></span>
-<span class="r-in"><span>  <span class="co"># Your must format your response as a JSON object.</span></span></span>
-<span class="r-in"><span>  <span class="co"># --- Receiving response from LLM provider: ---</span></span></span>
-<span class="r-in"><span>  <span class="co"># {</span></span></span>
-<span class="r-in"><span>  <span class="co">#   "solution_steps": [</span></span></span>
-<span class="r-in"><span>  <span class="co">#     {</span></span></span>
-<span class="r-in"><span>  <span class="co">#       "step": 1,</span></span></span>
-<span class="r-in"><span>  <span class="co">#       "operation": "Subtract 7 from both sides",</span></span></span>
-<span class="r-in"><span>  <span class="co">#       "equation": "8x + 7 - 7 = -23 - 7",</span></span></span>
-<span class="r-in"><span>  <span class="co">#       "result": "8x = -30"</span></span></span>
-<span class="r-in"><span>  <span class="co">#     },</span></span></span>
-<span class="r-in"><span>  <span class="co">#     {</span></span></span>
-<span class="r-in"><span>  <span class="co">#       "step": 2,</span></span></span>
-<span class="r-in"><span>  <span class="co">#       "operation": "Divide both sides by 8",</span></span></span>
-<span class="r-in"><span>  <span class="co">#       "equation": "8x / 8 = -30 / 8",</span></span></span>
-<span class="r-in"><span>  <span class="co">#       "result": "x = -3.75"</span></span></span>
-<span class="r-in"><span>  <span class="co">#     }</span></span></span>
-<span class="r-in"><span>  <span class="co">#   ],</span></span></span>
-<span class="r-in"><span>  <span class="co">#   "solution": {</span></span></span>
-<span class="r-in"><span>  <span class="co">#     "x": -3.75</span></span></span>
-<span class="r-in"><span>  <span class="co">#   }</span></span></span>
-<span class="r-in"><span>  <span class="co"># }</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co"># ... (Creating fake provider based on Ollama for demonstration purposes) ...</span></span></span>
-<span class="r-in"><span>  <span class="va">fake_provider_without_json_support</span> <span class="op">&lt;-</span> <span class="fu"><a href="llm_provider_ollama.html">llm_provider_ollama</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">fake_provider_without_json_support</span><span class="op">$</span><span class="va">api_type</span> <span class="op">&lt;-</span> <span class="st">"fake"</span></span></span>
-<span class="r-in"><span>  <span class="va">fake_provider_without_json_support</span><span class="op">$</span><span class="va">parameters</span><span class="op">$</span><span class="va">stream</span> <span class="op">&lt;-</span> <span class="cn">FALSE</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co"># Text-based without schema (works for any provider/model)</span></span></span>
+<span class="r-in"><span>  <span class="co">## Text-based (works for any provider/model):</span></span></span>
 <span class="r-in"><span>  <span class="co">#   Adds request to prompt for a JSON object</span></span></span>
 <span class="r-in"><span>  <span class="co">#   Extracts JSON from textual response (feedback for retry if no JSON received)</span></span></span>
 <span class="r-in"><span>  <span class="co">#   Parses JSON to R object</span></span></span>
-<span class="r-in"><span>  <span class="va">json3</span> <span class="op">&lt;-</span> <span class="va">base_prompt</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="va">json0</span> <span class="op">&lt;-</span> <span class="va">base_prompt</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="answer_as_json.html">answer_as_json</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="va">fake_provider_without_json_support</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="fu"><a href="llm_provider_ollama.html">llm_provider_ollama</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="co"># --- Sending request to LLM provider (llama3.1:8b): ---</span></span></span>
 <span class="r-in"><span>  <span class="co"># How can I solve 8x + 7 = -23?</span></span></span>
 <span class="r-in"><span>  <span class="co">#</span></span></span>
@@ -183,6 +125,60 @@ with 'schema_in_prompt_as = "example"' and type = 'text-based'/'ollama'.</p>
 <span class="r-in"><span>  <span class="co">#   }</span></span></span>
 <span class="r-in"><span>  <span class="co"># }</span></span></span>
 <span class="r-in"><span>  <span class="co"># ```</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">## Ollama:</span></span></span>
+<span class="r-in"><span>  <span class="co">#   - Sets 'format' parameter to 'json', enforcing JSON</span></span></span>
+<span class="r-in"><span>  <span class="co">#   - Adds request to prompt for a JSON object, as is recommended by the docs</span></span></span>
+<span class="r-in"><span>  <span class="co">#   - Parses JSON to R object</span></span></span>
+<span class="r-in"><span>  <span class="va">json1</span> <span class="op">&lt;-</span> <span class="va">base_prompt</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="answer_as_json.html">answer_as_json</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"auto"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="fu"><a href="llm_provider_ollama.html">llm_provider_ollama</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># --- Sending request to LLM provider (llama3.1:8b): ---</span></span></span>
+<span class="r-in"><span>  <span class="co"># How can I solve 8x + 7 = -23?</span></span></span>
+<span class="r-in"><span>  <span class="co">#</span></span></span>
+<span class="r-in"><span>  <span class="co"># Your must format your response as a JSON object.</span></span></span>
+<span class="r-in"><span>  <span class="co"># --- Receiving response from LLM provider: ---</span></span></span>
+<span class="r-in"><span>  <span class="co"># {"steps": [</span></span></span>
+<span class="r-in"><span>  <span class="co">#   "Subtract 7 from both sides to get 8x = -30",</span></span></span>
+<span class="r-in"><span>  <span class="co">#   "Simplify the right side of the equation to get 8x = -30",</span></span></span>
+<span class="r-in"><span>  <span class="co">#   "Divide both sides by 8 to solve for x, resulting in x = -30/8",</span></span></span>
+<span class="r-in"><span>  <span class="co">#   "Simplify the fraction to find the value of x"</span></span></span>
+<span class="r-in"><span>  <span class="co"># ],</span></span></span>
+<span class="r-in"><span>  <span class="co"># "value_of_x": "-3.75"}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">## OpenAI-type API without schema:</span></span></span>
+<span class="r-in"><span>  <span class="co">#   - Sets 'response_format' parameter to 'json_object', enforcing JSON</span></span></span>
+<span class="r-in"><span>  <span class="co">#   - Adds request to prompt for a JSON object, as is required by the API</span></span></span>
+<span class="r-in"><span>  <span class="co">#   - Parses JSON to R object</span></span></span>
+<span class="r-in"><span>  <span class="va">json2</span> <span class="op">&lt;-</span> <span class="va">base_prompt</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="answer_as_json.html">answer_as_json</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"auto"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="fu"><a href="llm_provider_openai.html">llm_provider_openai</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># --- Sending request to LLM provider (gpt-4o-mini): ---</span></span></span>
+<span class="r-in"><span>  <span class="co"># How can I solve 8x + 7 = -23?</span></span></span>
+<span class="r-in"><span>  <span class="co">#</span></span></span>
+<span class="r-in"><span>  <span class="co"># Your must format your response as a JSON object.</span></span></span>
+<span class="r-in"><span>  <span class="co"># --- Receiving response from LLM provider: ---</span></span></span>
+<span class="r-in"><span>  <span class="co"># {</span></span></span>
+<span class="r-in"><span>  <span class="co">#   "solution_steps": [</span></span></span>
+<span class="r-in"><span>  <span class="co">#     {</span></span></span>
+<span class="r-in"><span>  <span class="co">#       "step": 1,</span></span></span>
+<span class="r-in"><span>  <span class="co">#       "operation": "Subtract 7 from both sides",</span></span></span>
+<span class="r-in"><span>  <span class="co">#       "equation": "8x + 7 - 7 = -23 - 7",</span></span></span>
+<span class="r-in"><span>  <span class="co">#       "result": "8x = -30"</span></span></span>
+<span class="r-in"><span>  <span class="co">#     },</span></span></span>
+<span class="r-in"><span>  <span class="co">#     {</span></span></span>
+<span class="r-in"><span>  <span class="co">#       "step": 2,</span></span></span>
+<span class="r-in"><span>  <span class="co">#       "operation": "Divide both sides by 8",</span></span></span>
+<span class="r-in"><span>  <span class="co">#       "equation": "8x / 8 = -30 / 8",</span></span></span>
+<span class="r-in"><span>  <span class="co">#       "result": "x = -3.75"</span></span></span>
+<span class="r-in"><span>  <span class="co">#     }</span></span></span>
+<span class="r-in"><span>  <span class="co">#   ],</span></span></span>
+<span class="r-in"><span>  <span class="co">#   "solution": {</span></span></span>
+<span class="r-in"><span>  <span class="co">#     "x": -3.75</span></span></span>
+<span class="r-in"><span>  <span class="co">#   }</span></span></span>
+<span class="r-in"><span>  <span class="co"># }</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
@@ -237,86 +233,15 @@ with 'schema_in_prompt_as = "example"' and type = 'text-based'/'ollama'.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span>  <span class="co"># Ollama with schema</span></span></span>
-<span class="r-in"><span>  <span class="co">#   Sets 'format' parameter to 'json', enforcing JSON</span></span></span>
-<span class="r-in"><span>  <span class="co">#   Adds request to prompt for a JSON object, as is recommended by the docs</span></span></span>
-<span class="r-in"><span>  <span class="co">#   Adds schema to prompt</span></span></span>
-<span class="r-in"><span>  <span class="co">#   Validates JSON against schema with 'jsonvalidate' package (feedback for retry if invalid)</span></span></span>
-<span class="r-in"><span>  <span class="va">json4</span> <span class="op">&lt;-</span> <span class="va">base_prompt</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="answer_as_json.html">answer_as_json</a></span><span class="op">(</span><span class="va">json_schema</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="fu"><a href="llm_provider_ollama.html">llm_provider_ollama</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="co"># --- Sending request to LLM provider (llama3.1:8b): ---</span></span></span>
-<span class="r-in"><span>  <span class="co"># How can I solve 8x + 7 = -23?</span></span></span>
-<span class="r-in"><span>  <span class="co">#</span></span></span>
-<span class="r-in"><span>  <span class="co"># Your must format your response as a JSON object.</span></span></span>
-<span class="r-in"><span>  <span class="co">#</span></span></span>
-<span class="r-in"><span>  <span class="co"># Your JSON object should match this example JSON object:</span></span></span>
-<span class="r-in"><span>  <span class="co"># {</span></span></span>
-<span class="r-in"><span>  <span class="co">#   "steps": [</span></span></span>
-<span class="r-in"><span>  <span class="co">#     {</span></span></span>
-<span class="r-in"><span>  <span class="co">#       "explanation": "...",</span></span></span>
-<span class="r-in"><span>  <span class="co">#       "output": "..."</span></span></span>
-<span class="r-in"><span>  <span class="co">#     }</span></span></span>
-<span class="r-in"><span>  <span class="co">#   ],</span></span></span>
-<span class="r-in"><span>  <span class="co">#   "final_answer": "..."</span></span></span>
-<span class="r-in"><span>  <span class="co"># }</span></span></span>
-<span class="r-in"><span>  <span class="co"># --- Receiving response from LLM provider: ---</span></span></span>
-<span class="r-in"><span>  <span class="co"># {</span></span></span>
-<span class="r-in"><span>  <span class="co">#   "steps": [</span></span></span>
-<span class="r-in"><span>  <span class="co">#     {</span></span></span>
-<span class="r-in"><span>  <span class="co">#       "explanation": "First, subtract 7 from both sides of the equation to</span></span></span>
-<span class="r-in"><span>  <span class="co">#       isolate the term with x.",</span></span></span>
-<span class="r-in"><span>  <span class="co">#       "output": "8x = -23 - 7"</span></span></span>
-<span class="r-in"><span>  <span class="co">#     },</span></span></span>
-<span class="r-in"><span>  <span class="co">#     {</span></span></span>
-<span class="r-in"><span>  <span class="co">#       "explanation": "Simplify the right-hand side of the equation.",</span></span></span>
-<span class="r-in"><span>  <span class="co">#       "output": "8x = -30"</span></span></span>
-<span class="r-in"><span>  <span class="co">#     },</span></span></span>
-<span class="r-in"><span>  <span class="co">#     {</span></span></span>
-<span class="r-in"><span>  <span class="co">#       "explanation": "Next, divide both sides of the equation by 8 to solve for x.",</span></span></span>
-<span class="r-in"><span>  <span class="co">#       "output": "x = -30 / 8"</span></span></span>
-<span class="r-in"><span>  <span class="co">#     },</span></span></span>
-<span class="r-in"><span>  <span class="co">#     {</span></span></span>
-<span class="r-in"><span>  <span class="co">#       "explanation": "Simplify the right-hand side of the equation.",</span></span></span>
-<span class="r-in"><span>  <span class="co">#       "output": "x = -3.75"</span></span></span>
-<span class="r-in"><span>  <span class="co">#     }</span></span></span>
-<span class="r-in"><span>  <span class="co">#   ],</span></span></span>
-<span class="r-in"><span>  <span class="co">#   "final_answer": "-3.75"</span></span></span>
-<span class="r-in"><span>  <span class="co"># }</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co"># OpenAI with schema</span></span></span>
-<span class="r-in"><span>  <span class="co">#   Sets 'response_format' parameter to 'json_object', enforcing JSON</span></span></span>
-<span class="r-in"><span>  <span class="co">#   Adds json_schema to the API request, API enforces JSON adhering schema</span></span></span>
-<span class="r-in"><span>  <span class="co">#   Parses JSON to R object</span></span></span>
-<span class="r-in"><span>  <span class="va">json5</span> <span class="op">&lt;-</span> <span class="va">base_prompt</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="answer_as_json.html">answer_as_json</a></span><span class="op">(</span><span class="va">json_schema</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="fu"><a href="llm_provider_openai.html">llm_provider_openai</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="co"># --- Sending request to LLM provider (gpt-4o-mini): ---</span></span></span>
-<span class="r-in"><span>  <span class="co"># How can I solve 8x + 7 = -23?</span></span></span>
-<span class="r-in"><span>  <span class="co"># --- Receiving response from LLM provider: ---</span></span></span>
-<span class="r-in"><span>  <span class="co"># {"steps":[</span></span></span>
-<span class="r-in"><span>  <span class="co"># {"explanation":"Start with the original equation.",</span></span></span>
-<span class="r-in"><span>  <span class="co"># "output":"8x + 7 = -23"},</span></span></span>
-<span class="r-in"><span>  <span class="co"># {"explanation":"Subtract 7 from both sides to isolate the term with x.",</span></span></span>
-<span class="r-in"><span>  <span class="co"># "output":"8x + 7 - 7 = -23 - 7"},</span></span></span>
-<span class="r-in"><span>  <span class="co"># {"explanation":"Simplify the left side and the right side of the equation.",</span></span></span>
-<span class="r-in"><span>  <span class="co"># "output":"8x = -30"},</span></span></span>
-<span class="r-in"><span>  <span class="co"># {"explanation":"Now, divide both sides by 8 to solve for x.",</span></span></span>
-<span class="r-in"><span>  <span class="co"># "output":"x = -30 / 8"},</span></span></span>
-<span class="r-in"><span>  <span class="co"># {"explanation":"Simplify the fraction by dividing both the numerator and the</span></span></span>
-<span class="r-in"><span>  <span class="co"># denominator by 2.",</span></span></span>
-<span class="r-in"><span>  <span class="co"># "output":"x = -15 / 4"}</span></span></span>
-<span class="r-in"><span>  <span class="co"># ], "final_answer":"x = -15/4"}</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co"># Text-based with schema (works for any provider/model)</span></span></span>
-<span class="r-in"><span>  <span class="co">#   Adds request to prompt for a JSON object</span></span></span>
-<span class="r-in"><span>  <span class="co">#   Adds schema to prompt</span></span></span>
-<span class="r-in"><span>  <span class="co">#   Extracts JSON from textual response (feedback for retry if no JSON received)</span></span></span>
-<span class="r-in"><span>  <span class="co">#   Validates JSON against schema with 'jsonvalidate' package (feedback for retry if invalid)</span></span></span>
-<span class="r-in"><span>  <span class="co">#   Parses JSON to R object</span></span></span>
-<span class="r-in"><span>  <span class="va">json6</span> <span class="op">&lt;-</span> <span class="va">base_prompt</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="co">## Text-based with schema (works for any provider/model):</span></span></span>
+<span class="r-in"><span>  <span class="co">#   - Adds request to prompt for a JSON object</span></span></span>
+<span class="r-in"><span>  <span class="co">#   - Adds schema to prompt</span></span></span>
+<span class="r-in"><span>  <span class="co">#   - Extracts JSON from textual response (feedback for retry if no JSON received)</span></span></span>
+<span class="r-in"><span>  <span class="co">#   - Validates JSON against schema with 'jsonvalidate' package (feedback for retry if invalid)</span></span></span>
+<span class="r-in"><span>  <span class="co">#   - Parses JSON to R object</span></span></span>
+<span class="r-in"><span>  <span class="va">json3</span> <span class="op">&lt;-</span> <span class="va">base_prompt</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="answer_as_json.html">answer_as_json</a></span><span class="op">(</span>schema <span class="op">=</span> <span class="va">json_schema</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="va">fake_provider_without_json_support</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="fu"><a href="llm_provider_ollama.html">llm_provider_ollama</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="co"># --- Sending request to LLM provider (llama3.1:8b): ---</span></span></span>
 <span class="r-in"><span>  <span class="co"># How can I solve 8x + 7 = -23?</span></span></span>
 <span class="r-in"><span>  <span class="co">#</span></span></span>
@@ -360,6 +285,78 @@ with 'schema_in_prompt_as = "example"' and type = 'text-based'/'ollama'.</p>
 <span class="r-in"><span>  <span class="co">#   "final_answer": "-3.75"</span></span></span>
 <span class="r-in"><span>  <span class="co"># }</span></span></span>
 <span class="r-in"><span>  <span class="co"># ```</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">## Ollama with schema:</span></span></span>
+<span class="r-in"><span>  <span class="co">#   - Sets 'format' parameter to 'json', enforcing JSON</span></span></span>
+<span class="r-in"><span>  <span class="co">#   - Adds request to prompt for a JSON object, as is recommended by the docs</span></span></span>
+<span class="r-in"><span>  <span class="co">#   - Adds schema to prompt</span></span></span>
+<span class="r-in"><span>  <span class="co">#   - Validates JSON against schema with 'jsonvalidate' package (feedback for retry if invalid)</span></span></span>
+<span class="r-in"><span>  <span class="va">json4</span> <span class="op">&lt;-</span> <span class="va">base_prompt</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="answer_as_json.html">answer_as_json</a></span><span class="op">(</span><span class="va">json_schema</span>, type <span class="op">=</span> <span class="st">"auto"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="fu"><a href="llm_provider_ollama.html">llm_provider_ollama</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># --- Sending request to LLM provider (llama3.1:8b): ---</span></span></span>
+<span class="r-in"><span>  <span class="co"># How can I solve 8x + 7 = -23?</span></span></span>
+<span class="r-in"><span>  <span class="co">#</span></span></span>
+<span class="r-in"><span>  <span class="co"># Your must format your response as a JSON object.</span></span></span>
+<span class="r-in"><span>  <span class="co">#</span></span></span>
+<span class="r-in"><span>  <span class="co"># Your JSON object should match this example JSON object:</span></span></span>
+<span class="r-in"><span>  <span class="co"># {</span></span></span>
+<span class="r-in"><span>  <span class="co">#   "steps": [</span></span></span>
+<span class="r-in"><span>  <span class="co">#     {</span></span></span>
+<span class="r-in"><span>  <span class="co">#       "explanation": "...",</span></span></span>
+<span class="r-in"><span>  <span class="co">#       "output": "..."</span></span></span>
+<span class="r-in"><span>  <span class="co">#     }</span></span></span>
+<span class="r-in"><span>  <span class="co">#   ],</span></span></span>
+<span class="r-in"><span>  <span class="co">#   "final_answer": "..."</span></span></span>
+<span class="r-in"><span>  <span class="co"># }</span></span></span>
+<span class="r-in"><span>  <span class="co"># --- Receiving response from LLM provider: ---</span></span></span>
+<span class="r-in"><span>  <span class="co"># {</span></span></span>
+<span class="r-in"><span>  <span class="co">#   "steps": [</span></span></span>
+<span class="r-in"><span>  <span class="co">#     {</span></span></span>
+<span class="r-in"><span>  <span class="co">#       "explanation": "First, subtract 7 from both sides of the equation to</span></span></span>
+<span class="r-in"><span>  <span class="co">#       isolate the term with x.",</span></span></span>
+<span class="r-in"><span>  <span class="co">#       "output": "8x = -23 - 7"</span></span></span>
+<span class="r-in"><span>  <span class="co">#     },</span></span></span>
+<span class="r-in"><span>  <span class="co">#     {</span></span></span>
+<span class="r-in"><span>  <span class="co">#       "explanation": "Simplify the right-hand side of the equation.",</span></span></span>
+<span class="r-in"><span>  <span class="co">#       "output": "8x = -30"</span></span></span>
+<span class="r-in"><span>  <span class="co">#     },</span></span></span>
+<span class="r-in"><span>  <span class="co">#     {</span></span></span>
+<span class="r-in"><span>  <span class="co">#       "explanation": "Next, divide both sides of the equation by 8 to solve for x.",</span></span></span>
+<span class="r-in"><span>  <span class="co">#       "output": "x = -30 / 8"</span></span></span>
+<span class="r-in"><span>  <span class="co">#     },</span></span></span>
+<span class="r-in"><span>  <span class="co">#     {</span></span></span>
+<span class="r-in"><span>  <span class="co">#       "explanation": "Simplify the right-hand side of the equation.",</span></span></span>
+<span class="r-in"><span>  <span class="co">#       "output": "x = -3.75"</span></span></span>
+<span class="r-in"><span>  <span class="co">#     }</span></span></span>
+<span class="r-in"><span>  <span class="co">#   ],</span></span></span>
+<span class="r-in"><span>  <span class="co">#   "final_answer": "-3.75"</span></span></span>
+<span class="r-in"><span>  <span class="co"># }</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">## OpenAI with schema:</span></span></span>
+<span class="r-in"><span>  <span class="co">#   - Sets 'response_format' parameter to 'json_object', enforcing JSON</span></span></span>
+<span class="r-in"><span>  <span class="co">#   - Adds json_schema to the API request, API enforces JSON adhering schema</span></span></span>
+<span class="r-in"><span>  <span class="co">#   - Parses JSON to R object</span></span></span>
+<span class="r-in"><span>  <span class="va">json5</span> <span class="op">&lt;-</span> <span class="va">base_prompt</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="answer_as_json.html">answer_as_json</a></span><span class="op">(</span><span class="va">json_schema</span>, type <span class="op">=</span> <span class="st">"auto"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="fu"><a href="llm_provider_openai.html">llm_provider_openai</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># --- Sending request to LLM provider (gpt-4o-mini): ---</span></span></span>
+<span class="r-in"><span>  <span class="co"># How can I solve 8x + 7 = -23?</span></span></span>
+<span class="r-in"><span>  <span class="co"># --- Receiving response from LLM provider: ---</span></span></span>
+<span class="r-in"><span>  <span class="co"># {"steps":[</span></span></span>
+<span class="r-in"><span>  <span class="co"># {"explanation":"Start with the original equation.",</span></span></span>
+<span class="r-in"><span>  <span class="co"># "output":"8x + 7 = -23"},</span></span></span>
+<span class="r-in"><span>  <span class="co"># {"explanation":"Subtract 7 from both sides to isolate the term with x.",</span></span></span>
+<span class="r-in"><span>  <span class="co"># "output":"8x + 7 - 7 = -23 - 7"},</span></span></span>
+<span class="r-in"><span>  <span class="co"># {"explanation":"Simplify the left side and the right side of the equation.",</span></span></span>
+<span class="r-in"><span>  <span class="co"># "output":"8x = -30"},</span></span></span>
+<span class="r-in"><span>  <span class="co"># {"explanation":"Now, divide both sides by 8 to solve for x.",</span></span></span>
+<span class="r-in"><span>  <span class="co"># "output":"x = -30 / 8"},</span></span></span>
+<span class="r-in"><span>  <span class="co"># {"explanation":"Simplify the fraction by dividing both the numerator and the</span></span></span>
+<span class="r-in"><span>  <span class="co"># denominator by 2.",</span></span></span>
+<span class="r-in"><span>  <span class="co"># "output":"x = -15 / 4"}</span></span></span>
+<span class="r-in"><span>  <span class="co"># ], "final_answer":"x = -15/4"}</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
