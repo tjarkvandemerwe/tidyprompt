@@ -16,7 +16,7 @@ resource_files:
 library(tidyprompt)
 ```
 
-### Setup an LLM provider
+## Setup an LLM provider
 
 'tidyprompt' can be used with any LLM provider capable of completing a chat.
 
@@ -54,7 +54,7 @@ openrouter <- llm_provider_openrouter(
 #   of the OpenAI API for chat completion, you can use llm_provider_openai()
 ```
 
-### Basic prompting
+## Basic prompting
 
 A simple string serves as the base for a prompt.
 
@@ -102,9 +102,9 @@ You can also construct the final prompt text, without sending it to an LLM provi
 #> Use 'get_prompt_wraps(x)' to show the prompt wraps.
 ```
 
-## Types of prompt wraps
+## Prompt wraps
 
-This package contains three main families of prompt wraps which affect
+This package contains three main families of pre-built prompt wraps which affect
 how a LLM handles a prompt:
 
 - `answer_as`: specify the **format** of the output (e.g., integer, list, json)
@@ -233,9 +233,9 @@ function then ensures only the final answer is returned.
 #> [1] 4
 ```
 
-### answer_using: Tools and code
+### answer_using: Have the LLM work with tools and code
 
-#### Giving tools to the LLM (autonomous function-calling)
+#### Tools (function-calling)
 
 With `answer_using_tools()`, you can enable your LLM to call R functions.
 This enables the LLM to autonomously retrieve additional information or take other actions.
@@ -351,7 +351,7 @@ plot
 ```
 ![plot](../man/figures/answer_using_r1-1.png)
 
-### Creating your own prompt wraps
+### Creating custom prompt wraps
 
 See `prompt_wrap()` and the '[Creating prompt wraps](creating_prompt_wraps.html)'
 vignette for information on how to create your own prompt wraps.
