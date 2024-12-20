@@ -81,15 +81,11 @@ on a separate line.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">named_vector</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">10</span>, y <span class="op">=</span> <span class="fl">20</span>, z <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">vector_list_to_string</span><span class="op">(</span><span class="va">named_vector</span>, how <span class="op">=</span> <span class="st">"inline"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> x: 10, y: 20, z: 30</span>
+<span class="r-in"><span><span class="fu">vector_list_to_string</span><span class="op">(</span><span class="va">named_vector</span>, how <span class="op">=</span> <span class="st">"inline"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "x: 10, y: 20, z: 30"</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">vector_list_to_string</span><span class="op">(</span><span class="va">named_vector</span>, how <span class="op">=</span> <span class="st">"expanded"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> x: 10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> y: 20</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> z: 30</span>
+<span class="r-in"><span><span class="fu">vector_list_to_string</span><span class="op">(</span><span class="va">named_vector</span>, how <span class="op">=</span> <span class="st">"expanded"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "x: 10\ny: 20\nz: 30"</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
