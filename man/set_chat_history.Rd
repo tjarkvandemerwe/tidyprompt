@@ -2,7 +2,7 @@
 % Please edit documentation in R/tidyprompt.R
 \name{set_chat_history}
 \alias{set_chat_history}
-\title{Set the chat history for \linkS4class{tidyprompt} object}
+\title{Set the chat history}
 \usage{
 set_chat_history(x, chat_history)
 }
@@ -79,7 +79,7 @@ prompt_text <- prompt$construct_prompt_text()
 # Alternative:
 prompt_text <- construct_prompt_text(prompt)
 
-# Configure chat history (affecting also the base prompt)
+# Set chat history (affecting also the base prompt)
 chat_history <- data.frame(
   role = c("user", "assistant", "user"),
   content = c("What is 5 + 5?", "10", "And what is 5 + 6?")

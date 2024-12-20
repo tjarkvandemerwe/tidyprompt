@@ -45,7 +45,6 @@ Make LLM answer as a constrained text response
   # A type of AI that processes and generates human-like text.
   # [1] "A type of AI that processes and generates human-like text."
 }
-
 }
 \seealso{
 Other pre_built_prompt_wraps: 

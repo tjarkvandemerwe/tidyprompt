@@ -11,5 +11,3 @@
   #   NO ANSWER
   # NULL
 }
-
-

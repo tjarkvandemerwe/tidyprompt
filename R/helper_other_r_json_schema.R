@@ -1,8 +1,8 @@
 #' Generate an example object from a JSON schema
 #'
 #' This function generates an example JSON object from a JSON schema.
-#' This is called when providing a schema to 'answer_as_json()'
-#' with 'schema_in_prompt_as = "example"' and type = 'text-based'/'ollama'.
+#' This is used when enforcing a JSON schema through text-based handling
+#' (requiring an example to be added to the prompt text).
 #'
 #' @param schema A list (R object) representing a JSON schema
 #'

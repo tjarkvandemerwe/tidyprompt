@@ -51,7 +51,7 @@ prompt_text <- prompt$construct_prompt_text()
 # Alternative:
 prompt_text <- construct_prompt_text(prompt)
 
-# Configure chat history (affecting also the base prompt)
+# Set chat history (affecting also the base prompt)
 chat_history <- data.frame(
   role = c("user", "assistant", "user"),
   content = c("What is 5 + 5?", "10", "And what is 5 + 6?")

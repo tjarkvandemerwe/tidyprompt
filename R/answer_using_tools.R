@@ -970,10 +970,9 @@ gd_parse_help_text <- function(help_text) {
 #' supported
 #'
 #' @return A list (R object) representing a JSON schema for the function
-#' @export
 #'
-#' @example inst/examples/answer_using_tools.R
-#' @family tools
+#' @noRd
+#' @keywords internal
 tools_docs_to_r_json_schema <- function(
     docs,
     all_required = TRUE,
@@ -1120,10 +1119,9 @@ tools_docs_to_r_json_schema <- function(
 #' @param with_arguments Logical indicating whether to include arguments in the text
 #'
 #' @return A string with the arguments formatted as text
-#' @export
 #'
-#' @example inst/examples/answer_using_tools.R
-#' @family tools
+#' @noRd
+#' @keywords internal
 tools_docs_to_text <- function(docs, with_arguments = TRUE) {
 
   # Internal helper function to process arguments

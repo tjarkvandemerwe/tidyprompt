@@ -45,7 +45,6 @@ Make LLM answer as a boolean (TRUE or FALSE)
   #   TRUE
   # [1] TRUE
 }
-
 }
 \seealso{
 Other pre_built_prompt_wraps: 

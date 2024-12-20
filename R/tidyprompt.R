@@ -449,7 +449,7 @@ construct_prompt_text <- function(x, llm_provider = NULL) {
 
 
 #' @title
-#' Set the chat history for [tidyprompt-class] object
+#' Set the chat history
 #'
 #' @description
 #' This function sets the chat history for a [tidyprompt-class] object.
