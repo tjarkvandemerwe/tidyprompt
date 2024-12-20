@@ -115,7 +115,12 @@ answer_as_json <- function(
       if (is.null(schema))
         return(list(format = "json"))
 
+      if ("schema" %in% names(schema)) {
+        schema <- schema$schema
+      }
+
       schema$strict <- schema_strict
+
       return(list(format = schema))
     }
 
@@ -123,11 +128,25 @@ answer_as_json <- function(
       if (is.null(schema))
         return(list(response_format = list(type = "json_object")))
 
+      json_schema <- list() # Top level schema
+      # Should contain:
+      # - name
+      # - description (optional)
+      # - schema
+      # - strict
 
-      schema$strict <- schema_strict
+      if (all("name" %in% names(schema), "schema" %in% names(schema))) {
+        json_schema <- schema
+      } else {
+        son_schema$name <- "schema"
+        json_schema$schema <- schema
+      }
+
+      json_schema$strict <- schema_strict
+
       return(list(response_format = list(
         type = "json_schema",
-        json_schema = list(name = "schema", schema = schema)
+        json_schema = json_schema
       )))
     }
 
