@@ -78,7 +78,8 @@ This may sometimes affect the prompt text construction</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="tidyprompt.html">tidyprompt</a></span><span class="op">(</span><span class="st">"Hi!"</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">prompt</span> <span class="op">&lt;-</span> <span class="fu"><a href="tidyprompt.html">tidyprompt</a></span><span class="op">(</span><span class="st">"Hi!"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">prompt</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">&lt;tidyprompt&gt;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">The base prompt is not modified by prompt wraps:</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">&gt; </span>Hi! </span>
@@ -87,8 +88,9 @@ This may sometimes affect the prompt text construction</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Add to a tidyprompt using a prompt wrap:</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="tidyprompt.html">tidyprompt</a></span><span class="op">(</span><span class="st">"Hi!"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span><span class="va">prompt</span> <span class="op">&lt;-</span> <span class="fu"><a href="tidyprompt.html">tidyprompt</a></span><span class="op">(</span><span class="st">"Hi!"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="add_text.html">add_text</a></span><span class="op">(</span><span class="st">"How are you?"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">prompt</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">&lt;tidyprompt&gt;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">The base prompt is modified by a prompt wrap, resulting in:</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">&gt; </span>Hi!</span>
@@ -101,17 +103,8 @@ This may sometimes affect the prompt text construction</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Strings can be input for prompt wraps; therefore,</span></span></span>
 <span class="r-in"><span><span class="co">#   a call to tidyprompt() is not necessary:</span></span></span>
-<span class="r-in"><span><span class="st">"Hi"</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span><span class="va">prompt</span> <span class="op">&lt;-</span> <span class="st">"Hi"</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="add_text.html">add_text</a></span><span class="op">(</span><span class="st">"How are you?"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">&lt;tidyprompt&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">The base prompt is modified by a prompt wrap, resulting in:</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">&gt; </span>Hi</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">&gt; </span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">&gt; </span>How are you? </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">Use 'x$base_prompt' to show the base prompt text.</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">Use 'x$construct_prompt_text()' to get the full prompt text.</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">Use 'get_prompt_wraps(x)' to show the prompt wraps.</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example of adding extraction &amp; validation with a prompt_wrap():</span></span></span>
 <span class="r-in"><span><span class="va">prompt</span> <span class="op">&lt;-</span> <span class="st">"Hi"</span> <span class="op">|&gt;</span></span></span>
@@ -142,106 +135,17 @@ This may sometimes affect the prompt text construction</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Get base prompt text</span></span></span>
-<span class="r-in"><span><span class="va">prompt</span><span class="op">$</span><span class="va">base_prompt</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Hi"</span>
+<span class="r-in"><span><span class="va">base_prompt</span> <span class="op">&lt;-</span> <span class="va">prompt</span><span class="op">$</span><span class="va">base_prompt</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Get all prompt wraps</span></span></span>
-<span class="r-in"><span><span class="va">prompt</span><span class="op">$</span><span class="fu">get_prompt_wraps</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $type</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "unspecified"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $modify_fn</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> function (original_prompt_text, llm_provider = NULL, http_list = NULL) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> {</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     if (position == "after") {</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         paste(original_prompt_text, text, sep = sep)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     else {</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         paste(text, original_prompt_text, sep = sep)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x562d87257f58&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $extraction_fn</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $validation_fn</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $handler_fn</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $parameter_fn</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $name</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "add_text"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"class")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "prompt_wrap"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [[2]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $type</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "unspecified"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $modify_fn</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> function (original_prompt_text, llm_provider = NULL, http_list = NULL) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> {</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     if (!add_instruction_to_prompt) {</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         return(original_prompt_text)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     glue::glue("{original_prompt_text}\n\n{instruction}")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x562d87259468&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $extraction_fn</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> function (x, llm_provider = NULL, http_list = NULL) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> {</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     extracted &lt;- suppressWarnings(as.numeric(x))</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     if (is.na(extracted)) {</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         return(llm_feedback(instruction))</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     return(extracted)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x562d8725b4d8&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $validation_fn</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> function (x, llm_provider = NULL, http_list = NULL) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> {</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     if (x != floor(x)) {</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         return(llm_feedback(instruction))</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     if (!is.null(min) &amp;&amp; x &lt; min) {</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         return(llm_feedback(glue::glue("The number should be greater than or equal to {min}.")))</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     if (!is.null(max) &amp;&amp; x &gt; max) {</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         return(llm_feedback(glue::glue("The number should be less than or equal to {max}.")))</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     return(TRUE)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x562d8725d580&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $handler_fn</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $parameter_fn</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $name</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "answer_as_integer"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"class")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "prompt_wrap"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span><span class="va">prompt_wraps</span> <span class="op">&lt;-</span> <span class="va">prompt</span><span class="op">$</span><span class="fu">get_prompt_wraps</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Alternative:</span></span></span>
+<span class="r-in"><span><span class="va">prompt_wraps</span> <span class="op">&lt;-</span> <span class="fu"><a href="get_prompt_wraps.html">get_prompt_wraps</a></span><span class="op">(</span><span class="va">prompt</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Construct prompt text</span></span></span>
-<span class="r-in"><span><span class="va">prompt</span><span class="op">$</span><span class="fu">construct_prompt_text</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hi</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> What is 5 + 5?</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> You must answer with only an integer (use no other characters).</span>
+<span class="r-in"><span><span class="va">prompt_text</span> <span class="op">&lt;-</span> <span class="va">prompt</span><span class="op">$</span><span class="fu">construct_prompt_text</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Alternative:</span></span></span>
+<span class="r-in"><span><span class="va">prompt_text</span> <span class="op">&lt;-</span> <span class="fu">construct_prompt_text</span><span class="op">(</span><span class="va">prompt</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Configure chat history (affecting also the base prompt)</span></span></span>
 <span class="r-in"><span><span class="va">chat_history</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
@@ -251,13 +155,7 @@ This may sometimes affect the prompt text construction</p></dd>
 <span class="r-in"><span><span class="va">prompt</span><span class="op">$</span><span class="fu">set_chat_history</span><span class="op">(</span><span class="va">chat_history</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Get chat history</span></span></span>
-<span class="r-in"><span><span class="va">prompt</span><span class="op">$</span><span class="fu">get_chat_history</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 3 × 3</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   role      content                                                  tool_result</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                                    <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> user      <span style="color: #949494;">"</span>What is 5 + 5?<span style="color: #949494;">"</span>                                         FALSE      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> assistant <span style="color: #949494;">"</span>10<span style="color: #949494;">"</span>                                                     FALSE      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> user      <span style="color: #949494;">"</span>And what is 5 + 6?\n\nWhat is 5 + 5?\n\nYou must answe… <span style="color: #BB0000;">NA</span>         </span>
+<span class="r-in"><span><span class="va">chat_history</span> <span class="op">&lt;-</span> <span class="va">prompt</span><span class="op">$</span><span class="fu">get_chat_history</span><span class="op">(</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
