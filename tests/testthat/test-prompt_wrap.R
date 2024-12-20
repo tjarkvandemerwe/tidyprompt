@@ -19,3 +19,20 @@ test_that("can add prompt wraps of all types and they are ordered correctly", {
   types_in_order_eval <- sapply(wraps_eval, function(x) x$type)
   expect_equal(types_in_order_eval, c("tool", "mode", "break", "unspecified", "check"))
 })
+
+test_that("handler fn works", {
+  skip_test_if_no_ollama()
+
+  fake <- llm_provider_fake()
+
+  result <- "Hi" |>
+    prompt_wrap(
+      handler_fn = function(response, llm_provider) {
+        response$completed$content[nrow(response$completed)] <- "beepido boop ba"
+        return(response)
+      }
+    ) |>
+    send_prompt(fake)
+
+  expect_identical(result, "beepido boop ba")
+})
