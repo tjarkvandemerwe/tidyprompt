@@ -69,9 +69,9 @@
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/tjarkvandemerwe/tidyprompt" class="external-link">tidyprompt</a></span><span class="op">)</span></span></code></pre></div>
-<div class="section level3">
-<h3 id="setup-an-llm-provider">Setup an LLM provider<a class="anchor" aria-label="anchor" href="#setup-an-llm-provider"></a>
-</h3>
+<div class="section level2">
+<h2 id="setup-an-llm-provider">Setup an LLM provider<a class="anchor" aria-label="anchor" href="#setup-an-llm-provider"></a>
+</h2>
 <p>‘tidyprompt’ can be used with any LLM provider capable of completing
 a chat.</p>
 <p>At the moment, ‘tidyprompt’ includes pre-built functions to connect
@@ -106,9 +106,9 @@ change the relevant parameters (like the URL and the API key).</p>
 <span><span class="co">#   llm_provider_ollama() and llm_provider_openai(). For APIs that follow the structure</span></span>
 <span><span class="co">#   of the OpenAI API for chat completion, you can use llm_provider_openai()</span></span></code></pre></div>
 </div>
-<div class="section level3">
-<h3 id="basic-prompting">Basic prompting<a class="anchor" aria-label="anchor" href="#basic-prompting"></a>
-</h3>
+<div class="section level2">
+<h2 id="basic-prompting">Basic prompting<a class="anchor" aria-label="anchor" href="#basic-prompting"></a>
+</h2>
 <p>A simple string serves as the base for a prompt.</p>
 <p>By adding prompt wraps, you can influence various aspects of how the
 LLM handles the prompt, while verifying that the output is structured
@@ -149,10 +149,10 @@ an LLM provider.</p>
 <span><span class="co">#&gt; Use 'get_prompt_wraps(x)' to show the prompt wraps.</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="types-of-prompt-wraps">Types of prompt wraps<a class="anchor" aria-label="anchor" href="#types-of-prompt-wraps"></a>
+<h2 id="prompt-wraps">Prompt wraps<a class="anchor" aria-label="anchor" href="#prompt-wraps"></a>
 </h2>
-<p>This package contains three main families of prompt wraps which
-affect how a LLM handles a prompt:</p>
+<p>This package contains three main families of pre-built prompt wraps
+which affect how a LLM handles a prompt:</p>
 <ul>
 <li>
 <code>answer_as</code>: specify the <strong>format</strong> of the
@@ -284,10 +284,10 @@ the final answer is returned.</final></p>
 <span><span class="co">#&gt; [1] 4</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="answer_using-tools-and-code">answer_using: Tools and code<a class="anchor" aria-label="anchor" href="#answer_using-tools-and-code"></a>
+<h3 id="answer_using-have-the-llm-work-with-tools-and-code">answer_using: Have the LLM work with tools and code<a class="anchor" aria-label="anchor" href="#answer_using-have-the-llm-work-with-tools-and-code"></a>
 </h3>
 <div class="section level4">
-<h4 id="giving-tools-to-the-llm-autonomous-function-calling">Giving tools to the LLM (autonomous function-calling)<a class="anchor" aria-label="anchor" href="#giving-tools-to-the-llm-autonomous-function-calling"></a>
+<h4 id="tools-function-calling">Tools (function-calling)<a class="anchor" aria-label="anchor" href="#tools-function-calling"></a>
 </h4>
 <p>With <code><a href="../reference/answer_using_tools.html">answer_using_tools()</a></code>, you can enable your LLM to
 call R functions. This enables the LLM to autonomously retrieve
@@ -406,7 +406,7 @@ used to formulate a final answer.</p>
 </div>
 </div>
 <div class="section level3">
-<h3 id="creating-your-own-prompt-wraps">Creating your own prompt wraps<a class="anchor" aria-label="anchor" href="#creating-your-own-prompt-wraps"></a>
+<h3 id="creating-custom-prompt-wraps">Creating custom prompt wraps<a class="anchor" aria-label="anchor" href="#creating-custom-prompt-wraps"></a>
 </h3>
 <p>See <code><a href="../reference/prompt_wrap.html">prompt_wrap()</a></code> and the ‘<a href="creating_prompt_wraps.html">Creating prompt wraps</a>’ vignette
 for information on how to create your own prompt wraps.</p>
