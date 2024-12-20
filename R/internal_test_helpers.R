@@ -59,7 +59,7 @@ skip_test_if_no_ollama <- function(do_not_run = FALSE) {
 #'
 #' @noRd
 #' @keywords internal
-skip_test_if_no_openai() <- function(do_not_run = FALSE, model = "gpt-4o-mini") {
+skip_test_if_no_openai <- function(do_not_run = FALSE, model = "gpt-4o-mini") {
   if (do_not_run) {
     return(testthat::skip("skip test: Skipping test even if OpenAI is available"))
   }
