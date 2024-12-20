@@ -197,22 +197,6 @@ system; you must use this function with caution.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span>  <span class="co"># Prompt to plot object in R</span></span></span>
-<span class="r-in"><span>  <span class="va">plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="st">"Create a scatter plot of miles per gallon (mpg) versus"</span>,</span></span>
-<span class="r-in"><span>    <span class="st">" horsepower (hp) for the cars in my data."</span>,</span></span>
-<span class="r-in"><span>    <span class="st">" Use different colors to represent the number of cylinders (cyl)."</span>,</span></span>
-<span class="r-in"><span>    <span class="st">" Be very creative and make the plot look nice but also a little crazy!"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>    <span class="fu">answer_using_r</span><span class="op">(</span></span></span>
-<span class="r-in"><span>      pkgs_to_use <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ggplot2"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>      objects_to_use <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mtcars <span class="op">=</span> <span class="va">mtcars</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>      evaluate_code <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>      return_mode <span class="op">=</span> <span class="st">"object"</span></span></span>
-<span class="r-in"><span>    <span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="fu"><a href="llm_provider_openai.html">llm_provider_openai</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">plot</span></span></span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="co"># Prompt to value calculated with R</span></span></span>
 <span class="r-in"><span>  <span class="va">avg_miles_per_gallon</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="st">"Using my data,"</span>,</span></span>
@@ -225,7 +209,7 @@ system; you must use this function with caution.</p>
 <span class="r-in"><span>      evaluate_code <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>      output_as_tool <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span>    <span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="fu"><a href="llm_provider_ollama.html">llm_provider_ollama</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="va">avg_miles_per_gallon</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="co"># Prompt to linear model object in R</span></span></span>
@@ -245,8 +229,24 @@ system; you must use this function with caution.</p>
 <span class="r-in"><span>        <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></span>
 <span class="r-in"><span>      <span class="op">}</span></span></span>
 <span class="r-in"><span>    <span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="fu"><a href="llm_provider_ollama.html">llm_provider_ollama</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># Prompt to plot object in R</span></span></span>
+<span class="r-in"><span>  <span class="va">plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="st">"Create a scatter plot of miles per gallon (mpg) versus"</span>,</span></span>
+<span class="r-in"><span>    <span class="st">" horsepower (hp) for the cars in my data."</span>,</span></span>
+<span class="r-in"><span>    <span class="st">" Use different colors to represent the number of cylinders (cyl)."</span>,</span></span>
+<span class="r-in"><span>    <span class="st">" Be very creative and make the plot look nice but also a little crazy!"</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>    <span class="fu">answer_using_r</span><span class="op">(</span></span></span>
+<span class="r-in"><span>      pkgs_to_use <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ggplot2"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>      objects_to_use <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mtcars <span class="op">=</span> <span class="va">mtcars</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>      evaluate_code <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>      return_mode <span class="op">=</span> <span class="st">"object"</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">plot</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

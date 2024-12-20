@@ -144,7 +144,6 @@ that the LLM will use SQL to answer the prompt</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="co"># Create an in-memory SQLite database</span></span></span>
 <span class="r-in"><span>  <span class="va">conn</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">RSQLite</span><span class="fu">::</span><span class="fu">SQLite</span><span class="op">(</span><span class="op">)</span>, <span class="st">":memory:"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
@@ -203,6 +202,46 @@ that the LLM will use SQL to answer the prompt</p>
 <span class="r-in"><span>      output_as_tool <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span>    <span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="fu"><a href="llm_provider_openai.html">llm_provider_openai</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># --- Sending request to LLM provider (gpt-4o-mini): ---</span></span></span>
+<span class="r-in"><span>  <span class="co"># Where are my customers from?</span></span></span>
+<span class="r-in"><span>  <span class="co">#</span></span></span>
+<span class="r-in"><span>  <span class="co"># You must code in SQL to answer this prompt. You must provide all SQL code</span></span></span>
+<span class="r-in"><span>  <span class="co"># between ```sql and ```.</span></span></span>
+<span class="r-in"><span>  <span class="co">#</span></span></span>
+<span class="r-in"><span>  <span class="co"># Never make assumptions about the possible values in the tables.</span></span></span>
+<span class="r-in"><span>  <span class="co"># Instead, execute SQL queries to retrieve information you need.</span></span></span>
+<span class="r-in"><span>  <span class="co">#</span></span></span>
+<span class="r-in"><span>  <span class="co"># These tables are available in the database:</span></span></span>
+<span class="r-in"><span>  <span class="co">#   customers, orders</span></span></span>
+<span class="r-in"><span>  <span class="co">#</span></span></span>
+<span class="r-in"><span>  <span class="co"># Table descriptions:</span></span></span>
+<span class="r-in"><span>  <span class="co">#   - customers</span></span></span>
+<span class="r-in"><span>  <span class="co"># Columns: id, name, email, country</span></span></span>
+<span class="r-in"><span>  <span class="co">#</span></span></span>
+<span class="r-in"><span>  <span class="co"># - orders</span></span></span>
+<span class="r-in"><span>  <span class="co"># Columns: order_id, customer_id, product, amount, order_date</span></span></span>
+<span class="r-in"><span>  <span class="co">#</span></span></span>
+<span class="r-in"><span>  <span class="co"># Your SQL query will be executed on the database. The results will be sent back</span></span></span>
+<span class="r-in"><span>  <span class="co"># to you. After seeing the results, you can either provide a final answer or try</span></span></span>
+<span class="r-in"><span>  <span class="co"># another SQL query. When you provide your final answer, do not include any SQL code.</span></span></span>
+<span class="r-in"><span>  <span class="co"># --- Receiving response from LLM provider: ---</span></span></span>
+<span class="r-in"><span>  <span class="co"># ```sql</span></span></span>
+<span class="r-in"><span>  <span class="co"># SELECT DISTINCT country FROM customers;</span></span></span>
+<span class="r-in"><span>  <span class="co"># ```</span></span></span>
+<span class="r-in"><span>  <span class="co"># --- Sending request to LLM provider (gpt-4o-mini): ---</span></span></span>
+<span class="r-in"><span>  <span class="co"># --- SQL code: ---</span></span></span>
+<span class="r-in"><span>  <span class="co"># SELECT DISTINCT country FROM customers;</span></span></span>
+<span class="r-in"><span>  <span class="co">#</span></span></span>
+<span class="r-in"><span>  <span class="co"># --- Query results: ---</span></span></span>
+<span class="r-in"><span>  <span class="co">#   country</span></span></span>
+<span class="r-in"><span>  <span class="co"># 1     USA</span></span></span>
+<span class="r-in"><span>  <span class="co"># 2  Canada</span></span></span>
+<span class="r-in"><span>  <span class="co"># 3      UK</span></span></span>
+<span class="r-in"><span>  <span class="co"># --- Receiving response from LLM provider: ---</span></span></span>
+<span class="r-in"><span>  <span class="co"># Based on the query results, your customers are from the following countries:</span></span></span>
+<span class="r-in"><span>  <span class="co"># USA, Canada, and UK.</span></span></span>
+<span class="r-in"><span>  <span class="co"># [1] "Based on the query results, your customers are from the following countries:</span></span></span>
+<span class="r-in"><span>  <span class="co"># USA, Canada, and UK."</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

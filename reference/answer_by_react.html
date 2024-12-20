@@ -136,42 +136,42 @@ ReAct: Synergizing Reasoning and Acting in Language Models.
 <span class="r-in"><span>  <span class="st">"What is 5 + 5?"</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>    <span class="fu">answer_by_react</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="answer_as_integer.html">answer_as_integer</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="fu"><a href="llm_provider_ollama.html">llm_provider_ollama</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="send_prompt.html">send_prompt</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="co"># --- Sending request to LLM provider (llama3.1:8b): ---</span></span></span>
-<span class="r-in"><span>  <span class="co">#   You are given a user's prompt.</span></span></span>
-<span class="r-in"><span>  <span class="co">#   To answer the user's prompt, you need to think step by step,</span></span></span>
-<span class="r-in"><span>  <span class="co">#   take an action if needed, and then return a final answer.</span></span></span>
+<span class="r-in"><span>  <span class="co"># You are given a user's prompt.</span></span></span>
+<span class="r-in"><span>  <span class="co"># To answer the user's prompt, you need to think step by step,</span></span></span>
+<span class="r-in"><span>  <span class="co"># take an action if needed, and then return a final answer.</span></span></span>
 <span class="r-in"><span>  <span class="co">#</span></span></span>
-<span class="r-in"><span>  <span class="co">#   ----- START OF USER'S PROMPT -----</span></span></span>
-<span class="r-in"><span>  <span class="co">#   What is 5 + 5?</span></span></span>
+<span class="r-in"><span>  <span class="co"># ----- START OF USER'S PROMPT -----</span></span></span>
+<span class="r-in"><span>  <span class="co"># What is 5 + 5?</span></span></span>
 <span class="r-in"><span>  <span class="co">#</span></span></span>
-<span class="r-in"><span>  <span class="co">#   You must answer with only an integer (use no other characters).</span></span></span>
-<span class="r-in"><span>  <span class="co">#   ----- END OF USER'S PROMPT -----</span></span></span>
+<span class="r-in"><span>  <span class="co"># You must answer with only an integer (use no other characters).</span></span></span>
+<span class="r-in"><span>  <span class="co"># ----- END OF USER'S PROMPT -----</span></span></span>
 <span class="r-in"><span>  <span class="co">#</span></span></span>
-<span class="r-in"><span>  <span class="co">#   Use the following structure:</span></span></span>
-<span class="r-in"><span>  <span class="co">#     Thought: &lt;describe your thought process&gt;</span></span></span>
-<span class="r-in"><span>  <span class="co">#     Action: &lt;if needed, describe the action you take (e.g., look up information)&gt;</span></span></span>
-<span class="r-in"><span>  <span class="co">#     Observation: &lt;describe the result or observation from the action&gt;</span></span></span>
-<span class="r-in"><span>  <span class="co">#   (Repeat Thought -&gt; Action -&gt; Observation as necessary)</span></span></span>
+<span class="r-in"><span>  <span class="co"># Use the following structure:</span></span></span>
+<span class="r-in"><span>  <span class="co">#   Thought: &lt;describe your thought process&gt;</span></span></span>
+<span class="r-in"><span>  <span class="co">#   Action: &lt;if needed, describe the action you take (e.g., look up information)&gt;</span></span></span>
+<span class="r-in"><span>  <span class="co">#   Observation: &lt;describe the result or observation from the action&gt;</span></span></span>
+<span class="r-in"><span>  <span class="co"># (Repeat Thought -&gt; Action -&gt; Observation as necessary)</span></span></span>
 <span class="r-in"><span>  <span class="co">#</span></span></span>
-<span class="r-in"><span>  <span class="co">#   When you are done, you must type:</span></span></span>
+<span class="r-in"><span>  <span class="co"># When you are done, you must type:</span></span></span>
 <span class="r-in"><span>  <span class="co">#   FINISH[&lt;put here your final answer to the user's prompt&gt;]</span></span></span>
 <span class="r-in"><span>  <span class="co">#</span></span></span>
-<span class="r-in"><span>  <span class="co">#   Ensure your final answer aligns with your reasoning and observations.</span></span></span>
+<span class="r-in"><span>  <span class="co"># Ensure your final answer aligns with your reasoning and observations.</span></span></span>
 <span class="r-in"><span>  <span class="co"># --- Receiving response from LLM provider: ---</span></span></span>
-<span class="r-in"><span>  <span class="co">#   Thought: The problem is asking for the sum of two numbers, 5 and 5.</span></span></span>
+<span class="r-in"><span>  <span class="co"># Thought: The problem is asking for the sum of two numbers, 5 and 5.</span></span></span>
 <span class="r-in"><span>  <span class="co">#</span></span></span>
-<span class="r-in"><span>  <span class="co">#   Action: None needed, as this is a simple arithmetic operation that can be performed mentally.</span></span></span>
+<span class="r-in"><span>  <span class="co"># Action: None needed, as this is a simple arithmetic operation that can be performed mentally.</span></span></span>
 <span class="r-in"><span>  <span class="co">#</span></span></span>
-<span class="r-in"><span>  <span class="co">#   Observation: I can easily add these two numbers together in my mind to get the result.</span></span></span>
+<span class="r-in"><span>  <span class="co"># Observation: I can easily add these two numbers together in my mind to get the result.</span></span></span>
 <span class="r-in"><span>  <span class="co">#</span></span></span>
-<span class="r-in"><span>  <span class="co">#   Thought: To find the sum, I will simply add the two numbers together: 5 + 5 = ?</span></span></span>
+<span class="r-in"><span>  <span class="co"># Thought: To find the sum, I will simply add the two numbers together: 5 + 5 = ?</span></span></span>
 <span class="r-in"><span>  <span class="co">#</span></span></span>
-<span class="r-in"><span>  <span class="co">#   Action: Perform the addition.</span></span></span>
+<span class="r-in"><span>  <span class="co"># Action: Perform the addition.</span></span></span>
 <span class="r-in"><span>  <span class="co">#</span></span></span>
-<span class="r-in"><span>  <span class="co">#   Observation: The result of adding 5 and 5 is 10.</span></span></span>
+<span class="r-in"><span>  <span class="co"># Observation: The result of adding 5 and 5 is 10.</span></span></span>
 <span class="r-in"><span>  <span class="co">#</span></span></span>
-<span class="r-in"><span>  <span class="co">#   FINISH[10]</span></span></span>
+<span class="r-in"><span>  <span class="co"># FINISH[10]</span></span></span>
 <span class="r-in"><span>  <span class="co"># [1] 10</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
