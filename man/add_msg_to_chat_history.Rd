@@ -105,7 +105,8 @@ chat_from_df
   prompt$set_chat_history(chat_history_with_new_message)
 
   # send_prompt() also accepts a chat history as input:
-  send_prompt(chat_history_with_new_message, return_mode = "full")
+  new_result <- chat_history_with_new_message |>
+    send_prompt(return_mode = "full")
 
   # You can also create a persistent chat history object from
   #   a chat history data frame; see ?`persistent_chat-class`
