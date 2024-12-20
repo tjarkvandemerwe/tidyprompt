@@ -58,8 +58,8 @@ better in terms of accuracy and efficiency. 'tidyprompt' may support
 #   suitable documentation may be available in the form of help files:
 \dontrun{
   "What are the files in my current directory?" |>
-    answer_using_tools(list.files) |>
-    send_prompt(llm_provider_openai())
+    answer_using_tools(dir) |>
+    send_prompt()
 }
 
 # Below it is shown how to use custom functions and how to override
@@ -111,7 +111,7 @@ prompt <- "Hi, what is the weather in Enschede? Give me Celcius degrees" |>
 
 \dontrun{
   prompt |>
-    send_prompt(llm_provider_ollama())
+    send_prompt()
 }
 }
 \seealso{

@@ -33,7 +33,7 @@ base_prompt <- "How can I solve 8x + 7 = -23?"
   #   Adds request to prompt for a JSON object
   #   Extracts JSON from textual response (feedback for retry if no JSON received)
   #   Parses JSON to R object
-  json0 <- base_prompt |>
+  json_1 <- base_prompt |>
     answer_as_json() |>
     send_prompt(llm_provider_ollama())
   # --- Sending request to LLM provider (llama3.1:8b): ---
@@ -75,7 +75,7 @@ base_prompt <- "How can I solve 8x + 7 = -23?"
   #   - Sets 'format' parameter to 'json', enforcing JSON
   #   - Adds request to prompt for a JSON object, as is recommended by the docs
   #   - Parses JSON to R object
-  json1 <- base_prompt |>
+  json_2 <- base_prompt |>
     answer_as_json(type = "auto") |>
     send_prompt(llm_provider_ollama())
   # --- Sending request to LLM provider (llama3.1:8b): ---
@@ -96,7 +96,7 @@ base_prompt <- "How can I solve 8x + 7 = -23?"
   #   - Sets 'response_format' parameter to 'json_object', enforcing JSON
   #   - Adds request to prompt for a JSON object, as is required by the API
   #   - Parses JSON to R object
-  json2 <- base_prompt |>
+  json_3 <- base_prompt |>
     answer_as_json(type = "auto") |>
     send_prompt(llm_provider_openai())
   # --- Sending request to LLM provider (gpt-4o-mini): ---
@@ -170,7 +170,7 @@ r_json_schema_to_example(json_schema)
   #   - Extracts JSON from textual response (feedback for retry if no JSON received)
   #   - Validates JSON against schema with 'jsonvalidate' package (feedback for retry if invalid)
   #   - Parses JSON to R object
-  json3 <- base_prompt |>
+  json_4 <- base_prompt |>
     answer_as_json(schema = json_schema) |>
     send_prompt(llm_provider_ollama())
   # --- Sending request to LLM provider (llama3.1:8b): ---
@@ -223,7 +223,7 @@ r_json_schema_to_example(json_schema)
   #   - Adds request to prompt for a JSON object, as is recommended by the docs
   #   - Adds schema to prompt
   #   - Validates JSON against schema with 'jsonvalidate' package (feedback for retry if invalid)
-  json4 <- base_prompt |>
+  json_5 <- base_prompt |>
     answer_as_json(json_schema, type = "auto") |>
     send_prompt(llm_provider_ollama())
   # --- Sending request to LLM provider (llama3.1:8b): ---
@@ -269,7 +269,7 @@ r_json_schema_to_example(json_schema)
   #   - Sets 'response_format' parameter to 'json_object', enforcing JSON
   #   - Adds json_schema to the API request, API enforces JSON adhering schema
   #   - Parses JSON to R object
-  json5 <- base_prompt |>
+  json_6 <- base_prompt |>
     answer_as_json(json_schema, type = "auto") |>
     send_prompt(llm_provider_openai())
   # --- Sending request to LLM provider (gpt-4o-mini): ---

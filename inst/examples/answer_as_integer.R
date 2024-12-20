@@ -1,7 +1,7 @@
 \dontrun{
   "What is 5 + 5?" |>
     answer_as_integer() |>
-    send_prompt(llm_provider_ollama())
+    send_prompt()
   # --- Sending request to LLM provider (llama3.1:8b): ---
   #   What is 5 + 5?
   #

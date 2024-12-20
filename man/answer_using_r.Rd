@@ -101,22 +101,6 @@ system; you must use this function with caution.
 }
 \examples{
 \dontrun{
-  # Prompt to plot object in R
-  plot <- paste0(
-    "Create a scatter plot of miles per gallon (mpg) versus",
-    " horsepower (hp) for the cars in my data.",
-    " Use different colors to represent the number of cylinders (cyl).",
-    " Be very creative and make the plot look nice but also a little crazy!"
-  ) |>
-    answer_using_r(
-      pkgs_to_use = c("ggplot2"),
-      objects_to_use = list(mtcars = mtcars),
-      evaluate_code = TRUE,
-      return_mode = "object"
-    ) |>
-    send_prompt(llm_provider_openai())
-  plot
-
   # Prompt to value calculated with R
   avg_miles_per_gallon <- paste0(
     "Using my data,",
@@ -129,7 +113,7 @@ system; you must use this function with caution.
       evaluate_code = TRUE,
       output_as_tool = TRUE
     ) |>
-    send_prompt(llm_provider_ollama())
+    send_prompt()
   avg_miles_per_gallon
 
   # Prompt to linear model object in R
@@ -149,8 +133,24 @@ system; you must use this function with caution.
         return(x)
       }
     ) |>
-    send_prompt(llm_provider_ollama())
+    send_prompt()
   summary(model)
+
+  # Prompt to plot object in R
+  plot <- paste0(
+    "Create a scatter plot of miles per gallon (mpg) versus",
+    " horsepower (hp) for the cars in my data.",
+    " Use different colors to represent the number of cylinders (cyl).",
+    " Be very creative and make the plot look nice but also a little crazy!"
+  ) |>
+    answer_using_r(
+      pkgs_to_use = c("ggplot2"),
+      objects_to_use = list(mtcars = mtcars),
+      evaluate_code = TRUE,
+      return_mode = "object"
+    ) |>
+    send_prompt()
+  plot
 }
 }
 \seealso{

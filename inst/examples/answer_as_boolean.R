@@ -1,7 +1,7 @@
 \dontrun{
   "Are you a large language model?" |>
     answer_as_boolean() |>
-    send_prompt(llm_provider_ollama())
+    send_prompt()
   # --- Sending request to LLM provider (llama3.1:8b): ---
   #   Are you a large language model?
   #
