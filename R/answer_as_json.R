@@ -138,7 +138,7 @@ answer_as_json <- function(
       if (all("name" %in% names(schema), "schema" %in% names(schema))) {
         json_schema <- schema
       } else {
-        son_schema$name <- "schema"
+        json_schema$name <- "schema"
         json_schema$schema <- schema
       }
 
