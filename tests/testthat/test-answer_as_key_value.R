@@ -28,7 +28,7 @@ test_that("answer_as_key_value returns key-value pairs", {
 
   response <- "Provide the capitals of these countries: The Netherlands, France, Japan." |>
     answer_as_key_value(key_name = "country", value_name = "capital", list_mode = "comma") |>
-    send_prompt(ollama, verbose = FALSE)
+    send_prompt(ollama)
 
   expect_true(is.list(response))
   expect_equal(length(response), 3)

@@ -26,9 +26,12 @@ skip_test_if_no_ollama <- function(do_not_run = FALSE) {
   # Try performing the request and catch any errors
   ollama_running <- tryCatch(
     {
-      # Perform a GET request
-      httr2::req_perform(req)
-      TRUE # If the request succeeds, the server is running
+      resp <- httr2::req_perform(req)
+      if (resp$status_code == 200) {
+        TRUE
+      } else {
+        FALSE
+      }
     },
     error = function(e) {
       FALSE # If there's an error, assume the server is not running

@@ -518,7 +518,7 @@ tools_get_docs <- function(func, name = NULL) {
       is.null(docs$return$description) || (is.character(docs$return$description) & length(docs$return$description) == 1)
     )
   } else {
-    docs <- tools_generate_docs(name)
+    docs <- tools_generate_docs(name, func)
   }
 
   # Check that all formal arguments have documentation
@@ -570,29 +570,32 @@ tools_get_docs <- function(func, name = NULL) {
 #' when there is no documentation.#'
 #'
 #' @param name (string) A name of a function (e.g., 'list.files')
+#' @param func_object (function) A function object. If provided, the function
+#' object will be used instead of the function with the name 'name', when
+#' that cannot be obtained with 'get()'
 #'
 #' @return A list with documentation for the function
 #'
 #' @noRd
 #' @keywords internal
-tools_generate_docs <- function(name) {
+tools_generate_docs <- function(name, func_object = NULL) {
   # Get the package name and function
-  if (grepl("::", name)) {
-    # Extract function name and package name
-    func_name <- gsub(".*::", "", name)
-    package_name <- gsub("::.*", "", name)
-    func <- getExportedValue(package_name, func_name)
-  } else {
-    # Get the function and its package
-    func <- get(name, mode = "function")
-    package_env <- environment(func)
-    package_name <- environmentName(package_env)
+  func <- tryCatch(
+    get(name, mode = "function"),
+    error = function(e) {
+      NULL
+    }
+  )
+  if (is.null(func) & !is.null(func_object)) {
+    func <- func_object
   }
+  package_env <- environment(func)
+  package_name <- environmentName(package_env)
 
   # Get arguments, defaults, and likely types based on formals
   args <- gd_get_args_defaults_types(func)
 
-  if (package_name == "R_GlobalEnv") {
+  if (package_name == "R_GlobalEnv" | package_name == "") {
     help_file <- NULL
   } else {
     # Get the function's help file

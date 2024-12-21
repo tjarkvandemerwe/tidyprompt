@@ -117,32 +117,32 @@ answer_as_key_value <- function(
       }
 
       # Split each match into key and value
-      # Each element in pairs is something like "key: value"
-      # We can re-extract keys and values using a secondary pattern
       kv_pattern <- "^--\\s*([^:]+):\\s*(.*)$"
       keys <- stringr::str_replace(pairs, kv_pattern, "\\1") |> stringr::str_trim()
       vals <- stringr::str_replace(pairs, kv_pattern, "\\2") |> stringr::str_trim()
 
     } else if (list_mode == "comma") {
-      # For comma mode, pattern: "(\d+\.\s*([^:]+):\s*([^,]+))"
-      matches <- stringr::str_match_all(response, "\\d+\\.\\s*([^:]+):\\s*([^,\\n]+)")[[1]]
-      # matches is a matrix, second capture group is key, third is value
+      # For comma mode, we need to handle cases where there might be commas or periods
+      # Adjusted regex pattern to allow commas and periods at the end of the line
+      matches <- stringr::str_match_all(response, "\\d+\\.\\s*([^:]+):\\s*([^,\\n.]+)")[[1]]
       if (nrow(matches) == 0) {
         return(llm_feedback(glue::glue(
           "Could not parse any key-value pairs from your response.\n\n",
           "{list_instruction}"
         )))
       }
+
+      # Extract keys and values
       keys <- stringr::str_trim(matches[,2])
       vals <- stringr::str_trim(matches[,3])
     }
 
-    # Create a list of pairs
-    # We will ensure uniqueness by unique keys
+    # Create a data frame for the key-value pairs
     df <- data.frame(key = keys, value = vals, stringsAsFactors = FALSE)
-    # If uniqueness is required by the keys, we can do:
+    # Ensure uniqueness by key
     df <- df[!duplicated(df$key), ]
 
+    # Check if the number of unique items matches the expected count
     if (!is.null(n_unique_items) && nrow(df) != n_unique_items) {
       return(llm_feedback(glue::glue(
         "The number of unique key-value pairs should be {n_unique_items}.\n\n",

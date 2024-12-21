@@ -1,4 +1,4 @@
-test_that("ollama answer_as_json returns valid JSON", {
+test_that("answer_as_json (text-based) works with json schema", {
   skip_test_if_no_ollama()
 
   schema <- list(
@@ -40,7 +40,7 @@ test_that("ollama answer_as_json returns valid JSON", {
   r_json_schema_to_example(schema)
 
   response <- "Create a persona" |>
-    answer_as_json(schema, schema_strict = TRUE) |>
+    answer_as_json(schema, schema_strict = TRUE, type = "text-based") |>
     send_prompt(llm_provider_ollama())
 
   expect_true(is.list(response), info = "Response should be a list")
@@ -60,16 +60,22 @@ test_that("ollama answer_as_json returns valid JSON", {
   expect_true(is.numeric(response$age), info = "`age` should be numeric")
   expect_true(response$age >= 0, info = "`age` should be non-negative")
 
-  # Validate `gender`
+  # Validate `ge  nder`
   expect_true(is.character(response$gender), info = "`gender` should be a string")
-  expect_true(response$gender %in% c("Male", "Female", "Non-binary", "Other"),
-              info = "`gender` should be one of the allowed values")
+  expect_true(
+    response$gender %in% c("Male", "Female", "Non-binary", "Other"),
+    info = "`gender` should be one of the allowed values"
+  )
 
   # Validate `hobbies`
-  expect_true(is.list(response$hobbies) || is.character(response$hobbies),
-              info = "`hobbies` should be a list or a character vector")
-  expect_true(all(sapply(response$hobbies, is.character)),
-              info = "All items in `hobbies` should be strings")
+  expect_true(
+    is.list(response$hobbies) || is.character(response$hobbies),
+    info = "`hobbies` should be a list or a character vector"
+  )
+  expect_true(
+    all(sapply(response$hobbies, is.character)),
+    info = "All items in `hobbies` should be strings"
+  )
 
   # Validate `pet` object
   expect_true(is.list(response$pet), info = "`pet` should be a list")
@@ -77,12 +83,17 @@ test_that("ollama answer_as_json returns valid JSON", {
   expect_true(nchar(response$pet$name) > 0, info = "`pet$name` should not be empty")
   expect_true(is.numeric(response$pet$age), info = "`pet$age` should be numeric")
   expect_true(response$pet$age >= 0, info = "`pet$age` should be non-negative")
-  expect_true(is.character(response$pet$species), info = "`pet$species` should be a string")
-  expect_true(response$pet$species %in% c("Dog", "Cat", "Fish", "Bird", "Other"),
-              info = "`pet$species` should be one of the allowed values")
+  expect_true(
+    is.character(response$pet$species),
+    info = "`pet$species` should be a string"
+  )
+  expect_true(
+    response$pet$species %in% c("Dog", "Cat", "Fish", "Bird", "Other"),
+    info = "`pet$species` should be one of the allowed values"
+  )
 })
 
-test_that("openai answer_as_json works", {
+test_that("answer_as_json (openai via auto) works with json schema", {
   skip_test_if_no_openai()
 
   schema <- list(
