@@ -1,4 +1,5 @@
 #' @title PersistentChat R6 class
+#' @name persistent_chat-class
 #'
 #' @description
 #' A class for managing a persistent chat with a large language model (LLM).
@@ -9,9 +10,13 @@
 #' with an LLM. (It may specifically be used to continue a chat history which was
 #' returned by [send_prompt()] with `return_mode = "full"`.)
 #'
-#' @export
+#' @example inst/examples/persistent_chat.R
 #'
 #' @seealso [llm_provider-class] [chat_history()]
+NULL
+
+#' @rdname persistent_chat-class
+#' @export
 `persistent_chat-class` <- R6::R6Class(
   "PersistentChat",
   public = list(
@@ -43,8 +48,8 @@
         self$chat_history <- chat_history
       }
 
-      if (!inherits(llm_provider, "Llm_provider")) {
-        stop("The 'llm_provider' argument must be of class 'Llm_provider'")
+      if (!inherits(llm_provider, "LlmProvider")) {
+        stop("The 'llm_provider' argument must be of class 'LlmProvider'")
       }
 
       self$llm_provider <- llm_provider
@@ -72,7 +77,7 @@
         is.character(msg), length(msg) == 1, is.logical(verbose)
       )
 
-      llm_provider <- llm_provider$clone()
+      llm_provider <- self$llm_provider$clone()
       llm_provider$verbose <- verbose
 
       response <- llm_provider$complete_chat(self$chat_history)

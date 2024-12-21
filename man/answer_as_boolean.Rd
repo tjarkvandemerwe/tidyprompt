@@ -36,7 +36,7 @@ Make LLM answer as a boolean (TRUE or FALSE)
 \dontrun{
   "Are you a large language model?" |>
     answer_as_boolean() |>
-    send_prompt(llm_provider_ollama())
+    send_prompt()
   # --- Sending request to LLM provider (llama3.1:8b): ---
   #   Are you a large language model?
   #
@@ -45,7 +45,6 @@ Make LLM answer as a boolean (TRUE or FALSE)
   #   TRUE
   # [1] TRUE
 }
-
 }
 \seealso{
 Other pre_built_prompt_wraps: 

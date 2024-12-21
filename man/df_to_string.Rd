@@ -25,8 +25,11 @@ Converts a data frame to a string format, intended for sending it to a LLM
 \examples{
 cars |>
   head(5) |>
-  df_to_string() |>
-  cat()
+  df_to_string(how = "wide")
+
+cars |>
+  head(5) |>
+  df_to_string(how = "long")
 }
 \seealso{
 Other text_helpers: 

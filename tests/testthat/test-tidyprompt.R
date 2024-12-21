@@ -15,8 +15,34 @@ test_that("construct more complex prompt text", {
   )
 })
 
-test_that("create tidyprompt from chat_history object", {
+test_that("construct prompt text based on llm_provider", {
+  fake <- llm_provider_fake()
 
+  prompt <- "Hi" |>
+    prompt_wrap(
+      modify_fn = function(x) {
+        if (!is.null(llm_provider)) {
+          if (!inherits(llm_provider, "LlmProvider")) {
+            stop("llm_provider passed to modify_fn is not LlmProvider object")
+          }
+        }
+
+        if (isTRUE(llm_provider$api_type == "fake")) {
+          return("text for fake llm provider")
+        }
+
+        return("text for other llm provider")
+      }
+    )
+
+  text_fake <- construct_prompt_text(prompt, llm_provider = fake)
+  text_other <- construct_prompt_text(prompt)
+
+  expect_identical(text_fake, "text for fake llm provider")
+  expect_identical(text_other, "text for other llm provider")
+})
+
+test_that("create tidyprompt from chat_history object", {
   prompt <- "Hi" |> add_text("How are you?", sep = "\n\n", position = "after")
 
   chat_history <- prompt$get_chat_history()
@@ -49,4 +75,13 @@ test_that("setting and getting chat history returns consistent results", {
   # Get chat history and compare
   retrieved_chat_history <- prompt$get_chat_history()
   expect_equal(retrieved_chat_history, chat_history)
+})
+
+test_that("can create tidyprompt from tidyprompt", {
+  prompt <- tidyprompt("hi") |>
+    answer_as_integer() |>
+    quit_if()
+  prompt2 <- tidyprompt(prompt)
+
+  expect_identical(prompt, prompt2)
 })

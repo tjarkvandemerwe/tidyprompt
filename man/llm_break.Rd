@@ -49,7 +49,23 @@ extraction_fn <- function(x) {
   return(x)
 }
 
-# This extraction_fn would be part of a prompt_wrap()
+\dontrun{
+  result <- "How many months old is the cat of my uncle?" |>
+    answer_as_integer() |>
+    prompt_wrap(
+      modify_fn = function(prompt) {
+        paste0(
+          prompt, "\n\n",
+          "Type only 'NO ANSWER' if you do not know."
+        )
+      },
+      extraction_fn = extraction_fn,
+      type = "break"
+    ) |>
+    send_prompt()
+  result
+  # NULL
+}
 }
 \seealso{
 \code{\link[=llm_feedback]{llm_feedback()}}

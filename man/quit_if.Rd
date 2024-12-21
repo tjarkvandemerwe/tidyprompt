@@ -69,8 +69,6 @@ response to a prompt.
   #   NO ANSWER
   # NULL
 }
-
-
 }
 \seealso{
 Other pre_built_prompt_wraps: 

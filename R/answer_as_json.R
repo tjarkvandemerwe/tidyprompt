@@ -13,8 +13,7 @@
 #'
 #' @param schema A list which represents
 #' a JSON schema that the response should match.See example and your API's
-#' documentation for more information on defining JSON schemas. [r_json_schema_from_example()]
-#' can be used to generate a schema from an example object. Note that the schema should be a
+#' documentation for more information on defining JSON schemas. Note that the schema should be a
 #' list (R object) representing a JSON schema, not a JSON string
 #' (use [jsonlite::fromJSON()] and [jsonlite::toJSON()] to convert between the two)
 #'
@@ -34,7 +33,7 @@
 #' }
 #' @param type The way that JSON response should be enforced:
 #' \itemize{
-#' \item "text-based" (default): Instruction will be added to the prompt
+#' \item "text-based": Instruction will be added to the prompt
 #' asking for JSON; when a schema is provided, this will also be included
 #' in the prompt (see argument 'schema_in_prompt_as'). JSON will be parsed
 #' from the LLM response and, when a schema is provided, it will be validated
@@ -43,7 +42,7 @@
 #' cases may be less powerful than the other native JSON options
 #' \item "auto": Automatically determine the type based on 'llm_provider$api_type'.
 #' This does not consider model compatibility and could lead to errors; set 'type'
-#' manually if errors occur. Use 'text-based' if unsure
+#' manually if errors occur; use 'text-based' if unsure
 #' \item "openai" and "ollama": The response format will be set via the relevant API parameters,
 #' making the API enforce a valid JSON response. If a schema is provided,
 #' it will also be included in the API parameters and also be enforced by the API.
@@ -116,7 +115,12 @@ answer_as_json <- function(
       if (is.null(schema))
         return(list(format = "json"))
 
+      if ("schema" %in% names(schema)) {
+        schema <- schema$schema
+      }
+
       schema$strict <- schema_strict
+
       return(list(format = schema))
     }
 
@@ -124,10 +128,25 @@ answer_as_json <- function(
       if (is.null(schema))
         return(list(response_format = list(type = "json_object")))
 
-      schema$strict <- schema_strict
+      json_schema <- list() # Top level schema
+      # Should contain:
+      # - name
+      # - description (optional)
+      # - schema
+      # - strict
+
+      if (all("name" %in% names(schema), "schema" %in% names(schema))) {
+        json_schema <- schema
+      } else {
+        json_schema$name <- "schema"
+        json_schema$schema <- schema
+      }
+
+      json_schema$strict <- schema_strict
+
       return(list(response_format = list(
         type = "json_schema",
-        json_schema = schema
+        json_schema = json_schema
       )))
     }
 
@@ -192,8 +211,8 @@ answer_as_json <- function(
 
     if (
       !is.null(schema)
-      && !isTRUE(type %in% c("openai", "ollama"))
-      && jsonvalidate_installed()
+      & !isTRUE(type %in% c("openai", "ollama"))
+      & jsonvalidate_installed()
     ) {
       # Convert to JSON
       answer_json <- jsonlite::toJSON(jsons, auto_unbox = TRUE, pretty = TRUE)

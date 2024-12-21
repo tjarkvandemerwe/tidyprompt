@@ -1,4 +1,4 @@
-# Example creation of an OpenAI provider:
+# Example creation of a llm_provider-class object:
 llm_provider_openai <- function(
     parameters = list(
       model = "gpt-4o-mini",
@@ -14,32 +14,44 @@ llm_provider_openai <- function(
       "Authorization" = paste("Bearer", self$api_key)
     )
 
-    # Prepare the body by converting chat_history dataframe to list of lists
     body <- list(
       messages = lapply(seq_len(nrow(chat_history)), function(i) {
         list(role = chat_history$role[i], content = chat_history$content[i])
       })
     )
 
-    # Append all other parameters to the body
     for (name in names(self$parameters))
       body[[name]] <- self$parameters[[name]]
 
-    make_llm_provider_request(
-      url = self$url,
-      headers = headers,
-      body = body,
+    request <- httr2::request(self$url) |>
+      httr2::req_body_json(body) |>
+      httr2::req_headers(!!!headers)
+
+    request_llm_provider(
+      chat_history,
+      request,
       stream = self$parameters$stream,
       verbose = self$verbose,
-      stream_api_type = "openai"
+      api_type = self$api_type
     )
   }
 
-  return(llm_provider$new(
+  return(`llm_provider-class`$new(
     complete_chat_function = complete_chat,
     parameters = parameters,
     verbose = verbose,
     url = url,
-    api_key = api_key
+    api_key = api_key,
+    api_type = "openai"
   ))
+}
+
+llm_provider <- llm_provider_openai()
+
+\dontrun{
+  llm_provider$complete_chat("Hi!")
+  # --- Sending request to LLM provider (gpt-4o-mini): ---
+  # Hi!
+  # --- Receiving response from LLM provider: ---
+  # Hello! How can I assist you today?
 }

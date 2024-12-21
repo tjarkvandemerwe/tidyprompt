@@ -63,7 +63,6 @@ Enable LLM to draft and execute SQL queries on a database
 }
 \examples{
 \dontrun{
-
   # Create an in-memory SQLite database
   conn <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 
@@ -122,6 +121,46 @@ Enable LLM to draft and execute SQL queries on a database
       output_as_tool = TRUE
     ) |>
     send_prompt(llm_provider_openai())
+  # --- Sending request to LLM provider (gpt-4o-mini): ---
+  # Where are my customers from?
+  #
+  # You must code in SQL to answer this prompt. You must provide all SQL code
+  # between ```sql and ```.
+  #
+  # Never make assumptions about the possible values in the tables.
+  # Instead, execute SQL queries to retrieve information you need.
+  #
+  # These tables are available in the database:
+  #   customers, orders
+  #
+  # Table descriptions:
+  #   - customers
+  # Columns: id, name, email, country
+  #
+  # - orders
+  # Columns: order_id, customer_id, product, amount, order_date
+  #
+  # Your SQL query will be executed on the database. The results will be sent back
+  # to you. After seeing the results, you can either provide a final answer or try
+  # another SQL query. When you provide your final answer, do not include any SQL code.
+  # --- Receiving response from LLM provider: ---
+  # ```sql
+  # SELECT DISTINCT country FROM customers;
+  # ```
+  # --- Sending request to LLM provider (gpt-4o-mini): ---
+  # --- SQL code: ---
+  # SELECT DISTINCT country FROM customers;
+  #
+  # --- Query results: ---
+  #   country
+  # 1     USA
+  # 2  Canada
+  # 3      UK
+  # --- Receiving response from LLM provider: ---
+  # Based on the query results, your customers are from the following countries:
+  # USA, Canada, and UK.
+  # [1] "Based on the query results, your customers are from the following countries:
+  # USA, Canada, and UK."
 }
 }
 \seealso{

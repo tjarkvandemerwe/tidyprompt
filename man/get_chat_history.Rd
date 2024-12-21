@@ -20,15 +20,17 @@ with the system prompt as the first message with role 'system' and the
 the base prompt as the last message with role 'user'.
 }
 \examples{
-tidyprompt("Hi!")
+prompt <- tidyprompt("Hi!")
+print(prompt)
 
 # Add to a tidyprompt using a prompt wrap:
-tidyprompt("Hi!") |>
+prompt <- tidyprompt("Hi!") |>
   add_text("How are you?")
+print(prompt)
 
 # Strings can be input for prompt wraps; therefore,
 #   a call to tidyprompt() is not necessary:
-"Hi" |>
+prompt <- "Hi" |>
   add_text("How are you?")
 
 # Example of adding extraction & validation with a prompt_wrap():
@@ -59,15 +61,19 @@ prompt <- "Hi" |>
 is_tidyprompt(prompt) # Returns TRUE if input is a valid tidyprompt object
 
 # Get base prompt text
-prompt$base_prompt
+base_prompt <- prompt$base_prompt
 
 # Get all prompt wraps
-prompt$get_prompt_wraps()
+prompt_wraps <- prompt$get_prompt_wraps()
+# Alternative:
+prompt_wraps <- get_prompt_wraps(prompt)
 
 # Construct prompt text
-prompt$construct_prompt_text()
+prompt_text <- prompt$construct_prompt_text()
+# Alternative:
+prompt_text <- construct_prompt_text(prompt)
 
-# Configure chat history (affecting also the base prompt)
+# Set chat history (affecting also the base prompt)
 chat_history <- data.frame(
   role = c("user", "assistant", "user"),
   content = c("What is 5 + 5?", "10", "And what is 5 + 6?")
@@ -75,7 +81,7 @@ chat_history <- data.frame(
 prompt$set_chat_history(chat_history)
 
 # Get chat history
-prompt$get_chat_history()
+chat_history <- prompt$get_chat_history()
 }
 \seealso{
 \code{\link[=chat_history]{chat_history()}}

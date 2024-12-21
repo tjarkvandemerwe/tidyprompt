@@ -10,4 +10,3 @@
   # A type of AI that processes and generates human-like text.
   # [1] "A type of AI that processes and generates human-like text."
 }
-

@@ -1,13 +1,18 @@
 #' @title LlmProvider R6 Class
+#' @name llm_provider-class
 #'
 #' @description This class provides a structure for creating [llm_provider-class]
 #'  objects with different implementations of `$complete_chat()`.
 #' Using this class, you can create an [llm_provider-class] object that interacts
 #'  with different LLM providers, such Ollama, OpenAI, or other custom providers.
 #'
-#' @export
+#' @example inst/examples/llm_provider.R
 #'
 #' @family llm_provider
+NULL
+
+#' @rdname llm_provider-class
+#' @export
 `llm_provider-class` <- R6::R6Class(
   "LlmProvider",
   public = list(
