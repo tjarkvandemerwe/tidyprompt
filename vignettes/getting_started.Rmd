@@ -49,9 +49,9 @@ openrouter <- llm_provider_openrouter(
 # ... functions also included for Mistral, Groq, XAI (Grok), and Google Gemini
 
 # ... or easily create your own hook for any other LLM provider;
-#   see ?llm_provider-class for more information; also take a look at the source code of
-#   llm_provider_ollama() and llm_provider_openai(). For APIs that follow the structure
-#   of the OpenAI API for chat completion, you can use llm_provider_openai()
+#   see ?`llm_provider-class` for more information; also take a look at the source code of
+#   `llm_provider_ollama()` and `llm_provider_openai()`. For APIs that follow the structure
+#   of the OpenAI API for chat completion, you can use `llm_provider_openai()`
 ```
 
 ## Basic prompting
