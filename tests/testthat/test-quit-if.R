@@ -5,7 +5,7 @@ test_that("LLM can exit evaluation via quit_if", {
     set_system_prompt("you are an assistant who does not guess things") |>
     answer_as_integer() |>
     quit_if() |>
-    send_prompt(llm_provider_ollama())
+    send_prompt(llm_provider_ollama(), verbose = FALSE)
 
   expect_true(is.null(response))
 })

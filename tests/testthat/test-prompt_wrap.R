@@ -5,11 +5,11 @@ test_that("can create prompt_wrap", {
 
 test_that("can add prompt wraps of all types and they are ordered correctly", {
   prompt <- "Test prompt" |>
-    prompt_wrap(extraction_fn = function(x) x, type = "unspecified") |>
-    prompt_wrap(extraction_fn = function(x) x, type = "mode") |>
-    prompt_wrap(modify_fn = function(x) x, type = "tool") |>
-    prompt_wrap(modify_fn = function(x) x, type = "break") |>
-    prompt_wrap(validation_fn = function(x) x, type = "check")
+    prompt_wrap(extraction_fn = \(x) x, type = "unspecified") |>
+    prompt_wrap(extraction_fn = \(x) x, type = "mode") |>
+    prompt_wrap(modify_fn =     \(x) x, type = "tool") |>
+    prompt_wrap(modify_fn =     \(x) x, type = "break") |>
+    prompt_wrap(validation_fn = \(x) x, type = "check")
 
   wraps_mod <- prompt$get_prompt_wraps(order = "modification")
   types_in_order_mod <- sapply(wraps_mod, function(x) x$type)
