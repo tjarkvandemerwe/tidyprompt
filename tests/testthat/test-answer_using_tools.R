@@ -5,7 +5,7 @@ test_that("LLM can use R function without error", {
     answer_using_tools(dir)
 
   result <- prompt |>
-    send_prompt(llm_provider_ollama())
+    send_prompt(llm_provider_ollama(), verbose = FALSE)
 
   expect_true(!is.null(result))
 })

@@ -20,7 +20,6 @@ skip_test_if_no_ollama <- function(do_not_run = FALSE) {
   }
 
   # Define the request URL for the local Ollama server
-  # List models that are available
   url <- "http://localhost:11434"
   req <- httr2::request(url)
 
