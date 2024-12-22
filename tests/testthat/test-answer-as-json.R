@@ -1,3 +1,13 @@
+test_that("answer_as_json (text-based) works without schema", {
+  skip_test_if_no_ollama()
+
+  response <- "Create a very short persona" |>
+    answer_as_json(type = "text-based") |>
+    send_prompt(llm_provider_ollama())
+
+  expect_true(is.list(response), info = "Response should be a list")
+})
+
 test_that("answer_as_json (text-based) works with json schema", {
   skip_test_if_no_ollama()
 
@@ -93,7 +103,7 @@ test_that("answer_as_json (text-based) works with json schema", {
   )
 })
 
-test_that("answer_as_json (openai via auto) works with json schema", {
+test_that("answer_as_json (openai via auto) works", {
   skip_test_if_no_openai()
 
   schema <- list(
@@ -128,5 +138,43 @@ test_that("answer_as_json (openai via auto) works with json schema", {
     "Create a very short persona" |>
       answer_as_json(type = "auto") |>
       send_prompt(llm_provider_openai())
+  )
+})
+
+test_that("answer_as_json (ollama via auto) works", {
+  skip_test_if_no_ollama()
+
+  schema <- list(
+    "$schema" = "http://json-schema.org/draft-04/schema#",
+    title = "Persona",
+    type = "object",
+    properties = list(
+      name = list(type = "string", description = "The persona's name"),
+      age = list(type = "integer", description = "The persona's age"),
+      gender = list(
+        type = "string",
+        enum = c("Male", "Female", "Non-binary", "Other"),
+        description = "The persona's gender"
+      ),
+      hobbies = list(
+        type = "array",
+        items = list(type = "string"),
+        description = "List of hobbies"
+      )
+    ),
+    required = c("name", "age", "gender", "hobbies"),
+    additionalProperties = FALSE
+  )
+
+  expect_no_error(
+    "Create a persona" |>
+      answer_as_json(schema, type = "auto") |>
+      send_prompt(llm_provider_ollama())
+  )
+
+  expect_no_error(
+    "Create a very short persona" |>
+      answer_as_json(type = "auto") |>
+      send_prompt(llm_provider_ollama())
   )
 })
