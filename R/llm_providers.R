@@ -290,34 +290,11 @@ llm_provider_xai <- function(
 #' Streaming is not yet supported in this implementation.
 #'
 #' @param parameters A named list of parameters. Currently the following parameters are required:
-#'    - model: The name of the model to use (see: https://ai.google.dev/gemini-api/docs/models/gemini)#'
-#'
-#'  Additional parameters are appended to the request body; see the Google AI Studio API
-#'  documentation for more information: https://ai.google.dev/gemini-api/docs/text-generation
-#'  & https://github.com/google/generative-ai-docs/blob/main/site/en/gemini-api/docs/get-started/rest.ipynb
-#' @param verbose A logical indicating whether the interaction with the LLM provider
-#' should be printed to the console
-#' @param url The URL to the Google Gemini API endpoint for chat completion
-#' @param api_key The API key to use for authentication with the Google Gemini API
-#' (see: https://aistudio.google.com/app/apikey)
-#'
-#' @return A new [llm_provider-class] object for use of the Google Gemini API
-#'
-#' @export
-#' @example inst/examples/llm_providers.R
-#'
-#' @family llm_provider
-#' Create a new Google Gemini LLM provider
-#'
-#' Creates an [llm_provider-class] object that interacts with the Google Gemini API.
-#' Streaming is not yet supported in this implementation.
-#'
-#' @param parameters A named list of parameters. Currently the following parameters are required:
 #'    - model: The name of the model to use (see: https://ai.google.dev/gemini-api/docs/models/gemini)
 #'
 #'  Additional parameters are appended to the request body; see the Google AI Studio API
 #'  documentation for more information: https://ai.google.dev/gemini-api/docs/text-generation
-#'  & https://github.com/google/generative-ai-docs/blob/main/site/en/gemini-api/docs/get-started/rest.ipynb
+#'  and https://github.com/google/generative-ai-docs/blob/main/site/en/gemini-api/docs/get-started/rest.ipynb
 #' @param verbose A logical indicating whether the interaction with the LLM provider
 #' should be printed to the console
 #' @param url The URL to the Google Gemini API endpoint for chat completion
@@ -327,6 +304,7 @@ llm_provider_xai <- function(
 #' @return A new [llm_provider-class] object for use of the Google Gemini API
 #'
 #' @export
+#'
 #' @example inst/examples/llm_providers.R
 #'
 #' @family llm_provider
