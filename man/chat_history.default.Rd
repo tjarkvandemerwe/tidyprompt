@@ -9,6 +9,9 @@
 \arguments{
 \item{chat_history}{Object which is not \code{character} or \code{data.frame}}
 }
+\value{
+No return value; an error is thrown
+}
 \description{
 Calls error which indicates that the input was not a \code{character} or \code{data.frame}.
 }

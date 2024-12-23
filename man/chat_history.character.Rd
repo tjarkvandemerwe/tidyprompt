@@ -9,6 +9,10 @@
 \arguments{
 \item{chat_history}{A single string}
 }
+\value{
+A valid chat history \code{data.frame} (of class \code{chat_history}),
+with the 'role' set to 'user' and the 'content' set to the input string
+}
 \description{
 Creates a \code{chat_history} object from a single string.
 }

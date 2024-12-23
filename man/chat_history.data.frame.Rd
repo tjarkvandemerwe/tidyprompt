@@ -11,6 +11,10 @@
 where 'role' is either 'user', 'assistant', or 'system', and 'content' is a character string
 representing a chat message}
 }
+\value{
+A valid chat history \code{data.frame} (of class \code{chat_history}),
+with the 'role' and 'content' columns as specified in the input data frame
+}
 \description{
 Creates a \code{chat_history} object from a data frame.
 }
