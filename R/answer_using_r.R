@@ -142,13 +142,14 @@ answer_using_r <- function(
     }
     evaluation_session <- callr::r_session$new(options = r_session_options)
 
-    # Check if packages are installed
+    # Check if packages are installed using requireNamespace
     installed_pkgs <- evaluation_session$run(function(pkgs_to_use) {
-      # Check if each package is installed and return as a named list
+      # Check if each package is installed using requireNamespace and return as a named list
       sapply(pkgs_to_use, function(pkg) {
-        pkg %in% utils::installed.packages()[, "Package"]
+        requireNamespace(pkg, quietly = TRUE)
       }, simplify = TRUE, USE.NAMES = TRUE)
     }, args = list(pkgs_to_use = pkgs_to_use))
+
 
     if (any(installed_pkgs == FALSE)) {
       stop(paste0(
