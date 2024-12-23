@@ -32,6 +32,8 @@ chat_history <- function(chat_history) {
 #'
 #' @param chat_history Object which is not `character` or `data.frame`
 #'
+#' @return No return value; an error is thrown
+#'
 #' @exportS3Method chat_history default
 #' @keywords internal
 chat_history.default <- function(chat_history) {
@@ -45,6 +47,9 @@ chat_history.default <- function(chat_history) {
 #' Creates a `chat_history` object from a single string.
 #'
 #' @param chat_history A single string
+#'
+#' @return A valid chat history `data.frame` (of class `chat_history`),
+#' with the 'role' set to 'user' and the 'content' set to the input string
 #'
 #' @exportS3Method chat_history character
 #' @keywords internal
@@ -71,6 +76,9 @@ chat_history.character <- function(chat_history) {
 #' @param chat_history A data frame with 'role' and 'content' columns,
 #' where 'role' is either 'user', 'assistant', or 'system', and 'content' is a character string
 #' representing a chat message
+#'
+#' @return A valid chat history `data.frame` (of class `chat_history`),
+#' with the 'role' and 'content' columns as specified in the input data frame
 #'
 #' @exportS3Method chat_history data.frame
 #' @keywords internal
