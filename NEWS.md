@@ -1,7 +1,9 @@
+# tidyprompt (development version)
+
 # tidyprompt 0.0.1
 
-* Initial CRAN submission
+* Initial CRAN release
 
 # tidyprompt 0.0.0.9000
 
-* Development version available on GitHub
+* Initial development version available on GitHub

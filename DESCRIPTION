@@ -1,6 +1,6 @@
 Package: tidyprompt
 Title: Prompt Large Language Models and Enhance Their Functionality
-Version: 0.0.1
+Version: 0.0.1.9000
 Authors@R: 
   c(person(given = "Luka",
            family = "Koning",

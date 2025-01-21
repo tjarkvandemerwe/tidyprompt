@@ -46,7 +46,7 @@ Install the development version from GitHub:
 remotes::install_github("tjarkvandemerwe/tidyprompt")
 ```
 
-Or install from CRAN (pending release):
+Or install from CRAN (0.0.1):
 
 ``` r
 install.packages("tidyprompt")
@@ -159,11 +159,9 @@ summary(model)
 
 ## More information and contributing
 
-‘tidyprompt’ is under active development by Luka Koning
+‘tidyprompt’ is developed by Luka Koning
 (<l.koning@kennispunttwente.nl>) and Tjark van de Merwe
-(<t.vandemerwe@kennispunttwente.nl>). Note that at this stage, the
-package may not yet be fully stable and its architecture may be subject
-to change.
+(<t.vandemerwe@kennispunttwente.nl>).
 
 If you encounter issues, have questions, or have suggestions, please
 open an issue in the GitHub repository. You are also welcome to
@@ -206,15 +204,15 @@ prompt wraps. This way, ‘tidyprompt’ can be a powerful tool for a wide
 range of use cases, without focusing on maintaining provider-specific
 features.
 
-#### ‘tidyprompt’ versus ‘elmer’ & ‘tidyllm’
+#### ‘tidyprompt’ versus ‘ellmer’ & ‘tidyllm’
 
 In line with the above, ‘tidyprompt’ is less focused on interfacing with
-the APIs of various LLM providers, like R packages ‘elmer’ and ‘tidyllm’
-do. Instead, ‘tidyprompt’ is primarily focused on offering a framework
-for constructing prompts and associated logic for interactions with
-LLMs.
+the APIs of various LLM providers, like R packages ‘ellmer’ and
+‘tidyllm’ do. Instead, ‘tidyprompt’ is primarily focused on offering a
+framework for constructing prompts and associated logic for interactions
+with LLMs.
 
 We aim to design ‘tidyprompt’ in such a way that it may be compatible
-with ‘elmer’, ‘tidyllm’, and any other packages offering an interface to
-LLM APIs. We are open to feedback on our design and may include
-compatability with specific features from these packages in the future.
+with ‘ellmer’, ‘tidyllm’, and any other packages offering an interface
+to LLM APIs. We are open to feedback on our design and may include
+compatibility with specific features from these packages in the future.
