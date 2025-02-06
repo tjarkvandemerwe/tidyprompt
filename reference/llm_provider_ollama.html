@@ -60,9 +60,11 @@
 <dd><p>A named list of parameters. Currently the following parameters are required:</p><ul><li><p>model: The name of the model to use</p></li>
 <li><p>stream: A logical indicating whether the API should stream responses</p></li>
 </ul><p>Additional parameters may be passed by adding them to the parameters list;
-these parameters will be passed to the Ollama API via the body of the POST request.
-Note that various Ollama options need to be set in a list named 'options' within
-the parameters list (e.g., context window size is represented in $parameters$options$num_ctx)</p></dd>
+these parameters will be passed to the Ollama API via the body of the POST request.</p>
+<p>Note that various Ollama options need to be set in a list named 'options' within
+the parameters list (e.g., context window size is represented in $parameters$options$num_ctx).
+For ease of configuration, the 'set_option' and 'set_options' functions are available
+(e.g., <code>$set_option("num_ctx", 1024)</code> or <code>$set_options(list(num_ctx = 1024, temperature = 1))</code>).</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
