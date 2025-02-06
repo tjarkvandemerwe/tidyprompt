@@ -21,8 +21,6 @@ chat_history <- function(chat_history) {
   UseMethod("chat_history")
 }
 
-
-
 #' Default method for `chat_history()`
 #'
 #' Calls error which indicates that the input was not a `character` or `data.frame`.
@@ -37,10 +35,10 @@ chat_history <- function(chat_history) {
 #' @exportS3Method chat_history default
 #' @keywords internal
 chat_history.default <- function(chat_history) {
-  stop("The input must be either a data frame with 'role' and 'content' columns, or a single string.")
+  stop(
+    "The input must be either a data frame with 'role' and 'content' columns, or a single string."
+  )
 }
-
-
 
 #' Method for `chat_history()` when the input is a single string
 #'
@@ -67,8 +65,6 @@ chat_history.character <- function(chat_history) {
   return(chat_data)
 }
 
-
-
 #' Method for `chat_history()` when the input is a `data.frame`
 #'
 #' Creates a `chat_history` object from a data frame.
@@ -87,7 +83,9 @@ chat_history.data.frame <- function(chat_history) {
     stop("The data frame must contain'role' and 'content' columns.")
   }
   if (!all(chat_history$role %in% c("user", "assistant", "system"))) {
-    stop("The 'role' column must contain only 'user', 'assistant', or 'system'.")
+    stop(
+      "The 'role' column must contain only 'user', 'assistant', or 'system'."
+    )
   }
   if (!is.character(chat_history$role)) {
     stop("The 'role' column must be of type character.")
@@ -104,8 +102,6 @@ chat_history.data.frame <- function(chat_history) {
   class(chat_history) <- c("chat_history", class(chat_history))
   return(chat_history)
 }
-
-
 
 #' Add a message to a chat history
 #'
@@ -160,10 +156,10 @@ chat_history.data.frame <- function(chat_history) {
 #'
 #' @example inst/examples/chat_history.R
 add_msg_to_chat_history <- function(
-    chat_history,
-    message,
-    role = c("auto", "user", "assistant", "system", "tool"),
-    tool_result = NULL
+  chat_history,
+  message,
+  role = c("auto", "user", "assistant", "system", "tool"),
+  tool_result = NULL
 ) {
   if (is.null(chat_history)) {
     chat_history <- data.frame(
@@ -171,13 +167,12 @@ add_msg_to_chat_history <- function(
       content = character(),
       stringsAsFactors = FALSE
     )
-  }
-  else if (inherits(chat_history, "Tidyprompt")) {
+  } else if (inherits(chat_history, "Tidyprompt")) {
     chat_history <- chat_history$get_chat_history()
   } else if (
-    is.list(chat_history)
-    & !is.data.frame(chat_history)
-    & "chat_history" %in% names(chat_history)
+    is.list(chat_history) &
+      !is.data.frame(chat_history) &
+      "chat_history" %in% names(chat_history)
   ) {
     chat_history <- chat_history$chat_history |> chat_history()
   } else {
@@ -187,8 +182,10 @@ add_msg_to_chat_history <- function(
   role <- match.arg(role)
 
   stopifnot(
-    is.character(message), length(message) == 1,
-    is.character(role), length(role) == 1,
+    is.character(message),
+    length(message) == 1,
+    is.character(role),
+    length(role) == 1,
     is.null(tool_result) || is.logical(tool_result)
   )
 
@@ -210,11 +207,13 @@ add_msg_to_chat_history <- function(
   }
 
   chat_history <- chat_history |>
-    dplyr::bind_rows(data.frame(
-      role = role,
-      content = message,
-      tool_result = tool_result
-    ))
+    dplyr::bind_rows(
+      data.frame(
+        role = role,
+        content = message,
+        tool_result = tool_result
+      )
+    )
 
   return(chat_history)
 }

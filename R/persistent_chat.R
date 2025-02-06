@@ -20,7 +20,6 @@ NULL
 `persistent_chat-class` <- R6::R6Class(
   "PersistentChat",
   public = list(
-
     #' @field chat_history A [chat_history()] object
     chat_history = NULL,
     #' @field llm_provider A [llm_provider-class] object
@@ -33,12 +32,13 @@ NULL
     #'
     #' @return The initialized PersistentChat object
     initialize = function(
-      llm_provider, chat_history = NULL
+      llm_provider,
+      chat_history = NULL
     ) {
       if (
-        is.list(chat_history)
-        && !is.data.frame(chat_history)
-        && "chat_history" %in% names(chat_history)
+        is.list(chat_history) &&
+          !is.data.frame(chat_history) &&
+          "chat_history" %in% names(chat_history)
       ) {
         chat_history <- chat_history$chat_history |> chat_history()
       }
@@ -74,7 +74,9 @@ NULL
         role = role
       )
       stopifnot(
-        is.character(msg), length(msg) == 1, is.logical(verbose)
+        is.character(msg),
+        length(msg) == 1,
+        is.logical(verbose)
       )
 
       llm_provider <- self$llm_provider$clone()
@@ -83,8 +85,7 @@ NULL
       response <- llm_provider$complete_chat(self$chat_history)
       self$chat_history <- response$completed
 
-      if (verbose)
-        return(invisible(response))
+      if (verbose) return(invisible(response))
 
       return(response)
     },

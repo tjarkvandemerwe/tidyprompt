@@ -42,19 +42,21 @@ extraction_fn_finish <- function(llm_response, lenience = TRUE) {
   # Final check for successful extraction
   if (
     is.na(extracted_response) ||
-    tolower(trimws(extracted_response)) %in% c("answer", "final answer") ||
-    extracted_response |> stringr::str_trim() == ""
+      tolower(trimws(extracted_response)) %in% c("answer", "final answer") ||
+      extracted_response |> stringr::str_trim() == ""
   ) {
-    return(llm_feedback(glue::glue(
-      "Error, could not parse your final answer.\n",
-      "Please type: 'FINISH[<put here your final answer to the original prompt>]'"
-    )))
+    return(
+      llm_feedback(
+        glue::glue(
+          "Error, could not parse your final answer.\n",
+          "Please type: 'FINISH[<put here your final answer to the original prompt>]'"
+        )
+      )
+    )
   }
 
   return(extracted_response)
 }
-
-
 
 #' Extract and parse JSONs from a string (LLM response)
 #'
@@ -109,9 +111,12 @@ extraction_fn_json <- function(llm_response) {
 
   # Now parse the blocks
   parsed_jsons <- lapply(blocks, function(json_candidate) {
-    tryCatch({
-      jsonlite::fromJSON(json_candidate, simplifyDataFrame = FALSE)
-    }, error = function(e) NULL)
+    tryCatch(
+      {
+        jsonlite::fromJSON(json_candidate, simplifyDataFrame = FALSE)
+      },
+      error = function(e) NULL
+    )
   })
 
   # Remove NULL entries

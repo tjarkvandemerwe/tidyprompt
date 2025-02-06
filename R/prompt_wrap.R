@@ -116,19 +116,17 @@
 #'
 #' @seealso [tidyprompt-class] [send_prompt()]
 prompt_wrap <- function(
-    prompt,
-    modify_fn = NULL,
-    extraction_fn = NULL,
-    validation_fn = NULL,
-    handler_fn = NULL,
-    parameter_fn = NULL,
-    type = c("unspecified", "mode", "tool", "break", "check"),
-    name = NULL
+  prompt,
+  modify_fn = NULL,
+  extraction_fn = NULL,
+  validation_fn = NULL,
+  handler_fn = NULL,
+  parameter_fn = NULL,
+  type = c("unspecified", "mode", "tool", "break", "check"),
+  name = NULL
 ) {
   UseMethod("prompt_wrap")
 }
-
-
 
 #' [prompt_wrap()] method for when a [tidyprompt-class] object is supplied
 #'
@@ -146,8 +144,6 @@ prompt_wrap <- function(
 prompt_wrap.tidyprompt <- function(prompt, ...) {
   prompt_wrap_internal(prompt, ...)
 }
-
-
 
 #' Default method for [prompt_wrap()]
 #'
@@ -168,8 +164,6 @@ prompt_wrap.default <- function(prompt, ...) {
   prompt_wrap_internal(prompt, ...)
 }
 
-
-
 #' Internal function to append a [prompt_wrap()] to a [tidyprompt-class] object
 #'
 #' @param prompt See [prompt_wrap()]
@@ -186,14 +180,14 @@ prompt_wrap.default <- function(prompt, ...) {
 #' @noRd
 #' @keywords internal
 prompt_wrap_internal <- function(
-    prompt,
-    modify_fn = NULL,
-    extraction_fn = NULL,
-    validation_fn = NULL,
-    handler_fn = NULL,
-    parameter_fn = NULL,
-    type = c("unspecified", "mode", "tool", "break", "check"),
-    name = NULL
+  prompt,
+  modify_fn = NULL,
+  extraction_fn = NULL,
+  validation_fn = NULL,
+  handler_fn = NULL,
+  parameter_fn = NULL,
+  type = c("unspecified", "mode", "tool", "break", "check"),
+  name = NULL
 ) {
   type <- match.arg(type)
 
@@ -209,19 +203,38 @@ prompt_wrap_internal <- function(
     if (is.null(validation_fn)) {
       stop("When using type 'check', validation_fn is required")
     }
-    if (!all(sapply(list(modify_fn, extraction_fn, handler_fn, parameter_fn), is.null))) {
+    if (
+      !all(
+        sapply(
+          list(modify_fn, extraction_fn, handler_fn, parameter_fn),
+          is.null
+        )
+      )
+    ) {
       stop("When using type 'check', only validation_fn is allowed")
     }
   }
 
-
-  if (all(sapply(list(
-    modify_fn, extraction_fn, validation_fn, handler_fn, parameter_fn
-  ), is.null)))
-    stop(paste0(
-      "At least one of modify_fn, extraction_fn, validation_fn, handler_fn, or parameter_fn",
-      " must be provided"
-    ))
+  if (
+    all(
+      sapply(
+        list(
+          modify_fn,
+          extraction_fn,
+          validation_fn,
+          handler_fn,
+          parameter_fn
+        ),
+        is.null
+      )
+    )
+  )
+    stop(
+      paste0(
+        "At least one of modify_fn, extraction_fn, validation_fn, handler_fn, or parameter_fn",
+        " must be provided"
+      )
+    )
 
   ensure_three_arguments <- function(func) {
     if (is.null(func)) return(NULL)
@@ -235,7 +248,10 @@ prompt_wrap_internal <- function(
     # Combine the original arguments with the missing required arguments
     combined_args <- c(
       original_args,
-      structure(rep(list(quote(expr = NULL)), length(required_args)), names = required_args)
+      structure(
+        rep(list(quote(expr = NULL)), length(required_args)),
+        names = required_args
+      )
     )
 
     # Remove excess arguments beyond the first three
@@ -255,10 +271,12 @@ prompt_wrap_internal <- function(
   extraction_fn <- ensure_three_arguments(extraction_fn)
 
   if (!is.null(parameter_fn) && length(formals(parameter_fn)) != 1) {
-    stop(paste0(
-      "Parameter_fn should be a function that takes one argument,",
-      " which is the llm_provider"
-    ))
+    stop(
+      paste0(
+        "Parameter_fn should be a function that takes one argument,",
+        " which is the llm_provider"
+      )
+    )
   }
 
   type <- match.arg(type)

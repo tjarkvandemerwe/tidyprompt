@@ -16,11 +16,9 @@
 #'
 #' @family miscellaneous_helpers
 extract_from_return_list <- function(list, name_of_element = "response") {
-  if (!is.list(list))
-    stop("Input must be a list")
+  if (!is.list(list)) stop("Input must be a list")
 
-  if (!name_of_element %in% names(list))
-    stop("Element not found in list")
+  if (!name_of_element %in% names(list)) stop("Element not found in list")
 
   return(list[[name_of_element]])
 }

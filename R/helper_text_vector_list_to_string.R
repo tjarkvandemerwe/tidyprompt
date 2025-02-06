@@ -31,9 +31,15 @@ vector_list_to_string <- function(obj, how = c("inline", "expanded")) {
   if (!is.null(names(obj)) && any(names(obj) != "")) {
     # Named case: Generate output based on the `how` parameter
     if (how == "inline") {
-      result_string <- paste(paste(names(obj), obj, sep = ": "), collapse = ", ")
+      result_string <- paste(
+        paste(names(obj), obj, sep = ": "),
+        collapse = ", "
+      )
     } else if (how == "expanded") {
-      result_string <- paste(paste(names(obj), obj, sep = ": "), collapse = "\n")
+      result_string <- paste(
+        paste(names(obj), obj, sep = ": "),
+        collapse = "\n"
+      )
     }
   } else {
     # Unnamed case: Handle values only

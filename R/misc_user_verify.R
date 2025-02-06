@@ -30,7 +30,9 @@ user_verify <- function(
 
       cli::cli_h3("Accept or decline")
       cli::cli_alert_info("If {.strong satisfied}, type nothing")
-      cli::cli_alert_info("If {.strong not satisfied}, type feedback to the LLM")
+      cli::cli_alert_info(
+        "If {.strong not satisfied}, type feedback to the LLM"
+      )
 
       feedback <- readline("Type: ")
 

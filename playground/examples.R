@@ -15,8 +15,6 @@ or$parameters$model <- "anthropic/claude-3.5-haiku"
 # Send message
 oai$complete_chat("Hi!! How are you?")
 
-
-
 #### 2 Basic prompt ####
 
 ## Prompt aanpassen
@@ -28,7 +26,6 @@ oai$complete_chat("Hi!! How are you?")
     }
   ) |>
   send_prompt(oai)
-
 
 ## Prompt aanpassen, extractie en validatie toepassen
 
@@ -51,8 +48,6 @@ yes_no_instruction <- "Respond with only 'YES' or 'NO' (use no other characters)
     }
   ) |>
   send_prompt(oai)
-
-
 
 #### 3 Structured output ####
 
@@ -80,7 +75,6 @@ yes_no_instruction <- "Respond with only 'YES' or 'NO' (use no other characters)
 #> --- Receiving response from LLM provider: ---
 #>  4
 #> [1] 4
-
 
 ## Verschillende formats mogelijk
 
@@ -124,16 +118,12 @@ persona$name
 persona$age
 persona$occupation
 
-
-
 #### 4 Reasoning modes ####
 
 "What is 2+2?" |>
   answer_as_integer() |>
   answer_by_chain_of_thought() |>
   send_prompt(oai)
-
-
 
 #### 5 Escape prompt ####
 
@@ -143,8 +133,6 @@ persona$occupation
   quit_if() |>
   send_prompt(oai)
 #> NULL
-
-
 
 #### 6 R code generation + evaluation ####
 
@@ -209,16 +197,15 @@ plot <- paste0(
   send_prompt(or)
 plot
 
-
-
-
 #### 7 SQL database interaction ####
 
 # Create an in-memory SQLite database
 conn <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 
 # Create a sample table of customers
-DBI::dbExecute(conn, "
+DBI::dbExecute(
+  conn,
+  "
   CREATE TABLE
     customers (
       id INTEGER PRIMARY KEY,
@@ -226,10 +213,13 @@ DBI::dbExecute(conn, "
       email TEXT,
       country TEXT
     );
-")
+"
+)
 
 # Insert some sample customer data
-DBI::dbExecute(conn, "
+DBI::dbExecute(
+  conn,
+  "
   INSERT INTO
     customers (name, email, country)
   VALUES
@@ -237,10 +227,13 @@ DBI::dbExecute(conn, "
     ('Bob', 'bob@example.com', 'Canada'),
     ('Charlie', 'charlie@example.com', 'UK'),
     ('Diana', 'diana@example.com', 'USA');
-")
+"
+)
 
 # Create another sample table for orders
-DBI::dbExecute(conn, "
+DBI::dbExecute(
+  conn,
+  "
   CREATE TABLE orders (
     order_id INTEGER PRIMARY KEY,
     customer_id INTEGER,
@@ -249,10 +242,13 @@ DBI::dbExecute(conn, "
     order_date TEXT,
     FOREIGN KEY(customer_id) REFERENCES customers(id)
   );
-")
+"
+)
 
 # Insert some sample orders
-DBI::dbExecute(conn, "
+DBI::dbExecute(
+  conn,
+  "
   INSERT INTO
     orders (customer_id, product, amount, order_date)
   VALUES
@@ -262,7 +258,8 @@ DBI::dbExecute(conn, "
     (3, 'SuperWidget', 49.99, '2024-03-05'),
     (4, 'Gadget', 29.99, '2024-04-01'),
     (1, 'Thingamajig', 9.99, '2024-04-02');
-")
+"
+)
 
 # Ask LLM a question which it will answer using the SQL database:
 "Who spent the most money and what products did they buy?" |>
@@ -273,16 +270,13 @@ DBI::dbExecute(conn, "
   ) |>
   send_prompt(oai)
 
-
-
-
 #### 8 R functions as tools ####
 
 ## Custom function as tool
 
 temperature_in_location <- function(
-    location = c("Amsterdam", "Utrecht", "Enschede"),
-    unit = c("Celcius", "Fahrenheit")
+  location = c("Amsterdam", "Utrecht", "Enschede"),
+  unit = c("Celcius", "Fahrenheit")
 ) {
   location <- match.arg(location)
   unit <- match.arg(unit)
@@ -297,7 +291,7 @@ temperature_in_location <- function(
   if (unit == "Celcius") {
     return(temperature_celcius)
   } else {
-    return(temperature_celcius * 9/5 + 32)
+    return(temperature_celcius * 9 / 5 + 32)
   }
 }
 
@@ -307,12 +301,12 @@ docs <- tools_get_docs(temperature_in_location)
 docs$description <- "Get the temperature in a location"
 docs$arguments$unit$description <- "Unit in which to return the temperature"
 docs$arguments$location$description <- "Location for which to return the temperature"
-docs$return$description <- "The temperature in the specified location and unit"
+docs$
+return$description <- "The temperature in the specified location and unit"
 
 "What is the weather in Enschede?" |>
   answer_using_tools(temperature_in_location) |>
   send_prompt(oai)
-
 
 ## Make LLM use a function from an R package to search Wikipedia for the answer
 

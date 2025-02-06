@@ -17,7 +17,8 @@ test_that("answer_as_integer adds instruction", {
 
   expect_true(
     grepl(
-      "You must answer with only an integer (use no other characters).", prompt,
+      "You must answer with only an integer (use no other characters).",
+      prompt,
       fixed = TRUE
     )
   )

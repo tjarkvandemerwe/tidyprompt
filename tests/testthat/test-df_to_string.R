@@ -29,8 +29,14 @@ test_that("df_to_string handles single-column data frame in wide and long format
 })
 
 test_that("df_to_string throws error if input is not a data frame", {
-  expect_error(df_to_string("not_a_data_frame", how = "wide"), "Input must be a data frame")
-  expect_error(df_to_string(list(Name = c("Alice", "Bob")), how = "wide"), "Input must be a data frame")
+  expect_error(
+    df_to_string("not_a_data_frame", how = "wide"),
+    "Input must be a data frame"
+  )
+  expect_error(
+    df_to_string(list(Name = c("Alice", "Bob")), how = "wide"),
+    "Input must be a data frame"
+  )
 })
 
 test_that("df_to_string handles data frame with NA values in wide and long formats", {

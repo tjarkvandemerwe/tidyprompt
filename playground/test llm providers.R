@@ -14,10 +14,13 @@ for (i in 1:length(llm_providers)) {
   name <- names(llm_providers)[[i]]
   provider <- llm_providers[[i]]
 
-  tryCatch({
-    response <- provider$complete_chat(msg)
-    print(paste(name, ":", response$content))
-  }, error = function(e) {
-    print(paste(name, ":", e$message))
-  })
+  tryCatch(
+    {
+      response <- provider$complete_chat(msg)
+      print(paste(name, ":", response$content))
+    },
+    error = function(e) {
+      print(paste(name, ":", e$message))
+    }
+  )
 }

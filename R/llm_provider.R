@@ -123,8 +123,7 @@ NULL
     #'
     #' @return The modified [llm_provider-class] object
     set_parameters = function(new_parameters) {
-      if (length(new_parameters) == 0)
-        return(self)
+      if (length(new_parameters) == 0) return(self)
 
       stopifnot(
         is.list(new_parameters),
@@ -155,36 +154,47 @@ NULL
       }
 
       stopifnot(
-        is.list(input), "chat_history" %in% names(input)
+        is.list(input),
+        "chat_history" %in% names(input)
       )
 
       chat_history <- chat_history(input$chat_history)
       if (self$verbose) {
-        message(crayon::bold(glue::glue(
-          "--- Sending request to LLM provider",
-          " ({
+        message(
+          crayon::bold(
+            glue::glue(
+              "--- Sending request to LLM provider",
+              " ({
               if (!is.null(self$parameters$model)) {
                 self$parameters$model
               } else {
                 'no model specified'
               }
           }):",
-          " ---"
-        )))
+              " ---"
+            )
+          )
+        )
         cat(chat_history$content[nrow(chat_history)])
         cat("\n")
       }
 
       if (self$verbose)
-        message(crayon::bold(glue::glue(
-          "--- Receiving response from LLM provider: ---"
-        )))
+        message(
+          crayon::bold(
+            glue::glue(
+              "--- Receiving response from LLM provider: ---"
+            )
+          )
+        )
 
       environment(private$complete_chat_function) <- environment()
       response <- private$complete_chat_function(chat_history)
 
       # Filter content with empty string ("") (Ollama tool call)
-      response$completed <- response$completed[response$completed$content != "", ]
+      response$completed <- response$completed[
+        response$completed$content != "",
+      ]
 
       http <- list()
       http$requests[[1]] <- response$http$request
@@ -197,13 +207,13 @@ NULL
           http$responses[[length(http$responses) + 1]] <- response$http$response
 
           stopifnot(
-            is.list(response), "completed" %in% names(response),
+            is.list(response),
+            "completed" %in% names(response),
             is.data.frame(response$completed),
             all(c("role", "content") %in% names(response$completed))
           )
 
-          if (isTRUE(response$`break`))
-            break
+          if (isTRUE(response$`break`)) break
         }
 
         if (!isFALSE(response$done) | isTRUE(response$`break`)) {
@@ -216,8 +226,8 @@ NULL
 
       # Print difference between chat_history and completed
       if (
-        self$verbose
-        && (is.null(self$parameters$stream) || !self$parameters$stream)
+        self$verbose &&
+          (is.null(self$parameters$stream) || !self$parameters$stream)
       ) {
         chat_history_new <- response$completed[
           (nrow(chat_history) + 1):nrow(response$completed),
@@ -229,12 +239,13 @@ NULL
       }
 
       if (isTRUE(response$`break`))
-        warning(paste0(
-          "Chat completion was interrupted by a handler break"
-        ))
+        warning(
+          paste0(
+            "Chat completion was interrupted by a handler break"
+          )
+        )
 
-      if (self$verbose)
-        return(invisible(response))
+      if (self$verbose) return(invisible(response))
 
       return(response)
     },

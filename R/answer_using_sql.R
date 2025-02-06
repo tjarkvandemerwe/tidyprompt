@@ -45,32 +45,33 @@
 #' @family pre_built_prompt_wraps
 #' @family answer_using_prompt_wraps
 answer_using_sql <- function(
-    prompt,
-    add_text = paste0(
-      "You must code in SQL to answer this prompt.",
-      " You must provide all SQL code between ```sql and ```.",
-      "\n\n",
-      "Never make assumptions about the possible values in the tables.\n",
-      "Instead, execute SQL queries to retrieve information you need."
-    ),
-    conn,
-    list_tables = TRUE,
-    describe_tables = TRUE,
-    evaluate_code = FALSE,
-    output_as_tool = FALSE,
-    return_mode = c(
-      "full",
-      "code",
-      "object",
-      "formatted_output",
-      "llm_answer"
-    )
-){
+  prompt,
+  add_text = paste0(
+    "You must code in SQL to answer this prompt.",
+    " You must provide all SQL code between ```sql and ```.",
+    "\n\n",
+    "Never make assumptions about the possible values in the tables.\n",
+    "Instead, execute SQL queries to retrieve information you need."
+  ),
+  conn,
+  list_tables = TRUE,
+  describe_tables = TRUE,
+  evaluate_code = FALSE,
+  output_as_tool = FALSE,
+  return_mode = c(
+    "full",
+    "code",
+    "object",
+    "formatted_output",
+    "llm_answer"
+  )
+) {
   # Validate settings
   return_mode <- match.arg(return_mode)
 
   stopifnot(
-    is.character(add_text), length(add_text) == 1,
+    is.character(add_text),
+    length(add_text) == 1,
     inherits(conn, "DBIConnection"),
     is.logical(list_tables),
     is.logical(describe_tables),
@@ -79,14 +80,18 @@ answer_using_sql <- function(
   )
 
   if (!requireNamespace("DBI", quietly = TRUE))
-    stop("'DBI' package is required; please install it using 'install.packages(\"DBI\")")
+    stop(
+      "'DBI' package is required; please install it using 'install.packages(\"DBI\")"
+    )
 
-  if (!evaluate_code & output_as_tool)
-    output_as_tool <- FALSE
-  if (output_as_tool)
-    return_mode <- "llm_answer"
-  if (!evaluate_code & return_mode %in% c("console", "object", "formatted_output"))
-    stop("The return mode must be 'full', 'code', or 'llm_answer' if 'evaluate_code' is FALSE")
+  if (!evaluate_code & output_as_tool) output_as_tool <- FALSE
+  if (output_as_tool) return_mode <- "llm_answer"
+  if (
+    !evaluate_code & return_mode %in% c("console", "object", "formatted_output")
+  )
+    stop(
+      "The return mode must be 'full', 'code', or 'llm_answer' if 'evaluate_code' is FALSE"
+    )
 
   # Retrieve list of tables if needed
   tables <- character(0)
@@ -98,7 +103,10 @@ answer_using_sql <- function(
   describe_text <- ""
   if (list_tables && describe_tables && length(tables) > 0) {
     describe_info <- lapply(tables, function(tbl) {
-      fields <- tryCatch(DBI::dbListFields(conn, tbl), error = function(e) character(0))
+      fields <- tryCatch(
+        DBI::dbListFields(conn, tbl),
+        error = function(e) character(0)
+      )
       fields_str <- if (length(fields) > 0) {
         paste0("  Columns: ", paste(fields, collapse = ", "))
       } else {
@@ -166,10 +174,14 @@ answer_using_sql <- function(
         return(x)
       }
 
-      return(llm_feedback(paste0(
-        "No SQL code detected. You must provide SQL code ",
-        "between ```sql and ```."
-      )))
+      return(
+        llm_feedback(
+          paste0(
+            "No SQL code detected. You must provide SQL code ",
+            "between ```sql and ```."
+          )
+        )
+      )
     }
 
     # For simplicity, assume one SQL code block; if multiple, use the first
@@ -192,11 +204,15 @@ answer_using_sql <- function(
     )
 
     if (inherits(query_res, "error")) {
-      return(llm_feedback(glue::glue(
-        "An error occurred while executing the SQL:\n",
-        "    {query_res$message}\n",
-        "Please provide a valid SQL query."
-      )))
+      return(
+        llm_feedback(
+          glue::glue(
+            "An error occurred while executing the SQL:\n",
+            "    {query_res$message}\n",
+            "Please provide a valid SQL query."
+          )
+        )
+      )
     }
 
     # query_res should now be a data frame
@@ -216,18 +232,13 @@ answer_using_sql <- function(
     }
 
     # Return according to return_mode
-    if (return_mode == "full")
-      return(return_list)
-    if (return_mode == "code")
-      return(sql_code)
+    if (return_mode == "full") return(return_list)
+    if (return_mode == "code") return(sql_code)
     if (return_mode == "console")
       return(utils::capture.output(print(query_res)) |> paste(collapse = "\n"))
-    if (return_mode == "object")
-      return(query_res)
-    if (return_mode == "formatted_output")
-      return(formatted_output)
-    if (return_mode == "llm_answer")
-      return(x)
+    if (return_mode == "object") return(query_res)
+    if (return_mode == "formatted_output") return(formatted_output)
+    if (return_mode == "llm_answer") return(x)
 
     return(return_list)
   }
@@ -240,12 +251,13 @@ answer_using_sql <- function(
 
   # Wrap the prompt
   prompt_wrap(
-    prompt, modify_fn, extraction_fn,
-    type = type, name = "answer_using_sql"
+    prompt,
+    modify_fn,
+    extraction_fn,
+    type = type,
+    name = "answer_using_sql"
   )
 }
-
-
 
 #' Helper function to extract SQL code from a string
 #'
@@ -261,7 +273,11 @@ answer_using_sql <- function(
 #' @keywords internal
 answer_using_sql_extract_sql_code <- function(input_string) {
   # Use regular expression to match all content between ```sql and ```, with case-insensitive matching
-  matches <- gregexpr("(?s)```[sS][qQ][lL]\\s*(.*?)\\s*```", input_string, perl = TRUE)
+  matches <- gregexpr(
+    "(?s)```[sS][qQ][lL]\\s*(.*?)\\s*```",
+    input_string,
+    perl = TRUE
+  )
   extracted_code <- regmatches(input_string, matches)
 
   # Remove the ```sql and ``` wrappers

@@ -68,43 +68,52 @@
 #' @family answer_as_prompt_wraps
 #' @family json
 answer_as_json <- function(
-    prompt,
-    schema = NULL,
-    schema_strict = FALSE,
-    schema_in_prompt_as = c(
-      "example", "schema"
-    ),
-    type = c(
-      "text-based", "auto", "openai", "ollama", "openai_oo", "ollama_oo"
-    )
+  prompt,
+  schema = NULL,
+  schema_strict = FALSE,
+  schema_in_prompt_as = c(
+    "example",
+    "schema"
+  ),
+  type = c(
+    "text-based",
+    "auto",
+    "openai",
+    "ollama",
+    "openai_oo",
+    "ollama_oo"
+  )
 ) {
   prompt <- tidyprompt(prompt)
   schema_in_prompt_as <- match.arg(schema_in_prompt_as)
   type <- match.arg(type)
 
   if (!is.null(schema) & !is.list(schema))
-    stop("The 'schema' argument must be a list (R object) representing a JSON schema")
+    stop(
+      "The 'schema' argument must be a list (R object) representing a JSON schema"
+    )
   if (!is.null(schema) & length(schema) == 0)
-    stop("The 'schema' argument must be a non-empty list (R object) representing a JSON schema")
+    stop(
+      "The 'schema' argument must be a non-empty list (R object) representing a JSON schema"
+    )
 
   if (type == "auto" & getOption("tidyprompt.warn.auto.json", TRUE)) {
-    cli::cli_alert_warning(paste0(
-      "{.strong `answer_as_json()`}:\n",
-      "* Automatically determining type based on 'llm_provider$api_type';\n",
-      "this does not consider model compatability\n",
-      "* Manually set argument 'type' if errors occur ",
-      "(\"text-based\" always works)\n",
-      "* Use `options(tidyprompt.warn.auto.json = FALSE)` to suppress this warning"
-    ))
+    cli::cli_alert_warning(
+      paste0(
+        "{.strong `answer_as_json()`}:\n",
+        "* Automatically determining type based on 'llm_provider$api_type';\n",
+        "this does not consider model compatability\n",
+        "* Manually set argument 'type' if errors occur ",
+        "(\"text-based\" always works)\n",
+        "* Use `options(tidyprompt.warn.auto.json = FALSE)` to suppress this warning"
+      )
+    )
   }
 
   determine_type <- function(llm_provider = NULL) {
-    if (type != "auto")
-      return(type)
-    if (isTRUE(llm_provider$api_type == "openai"))
-      return("openai")
-    if (isTRUE(llm_provider$api_type == "ollama"))
-      return("ollama")
+    if (type != "auto") return(type)
+    if (isTRUE(llm_provider$api_type == "openai")) return("openai")
+    if (isTRUE(llm_provider$api_type == "ollama")) return("ollama")
     return("text-based")
   }
 
@@ -112,8 +121,7 @@ answer_as_json <- function(
     type <- determine_type(llm_provider)
 
     if (type == "ollama") {
-      if (is.null(schema))
-        return(list(format = "json"))
+      if (is.null(schema)) return(list(format = "json"))
 
       if ("schema" %in% names(schema)) {
         schema <- schema$schema
@@ -144,10 +152,14 @@ answer_as_json <- function(
 
       json_schema$strict <- schema_strict
 
-      return(list(response_format = list(
-        type = "json_schema",
-        json_schema = json_schema
-      )))
+      return(
+        list(
+          response_format = list(
+            type = "json_schema",
+            json_schema = json_schema
+          )
+        )
+      )
     }
 
     if (type == "ollama_oo") {
@@ -171,16 +183,18 @@ answer_as_json <- function(
       "Your must format your response as a JSON object."
     )
 
-    if (
-      !is.null(schema)
-    ) {
+    if (!is.null(schema)) {
       jsonvalidate_installed()
 
       schema_instruction <- NULL
       if (schema_in_prompt_as == "example") {
         schema_instruction <- paste0(
           "Your JSON object should match this example JSON object:\n",
-          jsonlite::toJSON(r_json_schema_to_example(schema), auto_unbox = TRUE, pretty = TRUE)
+          jsonlite::toJSON(
+            r_json_schema_to_example(schema),
+            auto_unbox = TRUE,
+            pretty = TRUE
+          )
         )
       } else if (schema_in_prompt_as == "schema") {
         schema_instruction <- paste0(
@@ -202,17 +216,18 @@ answer_as_json <- function(
     jsons <- extraction_fn_json(llm_response)
 
     if (length(jsons) == 0)
-      return(llm_feedback(
-        "You must respond as a valid JSON object."
-      ))
+      return(
+        llm_feedback(
+          "You must respond as a valid JSON object."
+        )
+      )
 
-    if (length(jsons) == 1)
-      jsons <- jsons[[1]]
+    if (length(jsons) == 1) jsons <- jsons[[1]]
 
     if (
-      !is.null(schema)
-      & !isTRUE(type %in% c("openai", "ollama"))
-      & jsonvalidate_installed()
+      !is.null(schema) &
+        !isTRUE(type %in% c("openai", "ollama")) &
+        jsonvalidate_installed()
     ) {
       # Convert to JSON
       answer_json <- jsonlite::toJSON(jsons, auto_unbox = TRUE, pretty = TRUE)
@@ -220,18 +235,26 @@ answer_as_json <- function(
 
       # Validate JSON with verbose error reporting
       validation_result <- jsonvalidate::json_validate(
-        answer_json, schema_json, strict = schema_strict, verbose = TRUE
+        answer_json,
+        schema_json,
+        strict = schema_strict,
+        verbose = TRUE
       )
 
       if (!validation_result) {
         # Extract error details
         error_details <- attr(validation_result, "errors")
 
-        return(llm_feedback(paste0(
-          "Your response did not match the expected JSON schema.\n\n",
-          df_to_string(error_details), "\n\n",
-          schema_instruction
-        )))
+        return(
+          llm_feedback(
+            paste0(
+              "Your response did not match the expected JSON schema.\n\n",
+              df_to_string(error_details),
+              "\n\n",
+              schema_instruction
+            )
+          )
+        )
       }
     }
 
@@ -240,23 +263,27 @@ answer_as_json <- function(
 
   prompt_wrap(
     prompt,
-    modify_fn, extraction_fn, NULL, NULL, parameter_fn,
+    modify_fn,
+    extraction_fn,
+    NULL,
+    NULL,
+    parameter_fn,
     name = "answer_as_json"
   )
 }
 
-
-
 jsonvalidate_installed <- function() {
   if (!requireNamespace("jsonvalidate", quietly = TRUE)) {
-    cli::cli_alert_warning(paste0(
-      "{.strong `answer_as_json()`}:\n",
-      "* When using type \"text-based\" and providing a schema,\n",
-      " the 'jsonvalidate' package must be installed to validate the response\n",
-      " against the schema\n",
-      "* The 'jsonvalidate' package is not installed;\n",
-      " the LLM response will not be validated against the schema"
-    ))
+    cli::cli_alert_warning(
+      paste0(
+        "{.strong `answer_as_json()`}:\n",
+        "* When using type \"text-based\" and providing a schema,\n",
+        " the 'jsonvalidate' package must be installed to validate the response\n",
+        " against the schema\n",
+        "* The 'jsonvalidate' package is not installed;\n",
+        " the LLM response will not be validated against the schema"
+      )
+    )
 
     return(invisible(FALSE))
   }

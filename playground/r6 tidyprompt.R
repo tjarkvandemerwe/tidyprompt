@@ -15,7 +15,10 @@ tp <- R6::R6Class(
 
       if (!is.null(self$modify_fn)) {
         # Add `self` to the environment of `modify_fn`
-        environment(self$modify_fn) <- list2env(list(self = self), parent = environment(self$modify_fn))
+        environment(self$modify_fn) <- list2env(
+          list(self = self),
+          parent = environment(self$modify_fn)
+        )
         prompt <- self$modify_fn(prompt)
       }
 
@@ -24,13 +27,11 @@ tp <- R6::R6Class(
   )
 )
 
-
 tpi <- tp$new()
 # tpi$modify_fn <- function(prompt) {
 #   paste0(prompt, " How are you?")
 # }
 # tpi$construct_prompt()
-
 
 pw <- function(tpi, text = " hi from wrap function env!") {
   tpi <- tpi$clone()
@@ -44,4 +45,3 @@ pw <- function(tpi, text = " hi from wrap function env!") {
 
 tpi <- pw(tpi)
 tpi$construct_prompt()
-

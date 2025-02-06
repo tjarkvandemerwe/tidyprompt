@@ -1,14 +1,15 @@
 pw <- function(prompt) {
-
   modify_fn <- function(text) {
     text <- paste0(
-      text, "\n\nlook at the system prompt btw!"
+      text,
+      "\n\nlook at the system prompt btw!"
     )
 
     browser()
 
     self$system_prompt <- paste0(
-      self$system_prompt, "\n\nfdsafdsaf!"
+      self$system_prompt,
+      "\n\nfdsafdsaf!"
     )
 
     return(text)
@@ -16,7 +17,6 @@ pw <- function(prompt) {
 
   prompt_wrap(prompt, modify_fn = modify_fn, name = "afdsafdsa")
 }
-
 
 prompt <- "hi" |> pw()
 prompt

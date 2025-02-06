@@ -1,5 +1,5 @@
 test_that("extraction and validation works", {
- fake_llm <- llm_provider_fake()
+  fake_llm <- llm_provider_fake()
 
   response <- "What is 2 + 2?" |>
     answer_by_chain_of_thought() |>
@@ -26,9 +26,9 @@ test_that("full return mode works", {
   expect_true(is.data.frame(response$chat_history))
   expect_true(is.data.frame(response$chat_history_clean))
   expect_true(
-    is.numeric(response$interactions)
-    & response$interactions > 0
-    & response$interactions == floor(response$interactions)
+    is.numeric(response$interactions) &
+      response$interactions > 0 &
+      response$interactions == floor(response$interactions)
   )
   expect_true(is.double(response$duration_seconds))
 })

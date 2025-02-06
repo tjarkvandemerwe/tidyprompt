@@ -32,11 +32,21 @@ print.Tidyprompt <- function(x, ...) {
     formatted_text <- format_with_prefix(x$base_prompt, line_prefix)
     cat(formatted_text, "\n")
   } else if (n_wraps == 1) {
-    cat(col_silver("The base prompt is modified by a prompt wrap, resulting in:\n"))
+    cat(
+      col_silver(
+        "The base prompt is modified by a prompt wrap, resulting in:\n"
+      )
+    )
   } else if (n_wraps > 1) {
-    cat(col_silver(
-      paste("The base prompt is modified by", n_wraps, "prompt wraps, resulting in:\n")
-    ))
+    cat(
+      col_silver(
+        paste(
+          "The base prompt is modified by",
+          n_wraps,
+          "prompt wraps, resulting in:\n"
+        )
+      )
+    )
   }
 
   if (n_wraps > 0) {
@@ -46,7 +56,9 @@ print.Tidyprompt <- function(x, ...) {
   }
 
   cat(col_silver("Use 'x$base_prompt' to show the base prompt text.\n"))
-  cat(col_silver("Use 'x$construct_prompt_text()' to get the full prompt text.\n"))
+  cat(
+    col_silver("Use 'x$construct_prompt_text()' to get the full prompt text.\n")
+  )
   if (n_wraps > 0) {
     cat(col_silver("Use 'get_prompt_wraps(x)' to show the prompt wraps.\n"))
   }
@@ -55,19 +67,16 @@ print.Tidyprompt <- function(x, ...) {
 }
 
 col_blue <- function(text) {
-  if (requireNamespace("cli", quietly = TRUE))
-    return(cli::col_blue(text))
+  if (requireNamespace("cli", quietly = TRUE)) return(cli::col_blue(text))
   text
 }
 
 col_green <- function(text) {
-  if (requireNamespace("cli", quietly = TRUE))
-    return(cli::col_green(text))
+  if (requireNamespace("cli", quietly = TRUE)) return(cli::col_green(text))
   text
 }
 
 col_silver <- function(text) {
-  if (requireNamespace("cli", quietly = TRUE))
-    return(cli::col_silver(text))
+  if (requireNamespace("cli", quietly = TRUE)) return(cli::col_silver(text))
   text
 }

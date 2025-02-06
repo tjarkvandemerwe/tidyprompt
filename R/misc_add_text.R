@@ -18,8 +18,10 @@
 #' @family pre_built_prompt_wraps
 #' @family miscellaneous_prompt_wraps
 add_text <- function(
-    prompt,
-    text, position = c("after", "before"), sep = "\n\n"
+  prompt,
+  text,
+  position = c("after", "before"),
+  sep = "\n\n"
 ) {
   position <- match.arg(position)
 

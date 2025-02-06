@@ -2,10 +2,8 @@
 
 options(tidyprompt.verbose = TRUE)
 
-
 ####  Code to test extractions/validations ####
 if (FALSE) {
-
   ollama <- create_ollama_llm_provider()
 
   prompt <- "What is 2 + 2?" |>
@@ -19,12 +17,16 @@ if (FALSE) {
     send_prompt(ollama, verbose = TRUE)
 
   "Hi!" |>
-    add_text("Can you please calculate what is 5+5? Write the answer out as a word") |>
+    add_text(
+      "Can you please calculate what is 5+5? Write the answer out as a word"
+    ) |>
     answer_as_integer(add_instruction_to_prompt = FALSE) |>
     send_prompt(ollama)
 
   prompt <- "Hi!" |>
-    add_text("Can you please calculate what is 5+5? Write the answer out as a word") |>
+    add_text(
+      "Can you please calculate what is 5+5? Write the answer out as a word"
+    ) |>
     answer_as_integer(add_instruction_to_prompt = FALSE) |>
     set_llm_provider(create_ollama_llm_provider()) |>
     answer_by_chain_of_thought()
@@ -33,21 +35,16 @@ if (FALSE) {
 
   tool_functions <- list(temperature_in_location)
 
-
   "Hi!" |>
     send_prompt(
       llm_provider = create_ollama_llm_provider(),
       system_prompt = "You are an assistant who always answers in poems. You are also very angry."
     )
-
 }
-
-
 
 #### Test prompt wrap ####
 
 if (FALSE) {
-
   #' Add a mode to a prompt (example function)
   #'
   #' @param prompt_wrap_or_list A single string, a prompt_wrap object, or a list
@@ -61,11 +58,13 @@ if (FALSE) {
     new_wrap <- create_prompt_wrap(
       type = "mode",
       modify_fn = function(original_prompt_text, modify_fn_args) {
-        return(glue::glue(
-          "{original_prompt_text}
+        return(
+          glue::glue(
+            "{original_prompt_text}
 
         Provide your answer in a way that a 5-year old would understand."
-        ))
+          )
+        )
       },
       modify_fn_args = list()
     )
@@ -108,24 +107,24 @@ if (FALSE) {
     add_example_mode() |>
     set_llm_provider(create_ollama_llm_provider()) |>
     send_prompt()
-
 }
-
-
 
 #### Code to test extractions/validations ####
 
 if (FALSE) {
-
   "Hi!" |>
-    add_text("Can you please calculate what is 5+5? Write the answer out as a word") |>
+    add_text(
+      "Can you please calculate what is 5+5? Write the answer out as a word"
+    ) |>
     answer_as_integer(add_instruction_to_prompt = FALSE) |>
     set_llm_provider(create_ollama_llm_provider()) |>
     answer_by_chain_of_thought(extract_from_finish_brackets = FALSE) |>
     send_prompt()
 
   "Hi!" |>
-    add_text("Can you please calculate what is 5+5? Write the answer out as a word") |>
+    add_text(
+      "Can you please calculate what is 5+5? Write the answer out as a word"
+    ) |>
     answer_as_integer(add_instruction_to_prompt = FALSE) |>
     set_llm_provider(create_ollama_llm_provider()) |>
     answer_by_chain_of_thought(extract_from_finish_brackets = FALSE) |>
@@ -139,15 +138,11 @@ if (FALSE) {
 
   "Hi" |>
     send_prompt(llm_provider = create_ollama_llm_provider())
-
 }
-
-
 
 #### Tool testing ####
 
 if (FALSE) {
-
   #' Example function to pass to LLM
   #'
   #' @param location ...
@@ -182,10 +177,9 @@ if (FALSE) {
     if (unit == "Celcius") {
       return(temperature_celcius)
     } else {
-      return(temperature_celcius * 9/5 + 32)
+      return(temperature_celcius * 9 / 5 + 32)
     }
   }
-
 
   "Hi, what is the weather in Enschede? Give me Celcius degrees" |>
     add_tools(tool_functions = list(temperature_in_location)) |>
@@ -203,5 +197,4 @@ if (FALSE) {
   # FUNCTION[temperature_in_location]("Enschede", "Celcius")'
   #
   # tool_extraction(llm_response, tool_functions)
-
 }

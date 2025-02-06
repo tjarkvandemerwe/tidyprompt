@@ -11,7 +11,8 @@ test_that("construct simple prompt text", {
 test_that("construct more complex prompt text", {
   prompt <- "Hi" |> add_text("How are you?", sep = "\n\n", position = "after")
   expect_equal(
-    construct_prompt_text(prompt), "Hi\n\nHow are you?"
+    construct_prompt_text(prompt),
+    "Hi\n\nHow are you?"
   )
 })
 
@@ -55,7 +56,8 @@ test_that("create tidyprompt from chat_history object", {
 
   # Check text
   expect_equal(
-    construct_prompt_text(prompt2), "Hi\n\nHow are you?"
+    construct_prompt_text(prompt2),
+    "Hi\n\nHow are you?"
   )
 })
 
@@ -65,7 +67,8 @@ test_that("setting and getting chat history returns consistent results", {
     role = c("user", "assistant", "user"),
     content = c("What is 5 + 5?", "10", "And what is 5 + 6?"),
     tool_result = c(FALSE, FALSE, NA)
-  ) |> chat_history()
+  ) |>
+    chat_history()
 
   # Create Tidyprompt object and set chat history
   # Initial prompt should not show up.

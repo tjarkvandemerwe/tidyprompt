@@ -47,11 +47,11 @@
 #'
 #' @examples
 answer_as_json <- function(
-    prompt,
-    type = c("text-based", "ollama", "openai"),
-    schema = NULL,
-    schema_strict = FALSE,
-    schema_in_prompt_as = c("example", "schema")
+  prompt,
+  type = c("text-based", "ollama", "openai"),
+  schema = NULL,
+  schema_strict = FALSE,
+  schema_in_prompt_as = c("example", "schema")
 ) {
   prompt <- tidyprompt(prompt)
   type <- match.arg(type)
@@ -70,24 +70,29 @@ answer_as_json <- function(
     }
   }
 
-  if (type == "ollama")
-    prompt$parameters$format <- "json"
+  if (type == "ollama") prompt$parameters$format <- "json"
 
   schema_instruction <- NULL
   if (type %in% c("text-based", "ollama") & !is.null(schema)) {
     if (!requireNamespace("jsonvalidate", quietly = TRUE)) {
-      warning(paste0(
-        "When using type = 'text-based'/'ollama' and providing a schema,",
-        " the 'jsonvalidate' package must be installed to validate the response",
-        " against the schema. Currently, the 'jsonvalidate' package is not installed",
-        " and the LLM response will not be validated against the schema"
-      ))
+      warning(
+        paste0(
+          "When using type = 'text-based'/'ollama' and providing a schema,",
+          " the 'jsonvalidate' package must be installed to validate the response",
+          " against the schema. Currently, the 'jsonvalidate' package is not installed",
+          " and the LLM response will not be validated against the schema"
+        )
+      )
     }
 
     if (schema_in_prompt_as == "example") {
       schema_instruction <- paste0(
         "Your JSON object should match this example JSON object:\n",
-        jsonlite::toJSON(generate_json_example_from_schema(schema), auto_unbox = TRUE, pretty = TRUE)
+        jsonlite::toJSON(
+          generate_json_example_from_schema(schema),
+          auto_unbox = TRUE,
+          pretty = TRUE
+        )
       )
     } else if (schema_in_prompt_as == "schema") {
       schema_instruction <- paste0(
@@ -98,18 +103,14 @@ answer_as_json <- function(
   }
 
   modify_fn <- function(prompt_text) {
-    if (type == "openai" & !is.null(schema))
-      return(prompt_text)
+    if (type == "openai" & !is.null(schema)) return(prompt_text)
 
     prompt_text <- glue::glue(
       "{prompt_text}\n\n",
       "Your must format your response as a JSON object."
     )
 
-    if (
-      (type %in% c("text-based", "ollama"))
-      & !is.null(schema_instruction)
-    )
+    if ((type %in% c("text-based", "ollama")) & !is.null(schema_instruction))
       prompt_text <- paste0(prompt_text, "\n\n", schema_instruction)
 
     return(prompt_text)
@@ -119,17 +120,18 @@ answer_as_json <- function(
     jsons <- extraction_fn_json(llm_response)
 
     if (length(jsons) == 0)
-      return(llm_feedback(
-        "You must respond as a valid JSON object."
-      ))
+      return(
+        llm_feedback(
+          "You must respond as a valid JSON object."
+        )
+      )
 
-    if (length(jsons) == 1)
-      jsons <- jsons[[1]]
+    if (length(jsons) == 1) jsons <- jsons[[1]]
 
     if (
-      !is.null(schema)
-      & type %in% c("text-based", "ollama")
-      & requireNamespace("jsonvalidate", quietly = TRUE)
+      !is.null(schema) &
+        type %in% c("text-based", "ollama") &
+        requireNamespace("jsonvalidate", quietly = TRUE)
     ) {
       # Convert to JSON
       answer_json <- jsonlite::toJSON(jsons, auto_unbox = TRUE, pretty = TRUE)
@@ -137,18 +139,26 @@ answer_as_json <- function(
 
       # Validate JSON with verbose error reporting
       validation_result <- jsonvalidate::json_validate(
-        answer_json, schema_json, strict = strict_schema, verbose = TRUE
+        answer_json,
+        schema_json,
+        strict = strict_schema,
+        verbose = TRUE
       )
 
       if (!validation_result) {
         # Extract error details
         error_details <- attr(validation_result, "errors")
 
-        return(llm_feedback(paste0(
-          "Your response did not match the expected JSON schema.\n\n",
-          df_to_string(error_details), "\n\n",
-          schema_instruction
-        )))
+        return(
+          llm_feedback(
+            paste0(
+              "Your response did not match the expected JSON schema.\n\n",
+              df_to_string(error_details),
+              "\n\n",
+              schema_instruction
+            )
+          )
+        )
       }
     }
 
@@ -157,8 +167,6 @@ answer_as_json <- function(
 
   prompt_wrap(prompt, modify_fn, extraction_fn)
 }
-
-
 
 #' Generate an example object from a JSON schema
 #'
@@ -190,7 +198,9 @@ generate_json_example_from_schema <- function(schema) {
       result <- list()
       if (!is.null(schema$properties)) {
         for (name in names(schema$properties)) {
-          result[[name]] <- generate_json_example_from_schema(schema$properties[[name]])
+          result[[name]] <- generate_json_example_from_schema(
+            schema$properties[[name]]
+          )
         }
       }
       return(result)

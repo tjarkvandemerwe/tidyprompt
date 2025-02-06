@@ -42,7 +42,6 @@ df_to_string <- function(df, how = c("wide", "long")) {
 
     # Combine header and rows into a single output string
     result_string <- paste(c(header, rows_as_strings), collapse = "\n")
-
   } else if (how == "long") {
     # Convert each row with column names for each value
     rows_as_strings <- apply(df, 1, function(row) {

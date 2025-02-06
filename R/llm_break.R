@@ -32,8 +32,8 @@
 #' @family prompt_evaluation
 #' @seealso [llm_feedback()]
 llm_break <- function(
-    object_to_return = NULL,
-    success = FALSE
+  object_to_return = NULL,
+  success = FALSE
 ) {
   if (!is.logical(success))
     stop("The 'success' argument must be of type logical.")
@@ -42,11 +42,13 @@ llm_break <- function(
     warning("If 'success' is FALSE, 'object_to_return' is set to NULL")
   }
 
-  return(structure(
-    list(
-      object_to_return = object_to_return,
-      success = success
-    ),
-    class = "llm_break"
-  ))
+  return(
+    structure(
+      list(
+        object_to_return = object_to_return,
+        success = success
+      ),
+      class = "llm_break"
+    )
+  )
 }

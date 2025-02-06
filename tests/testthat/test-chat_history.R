@@ -9,8 +9,10 @@ test_that("chat_history.character creates a valid chat_history data frame", {
 
 test_that("chat_history.character errors on non-single string inputs", {
   # Test with multiple strings
-  expect_error(chat_history(c("Hello", "This should fail")),
-               "A single character string is expected for chat history input.")
+  expect_error(
+    chat_history(c("Hello", "This should fail")),
+    "A single character string is expected for chat history input."
+  )
 })
 
 test_that("chat_history.data.frame accepts valid chat history data frame", {
@@ -24,7 +26,10 @@ test_that("chat_history.data.frame accepts valid chat history data frame", {
   expect_s3_class(result, "chat_history")
   expect_equal(ncol(result), 3)
   expect_equal(result$role, c("user", "assistant", "system"))
-  expect_equal(result$content, c("User message", "Assistant response", "System message"))
+  expect_equal(
+    result$content,
+    c("User message", "Assistant response", "System message")
+  )
 })
 
 test_that("chat_history.data.frame errors on invalid role values", {
@@ -34,8 +39,10 @@ test_that("chat_history.data.frame errors on invalid role values", {
     content = c("User message", "Invalid role"),
     stringsAsFactors = FALSE
   )
-  expect_error(chat_history(invalid_df),
-               "The 'role' column must contain only 'user', 'assistant', or 'system'.")
+  expect_error(
+    chat_history(invalid_df),
+    "The 'role' column must contain only 'user', 'assistant', or 'system'."
+  )
 })
 
 test_that("chat_history.data.frame errors on non-character content column", {
@@ -45,12 +52,16 @@ test_that("chat_history.data.frame errors on non-character content column", {
     content = c(1, 2),
     stringsAsFactors = FALSE
   )
-  expect_error(chat_history(invalid_df),
-               "The 'content' column must be of type character.")
+  expect_error(
+    chat_history(invalid_df),
+    "The 'content' column must be of type character."
+  )
 })
 
 test_that("chat_history.default errors on invalid input types", {
   # Test with numeric input
-  expect_error(chat_history(42),
-               "The input must be either a data frame with 'role' and 'content' columns, or a single string.")
+  expect_error(
+    chat_history(42),
+    "The input must be either a data frame with 'role' and 'content' columns, or a single string."
+  )
 })

@@ -47,10 +47,10 @@
 #'
 #' @example inst/examples/llm_verify.R
 llm_verify <- function(
-    prompt,
-    question = "Is the answer satisfactory?",
-    llm_provider = NULL,
-    max_words_feedback = 50
+  prompt,
+  question = "Is the answer satisfactory?",
+  llm_provider = NULL,
+  max_words_feedback = 50
 ) {
   prompt <- tidyprompt(prompt)
 
@@ -91,7 +91,9 @@ llm_verify <- function(
       ">>> An assistant was asked:\n\n",
       "{prompt_text}\n\n",
       ">>> The assistant answered:\n\n",
-      "  ", paste(result_as_text, collapse = "\n  "), "\n\n",
+      "  ",
+      paste(result_as_text, collapse = "\n  "),
+      "\n\n",
       ">>> {question}",
       .trim = FALSE
     ) |>
@@ -114,9 +116,14 @@ llm_verify <- function(
       answer_as_text(max_words = max_words_feedback) |>
       send_prompt(llm_provider)
 
-    return(llm_feedback(paste0(
-      "Your answer was rejected for this reason:\n\n", feedback
-    )))
+    return(
+      llm_feedback(
+        paste0(
+          "Your answer was rejected for this reason:\n\n",
+          feedback
+        )
+      )
+    )
   }
 
   prompt_wrap(

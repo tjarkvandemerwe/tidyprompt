@@ -31,11 +31,10 @@
 #' @family pre_built_prompt_wraps
 #' @family answer_by_prompt_wraps
 answer_by_chain_of_thought <- function(
-    prompt,
-    extract_from_finish_brackets = TRUE,
-    extraction_lenience = TRUE
+  prompt,
+  extract_from_finish_brackets = TRUE,
+  extraction_lenience = TRUE
 ) {
-
   # Define modification/extraction/validation functions:
   modify_fn <- function(original_prompt_text) {
     new_prompt <- glue::glue(
@@ -68,14 +67,15 @@ answer_by_chain_of_thought <- function(
   }
 
   extraction_fn <- function(llm_response) {
-    if (!extract_from_finish_brackets)
-      return(llm_response)
+    if (!extract_from_finish_brackets) return(llm_response)
     extraction_fn_finish(llm_response, extraction_lenience)
   }
 
   prompt_wrap(
     prompt,
-    modify_fn, extraction_fn,
-    type = "mode", name = "answer_by_chain_of_thought"
+    modify_fn,
+    extraction_fn,
+    type = "mode",
+    name = "answer_by_chain_of_thought"
   )
 }

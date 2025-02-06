@@ -25,16 +25,18 @@
 #' @family pre_built_prompt_wraps
 #' @family answer_as_prompt_wraps
 answer_as_list <- function(
-    prompt,
-    item_name = "item",
-    item_explanation = NULL,
-    n_unique_items = NULL,
-    list_mode = c("bullet", "comma")
+  prompt,
+  item_name = "item",
+  item_explanation = NULL,
+  n_unique_items = NULL,
+  list_mode = c("bullet", "comma")
 ) {
   prompt <- tidyprompt(prompt)
   stopifnot(
-    is.character(item_name), length(item_name) == 1,
-    is.null(item_explanation) || (is.character(item_explanation) & length(item_explanation) == 1),
+    is.character(item_name),
+    length(item_name) == 1,
+    is.null(item_explanation) ||
+      (is.character(item_explanation) & length(item_explanation) == 1),
     is.null(n_unique_items) || (is.numeric(n_unique_items) & n_unique_items > 0)
   )
   list_mode <- match.arg(list_mode)
@@ -112,34 +114,46 @@ answer_as_list <- function(
 
   extraction_fn <- function(response) {
     if (!is.character(response)) {
-      stop(paste0(
-        "Response to extract a list from must be a string.",
-        " Make sure that you do not apply any prompt wraps which make the",
-        " response unsuitable for list extraction."
-      ))
+      stop(
+        paste0(
+          "Response to extract a list from must be a string.",
+          " Make sure that you do not apply any prompt wraps which make the",
+          " response unsuitable for list extraction."
+        )
+      )
     }
 
     if (list_mode == "bullet") {
       # Existing bullet mode extraction
       items <- stringr::str_extract_all(response, "--\\s*([^\\-\\n]+)")[[1]]
       if (length(items) == 0) {
-        return(llm_feedback(glue::glue(
-          "Could not parse any listed items from your response.",
-          "{list_instruction}",
-          .trim = FALSE
-        )))
+        return(
+          llm_feedback(
+            glue::glue(
+              "Could not parse any listed items from your response.",
+              "{list_instruction}",
+              .trim = FALSE
+            )
+          )
+        )
       }
       items <- stringr::str_trim(stringr::str_remove_all(items, "--\\s*"))
     } else if (list_mode == "comma") {
       # Improved comma mode extraction
-      items <- stringr::str_match_all(response, "\\d+\\.\\s*([^,\\n]+)")[[1]][,2]
+      items <- stringr::str_match_all(response, "\\d+\\.\\s*([^,\\n]+)")[[1]][,
+        2
+      ]
 
       if (length(items) == 0) {
-        return(llm_feedback(glue::glue(
-          "Could not parse any listed items from your response.",
-          "{list_instruction}",
-          .trim = FALSE
-        )))
+        return(
+          llm_feedback(
+            glue::glue(
+              "Could not parse any listed items from your response.",
+              "{list_instruction}",
+              .trim = FALSE
+            )
+          )
+        )
       }
 
       # Trim whitespace
@@ -152,11 +166,15 @@ answer_as_list <- function(
       items <- items[items != ""]
 
       if (length(items) == 0) {
-        return(llm_feedback(glue::glue(
-          "Could not parse any valid items from your response.",
-          "{list_instruction}",
-          .trim = FALSE
-        )))
+        return(
+          llm_feedback(
+            glue::glue(
+              "Could not parse any valid items from your response.",
+              "{list_instruction}",
+              .trim = FALSE
+            )
+          )
+        )
       }
     }
 
@@ -164,11 +182,15 @@ answer_as_list <- function(
     items <- unique(items)
 
     if (!is.null(n_unique_items) && length(items) != n_unique_items) {
-      return(llm_feedback(glue::glue(
-        "The number of unique items in your list should be {n_unique_items}.",
-        "{list_instruction}",
-        .trim = FALSE
-      )))
+      return(
+        llm_feedback(
+          glue::glue(
+            "The number of unique items in your list should be {n_unique_items}.",
+            "{list_instruction}",
+            .trim = FALSE
+          )
+        )
+      )
     }
 
     # Return the extracted items
@@ -176,7 +198,9 @@ answer_as_list <- function(
   }
 
   prompt_wrap(
-    prompt, modify_fn, extraction_fn, name = "answer_as_list"
+    prompt,
+    modify_fn,
+    extraction_fn,
+    name = "answer_as_list"
   )
 }
-

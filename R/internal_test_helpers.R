@@ -16,7 +16,9 @@
 #' @keywords internal
 skip_test_if_no_ollama <- function(do_not_run = FALSE) {
   if (do_not_run) {
-    return(testthat::skip("skip test: Skipping test even if Ollama is available"))
+    return(
+      testthat::skip("skip test: Skipping test even if Ollama is available")
+    )
   }
 
   # Define the request URL for the local Ollama server
@@ -45,8 +47,6 @@ skip_test_if_no_ollama <- function(do_not_run = FALSE) {
   return(invisible(NULL))
 }
 
-
-
 #' Skip tests if OpenAI model is unavailable
 #'
 #' Helper function for unit tests that skips the test if the OpenAI model is not available.
@@ -63,7 +63,9 @@ skip_test_if_no_ollama <- function(do_not_run = FALSE) {
 #' @keywords internal
 skip_test_if_no_openai <- function(do_not_run = FALSE, model = "gpt-4o-mini") {
   if (do_not_run) {
-    return(testthat::skip("skip test: Skipping test even if OpenAI is available"))
+    return(
+      testthat::skip("skip test: Skipping test even if OpenAI is available")
+    )
   }
 
   url <- paste0("https://api.openai.com/v1/models/", model)

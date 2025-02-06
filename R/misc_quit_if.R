@@ -41,14 +41,14 @@
 #' @family pre_built_prompt_wraps
 #' @family miscellaneous_prompt_wraps
 quit_if <- function(
-    prompt,
-    quit_detect_regex = "NO ANSWER",
-    instruction = paste0(
-      "If you think that you cannot provide a valid answer, you must type:\n",
-      "'NO ANSWER' (use no other characters)"
-    ),
-    success = TRUE,
-    response_result = c("null", "llm_response", "regex_match")
+  prompt,
+  quit_detect_regex = "NO ANSWER",
+  instruction = paste0(
+    "If you think that you cannot provide a valid answer, you must type:\n",
+    "'NO ANSWER' (use no other characters)"
+  ),
+  success = TRUE,
+  response_result = c("null", "llm_response", "regex_match")
 ) {
   # Validate arguments
   if (!is.null(instruction)) {
@@ -83,22 +83,30 @@ quit_if <- function(
   extraction_fn <- function(x) {
     if (grepl(quit_detect_regex, x)) {
       if (response_result == "null") {
-        return(llm_break(
-          object_to_return = NULL,
-          success = success
-        ))
+        return(
+          llm_break(
+            object_to_return = NULL,
+            success = success
+          )
+        )
       }
       if (response_result == "llm_response") {
-        return(llm_break(
-          object_to_return = x,
-          success = success
-        ))
+        return(
+          llm_break(
+            object_to_return = x,
+            success = success
+          )
+        )
       }
       if (response_result == "regex_match") {
-        return(llm_break(
-          object_to_return = regmatches(x, regexpr(quit_detect_regex, x))[[1]],
-          success = success
-        ))
+        return(
+          llm_break(
+            object_to_return = regmatches(x, regexpr(quit_detect_regex, x))[[
+              1
+            ]],
+            success = success
+          )
+        )
       }
     }
     return(x)

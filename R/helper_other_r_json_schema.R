@@ -39,7 +39,7 @@ r_json_schema_to_example <- function(schema) {
     },
     string = {
       if (!is.null(schema$enum)) {
-        return(schema$enum)  # Include all possible values
+        return(schema$enum) # Include all possible values
       }
       return(ifelse(!is.null(schema$example), schema$example, "..."))
     },

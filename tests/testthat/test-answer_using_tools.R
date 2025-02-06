@@ -31,7 +31,7 @@ test_that("text-based function calling works with custom function", {
     if (unit == "Celcius") {
       return(temperature_celcius)
     } else {
-      return(temperature_celcius * 9/5 + 32)
+      return(temperature_celcius * 9 / 5 + 32)
     }
   }
 
@@ -41,7 +41,8 @@ test_that("text-based function calling works with custom function", {
   docs$description <- "Get the temperature in a location"
   docs$arguments$unit$description <- "Unit in which to return the temperature"
   docs$arguments$location$description <- "Location for which to return the temperature"
-  docs$return$description <- "The temperature in the specified location and unit"
+  docs$
+  return$description <- "The temperature in the specified location and unit"
   temperature_in_location <- tools_add_docs(temperature_in_location, docs)
 
   prompt <- "Hi, what is the weather in Enschede? Give me Celcius degrees" |>

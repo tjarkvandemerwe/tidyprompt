@@ -1,6 +1,10 @@
 test_that("answer_as_list adds list instruction", {
   prompt <- "List the top programming languages." |>
-    answer_as_list(item_name = "language", n_unique_items = 3, list_mode = "bullet") |>
+    answer_as_list(
+      item_name = "language",
+      n_unique_items = 3,
+      list_mode = "bullet"
+    ) |>
     construct_prompt_text()
 
   expect_true(

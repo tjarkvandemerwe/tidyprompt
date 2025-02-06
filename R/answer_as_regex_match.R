@@ -21,9 +21,9 @@
 #' @family pre_built_prompt_wraps
 #' @family answer_as_prompt_wraps
 answer_as_regex_match <- function(
-    prompt,
-    regex,
-    mode = c("full_match", "extract_matches")
+  prompt,
+  regex,
+  mode = c("full_match", "extract_matches")
 ) {
   mode <- match.arg(mode)
 

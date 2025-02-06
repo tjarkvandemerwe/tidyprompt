@@ -5,7 +5,9 @@ paste0(
 ) |>
   answer_as_integer() |>
   answer_as_code(
-    pkgs_to_use = c("dplyr"), output_as_tool = TRUE, return_mode = "llm_answer"
+    pkgs_to_use = c("dplyr"),
+    output_as_tool = TRUE,
+    return_mode = "llm_answer"
   ) |>
   answer_by_chain_of_thought() |>
   send_prompt(llm_provider_openai())
@@ -16,7 +18,8 @@ paste0(
 ) |>
   answer_as_integer() |>
   answer_as_code(
-    pkgs_to_use = c("dplyr"), output_as_tool = TRUE
+    pkgs_to_use = c("dplyr"),
+    output_as_tool = TRUE
   ) |>
   answer_by_chain_of_thought() |>
   send_prompt(llm_provider_ollama())
@@ -34,8 +37,9 @@ plot <- paste0(
   send_prompt()
 plot
 
-anthropic <- llm_provider_openrouter()$
-  set_parameters(list(model = "anthropic/claude-3.5-sonnet"))
+anthropic <- llm_provider_openrouter()$set_parameters(
+  list(model = "anthropic/claude-3.5-sonnet")
+)
 
 paste0(
   "Create a scatter plot of miles per gallon (mpg) versus",
@@ -50,7 +54,6 @@ paste0(
   ) |>
   send_prompt(anthropic)
 
-
 ###
 
 rs <- callr::r_session$new()
@@ -62,7 +65,7 @@ rs$run_with_output(function() {
   # rename
   names(cars) <- c("Humidity", "Bananas")
 
-  dataset <<- cars;
+  dataset <<- cars
 
   head(dataset)
 })
@@ -77,7 +80,6 @@ research question and answer it." |>
   answer_by_chain_of_thought(extract_from_finish_brackets = FALSE) |>
   send_prompt()
 
-
 answer <- "What do you think of this dataset?" |>
   answer_as_code(
     pkgs = c("ggplot2", "dplyr"),
@@ -86,7 +88,6 @@ answer <- "What do you think of this dataset?" |>
   ) |>
   answer_by_chain_of_thought(extract_from_finish_brackets = TRUE) |>
   send_prompt(anthropic)
-
 
 plot <- "Please do an analysis on the dataset. Think of 1 interesting
 research question and answer it with a nice plot. Make your plot a little crazy!" |>

@@ -173,25 +173,34 @@ prompt <- "Hi there!" |>
 #' @family pre_built_prompt_wraps
 #' @family answer_as_prompt_wraps
 answer_as_integer <- function(
-    prompt,
-    min = NULL,
-    max = NULL,
-    add_instruction_to_prompt = TRUE
+  prompt,
+  min = NULL,
+  max = NULL,
+  add_instruction_to_prompt = TRUE
 ) {
   instruction <- "You must answer with only an integer (use no other characters)."
 
   if (!is.null(min) && !is.null(max)) {
-    instruction <- paste(instruction, glue::glue(
-      "Enter an integer between {min} and {max}."
-    ))
+    instruction <- paste(
+      instruction,
+      glue::glue(
+        "Enter an integer between {min} and {max}."
+      )
+    )
   } else if (!is.null(min)) {
-    instruction <- paste(instruction, glue::glue(
-      "Enter an integer greater than or equal to {min}."
-    ))
+    instruction <- paste(
+      instruction,
+      glue::glue(
+        "Enter an integer greater than or equal to {min}."
+      )
+    )
   } else if (!is.null(max)) {
-    instruction <- paste(instruction, glue::glue(
-      "Enter an integer less than or equal to {max}."
-    ))
+    instruction <- paste(
+      instruction,
+      glue::glue(
+        "Enter an integer less than or equal to {max}."
+      )
+    )
   }
 
   modify_fn <- function(original_prompt_text) {
@@ -211,26 +220,37 @@ answer_as_integer <- function(
   }
 
   validation_fn <- function(x) {
-    if (x != floor(x)) { # Not a whole number
+    if (x != floor(x)) {
+      # Not a whole number
       return(llm_feedback(instruction))
     }
 
     if (!is.null(min) && x < min) {
-      return(llm_feedback(glue::glue(
-        "The number should be greater than or equal to {min}."
-      )))
+      return(
+        llm_feedback(
+          glue::glue(
+            "The number should be greater than or equal to {min}."
+          )
+        )
+      )
     }
     if (!is.null(max) && x > max) {
-      return(llm_feedback(glue::glue(
-        "The number should be less than or equal to {max}."
-      )))
+      return(
+        llm_feedback(
+          glue::glue(
+            "The number should be less than or equal to {max}."
+          )
+        )
+      )
     }
     return(TRUE)
   }
 
   prompt_wrap(
     prompt,
-    modify_fn, extraction_fn, validation_fn,
+    modify_fn,
+    extraction_fn,
+    validation_fn,
     name = "answer_as_integer"
   )
 }

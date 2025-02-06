@@ -23,10 +23,10 @@
 #' @family pre_built_prompt_wraps
 #' @family answer_as_prompt_wraps
 answer_as_named_list <- function(
-    prompt,
-    item_names,
-    item_instructions = NULL,
-    item_validations = NULL
+  prompt,
+  item_names,
+  item_instructions = NULL,
+  item_validations = NULL
 ) {
   prompt <- tidyprompt(prompt)
 
@@ -35,14 +35,24 @@ answer_as_named_list <- function(
   }
 
   if (!is.null(item_instructions)) {
-    if (!is.list(item_instructions) || !all(names(item_instructions) %in% item_names)) {
-      stop("`item_instructions` must be a named list with names matching `item_names`.")
+    if (
+      !is.list(item_instructions) ||
+        !all(names(item_instructions) %in% item_names)
+    ) {
+      stop(
+        "`item_instructions` must be a named list with names matching `item_names`."
+      )
     }
   }
 
   if (!is.null(item_validations)) {
-    if (!is.list(item_validations) || !all(names(item_validations) %in% item_names)) {
-      stop("`item_validations` must be a named list with names matching `item_names`.")
+    if (
+      !is.list(item_validations) ||
+        !all(names(item_validations) %in% item_names)
+    ) {
+      stop(
+        "`item_validations` must be a named list with names matching `item_names`."
+      )
     }
   }
 
@@ -77,20 +87,28 @@ answer_as_named_list <- function(
 
   extraction_fn <- function(response) {
     if (!is.character(response)) {
-      stop(paste0(
-        "Response to extract a list from must be a string.",
-        " Ensure no prompt wraps make the response unsuitable for list extraction."
-      ))
+      stop(
+        paste0(
+          "Response to extract a list from must be a string.",
+          " Ensure no prompt wraps make the response unsuitable for list extraction."
+        )
+      )
     }
 
     # Use regex to extract named key-value pairs
-    named_items <- stringr::str_match_all(response, "--\\s*([^:]+):\\s*(.+)")[[1]]
+    named_items <- stringr::str_match_all(response, "--\\s*([^:]+):\\s*(.+)")[[
+      1
+    ]]
 
     if (nrow(named_items) == 0) {
-      return(llm_feedback(glue::glue(
-        "Could not parse any named items from your response.\n\n",
-        "{list_instruction}"
-      )))
+      return(
+        llm_feedback(
+          glue::glue(
+            "Could not parse any named items from your response.\n\n",
+            "{list_instruction}"
+          )
+        )
+      )
     }
 
     # Extract names and values
@@ -104,10 +122,14 @@ answer_as_named_list <- function(
     # Validate all expected names are present
     missing_names <- setdiff(item_names, names(named_list))
     if (length(missing_names) > 0) {
-      return(llm_feedback(glue::glue(
-        "The response is missing the following expected names: {paste(missing_names, collapse = ', ')}.\n",
-        "{list_instruction}"
-      )))
+      return(
+        llm_feedback(
+          glue::glue(
+            "The response is missing the following expected names: {paste(missing_names, collapse = ', ')}.\n",
+            "{list_instruction}"
+          )
+        )
+      )
     }
 
     # Return the named list
@@ -121,9 +143,9 @@ answer_as_named_list <- function(
         function(x, validation_fn) {
           validation_result <- validation_fn(x)
           if (isTRUE(validation_result)) {
-            NULL  # Validation passed
+            NULL # Validation passed
           } else {
-            validation_result  # Return validation error message or object
+            validation_result # Return validation error message or object
           }
         },
         named_list[names(item_validations)],
@@ -132,18 +154,24 @@ answer_as_named_list <- function(
       )
 
       # Check if any validation failed
-      failed_validations <- validation_results[!sapply(validation_results, is.null)]
+      failed_validations <- validation_results[
+        !sapply(validation_results, is.null)
+      ]
       if (length(failed_validations) > 0) {
         failed_messages <- sapply(
           names(failed_validations),
           function(name) paste0("-- ", name, ": ", failed_validations[[name]]),
           USE.NAMES = FALSE
         )
-        return(llm_feedback(glue::glue(
-          "Validation failed for the following items:\n",
-          paste(failed_messages, collapse = "\n"),
-          "\n{list_instruction}"
-        )))
+        return(
+          llm_feedback(
+            glue::glue(
+              "Validation failed for the following items:\n",
+              paste(failed_messages, collapse = "\n"),
+              "\n{list_instruction}"
+            )
+          )
+        )
       }
     }
 
@@ -151,7 +179,10 @@ answer_as_named_list <- function(
   }
 
   prompt_wrap(
-    prompt, modify_fn, extraction_fn, validation_fn,
+    prompt,
+    modify_fn,
+    extraction_fn,
+    validation_fn,
     name = "answer_as_named_list"
   )
 }

@@ -25,16 +25,20 @@
 #' @seealso [llm_break()]
 llm_feedback <- function(text, tool_result = FALSE) {
   if (!tool_result) {
-    return(structure(
-      text,
-      class = "llm_feedback"
-    ))
+    return(
+      structure(
+        text,
+        class = "llm_feedback"
+      )
+    )
   } else {
-    return(structure(
-      list(
-        text = text
-      ),
-      class = "llm_feedback_tool_result"
-    ))
+    return(
+      structure(
+        list(
+          text = text
+        ),
+        class = "llm_feedback_tool_result"
+      )
+    )
   }
 }

@@ -14,7 +14,8 @@ test_that("answer_as_boolean handles true_definition and false_definition", {
     answer_as_boolean(
       true_definition = "Water is wet",
       false_definition = "Water is not wet"
-    ) |> construct_prompt_text()
+    ) |>
+    construct_prompt_text()
 
   expect_true(grepl("TRUE means: Water is wet", prompt))
   expect_true(grepl("FALSE means: Water is not wet", prompt))

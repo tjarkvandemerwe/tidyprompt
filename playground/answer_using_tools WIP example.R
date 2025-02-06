@@ -1,7 +1,7 @@
 # Example fake weather function to add to the prompt:
 temperature_in_location <- function(
-    location = c("Amsterdam", "Utrecht", "Enschede"),
-    unit = c("Celcius", "Fahrenheit")
+  location = c("Amsterdam", "Utrecht", "Enschede"),
+  unit = c("Celcius", "Fahrenheit")
 ) {
   location <- match.arg(location)
   unit <- match.arg(unit)
@@ -16,7 +16,7 @@ temperature_in_location <- function(
   if (unit == "Celcius") {
     return(temperature_celcius)
   } else {
-    return(temperature_celcius * 9/5 + 32)
+    return(temperature_celcius * 9 / 5 + 32)
   }
 }
 
@@ -28,7 +28,8 @@ docs
 docs$description <- "Get the temperature in a location"
 docs$arguments$unit$description <- "Unit in which to return the temperature"
 docs$arguments$location$description <- "Location for which to return the temperature"
-docs$return$description <- "The temperature in the specified location and unit"
+docs$
+return$description <- "The temperature in the specified location and unit"
 # (See `?tools_add_docs` for more details on the structure of the documentation object)
 
 # When we are satisfied with the documentation, we can add it to the function:

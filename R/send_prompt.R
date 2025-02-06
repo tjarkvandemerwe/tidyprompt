@@ -69,13 +69,13 @@
 #'
 #' @family prompt_evaluation
 send_prompt <- function(
-    prompt,
-    llm_provider = llm_provider_ollama(),
-    max_interactions = 10,
-    clean_chat_history = TRUE,
-    verbose = NULL,
-    stream = NULL,
-    return_mode = c("only_response", "full")
+  prompt,
+  llm_provider = llm_provider_ollama(),
+  max_interactions = 10,
+  clean_chat_history = TRUE,
+  verbose = NULL,
+  stream = NULL,
+  return_mode = c("only_response", "full")
 ) {
   ## 1 Validate arguments
 
@@ -84,7 +84,8 @@ send_prompt <- function(
   return_mode <- match.arg(return_mode)
   stopifnot(
     inherits(llm_provider, "LlmProvider"),
-    max_interactions > 0, max_interactions == floor(max_interactions),
+    max_interactions > 0,
+    max_interactions == floor(max_interactions),
     is.logical(clean_chat_history),
     is.null(verbose) | is.logical(verbose),
     is.null(stream) | is.logical(stream)
@@ -92,11 +93,9 @@ send_prompt <- function(
 
   # Verify and configure llm_provider
   llm_provider <- llm_provider$clone()
-  if (!is.null(verbose))
-    llm_provider$verbose <- verbose
+  if (!is.null(verbose)) llm_provider$verbose <- verbose
   if (
-    !is.null(stream)
-    & !is.null(llm_provider$parameters$stream) # This means the provider supports streaming
+    !is.null(stream) & !is.null(llm_provider$parameters$stream) # This means the provider supports streaming
   )
     llm_provider$parameters$stream <- stream
   # Apply parameter_fn's to the llm_provider
@@ -114,10 +113,8 @@ send_prompt <- function(
   }
 
   # Initialize variables which keep track of the process
-  if (return_mode == "full")
-    start_time <- Sys.time()
+  if (return_mode == "full") start_time <- Sys.time()
   http <- list(requests = list(), responses = list())
-
 
   ## 2 Chat history, send_chat, handler_fns
 
@@ -125,7 +122,9 @@ send_prompt <- function(
 
   # Internal function to send chat messages
   send_chat <- function(
-    message, role = "user", tool_result = FALSE
+    message,
+    role = "user",
+    tool_result = FALSE
   ) {
     if (!is.null(message)) {
       message <- as.character(message)
@@ -135,10 +134,14 @@ send_prompt <- function(
 
     if (clean_chat_history) {
       cleaned_chat_history <- clean_chat_history(chat_history)
-      response <- llm_provider$complete_chat(list(chat_history = cleaned_chat_history))
+      response <- llm_provider$complete_chat(
+        list(chat_history = cleaned_chat_history)
+      )
       chat_history <<- dplyr::bind_rows(
         chat_history,
-        response$completed[(nrow(cleaned_chat_history) + 1):nrow(response$completed), ]
+        response$completed[
+          (nrow(cleaned_chat_history) + 1):nrow(response$completed),
+        ]
       )
     } else {
       response <- llm_provider$complete_chat(list(chat_history = chat_history))
@@ -156,24 +159,22 @@ send_prompt <- function(
     utils::tail(chat_history$content, 1)
   }
 
-
   ## 3 Retrieve initial response
 
   response <- send_chat(NULL)
   # (NULL as initial message is already included in the chat_history)
-
 
   ## 4 Apply extractions and validations
 
   prompt_wraps <- get_prompt_wraps(prompt, order = "evaluation")
   # (Tools, then modes, then unspecified prompt_wraps)
 
-  interactions <- 1; success <- FALSE
+  interactions <- 1
+  success <- FALSE
   while (interactions < max_interactions & !success) {
     interactions <- interactions + 1
 
-    if (length(prompt_wraps) == 0)
-      success <- TRUE
+    if (length(prompt_wraps) == 0) success <- TRUE
 
     # Initialize variables for the loop
     any_prompt_wrap_not_done <- FALSE
@@ -199,8 +200,8 @@ send_prompt <- function(
         # If it inherits llm_feedback,
         #   send the feedback to the LLM & get new response
         if (
-          inherits(extraction_result, "llm_feedback")
-          || inherits(extraction_result, "llm_feedback_tool_result")
+          inherits(extraction_result, "llm_feedback") ||
+            inherits(extraction_result, "llm_feedback_tool_result")
         ) {
           if (inherits(extraction_result, "llm_feedback_tool_result")) {
             # This ensures tool results are not filtered out when cleaning
@@ -209,21 +210,29 @@ send_prompt <- function(
           } else {
             response <- send_chat(extraction_result, tool_result = FALSE)
           }
-          any_prompt_wrap_not_done <- TRUE; break
+          any_prompt_wrap_not_done <- TRUE
+          break
         }
 
         if (inherits(extraction_result, "llm_break")) {
           # Still apply remaining prompt wraps of type 'check'
           #   (this may block the break when feedback is returned)
           if (pw_index < length(prompt_wraps)) {
-            prompt_wraps_remaining <- prompt_wraps[(pw_index + 1):length(prompt_wraps)]
+            prompt_wraps_remaining <- prompt_wraps[
+              (pw_index + 1):length(prompt_wraps)
+            ]
             for (prompt_wrap_remaining in prompt_wraps_remaining) {
               if (prompt_wrap_remaining$type == "check") {
                 check_result <-
-                  prompt_wrap_remaining$validation_fn(response, llm_provider, http)
+                  prompt_wrap_remaining$validation_fn(
+                    response,
+                    llm_provider,
+                    http
+                  )
                 if (inherits(check_result, "llm_feedback")) {
                   response <- send_chat(check_result, tool_result = TRUE)
-                  any_prompt_wrap_not_done <- TRUE; break
+                  any_prompt_wrap_not_done <- TRUE
+                  break
                 }
               }
             }
@@ -257,21 +266,29 @@ send_prompt <- function(
           }
 
           response <- send_chat(validation_result, tool_result = tool_result)
-          any_prompt_wrap_not_done <- TRUE; break
+          any_prompt_wrap_not_done <- TRUE
+          break
         }
 
         if (inherits(validation_result, "llm_break")) {
           # Still apply remaining prompt wraps of type 'check'
           #   (this may block the break when feedback is returned)
           if (pw_index < length(prompt_wraps)) {
-            prompt_wraps_remaining <- prompt_wraps[(pw_index + 1):length(prompt_wraps)]
+            prompt_wraps_remaining <- prompt_wraps[
+              (pw_index + 1):length(prompt_wraps)
+            ]
             for (prompt_wrap_remaining in prompt_wraps_remaining) {
               if (prompt_wrap_remaining$type == "check") {
                 check_result <-
-                  prompt_wrap_remaining$validation_fn(response, llm_provider, http)
+                  prompt_wrap_remaining$validation_fn(
+                    response,
+                    llm_provider,
+                    http
+                  )
                 if (inherits(check_result, "llm_feedback")) {
                   response <- send_chat(check_result, tool_result = TRUE)
-                  any_prompt_wrap_not_done <- TRUE; break
+                  any_prompt_wrap_not_done <- TRUE
+                  break
                 }
               }
             }
@@ -289,25 +306,25 @@ send_prompt <- function(
       }
     }
 
-    if (!any_prompt_wrap_not_done)
-      success <- TRUE
+    if (!any_prompt_wrap_not_done) success <- TRUE
 
-    if (llm_break)
-      break
+    if (llm_break) break
   }
-
 
   ## 5 Final evaluation
 
   if (!success) {
-    warning(paste0(
-      "Failed to reach a valid answer after ", interactions, " interactions"
-    ))
+    warning(
+      paste0(
+        "Failed to reach a valid answer after ",
+        interactions,
+        " interactions"
+      )
+    )
     response <- NULL
   }
 
-  if (return_mode == "only_response")
-    return(response)
+  if (return_mode == "only_response") return(response)
 
   if (return_mode == "full") {
     return_list <- list()
@@ -319,19 +336,20 @@ send_prompt <- function(
     return_list$start_time <- start_time
     return_list$end_time <- Sys.time()
     return_list$duration_seconds <-
-      as.numeric(difftime(
-        return_list$end_time, return_list$start_time, units = "secs"
-      ))
+      as.numeric(
+        difftime(
+          return_list$end_time,
+          return_list$start_time,
+          units = "secs"
+        )
+      )
     return_list$http <- http
 
     return(return_list)
   }
 }
 
-
 # Create internal function which cleans the chat_history
-
-
 
 #' Create chat history dataframe
 #'
@@ -350,12 +368,12 @@ send_prompt <- function(
 #' @noRd
 #' @keywords internal
 create_chat_df <- function(
-    role = character(), content = character(), tool_result = logical()
+  role = character(),
+  content = character(),
+  tool_result = logical()
 ) {
   data.frame(role = role, content = content, tool_result = tool_result)
 }
-
-
 
 #' Clean chat history
 #'

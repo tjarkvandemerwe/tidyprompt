@@ -20,16 +20,22 @@
 #' @family pre_built_prompt_wraps
 #' @family answer_as_prompt_wraps
 answer_as_boolean <- function(
-    prompt,
-    true_definition = NULL,
-    false_definition = NULL,
-    add_instruction_to_prompt = TRUE
+  prompt,
+  true_definition = NULL,
+  false_definition = NULL,
+  add_instruction_to_prompt = TRUE
 ) {
   instruction <- "You must answer with only TRUE or FALSE (use no other characters)."
   if (!is.null(true_definition))
-    instruction <- paste(instruction, glue::glue("TRUE means: {true_definition}."))
+    instruction <- paste(
+      instruction,
+      glue::glue("TRUE means: {true_definition}.")
+    )
   if (!is.null(false_definition))
-    instruction <- paste(instruction, glue::glue("FALSE means: {false_definition}."))
+    instruction <- paste(
+      instruction,
+      glue::glue("FALSE means: {false_definition}.")
+    )
 
   modify_fn <- function(original_prompt_text) {
     if (!add_instruction_to_prompt) {
@@ -48,7 +54,9 @@ answer_as_boolean <- function(
   }
 
   prompt_wrap(
-    prompt, modify_fn, extraction_fn,
+    prompt,
+    modify_fn,
+    extraction_fn,
     name = "answer_as_boolean"
   )
 }

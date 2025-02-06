@@ -5,7 +5,9 @@ library(RSQLite)
 conn <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 
 # Create a sample table of customers
-DBI::dbExecute(conn, "
+DBI::dbExecute(
+  conn,
+  "
   CREATE TABLE
     customers (
       id INTEGER PRIMARY KEY,
@@ -13,10 +15,13 @@ DBI::dbExecute(conn, "
       email TEXT,
       country TEXT
     );
-")
+  "
+)
 
 # Insert some sample customer data
-DBI::dbExecute(conn, "
+DBI::dbExecute(
+  conn,
+  "
   INSERT INTO
     customers (name, email, country)
   VALUES
@@ -24,10 +29,13 @@ DBI::dbExecute(conn, "
     ('Bob', 'bob@example.com', 'Canada'),
     ('Charlie', 'charlie@example.com', 'UK'),
     ('Diana', 'diana@example.com', 'USA');
-")
+  "
+)
 
 # Create another sample table for orders
-DBI::dbExecute(conn, "
+DBI::dbExecute(
+  conn,
+  "
   CREATE TABLE orders (
     order_id INTEGER PRIMARY KEY,
     customer_id INTEGER,
@@ -36,10 +44,13 @@ DBI::dbExecute(conn, "
     order_date TEXT,
     FOREIGN KEY(customer_id) REFERENCES customers(id)
   );
-")
+  "
+)
 
 # Insert some sample orders
-DBI::dbExecute(conn, "
+DBI::dbExecute(
+  conn,
+  "
   INSERT INTO
     orders (customer_id, product, amount, order_date)
   VALUES
@@ -49,7 +60,8 @@ DBI::dbExecute(conn, "
     (3, 'SuperWidget', 49.99, '2024-03-05'),
     (4, 'Gadget', 29.99, '2024-04-01'),
     (1, 'Thingamajig', 9.99, '2024-04-02');
-")
+  "
+)
 
 # Now, you have a small SQLite database in memory with two tables:
 # 1. customers
@@ -68,7 +80,6 @@ DBI::dbExecute(conn, "
 
 # When you are done, disconnect:
 # dbDisconnect(conn)
-
 
 "Do I have customers from The Netherlands?" |>
   answer_using_sql(

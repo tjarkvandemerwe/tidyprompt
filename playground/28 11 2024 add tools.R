@@ -1,7 +1,7 @@
 # Example fake weather function to add to the prompt:
 temperature_in_location_nl <- function(
-    location = c("Amsterdam", "Utrecht", "Enschede"),
-    unit = c("Celcius", "Fahrenheit")
+  location = c("Amsterdam", "Utrecht", "Enschede"),
+  unit = c("Celcius", "Fahrenheit")
 ) {
   #' llm_tool::name temperature_in_location_nl
   #'
@@ -25,19 +25,23 @@ temperature_in_location_nl <- function(
   if (unit == "Celcius") {
     return(temperature_celcius)
   } else {
-    return(temperature_celcius * 9/5 + 32)
+    return(temperature_celcius * 9 / 5 + 32)
   }
 }
 
 prompt <- "hi current weather in enschede??" |>
-  add_tools(tool_functions = list(
-    temperature_in_location_nl
-  ))
+  add_tools(
+    tool_functions = list(
+      temperature_in_location_nl
+    )
+  )
 prompt
 send_prompt(prompt, llm_provider_openai())
 
 prompt <- "What are the files in my current directory?" |>
-  add_tools(tool_functions = list(
-    list.files
-  ))
+  add_tools(
+    tool_functions = list(
+      list.files
+    )
+  )
 send_prompt(prompt, llm_provider_openai())

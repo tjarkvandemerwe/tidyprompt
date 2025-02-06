@@ -49,22 +49,24 @@
 #' @family answer_using_prompt_wraps
 #' @family tools
 answer_using_tools <- function(
-    prompt,
-    tools = list(),
-    type = c("text-based", "auto", "openai", "ollama")
+  prompt,
+  tools = list(),
+  type = c("text-based", "auto", "openai", "ollama")
 ) {
   prompt <- tidyprompt(prompt)
   type <- match.arg(type)
 
   if (type == "auto" & getOption("tidyprompt.warn.auto.tools", TRUE)) {
-    cli::cli_alert_warning(paste0(
-      "{.strong `answer_using_tools()`}:\n",
-      "* Automatically determining type based on 'llm_provider$api_type';\n",
-      "this does not consider model compatability\n",
-      "* Manually set argument 'type' if errors occur ",
-      "(\"text-based\" always works)\n",
-      "* Use `options(tidyprompt.warn.auto.tools = FALSE)` to suppress this warning"
-    ))
+    cli::cli_alert_warning(
+      paste0(
+        "{.strong `answer_using_tools()`}:\n",
+        "* Automatically determining type based on 'llm_provider$api_type';\n",
+        "this does not consider model compatability\n",
+        "* Manually set argument 'type' if errors occur ",
+        "(\"text-based\" always works)\n",
+        "* Use `options(tidyprompt.warn.auto.tools = FALSE)` to suppress this warning"
+      )
+    )
   }
 
   # Check if tools is single function, if so, convert to list
@@ -85,12 +87,9 @@ answer_using_tools <- function(
   }
 
   determine_type <- function(llm_provider = NULL) {
-    if (type != "auto")
-      return(type)
-    if (isTRUE(llm_provider$api_type == "openai"))
-      return("openai")
-    if (isTRUE(llm_provider$api_type == "ollama"))
-      return("ollama")
+    if (type != "auto") return(type)
+    if (isTRUE(llm_provider$api_type == "openai")) return("openai")
+    if (isTRUE(llm_provider$api_type == "ollama")) return("ollama")
     return("text-based")
   }
 
@@ -122,11 +121,13 @@ answer_using_tools <- function(
     }
 
     if (type == "ollama" & isTRUE(llm_provider$parameters$stream)) {
-      cli::cli_alert_warning(paste0(
-        "{.strong `answer_using_tools()`}:\n",
-        "* 'ollama' does not support streaming when using tools;\n",
-        "'stream' parameter was set to FALSE"
-      ))
+      cli::cli_alert_warning(
+        paste0(
+          "{.strong `answer_using_tools()`}:\n",
+          "* 'ollama' does not support streaming when using tools;\n",
+          "'stream' parameter was set to FALSE"
+        )
+      )
       parameters$stream <- FALSE
     }
 
@@ -137,13 +138,16 @@ answer_using_tools <- function(
     type <- determine_type(llm_provider)
     if (!type %in% c("openai", "ollama")) return(response)
 
-    while (TRUE) { # For as long as there are tool calls
+    while (TRUE) {
+      # For as long as there are tool calls
       body <- response$http$response$body
 
-      if ("tool_calls" %in% names(body)) { # For streaming
+      if ("tool_calls" %in% names(body)) {
+        # For streaming
         # As handled by [append_or_update_tool_calls()]
         tool_calls <- body$tool_calls
-      } else { # Non-streaming; check body for tool calls
+      } else {
+        # Non-streaming; check body for tool calls
         body <- tryCatch(
           body |> rawToChar() |> jsonlite::fromJSON(),
           error = function(e) {
@@ -151,14 +155,12 @@ answer_using_tools <- function(
           }
         )
 
-        if (is.null(body))
-          break
+        if (is.null(body)) break
 
         tool_calls <- list()
 
         if (type == "openai") {
-          if (length(body$choices$message$tool_calls) == 0)
-            break
+          if (length(body$choices$message$tool_calls) == 0) break
 
           for (tool_call in body$choices$message$tool_calls) {
             tool_calls[[length(tool_calls) + 1]] <- list(
@@ -170,8 +172,7 @@ answer_using_tools <- function(
         }
 
         if (type == "ollama") {
-          if (length(body$message$tool_calls) == 0)
-            break
+          if (length(body$message$tool_calls) == 0) break
 
           for (i in seq_along(body$message$tool_calls)) {
             tool_call <- body$message$tool_calls[i]
@@ -182,8 +183,7 @@ answer_using_tools <- function(
         }
       }
 
-      if (length(tool_calls) == 0)
-        break
+      if (length(tool_calls) == 0) break
 
       # Add tool calls to messages (to be sent back to API)
       chat_history <- response$completed
@@ -213,24 +213,31 @@ answer_using_tools <- function(
         }
 
         # Also add the tool call to the chat history
-        chat_history <- chat_history |> dplyr::bind_rows(data.frame(
-          role = "assistant",
-          content = paste0(
-            "Calling function '", tool_name, "' with arguments:\n",
-            jsonlite::toJSON(arguments, auto_unbox = TRUE, pretty = TRUE)
+        chat_history <- chat_history |>
+          dplyr::bind_rows(
+            data.frame(
+              role = "assistant",
+              content = paste0(
+                "Calling function '",
+                tool_name,
+                "' with arguments:\n",
+                jsonlite::toJSON(arguments, auto_unbox = TRUE, pretty = TRUE)
+              )
+            )
           )
-        ))
 
         # Execute tool function
-        result <- tryCatch({
-          do.call(tool, arguments)
-        }, error = function(e) {
-          glue::glue("Error: {e$message}")
-        })
+        result <- tryCatch(
+          {
+            do.call(tool, arguments)
+          },
+          error = function(e) {
+            glue::glue("Error: {e$message}")
+          }
+        )
 
         # Ensure result is proper string
-        if (length(result) > 0)
-          result <- paste(result, collapse = ", ")
+        if (length(result) > 0) result <- paste(result, collapse = ", ")
         result <- as.character(result)
 
         # Add tool result to messages
@@ -239,12 +246,15 @@ answer_using_tools <- function(
         messages[[length(messages) + 1]] <- message_addition
 
         # Also add tool result to chat history
-        chat_history <- chat_history |> dplyr::bind_rows(data.frame(
-          role = "tool",
-          content = paste0("Result:\n", result),
-          tool_call_id = ifelse(is.null(tool_call$id), NA, tool_call$id),
-          tool_result = TRUE
-        ))
+        chat_history <- chat_history |>
+          dplyr::bind_rows(
+            data.frame(
+              role = "tool",
+              content = paste0("Result:\n", result),
+              tool_call_id = ifelse(is.null(tool_call$id), NA, tool_call$id),
+              tool_result = TRUE
+            )
+          )
 
         # Print directly if streaming
         #   (if verbose & no stream, it will be printed in llm_provider$complete_chat())
@@ -269,7 +279,7 @@ answer_using_tools <- function(
 
   modify_fn <- function(original_prompt_text, llm_provider) {
     type <- determine_type(llm_provider)
-    if (type %in%  c("openai", "ollama")) return(original_prompt_text)
+    if (type %in% c("openai", "ollama")) return(original_prompt_text)
 
     new_prompt <- glue::glue(
       "{original_prompt_text}\n\n",
@@ -299,13 +309,13 @@ answer_using_tools <- function(
       docs <- tools_get_docs(tool, tool_name)
 
       with_arguments <- TRUE
-      if (type == "openai")
-        with_arguments <- FALSE
+      if (type == "openai") with_arguments <- FALSE
 
       tool_llm_text <- tools_docs_to_text(docs, with_arguments)
 
       new_prompt <- glue::glue(
-        "{new_prompt}\n\n{tool_llm_text}", .trim = FALSE
+        "{new_prompt}\n\n{tool_llm_text}",
+        .trim = FALSE
       )
     }
 
@@ -326,26 +336,27 @@ answer_using_tools <- function(
     jsons <- extraction_fn_json(llm_response)
 
     fn_results <- lapply(jsons, function(json) {
-      if (is.null(json[["function"]]))
-        return(NULL)
+      if (is.null(json[["function"]])) return(NULL)
 
       if (json[["function"]] %in% names(tools)) {
         tool_function <- tools[[json[["function"]]]]
         arguments <- json[["arguments"]]
 
-        result <- tryCatch({
-          do.call(tool_function, arguments)
-        }, error = function(e) {
-          glue::glue("Error in {e$message}")
-        })
+        result <- tryCatch(
+          {
+            do.call(tool_function, arguments)
+          },
+          error = function(e) {
+            glue::glue("Error in {e$message}")
+          }
+        )
 
-        if (length(result) > 0)
-          result <- paste(result, collapse = ", ")
+        if (length(result) > 0) result <- paste(result, collapse = ", ")
 
         # Create some context around the result
         string_of_named_arguments <-
           paste(names(arguments), arguments, sep = " = ") |>
-          paste(collapse = ", ")
+            paste(collapse = ", ")
 
         result_string <- glue::glue(
           "function called: {json[[\"function\"]]}
@@ -355,18 +366,21 @@ answer_using_tools <- function(
 
         return(result_string)
       } else {
-        return(glue::glue("Error: Function '{json[[\"function\"]]}' not found."))
+        return(
+          glue::glue("Error: Function '{json[[\"function\"]]}' not found.")
+        )
       }
     })
     fn_results <- fn_results[!sapply(fn_results, is.null)]
 
-    if (length(fn_results) == 0)
-      return(llm_response)
+    if (length(fn_results) == 0) return(llm_response)
 
-    return(llm_feedback(
-      paste(fn_results, collapse = "\n\n"),
-      tool_result = TRUE
-    ))
+    return(
+      llm_feedback(
+        paste(fn_results, collapse = "\n\n"),
+        tool_result = TRUE
+      )
+    )
   }
 
   # Add environment with tool functions as an attribute to the extraction function
@@ -377,12 +391,15 @@ answer_using_tools <- function(
 
   prompt_wrap(
     prompt,
-    modify_fn, extraction_fn, NULL, handler_fn, parameter_fn,
-    type = "tool", name = "answer_using_tools"
+    modify_fn,
+    extraction_fn,
+    NULL,
+    handler_fn,
+    parameter_fn,
+    type = "tool",
+    name = "answer_using_tools"
   )
 }
-
-
 
 #' Add tidyprompt function documentation to a function
 #'
@@ -440,8 +457,8 @@ answer_using_tools <- function(
 #' @example inst/examples/answer_using_tools.R
 #' @family tools
 tools_add_docs <- function(
-    func,
-    docs
+  func,
+  docs
 ) {
   stopifnot(
     is.function(func),
@@ -452,18 +469,17 @@ tools_add_docs <- function(
     is.character(docs$description) & length(docs$description) == 1,
     is.list(docs$arguments),
     length(docs$arguments) == 0 | !is.null(names(docs$arguments)),
-    is.null(docs$return$description) | is.character(docs$return$description) & length(docs$return$description) == 1
+    is.null(docs$return$description) |
+      is.character(docs$return$description) &
+        length(docs$return$description) == 1
   )
 
-  if (is.null(docs$name))
-    docs$name <- deparse(substitute(func))
+  if (is.null(docs$name)) docs$name <- deparse(substitute(func))
 
   attr(func, "tidyprompt_tool_docs") <- docs
 
   return(func)
 }
-
-
 
 #' Extract documentation from a function
 #'
@@ -501,8 +517,7 @@ tools_get_docs <- function(func, name = NULL) {
   )
 
   docs <- list()
-  if (is.null(name))
-    name <- deparse(substitute(func))
+  if (is.null(name)) name <- deparse(substitute(func))
 
   if (!is.null(attr(func, "tidyprompt_tool_docs"))) {
     docs <- attr(func, "tidyprompt_tool_docs")
@@ -515,7 +530,11 @@ tools_get_docs <- function(func, name = NULL) {
       is.character(docs$description) & length(docs$description) == 1,
       is.list(docs$arguments),
       !is.null(names(docs$arguments)),
-      is.null(docs$return$description) || (is.character(docs$return$description) & length(docs$return$description) == 1)
+      is.null(docs$return$description) ||
+        (
+          is.character(docs$return$description) &
+            length(docs$return$description) == 1
+        )
     )
   } else {
     docs <- tools_generate_docs(name, func)
@@ -551,16 +570,18 @@ tools_get_docs <- function(func, name = NULL) {
   for (arg_name in names(docs$arguments)) {
     if (!arg_name %in% names(formals(func))) {
       docs$arguments[[arg_name]] <- NULL
-      warning(paste0(
-        "Argument '", arg_name, "' not found in function formals. Removing from documentation"
-      ))
+      warning(
+        paste0(
+          "Argument '",
+          arg_name,
+          "' not found in function formals. Removing from documentation"
+        )
+      )
     }
   }
 
   docs
 }
-
-
 
 #' Generate function documentation from formals and help file
 #'
@@ -601,12 +622,15 @@ tools_generate_docs <- function(name, func_object = NULL) {
     # Get the function's help file
     help_file <- utils::help(name, package = as.character(package_name))
   }
-  if (length(help_file) == 0) { # No help file found
+  if (length(help_file) == 0) {
+    # No help file found
     # Return without function description, arg descriptions, or return description
-    return(list(
-      name = name,
-      arguments = args
-    ))
+    return(
+      list(
+        name = name,
+        arguments = args
+      )
+    )
   }
 
   # Extract the text from the help file
@@ -625,15 +649,15 @@ tools_generate_docs <- function(name, func_object = NULL) {
   }
 
   # Return list with function name, description, arguments, and return value
-  return(list(
-    name = name,
-    description = paste0(parsed_help$Title, ": ", parsed_help$Description),
-    arguments = args,
-    return = list(description = parsed_help$Value)
-  ))
+  return(
+    list(
+      name = name,
+      description = paste0(parsed_help$Title, ": ", parsed_help$Description),
+      arguments = args,
+      return = list(description = parsed_help$Value)
+    )
+  )
 }
-
-
 
 #' Get argument names, default values, and types from a function's formals
 #'
@@ -677,8 +701,6 @@ gd_get_args_defaults_types <- function(func) {
 
   return(arguments)
 }
-
-
 
 #' Infer the type of an argument from its default value
 #'
@@ -726,12 +748,14 @@ gd_infer_type_from_default <- function(default_value) {
     return("string")
   } else if (is.call(default_value)) {
     func_name <- as.character(default_value[[1]])
-    if (func_name == "c" || (func_name == "list" && is.null(names(default_value[-1])))) {
+    if (
+      func_name == "c" ||
+        (func_name == "list" && is.null(names(default_value[-1])))
+    ) {
       # Treat list like c only if it has no names
       values <- default_value[-1]
 
-      if (length(values) == 0)
-        return("vector unknown")
+      if (length(values) == 0) return("vector unknown")
 
       if (length(values) > 1 && all(sapply(values, is.character))) {
         # Assuming it's a match.arg-type vector
@@ -773,7 +797,6 @@ gd_infer_type_from_default <- function(default_value) {
   }
 }
 
-
 #' Extract help file function
 #'
 #' @param file String containing name of file
@@ -784,7 +807,7 @@ gd_infer_type_from_default <- function(default_value) {
 #' @source Function adapted from the CRAN package
 #' \href{https://cran.r-project.org/web/packages/devtoolbox/index.html}{'devtoolbox'},
 #' which based this function on the 'utils:::.getHelpFile' function
-gd_get_help_file <- function(file){
+gd_get_help_file <- function(file) {
   path <- dirname(file)
   dirpath <- dirname(path)
 
@@ -815,7 +838,7 @@ gd_get_help_file <- function(file){
       compressed <- db$compressed
       envhook <- db$envhook
 
-      fetch <- function(key){
+      fetch <- function(key) {
         lazyLoadDBfetch(vals[key][[1L]], datafile, compressed, envhook)
       }
 
@@ -823,14 +846,15 @@ gd_get_help_file <- function(file){
         if (!key %in% vars)
           stop(
             gettextf(
-              "No help on %s found in RdDB %s", sQuote(key), sQuote(filebase)
+              "No help on %s found in RdDB %s",
+              sQuote(key),
+              sQuote(filebase)
             ),
             domain = NA
           )
 
         fetch(key)
-      }
-      else {
+      } else {
         res <- lapply(vars, fetch)
         names(res) <- vars
         res
@@ -839,14 +863,11 @@ gd_get_help_file <- function(file){
 
     res <- lazyLoadDBexec(filebase, fun)
 
-    if (length(key))
-      res
-    else invisible(res)
+    if (length(key)) res else invisible(res)
   }
 
   fetchRdDB(RdDB, basename(file))
 }
-
 
 #' Function to parse help text from a function's help file
 #'
@@ -896,9 +917,11 @@ gd_parse_help_text <- function(help_text) {
   for (i in seq_along(headers)) {
     current_header <- headers[i]
     current_start <- header_indices[i]
-    next_start <- ifelse(i < length(header_indices),
-                         header_indices[i + 1] - 1,
-                         length(clean_text))
+    next_start <- ifelse(
+      i < length(header_indices),
+      header_indices[i + 1] - 1,
+      length(clean_text)
+    )
 
     # Extract content for the current section
     section_content <- clean_text[(current_start + 1):next_start]
@@ -956,8 +979,6 @@ gd_parse_help_text <- function(help_text) {
   return(parsed_result)
 }
 
-
-
 #' Convert function documentation to a JSON schema
 #'
 #' This function converts function documentation to an R list that represents
@@ -977,9 +998,9 @@ gd_parse_help_text <- function(help_text) {
 #' @noRd
 #' @keywords internal
 tools_docs_to_r_json_schema <- function(
-    docs,
-    all_required = TRUE,
-    additional_properties = FALSE
+  docs,
+  all_required = TRUE,
+  additional_properties = FALSE
 ) {
   # Helper function to process each argument recursively
   process_argument <- function(arg) {
@@ -989,12 +1010,13 @@ tools_docs_to_r_json_schema <- function(
     if (is.list(r_type)) {
       # Handle named lists (objects)
       prop$type <- "object"
-      prop$additionalProperties <- FALSE  # Set additionalProperties to FALSE
+      prop$additionalProperties <- FALSE # Set additionalProperties to FALSE
       prop$properties <- list()
       for (name in names(r_type)) {
         sub_arg <- list(
           type = r_type[[name]],
-          default_value = if (!is.null(arg$default_value[[name]])) arg$default_value[[name]] else NULL
+          default_value = if (!is.null(arg$default_value[[name]]))
+            arg$default_value[[name]] else NULL
         )
         prop$properties[[name]] <- process_argument(sub_arg)
       }
@@ -1011,7 +1033,10 @@ tools_docs_to_r_json_schema <- function(
     } else if (r_type == "match.arg") {
       prop$type <- "string"
       # Check if default_value is a call, e.g. c("Val1", "Val2", ...)
-      if (is.call(arg$default_value) && identical(arg$default_value[[1]], as.name("c"))) {
+      if (
+        is.call(arg$default_value) &&
+          identical(arg$default_value[[1]], as.name("c"))
+      ) {
         # Evaluate the call to get a standard R vector
         prop$enum <- eval(arg$default_value)
       } else {
@@ -1055,7 +1080,7 @@ tools_docs_to_r_json_schema <- function(
         } else {
           # Named list (object)
           prop$type <- "object"
-          prop$additionalProperties <- FALSE  # Set additionalProperties to FALSE
+          prop$additionalProperties <- FALSE # Set additionalProperties to FALSE
           prop$properties <- list()
           for (name in names(default_value)) {
             sub_arg <- list(
@@ -1070,16 +1095,20 @@ tools_docs_to_r_json_schema <- function(
         prop$items <- list()
       }
     } else if (r_type == "call") {
-      cli::cli_alert_warning(paste0(
-        "{.strong `answer_using_tools()`, `tools_docs_to_r_json_schema()`}:\n",
-        "* Function calls are not possible as argument type; defaulting to 'string'"
-      ))
+      cli::cli_alert_warning(
+        paste0(
+          "{.strong `answer_using_tools()`, `tools_docs_to_r_json_schema()`}:\n",
+          "* Function calls are not possible as argument type; defaulting to 'string'"
+        )
+      )
       prop$type <- "string"
     } else {
-      cli::cli_alert_warning(paste0(
-        "{.strong `answer_using_tools()`, `tools_docs_to_r_json_schema()`}:\n",
-        "* Unknown argument type; defaulting to 'string'"
-      ))
+      cli::cli_alert_warning(
+        paste0(
+          "{.strong `answer_using_tools()`, `tools_docs_to_r_json_schema()`}:\n",
+          "* Unknown argument type; defaulting to 'string'"
+        )
+      )
       prop$type <- "string"
     }
     return(prop)
@@ -1103,8 +1132,7 @@ tools_docs_to_r_json_schema <- function(
     properties[[arg_name]] <- prop
   }
 
-  if (all_required)
-    required_args <- names(args)
+  if (all_required) required_args <- names(args)
 
   list(
     type = "object",
@@ -1113,8 +1141,6 @@ tools_docs_to_r_json_schema <- function(
     additionalProperties = additional_properties
   )
 }
-
-
 
 #' Create text description of function from documentation
 #'
@@ -1126,16 +1152,19 @@ tools_docs_to_r_json_schema <- function(
 #' @noRd
 #' @keywords internal
 tools_docs_to_text <- function(docs, with_arguments = TRUE) {
-
   # Internal helper function to process arguments
   tools_docs_to_text_arguments <- function(docs, line_prefix = "  ") {
     process_argument <- function(arg_name, arg_info, prefix = "  ") {
       # Warning for unknown type
       if (arg_info$type == "unknown") {
-        cli::cli_alert_warning(paste0(
-          "{.strong `answer_using_tools()`, `tools_docs_to_text()`}:\n",
-          "* Argument '", arg_name, "' has an unknown type. Defaulting to 'string'"
-        ))
+        cli::cli_alert_warning(
+          paste0(
+            "{.strong `answer_using_tools()`, `tools_docs_to_text()`}:\n",
+            "* Argument '",
+            arg_name,
+            "' has an unknown type. Defaulting to 'string'"
+          )
+        )
       }
 
       # Start argument text
@@ -1143,7 +1172,10 @@ tools_docs_to_text <- function(docs, with_arguments = TRUE) {
 
       # Add description if available
       if (!is.null(arg_info$description)) {
-        arg_text <- glue::glue("{arg_text} {arg_info$description}", .trim = FALSE)
+        arg_text <- glue::glue(
+          "{arg_text} {arg_info$description}",
+          .trim = FALSE
+        )
       }
 
       # Handle match.arg type
@@ -1153,10 +1185,14 @@ tools_docs_to_text <- function(docs, with_arguments = TRUE) {
           collapse = ", "
         )
         arg_text <- glue::glue(
-          "{arg_text} [Type: string (one of: {arg_options})]", .trim = FALSE
+          "{arg_text} [Type: string (one of: {arg_options})]",
+          .trim = FALSE
         )
       } else {
-        arg_text <- glue::glue("{arg_text} [Type: {arg_info$type}]", .trim = FALSE)
+        arg_text <- glue::glue(
+          "{arg_text} [Type: {arg_info$type}]",
+          .trim = FALSE
+        )
       }
 
       return(arg_text)
@@ -1189,7 +1225,10 @@ tools_docs_to_text <- function(docs, with_arguments = TRUE) {
 
           # Use arg_info$type if it's a list, else use arg_info
           next_level <- if (is.list(arg_info$type)) arg_info$type else arg_info
-          nested_subtext <- process_nested_list(next_level, paste0(prefix, "  "))
+          nested_subtext <- process_nested_list(
+            next_level,
+            paste0(prefix, "  ")
+          )
           nested_text <- paste(
             nested_text,
             nested_line,
@@ -1237,22 +1276,26 @@ tools_docs_to_text <- function(docs, with_arguments = TRUE) {
 
   # Define text
   tool_llm_text <- glue::glue(
-    "  function name: {docs$name}", .trim = FALSE
+    "  function name: {docs$name}",
+    .trim = FALSE
   )
   if (length(docs$description) > 0)
     tool_llm_text <- glue::glue(
-      "{tool_llm_text}\n  description: {docs$description}", .trim = FALSE
+      "{tool_llm_text}\n  description: {docs$description}",
+      .trim = FALSE
     )
   if (length(docs$arguments) > 0 & with_arguments) {
     tool_llm_text <- glue::glue(
       "{tool_llm_text}\n  arguments:",
-      "\n", tools_docs_to_text_arguments(docs, line_prefix = "    "),
+      "\n",
+      tools_docs_to_text_arguments(docs, line_prefix = "    "),
       .trim = FALSE
     )
   }
   if (length(docs$return$description) > 0)
     tool_llm_text <- glue::glue(
-      "{tool_llm_text}\n  return value: {docs$return$description}", .trim = FALSE
+      "{tool_llm_text}\n  return value: {docs$return$description}",
+      .trim = FALSE
     )
 
   return(tool_llm_text)

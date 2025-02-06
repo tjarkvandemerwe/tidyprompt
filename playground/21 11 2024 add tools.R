@@ -1,7 +1,7 @@
 # Example fake weather function to add to the prompt:
 temperature_in_location_nl <- function(
-    location = c("Amsterdam", "Utrecht", "Enschede"),
-    unit = c("Celcius", "Fahrenheit")
+  location = c("Amsterdam", "Utrecht", "Enschede"),
+  unit = c("Celcius", "Fahrenheit")
 ) {
   #' llm_tool::name temperature_in_location_nl
   #'
@@ -25,15 +25,14 @@ temperature_in_location_nl <- function(
   if (unit == "Celcius") {
     return(temperature_celcius)
   } else {
-    return(temperature_celcius * 9/5 + 32)
+    return(temperature_celcius * 9 / 5 + 32)
   }
 }
 
-
 # Example fake weather function to add to the prompt:
 temperature_in_location_germany <- function(
-    location = c("Berlin", "Munich", "Hamburg"),
-    unit = c("Celcius", "Fahrenheit")
+  location = c("Berlin", "Munich", "Hamburg"),
+  unit = c("Celcius", "Fahrenheit")
 ) {
   #' llm_tool::name temperature_in_location_germany
   #'
@@ -60,30 +59,29 @@ temperature_in_location_germany <- function(
   if (unit == "Celcius") {
     return(temperature_celcius)
   } else {
-    return(temperature_celcius * 9/5 + 32)
+    return(temperature_celcius * 9 / 5 + 32)
   }
 }
-
 
 # Attempt to extract documentation as it is extracted by add_tools():
 add_tools_extract_documentation(temperature_in_location_germany)
 
 "Hi, what is the weather in New York? Give me Celcius degrees" |>
-  add_tools(tool_functions = list(
-    temperature_in_location_nl,
-    temperature_in_location_germany
-  )) |>
+  add_tools(
+    tool_functions = list(
+      temperature_in_location_nl,
+      temperature_in_location_germany
+    )
+  ) |>
   answer_as_integer() |>
   quit_if() |>
   send_prompt(llm_provider_openai())
 
 prompt <- "hi current weather in enschede??" |>
-  add_tools(tool_functions = list(
-    temperature_in_location_nl
-  ))
+  add_tools(
+    tool_functions = list(
+      temperature_in_location_nl
+    )
+  )
 prompt
 send_prompt(prompt, llm_provider_openai())
-
-
-
-

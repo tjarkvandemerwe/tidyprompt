@@ -27,19 +27,27 @@ NULL
         stop("$prompt_wraps must be a list.", call. = FALSE)
 
       if (
-        length(private$prompt_wraps) > 0
-        && !all(sapply(private$prompt_wraps, function(x) inherits(x, "prompt_wrap")))
+        length(private$prompt_wraps) > 0 &&
+          !all(
+            sapply(private$prompt_wraps, function(x) inherits(x, "prompt_wrap"))
+          )
       )
-        stop("All elements of $prompt_wraps must be of class `prompt_wrap`.", call. = FALSE)
+        stop(
+          "All elements of $prompt_wraps must be of class `prompt_wrap`.",
+          call. = FALSE
+        )
 
       if (!is.null(private$chat_history)) {
         tryCatch(
           chat_history(private$chat_history),
           error = function(e) {
-            stop(paste0(
-              "The chat history is not valid.\n",
-              "Error in `chat_history(private$chat_history)`:\n", e$message
-            ))
+            stop(
+              paste0(
+                "The chat history is not valid.\n",
+                "Error in `chat_history(private$chat_history)`:\n",
+                e$message
+              )
+            )
           }
         )
       }
@@ -117,13 +125,16 @@ NULL
         chat_history <- tryCatch(
           chat_history(input),
           error = function(e) {
-            stop(paste0(
-              "Input for `tidyprompt-class` is a dataframe, but dataframe is not",
-              " a valid chat history.\n",
-              "Error in `chat_history(input)`:\n",
-              e$message, "\n",
-              "(see `?chat_history`)"
-            ))
+            stop(
+              paste0(
+                "Input for `tidyprompt-class` is a dataframe, but dataframe is not",
+                " a valid chat history.\n",
+                "Error in `chat_history(input)`:\n",
+                e$message,
+                "\n",
+                "(see `?chat_history`)"
+              )
+            )
             NULL
           }
         )
@@ -134,10 +145,12 @@ NULL
 
         # Last row of chat history must be user
         if (tail(chat_history$role, 1) != "user") {
-          stop(paste0(
-            "The last row of the chat history must have role 'user'.\n",
-            "Add a message to the chat history with `chat_history_add_msg()`"
-          ))
+          stop(
+            paste0(
+              "The last row of the chat history must have role 'user'.\n",
+              "Add a message to the chat history with `chat_history_add_msg()`"
+            )
+          )
         }
 
         # Extract base prompt from chat history
@@ -145,10 +158,7 @@ NULL
         chat_history <- chat_history[-nrow(chat_history), ]
 
         # Extract system prompt from chat history
-        if (
-          nrow(chat_history) > 0
-          && head(chat_history$role, 1) == "system"
-        ) {
+        if (nrow(chat_history) > 0 && head(chat_history$role, 1) == "system") {
           self$system_prompt <- head(chat_history$content, 1)
           chat_history <- chat_history[-1, ]
         }
@@ -182,10 +192,13 @@ NULL
     #'
     #' @return `TRUE` if valid, otherwise `FALSE`
     is_valid = function() {
-      tryCatch({
-        private$validate_tidyprompt()
-        TRUE
-      }, error = function(e) FALSE)
+      tryCatch(
+        {
+          private$validate_tidyprompt()
+          TRUE
+        },
+        error = function(e) FALSE
+      )
     },
 
     #' @description
@@ -226,7 +239,11 @@ NULL
 
       # Update the environment of functions in the `prompt_wrap` to include `self`
       functions_to_update <- c(
-        "modify_fn", "extraction_fn", "validation_fn", "handler_fn", "parameter_fn"
+        "modify_fn",
+        "extraction_fn",
+        "validation_fn",
+        "handler_fn",
+        "parameter_fn"
       )
       i <- 0
       for (wrap in wraps) {
@@ -240,7 +257,8 @@ NULL
             wraps[[i]][[fn_name]] <- fn
           }
         }
-      }; rm(i)
+      }
+      rm(i)
 
       if (length(wraps) == 0) return(list())
       if (order == "default") return(wraps)
@@ -248,9 +266,9 @@ NULL
       # Categorize wraps
       t_check <- wraps[sapply(wraps, function(x) x$type == "check")]
       t_unspecified <- wraps[sapply(wraps, function(x) x$type == "unspecified")]
-      t_mode       <- wraps[sapply(wraps, function(x) x$type == "mode")]
-      t_tool       <- wraps[sapply(wraps, function(x) x$type == "tool")]
-      t_break      <- wraps[sapply(wraps, function(x) x$type == "break")]
+      t_mode <- wraps[sapply(wraps, function(x) x$type == "mode")]
+      t_tool <- wraps[sapply(wraps, function(x) x$type == "tool")]
+      t_break <- wraps[sapply(wraps, function(x) x$type == "break")]
 
       if (order == "modification") {
         return(c(t_check, t_unspecified, t_break, t_mode, t_tool))
@@ -297,10 +315,12 @@ NULL
 
       # Last row of chat history must be user
       if (tail(chat_history$role, 1) != "user") {
-        stop(paste0(
-          "The last row of the chat history must have role 'user'.\n",
-          "Add a message to the chat history using `chat_history_add_msg()`"
-        ))
+        stop(
+          paste0(
+            "The last row of the chat history must have role 'user'.\n",
+            "Add a message to the chat history using `chat_history_add_msg()`"
+          )
+        )
       }
 
       self$base_prompt <- tail(chat_history$content, 1)
@@ -308,10 +328,7 @@ NULL
       chat_history <- chat_history[-nrow(chat_history), ]
 
       # If first row is system message, we will set it as the system prompt
-      if (
-        nrow(chat_history) > 0
-        && head(chat_history$role, 1) == "system"
-      ) {
+      if (nrow(chat_history) > 0 && head(chat_history$role, 1) == "system") {
         self$system_prompt <- head(chat_history$content, 1)
         # Remove system prompt from chat history
         chat_history <- chat_history[-1, ]
@@ -329,24 +346,30 @@ NULL
     #' @return A dataframe containing the chat history
     get_chat_history = function() {
       chat_history_construction <- c(
-        role = "system", content = self$system_prompt
-      ) |> dplyr::bind_rows(
-        private$chat_history
-      ) |> dplyr::bind_rows(c(
-        role = "user", content = self$construct_prompt_text()
-      ))
+        role = "system",
+        content = self$system_prompt
+      ) |>
+        dplyr::bind_rows(
+          private$chat_history
+        ) |>
+        dplyr::bind_rows(
+          c(
+            role = "user",
+            content = self$construct_prompt_text()
+          )
+        )
 
       # Remove roles with no content
       chat_history_construction <- chat_history_construction |>
-        dplyr::filter(.data$content != "" & !is.na(.data$content) & !is.null(.data$content))
+        dplyr::filter(
+          .data$content != "" & !is.na(.data$content) & !is.null(.data$content)
+        )
 
       chat_history <- chat_history(chat_history_construction)
       chat_history
     }
   )
 )
-
-
 
 #' Create a [tidyprompt-class] object
 #'
@@ -383,8 +406,6 @@ tidyprompt <- function(input) {
   `tidyprompt-class`$new(input)
 }
 
-
-
 #' Check if object is a [tidyprompt-class] object
 #'
 #' @param x An object to check
@@ -398,8 +419,6 @@ tidyprompt <- function(input) {
 is_tidyprompt <- function(x) {
   inherits(x, "Tidyprompt") && x$is_valid()
 }
-
-
 
 #' Get prompt wraps from a [tidyprompt-class] object
 #'
@@ -422,12 +441,13 @@ is_tidyprompt <- function(x) {
 #'
 #' @family tidyprompt
 #' @example inst/examples/tidyprompt.R
-get_prompt_wraps <- function(x, order = c("default", "modification", "evaluation")) {
+get_prompt_wraps <- function(
+  x,
+  order = c("default", "modification", "evaluation")
+) {
   x <- tidyprompt(x)
   x$get_prompt_wraps(order = order)
 }
-
-
 
 #' Construct prompt text from a [tidyprompt-class] object
 #'
@@ -445,8 +465,6 @@ construct_prompt_text <- function(x, llm_provider = NULL) {
   x <- tidyprompt(x)
   x$construct_prompt_text(llm_provider)
 }
-
-
 
 #' @title
 #' Set the chat history of a [tidyprompt-class] object
@@ -478,8 +496,6 @@ set_chat_history <- function(x, chat_history) {
   x$set_chat_history(chat_history)
 }
 
-
-
 #' Get the chat history of a [tidyprompt-class] object
 #'
 #' This function gets the chat history of the [tidyprompt-class] object.
@@ -502,8 +518,6 @@ get_chat_history <- function(x) {
   x <- tidyprompt(x)
   x$get_chat_history()
 }
-
-
 
 #' Set system prompt of a [tidyprompt-class] object
 #'
@@ -528,7 +542,8 @@ get_chat_history <- function(x) {
 set_system_prompt <- function(prompt, system_prompt) {
   prompt <- tidyprompt(prompt)
 
-  if (!is.character(system_prompt) |
+  if (
+    !is.character(system_prompt) |
       length(system_prompt) != 1
   )
     stop("system_prompt must be a single character string")

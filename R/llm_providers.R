@@ -23,12 +23,12 @@
 #'
 #' @family llm_provider
 llm_provider_ollama <- function(
-    parameters = list(
-      model = "llama3.1:8b",
-      stream = getOption("tidyprompt.stream", TRUE)
-    ),
-    verbose = getOption("tidyprompt.verbose", TRUE),
-    url = "http://localhost:11434/api/chat"
+  parameters = list(
+    model = "llama3.1:8b",
+    stream = getOption("tidyprompt.stream", TRUE)
+  ),
+  verbose = getOption("tidyprompt.verbose", TRUE),
+  url = "http://localhost:11434/api/chat"
 ) {
   complete_chat <- function(chat_history) {
     body <- list(
@@ -38,8 +38,7 @@ llm_provider_ollama <- function(
       })
     )
 
-    for (name in names(self$parameters))
-      body[[name]] <- self$parameters[[name]]
+    for (name in names(self$parameters)) body[[name]] <- self$parameters[[name]]
 
     request <- httr2::request(self$url) |>
       httr2::req_body_json(body)
@@ -53,8 +52,7 @@ llm_provider_ollama <- function(
     )
   }
 
-  if (is.null(parameters$stream))
-    parameters$stream <- FALSE
+  if (is.null(parameters$stream)) parameters$stream <- FALSE
 
   ollama <- `llm_provider-class`$new(
     complete_chat_function = complete_chat,
@@ -66,8 +64,6 @@ llm_provider_ollama <- function(
 
   return(ollama)
 }
-
-
 
 #' Create a new OpenAI LLM provider
 #'
@@ -96,13 +92,13 @@ llm_provider_ollama <- function(
 #'
 #' @family llm_provider
 llm_provider_openai <- function(
-    parameters = list(
-      model = "gpt-4o-mini",
-      stream = getOption("tidyprompt.stream", TRUE)
-    ),
-    verbose = getOption("tidyprompt.verbose", TRUE),
-    url = "https://api.openai.com/v1/chat/completions",
-    api_key = Sys.getenv("OPENAI_API_KEY")
+  parameters = list(
+    model = "gpt-4o-mini",
+    stream = getOption("tidyprompt.stream", TRUE)
+  ),
+  verbose = getOption("tidyprompt.verbose", TRUE),
+  url = "https://api.openai.com/v1/chat/completions",
+  api_key = Sys.getenv("OPENAI_API_KEY")
 ) {
   complete_chat <- function(chat_history) {
     headers <- c(
@@ -116,8 +112,7 @@ llm_provider_openai <- function(
       })
     )
 
-    for (name in names(self$parameters))
-      body[[name]] <- self$parameters[[name]]
+    for (name in names(self$parameters)) body[[name]] <- self$parameters[[name]]
 
     request <- httr2::request(self$url) |>
       httr2::req_body_json(body) |>
@@ -132,17 +127,17 @@ llm_provider_openai <- function(
     )
   }
 
-  return(`llm_provider-class`$new(
-    complete_chat_function = complete_chat,
-    parameters = parameters,
-    verbose = verbose,
-    url = url,
-    api_key = api_key,
-    api_type = "openai"
-  ))
+  return(
+    `llm_provider-class`$new(
+      complete_chat_function = complete_chat,
+      parameters = parameters,
+      verbose = verbose,
+      url = url,
+      api_key = api_key,
+      api_type = "openai"
+    )
+  )
 }
-
-
 
 #' Create a new OpenRouter LLM provider
 #'
@@ -166,18 +161,16 @@ llm_provider_openai <- function(
 #'
 #' @family llm_provider
 llm_provider_openrouter <- function(
-    parameters = list(
-      model = "qwen/qwen-2.5-7b-instruct",
-      stream = getOption("tidyprompt.stream", TRUE)
-    ),
-    verbose = getOption("tidyprompt.verbose", TRUE),
-    url = "https://openrouter.ai/api/v1/chat/completions",
-    api_key = Sys.getenv("OPENROUTER_API_KEY")
+  parameters = list(
+    model = "qwen/qwen-2.5-7b-instruct",
+    stream = getOption("tidyprompt.stream", TRUE)
+  ),
+  verbose = getOption("tidyprompt.verbose", TRUE),
+  url = "https://openrouter.ai/api/v1/chat/completions",
+  api_key = Sys.getenv("OPENROUTER_API_KEY")
 ) {
   llm_provider_openai(parameters, verbose, url, api_key)
 }
-
-
 
 #' Create a new Mistral LLM provider
 #'
@@ -201,18 +194,16 @@ llm_provider_openrouter <- function(
 #'
 #' @family llm_provider
 llm_provider_mistral <- function(
-    parameters = list(
-      model = "ministral-3b-latest",
-      stream = getOption("tidyprompt.stream", TRUE)
-    ),
-    verbose = getOption("tidyprompt.verbose", TRUE),
-    url = "https://api.mistral.ai/v1/chat/completions",
-    api_key = Sys.getenv("MISTRAL_API_KEY")
+  parameters = list(
+    model = "ministral-3b-latest",
+    stream = getOption("tidyprompt.stream", TRUE)
+  ),
+  verbose = getOption("tidyprompt.verbose", TRUE),
+  url = "https://api.mistral.ai/v1/chat/completions",
+  api_key = Sys.getenv("MISTRAL_API_KEY")
 ) {
   llm_provider_openai(parameters, verbose, url, api_key)
 }
-
-
 
 #' Create a new Groq LLM provider
 #'
@@ -236,18 +227,16 @@ llm_provider_mistral <- function(
 #'
 #' @family llm_provider
 llm_provider_groq <- function(
-    parameters = list(
-      model = "llama-3.1-8b-instant",
-      stream = TRUE
-    ),
-    verbose = getOption("tidyprompt.verbose", TRUE),
-    url = "https://api.groq.com/openai/v1/chat/completions",
-    api_key = Sys.getenv("GROQ_API_KEY")
+  parameters = list(
+    model = "llama-3.1-8b-instant",
+    stream = TRUE
+  ),
+  verbose = getOption("tidyprompt.verbose", TRUE),
+  url = "https://api.groq.com/openai/v1/chat/completions",
+  api_key = Sys.getenv("GROQ_API_KEY")
 ) {
   llm_provider_openai(parameters, verbose, url, api_key)
 }
-
-
 
 #' Create a new XAI (Grok) LLM provider
 #'
@@ -271,18 +260,16 @@ llm_provider_groq <- function(
 #'
 #' @family llm_provider
 llm_provider_xai <- function(
-    parameters = list(
-      model = "grok-beta",
-      stream = getOption("tidyprompt.stream", TRUE)
-    ),
-    verbose = getOption("tidyprompt.verbose", TRUE),
-    url = "https://api.x.ai/v1/chat/completions",
-    api_key = Sys.getenv("XAI_API_KEY")
+  parameters = list(
+    model = "grok-beta",
+    stream = getOption("tidyprompt.stream", TRUE)
+  ),
+  verbose = getOption("tidyprompt.verbose", TRUE),
+  url = "https://api.x.ai/v1/chat/completions",
+  api_key = Sys.getenv("XAI_API_KEY")
 ) {
   llm_provider_openai(parameters, verbose, url, api_key)
 }
-
-
 
 #' Create a new Google Gemini LLM provider
 #'
@@ -309,12 +296,12 @@ llm_provider_xai <- function(
 #'
 #' @family llm_provider
 llm_provider_google_gemini <- function(
-    parameters = list(
-      model = "gemini-1.5-flash"
-    ),
-    verbose = getOption("tidyprompt.verbose", TRUE),
-    url = "https://generativelanguage.googleapis.com/v1beta/models/",
-    api_key = Sys.getenv("GOOGLE_AI_STUDIO_API_KEY")
+  parameters = list(
+    model = "gemini-1.5-flash"
+  ),
+  verbose = getOption("tidyprompt.verbose", TRUE),
+  url = "https://generativelanguage.googleapis.com/v1beta/models/",
+  api_key = Sys.getenv("GOOGLE_AI_STUDIO_API_KEY")
 ) {
   complete_chat <- function(chat_history) {
     # Construct URL for the API request
@@ -327,7 +314,11 @@ llm_provider_google_gemini <- function(
     # Format chat_history for API compatibility with the 'contents' format
     formatted_contents <- lapply(seq_len(nrow(chat_history)), function(i) {
       list(
-        role = ifelse(chat_history$role[i] == "assistant", "model", chat_history$role[i]),
+        role = ifelse(
+          chat_history$role[i] == "assistant",
+          "model",
+          chat_history$role[i]
+        ),
         parts = list(list(text = chat_history$content[i]))
       )
     })
@@ -338,8 +329,7 @@ llm_provider_google_gemini <- function(
     )
 
     # Append all other parameters to the body
-    for (name in names(self$parameters))
-      body[[name]] <- self$parameters[[name]]
+    for (name in names(self$parameters)) body[[name]] <- self$parameters[[name]]
 
     # Send the POST request with httr2
     response <- httr2::request(endpoint) |>
@@ -355,12 +345,19 @@ llm_provider_google_gemini <- function(
     if (httr2::resp_status(response) == 200) {
       content <- httr2::resp_body_json(response)
 
-      return(list(
-        role = "assistant",
-        content = content$candidates[[1]]$content$parts[[1]]$text
-      ))
+      return(
+        list(
+          role = "assistant",
+          content = content$candidates[[1]]$content$parts[[1]]$text
+        )
+      )
     } else {
-      stop("Error: ", httr2::resp_status(response), " - ", httr2::resp_body_string(response))
+      stop(
+        "Error: ",
+        httr2::resp_status(response),
+        " - ",
+        httr2::resp_body_string(response)
+      )
     }
   }
 
@@ -373,8 +370,6 @@ llm_provider_google_gemini <- function(
     api_type = "gemini"
   )
 }
-
-
 
 #' Create a fake [llm_provider-class] (for development and testing purposes)
 #'
@@ -402,44 +397,72 @@ llm_provider_fake <- function(verbose = getOption("tidyprompt.verbose", TRUE)) {
       "To answer the user's prompt, you need to think step by step to arrive at a final answer."
 
     if (last_msg == "Hi there!") {
-      return(list(completed = chat_history |> dplyr::bind_rows(data.frame(
-        role = "assistant",
-        content = paste0(
-          "It's nice to meet you.",
-          " Is there something I can help you with or would you like to chat?"
+      return(
+        list(
+          completed = chat_history |>
+            dplyr::bind_rows(
+              data.frame(
+                role = "assistant",
+                content = paste0(
+                  "It's nice to meet you.",
+                  " Is there something I can help you with or would you like to chat?"
+                )
+              )
+            )
         )
-      ))))
-    }
-
-    if (grepl(
-      "What is a large language model? Explain in 10 words.", last_msg,
-      fixed = TRUE
-    )) {
-      return(list(completed = chat_history |> dplyr::bind_rows(data.frame(
-        role = "assistant",
-        content = "Complex computer program trained on vast texts to generate human-like responses."
-      ))))
+      )
     }
 
     if (
-      grepl("What is 2 + 2?", last_msg, fixed = TRUE)
-      & grepl(answer_as_integer_input, last_msg, fixed = TRUE)
-      & !grepl(chain_of_thought_input, last_msg, fixed = TRUE)
+      grepl(
+        "What is a large language model? Explain in 10 words.",
+        last_msg,
+        fixed = TRUE
+      )
     ) {
-      return(list(completed = chat_history |> dplyr::bind_rows(data.frame(
-        role = "assistant",
-        content = "4"
-      ))))
+      return(
+        list(
+          completed = chat_history |>
+            dplyr::bind_rows(
+              data.frame(
+                role = "assistant",
+                content = "Complex computer program trained on vast texts to generate human-like responses."
+              )
+            )
+        )
+      )
     }
 
     if (
-      grepl("What is 2 + 2?", last_msg, fixed = TRUE)
-      & !grepl(answer_as_integer_input, last_msg, fixed = TRUE)
+      grepl("What is 2 + 2?", last_msg, fixed = TRUE) &
+        grepl(answer_as_integer_input, last_msg, fixed = TRUE) &
+        !grepl(chain_of_thought_input, last_msg, fixed = TRUE)
     ) {
-      return(list(completed = chat_history |> dplyr::bind_rows(data.frame(
-        role = "assistant",
-        content = glue::glue(
-          ">> step 1: Identify the mathematical operation in the prompt,
+      return(
+        list(
+          completed = chat_history |>
+            dplyr::bind_rows(
+              data.frame(
+                role = "assistant",
+                content = "4"
+              )
+            )
+        )
+      )
+    }
+
+    if (
+      grepl("What is 2 + 2?", last_msg, fixed = TRUE) &
+        !grepl(answer_as_integer_input, last_msg, fixed = TRUE)
+    ) {
+      return(
+        list(
+          completed = chat_history |>
+            dplyr::bind_rows(
+              data.frame(
+                role = "assistant",
+                content = glue::glue(
+                  ">> step 1: Identify the mathematical operation in the prompt,
           which is a simple addition problem.
 
           >> step 2: Recall the basic arithmetic fact that 2 + 2 equals a specific
@@ -450,30 +473,50 @@ llm_provider_fake <- function(verbose = getOption("tidyprompt.verbose", TRUE)) {
 
           >> step 4: Conclude that based on this mathematical understanding, the
           solution to the prompt \"What is 2 + 2?\" is a fixed numerical quantity."
+                )
+              )
+            )
         )
-      ))))
+      )
     }
 
     if (
-      any(grepl("What is 2 + 2?", chat_history$content[chat_history$role == "user"], fixed = TRUE))
-      & grepl(answer_as_integer_input, last_msg, fixed = TRUE)
-      & !grepl(chain_of_thought_input, last_msg, fixed = TRUE)
+      any(
+        grepl(
+          "What is 2 + 2?",
+          chat_history$content[chat_history$role == "user"],
+          fixed = TRUE
+        )
+      ) &
+        grepl(answer_as_integer_input, last_msg, fixed = TRUE) &
+        !grepl(chain_of_thought_input, last_msg, fixed = TRUE)
     ) {
-      return(list(completed = chat_history |> dplyr::bind_rows(data.frame(
-        role = "assistant",
-        content = "22"
-      ))))
+      return(
+        list(
+          completed = chat_history |>
+            dplyr::bind_rows(
+              data.frame(
+                role = "assistant",
+                content = "22"
+              )
+            )
+        )
+      )
     }
 
     if (
-      grepl("What is 2 + 2?", last_msg,  fixed = TRUE)
-      & grepl(chain_of_thought_input, last_msg,  fixed = TRUE)
-      & grepl(answer_as_integer_input, last_msg,  fixed = TRUE)
+      grepl("What is 2 + 2?", last_msg, fixed = TRUE) &
+        grepl(chain_of_thought_input, last_msg, fixed = TRUE) &
+        grepl(answer_as_integer_input, last_msg, fixed = TRUE)
     ) {
-      return(list(completed = chat_history |> dplyr::bind_rows(data.frame(
-        role = "assistant",
-        content = glue::glue(
-          ">> step 1: Identify the mathematical operation in the prompt,
+      return(
+        list(
+          completed = chat_history |>
+            dplyr::bind_rows(
+              data.frame(
+                role = "assistant",
+                content = glue::glue(
+                  ">> step 1: Identify the mathematical operation in the prompt,
           which is a simple addition problem.
 
           >> step 2: Recall the basic arithmetic fact that 2 + 2 equals a specific
@@ -486,53 +529,92 @@ llm_provider_fake <- function(verbose = getOption("tidyprompt.verbose", TRUE)) {
           solution to the prompt \"What is 2 + 2?\" is a fixed numerical quantity.
 
           FINISH[4]"
+                )
+              )
+            )
         )
-      ))))
+      )
     }
 
-    if (grepl(
-      'example usage: FUNCTION[temperature_in_location]("Amsterdam", "Fahrenheit")',
-      last_msg,
-      fixed = TRUE
-    )) {
-      return(list(completed = chat_history |> dplyr::bind_rows(data.frame(
-        role = "assistant",
-        content = glue::glue(
-          "I'll use the provided function to get the current temperature in Enschede.
+    if (
+      grepl(
+        'example usage: FUNCTION[temperature_in_location]("Amsterdam", "Fahrenheit")',
+        last_msg,
+        fixed = TRUE
+      )
+    ) {
+      return(
+        list(
+          completed = chat_history |>
+            dplyr::bind_rows(
+              data.frame(
+                role = "assistant",
+                content = glue::glue(
+                  "I'll use the provided function to get the current temperature in Enschede.
 
           FUNCTION[temperature_in_location](\"Enschede\", \"Celcius\")"
+                )
+              )
+            )
         )
-      ))))
+      )
     }
 
     if (
-      grepl("function called: temperature_in_location", last_msg, fixed = TRUE)
-      & grepl("arguments used: location = Enschede", last_msg, fixed = TRUE)
-    ) {
-      return(list(completed = chat_history |> dplyr::bind_rows(data.frame(
-        role = "assistant",
-        content = "22.7"
-      ))))
-    }
-
-    if (
-      any(grepl(
-        "So the current temperature in Enschede is 22.7 degrees Celsius.",
-        chat_history$content[chat_history$role == "assistant"],
+      grepl(
+        "function called: temperature_in_location",
+        last_msg,
         fixed = TRUE
-      ))
-      & grepl(last_msg, answer_as_integer_input, fixed = TRUE)
+      ) &
+        grepl("arguments used: location = Enschede", last_msg, fixed = TRUE)
     ) {
-      return(list(completed = chat_history |> dplyr::bind_rows(data.frame(
-        role = "assistant",
-        content = "22.7"
-      ))))
+      return(
+        list(
+          completed = chat_history |>
+            dplyr::bind_rows(
+              data.frame(
+                role = "assistant",
+                content = "22.7"
+              )
+            )
+        )
+      )
     }
 
-    return(list(completed = chat_history |> dplyr::bind_rows(data.frame(
-      role = "assistant",
-      content = "I'm a fake LLM! This is my default response."
-    ))))
+    if (
+      any(
+        grepl(
+          "So the current temperature in Enschede is 22.7 degrees Celsius.",
+          chat_history$content[chat_history$role == "assistant"],
+          fixed = TRUE
+        )
+      ) &
+        grepl(last_msg, answer_as_integer_input, fixed = TRUE)
+    ) {
+      return(
+        list(
+          completed = chat_history |>
+            dplyr::bind_rows(
+              data.frame(
+                role = "assistant",
+                content = "22.7"
+              )
+            )
+        )
+      )
+    }
+
+    return(
+      list(
+        completed = chat_history |>
+          dplyr::bind_rows(
+            data.frame(
+              role = "assistant",
+              content = "I'm a fake LLM! This is my default response."
+            )
+          )
+      )
+    )
   }
 
   `llm_provider-class`$new(
