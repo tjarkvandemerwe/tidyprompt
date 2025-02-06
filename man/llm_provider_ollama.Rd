@@ -19,8 +19,11 @@ llm_provider_ollama(
 
 Additional parameters may be passed by adding them to the parameters list;
 these parameters will be passed to the Ollama API via the body of the POST request.
+
 Note that various Ollama options need to be set in a list named 'options' within
-the parameters list (e.g., context window size is represented in $parameters$options$num_ctx)}
+the parameters list (e.g., context window size is represented in $parameters$options$num_ctx).
+For ease of configuration, the 'set_option' and 'set_options' functions are available
+(e.g., \verb{$set_option("num_ctx", 1024)} or \verb{$set_options(list(num_ctx = 1024, temperature = 1))}).}
 
 \item{verbose}{A logical indicating whether the interaction with the LLM provider
 should be printed to the console}

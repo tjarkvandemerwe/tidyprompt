@@ -50,5 +50,6 @@ Imports:
     jsonlite,
     stringr,
     utils,
-    cli
+    cli,
+    R6
 Config/testthat/edition: 3

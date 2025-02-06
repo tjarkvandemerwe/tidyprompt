@@ -8,8 +8,11 @@
 #'
 #'  Additional parameters may be passed by adding them to the parameters list;
 #'  these parameters will be passed to the Ollama API via the body of the POST request.
+#'
 #'  Note that various Ollama options need to be set in a list named 'options' within
-#'  the parameters list (e.g., context window size is represented in $parameters$options$num_ctx)
+#'  the parameters list (e.g., context window size is represented in $parameters$options$num_ctx).
+#'  For ease of configuration, the 'set_option' and 'set_options' functions are available
+#'  (e.g., `$set_option("num_ctx", 1024)` or `$set_options(list(num_ctx = 1024, temperature = 1))`).
 #   See available settings at https://github.com/ollama/ollama/blob/main/docs/api.md
 #' @param verbose A logical indicating whether the interaction with the LLM provider
 #' should be printed to the console
@@ -54,7 +57,38 @@ llm_provider_ollama <- function(
 
   if (is.null(parameters$stream)) parameters$stream <- FALSE
 
-  ollama <- `llm_provider-class`$new(
+  # Extend llm_provider-class with 'set_option' functions
+  class <- R6::R6Class(
+    "llm_provider_ollama-class",
+    inherit = `llm_provider-class`,
+    public = list(
+      set_option = function(name, value) {
+        stopifnot(
+          is.character(name),
+          is.character(value) || is.logical(value) || is.numeric(value)
+        )
+
+        self$parameters$options[[name]] <- value
+      },
+      set_options = function(options) {
+        stopifnot(
+          is.list(options),
+          !is.null(names(options))
+        )
+
+        for (name in names(options)) {
+          value <- options[[name]]
+          stopifnot(
+            is.character(value) || is.logical(value) || is.numeric(value)
+          )
+
+          self$parameters$options[[name]] <- value
+        }
+      }
+    )
+  )
+
+  ollama <- class$new(
     complete_chat_function = complete_chat,
     parameters = parameters,
     verbose = verbose,
