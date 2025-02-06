@@ -69,6 +69,7 @@ llm_provider_ollama <- function(
         )
 
         self$parameters$options[[name]] <- value
+        return(self)
       },
       set_options = function(options) {
         stopifnot(
@@ -84,6 +85,7 @@ llm_provider_ollama <- function(
 
           self$parameters$options[[name]] <- value
         }
+        return(self)
       }
     )
   )
