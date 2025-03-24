@@ -18,6 +18,9 @@
 #' should be printed to the console
 #' @param url The URL to the Ollama API endpoint for chat completion
 #' (typically: "http://localhost:11434/api/chat")
+#' @param num_ctx The context window size to use.
+#' When NULL, the default context window size will be used. This is a function
+#' argument for convenience, and will be passed to '$parameters$options$num_ctx'
 #'
 #' @return A new [llm_provider-class] object for use of the Ollama API
 #'
@@ -31,7 +34,8 @@ llm_provider_ollama <- function(
     stream = getOption("tidyprompt.stream", TRUE)
   ),
   verbose = getOption("tidyprompt.verbose", TRUE),
-  url = "http://localhost:11434/api/chat"
+  url = "http://localhost:11434/api/chat",
+  num_ctx = NULL
 ) {
   complete_chat <- function(chat_history) {
     body <- list(
@@ -56,6 +60,7 @@ llm_provider_ollama <- function(
   }
 
   if (is.null(parameters$stream)) parameters$stream <- FALSE
+  if (!is.null(num_ctx)) parameters$options$num_ctx <- num_ctx
 
   # Extend llm_provider-class with 'set_option' functions
   class <- R6::R6Class(

@@ -7,7 +7,8 @@
 llm_provider_ollama(
   parameters = list(model = "llama3.1:8b", stream = getOption("tidyprompt.stream", TRUE)),
   verbose = getOption("tidyprompt.verbose", TRUE),
-  url = "http://localhost:11434/api/chat"
+  url = "http://localhost:11434/api/chat",
+  num_ctx = NULL
 )
 }
 \arguments{
@@ -30,6 +31,10 @@ should be printed to the console}
 
 \item{url}{The URL to the Ollama API endpoint for chat completion
 (typically: "http://localhost:11434/api/chat")}
+
+\item{num_ctx}{The context window size to use.
+When NULL, the default context window size will be used. This is a function
+argument for convenience, and will be passed to '$parameters$options$num_ctx'}
 }
 \value{
 A new \linkS4class{llm_provider} object for use of the Ollama API
