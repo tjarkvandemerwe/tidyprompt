@@ -368,13 +368,13 @@ llm_provider_google_gemini <- function(
     for (name in names(self$parameters)) body[[name]] <- self$parameters[[name]]
 
     # Send the POST request with httr2
-    response <- httr2::request(endpoint) |>
+    request <- httr2::request(endpoint) |>
       httr2::req_headers(
         `Content-Type` = "application/json"
       ) |>
       httr2::req_body_json(body) |>
-      httr2::req_url_query(key = self$api_key) |>
-      httr2::req_perform()
+      httr2::req_url_query(key = self$api_key)
+    response <- request |> httr2::req_perform()
 
     # Check if the request was successful
     if (httr2::resp_status(response) == 200) {
@@ -392,7 +392,7 @@ llm_provider_google_gemini <- function(
         list(
           completed = completed,
           http = list(
-            request = response$request,
+            request = request,
             response = response
           )
         )

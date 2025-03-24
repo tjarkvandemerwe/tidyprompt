@@ -9,7 +9,7 @@ llm_break(object_to_return = NULL, success = FALSE)
 \arguments{
 \item{object_to_return}{The object to return as the response result
 from \code{\link[=send_prompt]{send_prompt()}} when this object is returned from an extraction or
-validation function.}
+validation function}
 
 \item{success}{A logical indicating whether the \code{\link[=send_prompt]{send_prompt()}} loop break
 should nonetheless be considered as a successful completion of the
@@ -20,7 +20,7 @@ when the evaluation was unsuccessful); if \code{FALSE}, \code{\link[=send_prompt
 print a warning about the unsuccessful evaluation.
 If \code{TRUE}, the \code{object_to_return}
 will be returned as the response result of \code{\link[=send_prompt]{send_prompt()}} (and \code{\link[=send_prompt]{send_prompt()}})
-will print no warning about unsuccessful evaluation).}
+will print no warning about unsuccessful evaluation)}
 }
 \value{
 An list of class "llm_break" containing the object to return and

@@ -214,6 +214,10 @@ send_prompt <- function(
           break
         }
 
+        if (inherits(extraction_result, "llm_break_soft")) {
+          interactions <- max_interactions
+        }
+
         if (inherits(extraction_result, "llm_break")) {
           # Still apply remaining prompt wraps of type 'check'
           #   (this may block the break when feedback is returned)
@@ -268,6 +272,10 @@ send_prompt <- function(
           response <- send_chat(validation_result, tool_result = tool_result)
           any_prompt_wrap_not_done <- TRUE
           break
+        }
+
+        if (inherits(validation_result, "llm_break_soft")) {
+          interactions <- max_interactions
         }
 
         if (inherits(validation_result, "llm_break")) {

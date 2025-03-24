@@ -20,6 +20,7 @@ reference:
   - prompt_wrap
   - llm_feedback
   - llm_break
+  - llm_break_soft
 - subtitle: Send prompt
   desc: Function to evaluate prompts with an LLM provider.
 - contents:
