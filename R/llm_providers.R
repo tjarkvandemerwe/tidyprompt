@@ -370,8 +370,7 @@ llm_provider_google_gemini <- function(
     # Send the POST request with httr2
     response <- httr2::request(endpoint) |>
       httr2::req_headers(
-        `Content-Type` = "application/json",
-        `Authorization` = paste("Bearer", self$api_key)
+        `Content-Type` = "application/json"
       ) |>
       httr2::req_body_json(body) |>
       httr2::req_url_query(key = self$api_key) |>
@@ -381,10 +380,21 @@ llm_provider_google_gemini <- function(
     if (httr2::resp_status(response) == 200) {
       content <- httr2::resp_body_json(response)
 
+      completed <- chat_history |>
+        dplyr::bind_rows(
+          data.frame(
+            role = "assistant",
+            content = content$candidates[[1]]$content$parts[[1]]$text
+          )
+        )
+
       return(
         list(
-          role = "assistant",
-          content = content$candidates[[1]]$content$parts[[1]]$text
+          completed = completed,
+          http = list(
+            request = response$request,
+            response = response
+          )
         )
       )
     } else {
