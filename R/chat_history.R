@@ -79,6 +79,9 @@ chat_history.character <- function(chat_history) {
 #' @exportS3Method chat_history data.frame
 #' @keywords internal
 chat_history.data.frame <- function(chat_history) {
+  # Filter out rows with all 'NA'
+  chat_history <- chat_history[!rowSums(is.na(chat_history)) == ncol(chat_history), ]
+
   if (!all(c("role", "content") %in% names(chat_history))) {
     stop("The data frame must contain'role' and 'content' columns.")
   }
