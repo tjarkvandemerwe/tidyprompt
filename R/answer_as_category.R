@@ -1,4 +1,5 @@
 #' Make LLM answer as a category
+#' For multiple categories, see [answer_as_multi_category()]
 #'
 #' @param prompt A single string or a [tidyprompt()] object
 #' @param categories Possible categories to choose from (character vector)
@@ -6,13 +7,20 @@
 #' @return A [tidyprompt()] with an added [prompt_wrap()] which
 #' will ensure that the LLM response is the most fitting category of a text as
 #' a character vector of length one.
+#'
 #' @export
+#'
+#' @example inst/examples/answer_as_category.R
+#'
+#' @family pre_built_prompt_wraps
+#' @family answer_as_prompt_wraps
 answer_as_category <- function(
   prompt,
   categories
 ) {
+  prompt <- tidyprompt(prompt)
+
   stopifnot(
-    is.character(prompt),
     is.character(categories),
     length(categories) > 0,
     !any(duplicated(categories))
@@ -26,26 +34,26 @@ answer_as_category <- function(
   )
 
   instruction <- paste0(
+    "Possible categories:\n  ",
+    numbered_categories,
+    "\n\n",
     "Respond with the number of the category that best describes the text.",
     "\n",
     "(Use no other words or characters.)"
   )
 
-  modify_fn <- function(original_prompt_text, numbered_categories) {
+  modify_fn <- function(original_prompt_text) {
     paste0(
       "You need to categorize a text.\n\n",
       "Text:\n  '",
       original_prompt_text,
       "'\n\n",
-      "Possible categories:\n  ",
-      numbered_categories,
-      "\n\n",
       instruction
     )
   }
 
-  extraction_fn <- function(x) {
-    normalized <- trimws(tolower(x))
+  extraction_fn <- function(response) {
+    normalized <- trimws(tolower(response))
     if (normalized %in% as.character(seq_along(categories))) {
       return(categories[[as.integer(normalized)]])
     }
@@ -66,26 +74,28 @@ answer_as_category <- function(
 
 
 #' Build prompt for categorizing a text into multiple categories
+#' For single category, see [answer_as_category()]
 #'
 #' @param prompt A single string or a [tidyprompt()] object
 #' @param categories Possible categories to choose from (character vector)
 #'
 #' @return A [tidyprompt()] with an added [prompt_wrap()] which
 #' will ensure that the LLM response is a vector of fitting categories of a text.
+#'
 #' @export
+#'
+#' @example inst/examples/answer_as_multi_category.R
+#'
+#' @family pre_built_prompt_wraps
+#' @family answer_as_prompt_wraps
 answer_as_multi_category <- function(
-  prompt = "this product is red",
-  categories = c(
-    "positive review",
-    "negative review",
-    "mentions color",
-    "does not mention color"
-  )
+  prompt,
+  categories
 ) {
+  sprompt <- tidyprompt(prompt)
+
   stopifnot(
-    is.character(text),
     is.character(categories),
-    length(text) == 1,
     length(categories) > 0,
     !any(duplicated(categories))
   )
@@ -97,40 +107,46 @@ answer_as_multi_category <- function(
     collapse = "\n  "
   )
 
-  instruction <- "You need to categorize a text.\n\n"
-
   instruction <- paste0(
-    instruction,
-    "Text:\n  '",
-    text,
-    "'\n\n",
     "Possible categories:\n  ",
     numbered_categories,
     "\n\n",
     "Respond with the numbers of all categories that apply to this text, separated by commas.",
     "\n",
-    "(Use only numbers separated by commas, no extra words or characters.)"
+    "(Use no other words or characters.)"
   )
 
-  prompt <- instruction |>
-    tidyprompt::prompt_wrap(
-      extraction_fn = function(x) {
-        normalized <- trimws(tolower(x))
-        numbers <- unlist(strsplit(normalized, ",\\s*"))
-        valid_numbers <- numbers[
-          numbers %in% as.character(seq_along(categories))
-        ]
-        if (length(valid_numbers) == 0) {
-          return(tidyprompt::llm_feedback(
-            "You must select at least one valid category number."
-          ))
-        }
-        categories_selected <- categories[as.integer(valid_numbers)]
-        return(
-          jsonlite::toJSON(categories_selected, auto_unbox = FALSE)
-        )
-      }
+  modify_fn <- function(original_prompt_text) {
+    paste0(
+      "You need to categorize a text.\n\n",
+      "Text:\n  '",
+      original_prompt_text,
+      "'\n\n",
+      instruction
     )
+  }
 
-  return(prompt)
+  extraction_fn <- function(response) {
+    normalized <- trimws(tolower(response))
+    numbers <- unlist(strsplit(normalized, ",\\s*"))
+    valid_numbers <- numbers[
+      numbers %in% as.character(seq_along(categories))
+    ]
+    if (length(valid_numbers) == 0) {
+      return(tidyprompt::llm_feedback(
+        "You must select at least one valid category number."
+      ))
+    }
+    categories_selected <- categories[as.integer(valid_numbers)]
+    return(
+      jsonlite::toJSON(categories_selected, auto_unbox = FALSE)
+    )
+  }
+
+  prompt_wrap(
+    prompt,
+    modify_fn,
+    extraction_fn,
+    name = "answer_as_multi_category"
+  )
 }
