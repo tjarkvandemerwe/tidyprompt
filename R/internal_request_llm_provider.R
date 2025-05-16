@@ -56,21 +56,28 @@ request_llm_provider <- function(
 }
 
 req_llm_handle_error <- function(e) {
-  message("Error: ", e$message)
-  tryCatch(
+  msg <- paste0(e$message)
+
+  # Try to parse and include JSON body if available
+  body_msg <- tryCatch(
     {
       body <- e$resp |>
         httr2::resp_body_string() |>
         jsonlite::fromJSON()
-      print(body)
+      paste0("\nResponse body: ", jsonlite::toJSON(body, pretty = TRUE, auto_unbox = TRUE))
     },
-    error = function(e) message("(Could not parse JSON body from response)")
+    error = function(e) "\n(Could not parse JSON body from response)"
   )
-  message(
-    "Use 'httr2::last_response()' and 'httr2::last_request()' for more information"
+
+  msg <- paste0(
+    msg,
+    body_msg,
+    "\nUse 'httr2::last_response()' and 'httr2::last_request()' for more information"
   )
-  stop("Could not perform request to LLM provider")
+
+  stop(msg, call. = FALSE)
 }
+
 
 req_llm_stream <- function(req, api_type, verbose) {
   role <- NULL
