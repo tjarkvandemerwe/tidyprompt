@@ -175,8 +175,8 @@ NULL
             )
           )
         )
-        cat(chat_history$content[nrow(chat_history)])
-        cat("\n")
+
+        message(chat_history$content[nrow(chat_history)])
       }
 
       if (self$verbose)
@@ -227,14 +227,14 @@ NULL
       # Print difference between chat_history and completed
       if (
         self$verbose &&
-          (is.null(self$parameters$stream) || !self$parameters$stream)
+        (is.null(self$parameters$stream) || !self$parameters$stream)
       ) {
         chat_history_new <- response$completed[
           (nrow(chat_history) + 1):nrow(response$completed),
         ]
 
         for (i in seq_len(nrow(chat_history_new))) {
-          cat(chat_history_new$content[i], "\n")
+          message(chat_history_new$content[i])
         }
       }
 
