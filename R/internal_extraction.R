@@ -17,6 +17,16 @@
 #' @noRd
 #' @keywords internal
 extraction_fn_finish <- function(llm_response, lenience = TRUE) {
+  error_feedback <- llm_feedback(
+    glue::glue(
+      "Error, could not parse your final answer.\n",
+      "Please type: 'FINISH[<put here your final answer to the original prompt>]'"
+    )
+  )
+
+  # Check if FINISH is mentioned in the response.
+  if (!stringr::str_detect(llm_response, "(?si)FINISH")) return(error_feedback)
+
   # First attempt: Extract text between FINISH[...]
   extracted_response <- stringr::str_extract(
     llm_response,
@@ -25,17 +35,34 @@ extraction_fn_finish <- function(llm_response, lenience = TRUE) {
 
   # If extraction fails, try alternative method
   if (is.na(extracted_response) & lenience) {
-    # Use regex to match 'FINISH' variants and capture text after any punctuation
-    pattern <- "(?si)\\bFINISH\\w*\\W*(.*)"
-    matches <- stringr::str_match_all(llm_response, pattern)[[1]]
+    # Use regex to match 'FINISH' variants and capture text between brackets/braces or spaces
+    # start with capturing everything after finish:
+    extracted_response <- stringr::str_extract(
+      llm_response,
+      "(?si)(?<=\\bFINISH).*"
+    )
 
-    if (nrow(matches) > 0) {
-      # Get the last match
-      extracted_response <- matches[nrow(matches), 2]
-      extracted_response <- stringr::str_trim(extracted_response)
-    } else {
-      # If no 'FINISH' variants are found
-      extracted_response <- NA
+    # remove whitespaces
+    extracted_response <- stringr::str_trim(extracted_response)
+
+    # if text starts with punctuation ':, =, ...' and optional space remove it
+    extracted_response <- stringr::str_replace(
+      extracted_response,
+      "^[[:punct:]]+\\s*",
+      ""
+    )
+
+    # if text begins and ends with any form of braces '[{(' remove them
+    has_start_brace <- stringr::str_detect(extracted_response, "^[\\[\\{\\(]")
+    has_end_brace <- stringr::str_detect(extracted_response, "[\\]\\}\\)]$")
+
+    if (has_start_brace && has_end_brace) {
+      # remove braces
+      extracted_response <- stringr::str_replace_all(
+        extracted_response,
+        "(^[\\[\\{\\(])|([\\]\\}\\)]$)",
+        ""
+      )
     }
   }
 
@@ -45,14 +72,7 @@ extraction_fn_finish <- function(llm_response, lenience = TRUE) {
       tolower(trimws(extracted_response)) %in% c("answer", "final answer") ||
       extracted_response |> stringr::str_trim() == ""
   ) {
-    return(
-      llm_feedback(
-        glue::glue(
-          "Error, could not parse your final answer.\n",
-          "Please type: 'FINISH[<put here your final answer to the original prompt>]'"
-        )
-      )
-    )
+    return(error_feedback)
   }
 
   return(extracted_response)
