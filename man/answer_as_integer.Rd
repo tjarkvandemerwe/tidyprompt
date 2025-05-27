@@ -48,8 +48,10 @@ Make LLM answer as an integer (between min and max)
 Other pre_built_prompt_wraps: 
 \code{\link{add_text}()},
 \code{\link{answer_as_boolean}()},
+\code{\link{answer_as_category}()},
 \code{\link{answer_as_json}()},
 \code{\link{answer_as_list}()},
+\code{\link{answer_as_multi_category}()},
 \code{\link{answer_as_named_list}()},
 \code{\link{answer_as_regex_match}()},
 \code{\link{answer_as_text}()},
@@ -64,8 +66,10 @@ Other pre_built_prompt_wraps:
 
 Other answer_as_prompt_wraps: 
 \code{\link{answer_as_boolean}()},
+\code{\link{answer_as_category}()},
 \code{\link{answer_as_json}()},
 \code{\link{answer_as_list}()},
+\code{\link{answer_as_multi_category}()},
 \code{\link{answer_as_named_list}()},
 \code{\link{answer_as_regex_match}()},
 \code{\link{answer_as_text}()}
