@@ -2,7 +2,11 @@
 #' For multiple categories, see [answer_as_multi_category()]
 #'
 #' @param prompt A single string or a [tidyprompt()] object
-#' @param categories Possible categories to choose from (character vector)
+#' @param categories A character vector of category names. Must not be empty
+#'   and must not contain duplicates.
+#' @param descriptions An optional character vector of descriptions,
+#'   corresponding to each category. If provided, its length must match
+#'   the length of `categories`. Defaults to `NULL`.
 #'
 #' @return A [tidyprompt()] with an added [prompt_wrap()] which
 #' will ensure that the LLM response is the most fitting category of a text as
@@ -16,26 +20,18 @@
 #' @family answer_as_prompt_wraps
 answer_as_category <- function(
   prompt,
-  categories
+  categories,
+  descriptions = NULL
 ) {
   prompt <- tidyprompt(prompt)
 
-  stopifnot(
-    is.character(categories),
-    length(categories) > 0,
-    !any(duplicated(categories))
-  )
-
-  numbered_categories <- paste0(
-    seq_along(categories),
-    ". ",
+  numbered_categories_text <- .build_formatted_category_list(
     categories,
-    collapse = "\n  "
+    descriptions
   )
 
   instruction <- paste0(
-    "Possible categories:\n  ",
-    numbered_categories,
+    numbered_categories_text,
     "\n\n",
     "Respond with the number of the category that best describes the text.",
     "\n",
@@ -44,7 +40,7 @@ answer_as_category <- function(
 
   modify_fn <- function(original_prompt_text) {
     paste0(
-      "You need to categorize a text.\n\n",
+      "You need to categorize the following text.\n\n",
       "Text:\n  '",
       original_prompt_text,
       "'\n\n",
@@ -77,7 +73,11 @@ answer_as_category <- function(
 #' For single category, see [answer_as_category()]
 #'
 #' @param prompt A single string or a [tidyprompt()] object
-#' @param categories Possible categories to choose from (character vector)
+#' @param categories A character vector of category names. Must not be empty
+#'   and must not contain duplicates.
+#' @param descriptions An optional character vector of descriptions,
+#'   corresponding to each category. If provided, its length must match
+#'   the length of `categories`. Defaults to `NULL`.
 #'
 #' @return A [tidyprompt()] with an added [prompt_wrap()] which
 #' will ensure that the LLM response is a vector of fitting categories of a text.
@@ -90,26 +90,18 @@ answer_as_category <- function(
 #' @family answer_as_prompt_wraps
 answer_as_multi_category <- function(
   prompt,
-  categories
+  categories,
+  descriptions = NULL
 ) {
-  sprompt <- tidyprompt(prompt)
+  prompt <- tidyprompt(prompt)
 
-  stopifnot(
-    is.character(categories),
-    length(categories) > 0,
-    !any(duplicated(categories))
-  )
-
-  numbered_categories <- paste0(
-    seq_along(categories),
-    ". ",
+  numbered_categories_text <- .build_formatted_category_list(
     categories,
-    collapse = "\n  "
+    descriptions
   )
 
   instruction <- paste0(
-    "Possible categories:\n  ",
-    numbered_categories,
+    numbered_categories_text,
     "\n\n",
     "Respond with the numbers of all categories that apply to this text, separated by commas.",
     "\n",
@@ -118,7 +110,7 @@ answer_as_multi_category <- function(
 
   modify_fn <- function(original_prompt_text) {
     paste0(
-      "You need to categorize a text.\n\n",
+      "You need to categorize the following text.\n\n",
       "Text:\n  '",
       original_prompt_text,
       "'\n\n",
@@ -138,9 +130,8 @@ answer_as_multi_category <- function(
       ))
     }
     categories_selected <- categories[as.integer(valid_numbers)]
-    return(
-      jsonlite::toJSON(categories_selected, auto_unbox = FALSE)
-    )
+
+    return(categories_selected)
   }
 
   prompt_wrap(
@@ -149,4 +140,67 @@ answer_as_multi_category <- function(
     extraction_fn,
     name = "answer_as_multi_category"
   )
+}
+
+#' Build formatted categories text
+#'
+#' This helper function generates a text block listing categories,
+#' optionally with their descriptions.
+#' It also provides an appropriate introductory phrase.
+#'
+#' @param categories A character vector of category names. Must not be empty
+#'   and must not contain duplicates.
+#' @param descriptions An optional character vector of descriptions,
+#'   corresponding to each category. If provided, its length must match
+#'   the length of `categories`. Defaults to `NULL`.
+#'
+#' @return A string.
+#'
+#' @noRd
+#'
+#' @keywords internal
+.build_formatted_category_list <- function(
+  categories,
+  descriptions = NULL
+) {
+  stopifnot(
+    "'categories' must be a character vector." = is.character(categories),
+    "'categories' must not be empty." = length(categories) > 0,
+    "'categories' must not contain duplicates." = !any(duplicated(categories))
+  )
+
+  if (!is.null(descriptions)) {
+    length_equal <- length(descriptions) == length(categories)
+    stopifnot(
+      "'descriptions' must be a character vector." = is.character(descriptions),
+      "'descriptions' must have the same length as 'categories'." = length_equal
+    )
+  }
+
+  if (is.null(descriptions)) {
+    category_entries <- sprintf(
+      "%d. %s",
+      seq_along(categories),
+      categories
+    )
+    instruction_intro <- "Possible categories:"
+  } else {
+    category_entries <- sprintf(
+      "%d. %s: %s",
+      seq_along(categories),
+      categories,
+      descriptions
+    )
+    instruction_intro <- "Possible categories and their descriptions:"
+  }
+
+  numbered_categories_text <- paste0(category_entries, collapse = "\n  ")
+
+  formatted_category_list <- paste0(
+    instruction_intro,
+    "\n  ",
+    numbered_categories_text
+  )
+
+  return(formatted_category_list)
 }

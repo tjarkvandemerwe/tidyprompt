@@ -5,12 +5,17 @@
 \title{Make LLM answer as a category
 For multiple categories, see \code{\link[=answer_as_multi_category]{answer_as_multi_category()}}}
 \usage{
-answer_as_category(prompt, categories)
+answer_as_category(prompt, categories, descriptions = NULL)
 }
 \arguments{
 \item{prompt}{A single string or a \code{\link[=tidyprompt]{tidyprompt()}} object}
 
-\item{categories}{Possible categories to choose from (character vector)}
+\item{categories}{A character vector of category names. Must not be empty
+and must not contain duplicates.}
+
+\item{descriptions}{An optional character vector of descriptions,
+corresponding to each category. If provided, its length must match
+the length of \code{categories}. Defaults to \code{NULL}.}
 }
 \value{
 A \code{\link[=tidyprompt]{tidyprompt()}} with an added \code{\link[=prompt_wrap]{prompt_wrap()}} which
