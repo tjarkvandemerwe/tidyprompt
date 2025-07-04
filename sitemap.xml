@@ -12,10 +12,12 @@
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/add_msg_to_chat_history.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/add_text.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/answer_as_boolean.html</loc></url>
+<url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/answer_as_category.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/answer_as_integer.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/answer_as_json.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/answer_as_key_value.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/answer_as_list.html</loc></url>
+<url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/answer_as_multi_category.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/answer_as_named_list.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/answer_as_regex_match.html</loc></url>
 <url><loc>https://tjarkvandemerwe.github.io/tidyprompt/reference/answer_as_text.html</loc></url>
