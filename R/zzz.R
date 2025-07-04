@@ -10,7 +10,6 @@ cli::cli_h3(
     "'!"
   )
 )
-cli::cli_text("Note that 'tidyprompt' is still under active development.")
 cli::cli_alert_info(
   "You may download the latest version from {.href [GitHub](https://github.com/tjarkvandemerwe/tidyprompt)}, using:"
 )
