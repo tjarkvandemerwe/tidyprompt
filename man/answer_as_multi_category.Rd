@@ -11,15 +11,15 @@ answer_as_multi_category(prompt, categories, descriptions = NULL)
 \item{prompt}{A single string or a \code{\link[=tidyprompt]{tidyprompt()}} object}
 
 \item{categories}{A character vector of category names. Must not be empty
-and must not contain duplicates.}
+and must not contain duplicates}
 
 \item{descriptions}{An optional character vector of descriptions,
 corresponding to each category. If provided, its length must match
-the length of \code{categories}. Defaults to \code{NULL}.}
+the length of \code{categories}. Defaults to \code{NULL}}
 }
 \value{
 A \code{\link[=tidyprompt]{tidyprompt()}} with an added \code{\link[=prompt_wrap]{prompt_wrap()}} which
-will ensure that the LLM response is a vector of fitting categories of a text.
+will ensure that the LLM response is a vector of fitting categories of a text
 }
 \description{
 Build prompt for categorizing a text into multiple categories
@@ -28,7 +28,9 @@ For single category, see \code{\link[=answer_as_category]{answer_as_category()}}
 \examples{
 \dontrun{
   "It is sunny, that makes me happy." |>
-    answer_as_multi_category(categories = c("environment", "weather", "work", "positive", "negative")) |>
+    answer_as_multi_category(
+      categories = c("environment", "weather", "work", "positive", "negative")
+    ) |>
     send_prompt()
   # --- Sending request to LLM provider (llama3.1:8b): ---
   #   You need to categorize a text.

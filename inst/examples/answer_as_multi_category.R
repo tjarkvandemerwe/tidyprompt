@@ -1,6 +1,8 @@
 \dontrun{
   "It is sunny, that makes me happy." |>
-    answer_as_multi_category(categories = c("environment", "weather", "work", "positive", "negative")) |>
+    answer_as_multi_category(
+      categories = c("environment", "weather", "work", "positive", "negative")
+    ) |>
     send_prompt()
   # --- Sending request to LLM provider (llama3.1:8b): ---
   #   You need to categorize a text.

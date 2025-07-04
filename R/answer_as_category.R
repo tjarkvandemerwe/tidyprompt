@@ -3,14 +3,14 @@
 #'
 #' @param prompt A single string or a [tidyprompt()] object
 #' @param categories A character vector of category names. Must not be empty
-#'   and must not contain duplicates.
+#'   and must not contain duplicates
 #' @param descriptions An optional character vector of descriptions,
 #'   corresponding to each category. If provided, its length must match
-#'   the length of `categories`. Defaults to `NULL`.
+#'   the length of `categories`. Defaults to `NULL`
 #'
 #' @return A [tidyprompt()] with an added [prompt_wrap()] which
 #' will ensure that the LLM response is the most fitting category of a text as
-#' a character vector of length one.
+#' a character vector of length one
 #'
 #' @export
 #'
@@ -74,13 +74,13 @@ answer_as_category <- function(
 #'
 #' @param prompt A single string or a [tidyprompt()] object
 #' @param categories A character vector of category names. Must not be empty
-#'   and must not contain duplicates.
+#'   and must not contain duplicates
 #' @param descriptions An optional character vector of descriptions,
 #'   corresponding to each category. If provided, its length must match
-#'   the length of `categories`. Defaults to `NULL`.
+#'   the length of `categories`. Defaults to `NULL`
 #'
 #' @return A [tidyprompt()] with an added [prompt_wrap()] which
-#' will ensure that the LLM response is a vector of fitting categories of a text.
+#' will ensure that the LLM response is a vector of fitting categories of a text
 #'
 #' @export
 #'
@@ -149,12 +149,13 @@ answer_as_multi_category <- function(
 #' It also provides an appropriate introductory phrase.
 #'
 #' @param categories A character vector of category names. Must not be empty
-#'   and must not contain duplicates.
+#'   and must not contain duplicates
 #' @param descriptions An optional character vector of descriptions,
 #'   corresponding to each category. If provided, its length must match
-#'   the length of `categories`. Defaults to `NULL`.
+#'   the length of `categories`. Defaults to `NULL`
 #'
-#' @return A string.
+#' @return A string containing the formatted list of categories
+#'
 #'
 #' @noRd
 #'

@@ -11,16 +11,16 @@ answer_as_category(prompt, categories, descriptions = NULL)
 \item{prompt}{A single string or a \code{\link[=tidyprompt]{tidyprompt()}} object}
 
 \item{categories}{A character vector of category names. Must not be empty
-and must not contain duplicates.}
+and must not contain duplicates}
 
 \item{descriptions}{An optional character vector of descriptions,
 corresponding to each category. If provided, its length must match
-the length of \code{categories}. Defaults to \code{NULL}.}
+the length of \code{categories}. Defaults to \code{NULL}}
 }
 \value{
 A \code{\link[=tidyprompt]{tidyprompt()}} with an added \code{\link[=prompt_wrap]{prompt_wrap()}} which
 will ensure that the LLM response is the most fitting category of a text as
-a character vector of length one.
+a character vector of length one
 }
 \description{
 Make LLM answer as a category
