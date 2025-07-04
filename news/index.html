@@ -40,7 +40,17 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="tidyprompt-development-version">tidyprompt (development version)<a class="anchor" aria-label="anchor" href="#tidyprompt-development-version"></a></h2>
-</div>
+<ul><li>Added new prompt wraps: <code><a href="../reference/answer_as_category.html">answer_as_category()</a></code> &amp; <code><a href="../reference/answer_as_multi_category.html">answer_as_multi_category()</a></code>
+</li>
+<li>Added <code><a href="../reference/llm_break_soft.html">llm_break_soft()</a></code>, which can be used to interrupt prompt evaluation without causing an error</li>
+<li>Safer handling of chat history objects (‘NA’ rows could cause errors in specific cases)</li>
+<li>Fixed default Google Gemini LLM provider</li>
+<li>More flexible lenient extraction for final answer extraction in chain-of-thought</li>
+<li>Use <code><a href="https://rdrr.io/r/base/message.html" class="external-link">message()</a></code> instead of <code><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat()</a></code> for printing LLM responses</li>
+<li>Added ‘num_ctx’ parameter for Ollama LLM provider to more easily control the context window size</li>
+<li>Added <code>set_option()</code> &amp; `<code>set_options()</code> to Ollama LLM provider to more easily set options</li>
+<li>Added a more detailed error message in case a LLM provider cannot be reached</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.1" id="tidyprompt-001">tidyprompt 0.0.1<a class="anchor" aria-label="anchor" href="#tidyprompt-001"></a></h2><p class="text-muted">CRAN release: 2025-01-08</p>
 <ul><li>Initial CRAN release</li>
