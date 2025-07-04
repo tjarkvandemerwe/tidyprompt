@@ -20,3 +20,4 @@ vignettes/Rplots.pdf
 vignettes/precompile vignettes.R
 ^cran-comments\.md$
 ^CRAN-SUBMISSION$
+revdep/*

@@ -12,3 +12,4 @@ cache/*
 vignettes/cache/*
 vignettes/Rplots.pdf
 tidyprompt.Rproj
+/revdep
